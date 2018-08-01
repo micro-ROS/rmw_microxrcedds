@@ -10,6 +10,7 @@ project(rmw_micrortps
 
 # include(CTest)
 # enable_testing()
+find_package(microcdr REQUIRED)
 find_package(micrortps_client REQUIRED)
 
 find_package(ament_cmake_ros REQUIRED)

@@ -29,7 +29,8 @@ rmw_node_t* rmw_create_node(const char* name, const char* namespace_, size_t dom
         RMW_SET_ERROR_MSG("security_options is null");
         return NULL;
     }
-    return create_node(name, namespace_);
+    //return create_node(name, namespace_);
+    return NULL;
 }
 
 rmw_ret_t rmw_destroy_node(rmw_node_t* node)
