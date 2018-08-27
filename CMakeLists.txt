@@ -18,7 +18,7 @@ find_package(rcutils REQUIRED)
 
 find_package(rmw REQUIRED)
 find_package(rosidl_generator_c REQUIRED)
-find_package(rosidl_typesupport_introspection_c REQUIRED)
+find_package(rosidl_typesupport_micrortps_c REQUIRED)
    
     
 file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.c)
@@ -26,6 +26,7 @@ add_library(${PROJECT_NAME} ${SRC_FILES})
     
 ament_target_dependencies(${PROJECT_NAME}
     "rcutils"
+    "rosidl_typesupport_micrortps_c"
     "rmw"
     "rosidl_generator_c"
 )
@@ -52,15 +53,15 @@ ament_export_libraries(${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME} micrortps_client)
 ament_export_dependencies(
-    rosidl_typesupport_introspection_c
+    rosidl_typesupport_micrortps_c
     rosidl_generator_c
     rcutils
     rmw
     )
 
 register_rmw_implementation(
-    "c:rosidl_typesupport_c:rosidl_typesupport_introspection_c"
-    "cpp:rosidl_typesupport_cpp:rosidl_typesupport_introspection_cpp"
+    "c:rosidl_typesupport_c:rosidl_typesupport_micrortps_c"
+    # "cpp:rosidl_typesupport_cpp:rosidl_typesupport_introspection_cpp"
 )
 
 ament_package()
