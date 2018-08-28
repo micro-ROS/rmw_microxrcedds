@@ -57,7 +57,7 @@ void rmw_node_free_and_null(rmw_node_t* node)
     node = NULL;
 }
 
-rmw_node_t* create_node(const char* name, const char* namespace_)
+rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_id)
 {
     if (!mr_init_udp_transport(&node_info.udp, ip, port))
     {
@@ -120,7 +120,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_)
     node_info.participant_id = mr_object_id(1, MR_PARTICIPANT_ID);
     char* participant_ref    = "default participant";
     uint16_t participant_req = mr_write_create_participant_ref(&node_info.session, reliable_output,
-                                                               node_info.participant_id, participant_ref, MR_REPLACE);
+                                                               node_info.participant_id, domain_id, participant_ref, MR_REPLACE);
     uint8_t status[1];
     uint16_t requests[] = {participant_req};
     if (!mr_run_session_until_status(&node_info.session, 1000, requests, status, 1))

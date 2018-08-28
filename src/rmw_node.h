@@ -23,6 +23,6 @@ mrStreamId best_output;
 mrStreamId reliable_output;
 typedef struct Communication Communication;
 
-rmw_node_t* create_node(const char* name, const char* namespace_);
+rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_id);
 
 #endif // !RMW_NODE_H_
