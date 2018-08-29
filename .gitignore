@@ -85,3 +85,8 @@ dkms.conf
 # End of https://www.gitignore.io/api/c,c++,visualstudiocode
 
 .clang-format
+
+# ROS2 colcon build directories
+/build
+/install
+/log
