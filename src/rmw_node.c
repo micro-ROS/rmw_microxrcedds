@@ -11,10 +11,6 @@
 #define MAX_BUFFER_SIZE MAX_TRANSPORT_MTU* MAX_HISTORY
 
 MicroNode node_info;
-char* ip       = "127.0.0.1";
-uint16_t port  = 8888;
-uint32_t key   = 0xAABBCCDD;
-size_t history = 8;
 
 uint8_t input_reliable_stream_buffer[MAX_BUFFER_SIZE];
 uint8_t output_best_effort_stream_buffer[MAX_BUFFER_SIZE];
@@ -59,6 +55,12 @@ void rmw_node_free_and_null(rmw_node_t* node)
 
 rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_id)
 {
+    static const char* ip       = "127.0.0.1";
+    static const uint16_t port  = 8888;
+    static const uint32_t key   = 0xAABBCCDD;
+    static const size_t history = 8;
+
+    // TODO(Borja) Think how we are going to select transport to use
     if (!mr_init_udp_transport(&node_info.udp, ip, port))
     {
         RMW_SET_ERROR_MSG("Can not create an udp connection");
@@ -118,11 +120,12 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
 
     // Create the Node participant. At this point a Node correspond with a Session with one participant.
     node_info.participant_id = mr_object_id(1, MR_PARTICIPANT_ID);
-    char* participant_ref    = "default participant";
-    uint16_t participant_req = mr_write_create_participant_ref(&node_info.session, reliable_output,
-                                                               node_info.participant_id, domain_id, participant_ref, MR_REPLACE);
+    const char* participant_ref    = "default participant";
+    uint16_t participant_req = mr_write_create_participant_ref(
+        &node_info.session, reliable_output, node_info.participant_id, domain_id, participant_ref, MR_REPLACE);
     uint8_t status[1];
     uint16_t requests[] = {participant_req};
+    
     if (!mr_run_session_until_status(&node_info.session, 1000, requests, status, 1))
     {
         mr_delete_session(&node_info.session);
