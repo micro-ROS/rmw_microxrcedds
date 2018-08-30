@@ -53,6 +53,21 @@ void rmw_node_free_and_null(rmw_node_t* node)
     node = NULL;
 }
 
+void rmw_node_free_and_null_all(rmw_node_t* node)
+{
+    rmw_free_and_null((char*)node->namespace_);
+    rmw_free_and_null((char*)node->name);
+    rmw_node_free_and_null(node);
+}
+
+void clear_node(rmw_node_t* node)
+{
+    MicroNode* micro_node = (MicroNode*)node->data;
+    mr_delete_session(&micro_node->session);
+    mr_close_udp_transport(&micro_node->udp);
+    rmw_node_free_and_null_all(node);
+}
+
 rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_id)
 {
     static const char* ip       = "127.0.0.1";
@@ -97,42 +112,64 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
         rmw_node_free_and_null(node_handle);
         return NULL;
     }
-    memcpy(node_handle->name, name, strlen(name) + 1);
+    memcpy((char*)node_handle->name, name, strlen(name) + 1);
 
     node_handle->namespace_ = rmw_allocate(sizeof(char) * strlen(namespace_) + 1);
     if (!node_handle->namespace_)
     {
         RMW_SET_ERROR_MSG("failed to allocate memory");
         node_handle->namespace_ = NULL;
-        rmw_free_and_null(node_handle->name);
+        rmw_free_and_null((char*)node_handle->name);
         rmw_node_free_and_null(node_handle);
         return NULL;
     }
-    memcpy(node_handle->namespace_, namespace_, strlen(namespace_) + 1);
+    memcpy((char*)node_handle->namespace_, namespace_, strlen(namespace_) + 1);
 
     if (!mr_create_session(&node_info.session))
     {
-        rmw_free_and_null(node_handle->namespace_);
-        rmw_free_and_null(node_handle->name);
-        rmw_node_free_and_null(node_handle);
+        rmw_node_free_and_null_all(node_handle);
         return NULL;
     }
 
     // Create the Node participant. At this point a Node correspond with a Session with one participant.
-    node_info.participant_id = mr_object_id(1, MR_PARTICIPANT_ID);
-    const char* participant_ref    = "default participant";
-    uint16_t participant_req = mr_write_create_participant_ref(
+    node_info.participant_id    = mr_object_id(1, MR_PARTICIPANT_ID);
+    const char* participant_ref = "default participant";
+    uint16_t participant_req    = mr_write_create_participant_ref(
         &node_info.session, reliable_output, node_info.participant_id, domain_id, participant_ref, MR_REPLACE);
     uint8_t status[1];
     uint16_t requests[] = {participant_req};
-    
+
     if (!mr_run_session_until_status(&node_info.session, 1000, requests, status, 1))
     {
         mr_delete_session(&node_info.session);
-        rmw_free_and_null(node_handle->namespace_);
-        rmw_free_and_null(node_handle->name);
-        rmw_node_free_and_null(node_handle);
+        rmw_node_free_and_null_all(node_handle);
+        return NULL;
     }
 
     return node_handle;
+}
+
+rmw_ret_t destroy_node(rmw_node_t* node)
+{
+    rmw_ret_t result_ret = RMW_RET_OK;
+    if (!node)
+    {
+        RMW_SET_ERROR_MSG("node handle is null");
+        return RMW_RET_ERROR;
+    }
+
+    if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) == 0)
+    {
+        RMW_SET_ERROR_MSG("node handle not from this implementation");
+        return RMW_RET_ERROR;
+    }
+
+    if (!node->data)
+    {
+        RMW_SET_ERROR_MSG("node impl is null");
+        return RMW_RET_ERROR;
+    }
+
+    clear_node(node);
+    return result_ret;
 }

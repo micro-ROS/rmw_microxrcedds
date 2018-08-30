@@ -41,57 +41,71 @@ rmw_node_t* rmw_create_node(const char* name, const char* namespace_, size_t dom
 rmw_ret_t rmw_destroy_node(rmw_node_t* node)
 {
     EPROS_PRINT_TRACE()
-    return RMW_RET_OK;
+    if (destroy_node(node))
+    {
+        return RMW_RET_OK;
+    }
+    return RMW_RET_ERROR;
 }
 
 const rmw_guard_condition_t* rmw_node_get_graph_guard_condition(const rmw_node_t* node)
 {
-    (void) node;
+    (void)node;
     EPROS_PRINT_TRACE()
-    rmw_guard_condition_t * ret = (rmw_guard_condition_t *)rmw_allocate(sizeof(rmw_guard_condition_t));
-    ret->data = NULL;
+    rmw_guard_condition_t* ret     = (rmw_guard_condition_t*)rmw_allocate(sizeof(rmw_guard_condition_t));
+    ret->data                      = NULL;
     ret->implementation_identifier = eprosima_micrortps_identifier;
-    return ret;   
+    return ret;
 }
 
 rmw_publisher_t* rmw_create_publisher(const rmw_node_t* node, const rosidl_message_type_support_t* type_support,
                                       const char* topic_name, const rmw_qos_profile_t* qos_policies)
 {
     EPROS_PRINT_TRACE()
-        (void)qos_policies;
+    (void)qos_policies;
     rmw_publisher_t* ret           = (rmw_publisher_t*)rmw_allocate(sizeof(rmw_publisher_t));
     ret->data                      = NULL;
     ret->implementation_identifier = eprosima_micrortps_identifier;
     ret->topic_name                = topic_name;
 
-    const rosidl_message_type_support_t * meessage_type_support = get_message_typesupport_handle(
-    type_support, rosidl_typesupport_micrortps_c__identifier);
-    if (!type_support) {
+    const rosidl_message_type_support_t* meessage_type_support =
+        get_message_typesupport_handle(type_support, rosidl_typesupport_micrortps_c__identifier);
+    if (!type_support)
+    {
         RMW_SET_ERROR_MSG("type support not from this implementation");
         return NULL;
     }
-    // rosidl_typesupport_introspection_c__MessageMembers* members = (rosidl_typesupport_introspection_c__MessageMembers*)meessage_type_support->data;
-    // if (!members) {
+    // rosidl_typesupport_introspection_c__MessageMembers* members =
+    // (rosidl_typesupport_introspection_c__MessageMembers*)meessage_type_support->data; if (!members) {
     //     RMW_SET_ERROR_MSG("members handle is null");
     //     return NULL;
     // }
 
-    MicroNode* micro_node = (MicroNode*)node->data;
-    micro_node->publisher_id = mr_object_id(0x01, MR_PUBLISHER_ID);
+    // TODO(Borja) Check NULL on node
+    MicroNode* micro_node     = (MicroNode*)node->data;
+    micro_node->publisher_id  = mr_object_id(0x01, MR_PUBLISHER_ID);
     const char* publisher_xml = "<publisher name=\"MyPublisher\">";
-    uint16_t publisher_req = mr_write_configure_publisher_xml(&micro_node->session, reliable_output, micro_node->publisher_id, micro_node->participant_id, publisher_xml, MR_REPLACE);
-    
-    mrObjectId topic_id = mr_object_id(0x01, MR_TOPIC_ID);
-    const char* topic_xml = "<dds><topic><name>HelloWorldTopic</name><dataType>HelloWorld</dataType></topic></dds>";
-    uint16_t topic_req = mr_write_configure_topic_xml(&micro_node->session, reliable_output, topic_id, micro_node->participant_id, topic_xml, MR_REPLACE);
+    uint16_t publisher_req =
+        mr_write_configure_publisher_xml(&micro_node->session, reliable_output, micro_node->publisher_id,
+                                         micro_node->participant_id, publisher_xml, MR_REPLACE);
 
+    mrObjectId topic_id   = mr_object_id(0x01, MR_TOPIC_ID);
+    const char* topic_xml = "<dds><topic><name>HelloWorldTopic</name><dataType>HelloWorld</dataType></topic></dds>";
+    uint16_t topic_req    = mr_write_configure_topic_xml(&micro_node->session, reliable_output, topic_id,
+                                                      micro_node->participant_id, topic_xml, MR_REPLACE);
 
     micro_node->datawriter_id = mr_object_id(0x01, MR_DATAWRITER_ID);
-    const char* datawriter_xml = "<profiles><publisher profile_name=\"default_xrce_publisher_profile\"><topic><kind>NO_KEY</kind><name>HelloWorldTopic</name><dataType>HelloWorld</dataType><historyQos><kind>KEEP_LAST</kind><depth>5</depth></historyQos><durability><kind>TRANSIENT_LOCAL</kind></durability></topic></publisher></profiles>";
-    uint16_t datawriter_req = mr_write_configure_datawriter_xml(&micro_node->session, reliable_output, micro_node->datawriter_id, micro_node->publisher_id, datawriter_xml, MR_REPLACE);
+    const char* datawriter_xml =
+        "<profiles><publisher "
+        "profile_name=\"default_xrce_publisher_profile\"><topic><kind>NO_KEY</kind><name>HelloWorldTopic</"
+        "name><dataType>HelloWorld</dataType><historyQos><kind>KEEP_LAST</kind><depth>5</depth></"
+        "historyQos><durability><kind>TRANSIENT_LOCAL</kind></durability></topic></publisher></profiles>";
+    uint16_t datawriter_req =
+        mr_write_configure_datawriter_xml(&micro_node->session, reliable_output, micro_node->datawriter_id,
+                                          micro_node->publisher_id, datawriter_xml, MR_REPLACE);
     uint8_t status[3];
     uint16_t requests[] = {publisher_req, datawriter_req, topic_req};
-    if(!mr_run_session_until_status(&micro_node->session, 1000, requests, status, 3))
+    if (!mr_run_session_until_status(&micro_node->session, 1000, requests, status, 3))
     {
         rmw_free(ret);
         ret = NULL;

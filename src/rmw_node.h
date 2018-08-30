@@ -5,7 +5,7 @@
 
 #include <micrortps/client/client.h>
 
-#define EPROS_PRINT_TRACE() printf("func %s, in file %s:%d\n",__PRETTY_FUNCTION__,__FILE__,__LINE__);
+#define EPROS_PRINT_TRACE() printf("func %s, in file %s:%d\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
 
 // TODO(Borja): use static memory allocations with a fixed number of sessions/nodes.
 typedef struct
@@ -23,5 +23,6 @@ mrStreamId best_output;
 mrStreamId reliable_output;
 
 rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_id);
+rmw_ret_t destroy_node(rmw_node_t* node);
 
 #endif // !RMW_NODE_H_
