@@ -43,6 +43,7 @@ target_compile_options(${PROJECT_NAME}
         -Wextra
         -pedantic
         -Werror-implicit-function-declaration
+        -Wcast-align=strict
         # -Werror
         # -pedantic-errors
     )
