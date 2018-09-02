@@ -9,7 +9,7 @@ const char* rmw_get_implementation_identifier(void);
 // How do we pass transport to use?.
 rmw_ret_t rmw_init(void);
 
-rmw_node_t* rmw_create_node(const char* name, const char* namespace_, size_t domain_id,
+rmw_node_t* rmw_create_node(const char* name, const char* namespace, size_t domain_id,
                             const rmw_node_security_options_t* security_options);
 
 rmw_ret_t rmw_destroy_node(rmw_node_t* node);

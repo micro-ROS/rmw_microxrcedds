@@ -1,26 +1,20 @@
 #include "rmw_node.h"
 
-#include "identifier.h"
+#include "micronode.h"
+#include "utils.h"
 
-#include "rmw/allocators.h"
-#include "rmw/error_handling.h"
-#include "rmw/rmw.h"
-
-#define MAX_TRANSPORT_MTU 512
-#define MAX_HISTORY 16
-#define MAX_BUFFER_SIZE MAX_TRANSPORT_MTU* MAX_HISTORY
+#include <rmw/allocators.h>
+#include <rmw/error_handling.h>
+#include <rmw/rmw.h>
 
 MicroNode node_info;
-
-uint8_t input_reliable_stream_buffer[MAX_BUFFER_SIZE];
-uint8_t output_best_effort_stream_buffer[MAX_BUFFER_SIZE];
-uint8_t output_reliable_stream_buffer[MAX_BUFFER_SIZE];
 
 void on_status(mrSession* session, mrObjectId object_id, uint16_t request_id, uint8_t status, void* args)
 {
     (void)session;
     (void)object_id;
     (void)request_id;
+    (void)status;
     (void)args;
 }
 
@@ -39,25 +33,6 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
 
     printf("Receiving... ");
     // print_ShapeType_topic(&topic);
-}
-
-void rmw_free_and_null(void* rmw_allocated_ptr)
-{
-    rmw_free(rmw_allocated_ptr);
-    rmw_allocated_ptr = NULL;
-}
-
-void rmw_node_free_and_null(rmw_node_t* node)
-{
-    rmw_node_free(node);
-    node = NULL;
-}
-
-void rmw_node_free_and_null_all(rmw_node_t* node)
-{
-    rmw_free_and_null((char*)node->namespace_);
-    rmw_free_and_null((char*)node->name);
-    rmw_node_free_and_null(node);
 }
 
 void clear_node(rmw_node_t* node)
@@ -108,7 +83,6 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     if (!node_handle->name)
     {
         RMW_SET_ERROR_MSG("failed to allocate memory");
-        node_handle->name = NULL; // to avoid free on uninitialized memory
         rmw_node_free_and_null(node_handle);
         return NULL;
     }
@@ -118,7 +92,6 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     if (!node_handle->namespace_)
     {
         RMW_SET_ERROR_MSG("failed to allocate memory");
-        node_handle->namespace_ = NULL;
         rmw_free_and_null((char*)node_handle->name);
         rmw_node_free_and_null(node_handle);
         return NULL;

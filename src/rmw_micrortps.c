@@ -2,12 +2,15 @@
 
 #include "identifier.h"
 #include "rmw_node.h"
-
-#include <micrortps/client/client.h>
+#include "rmw_publisher.h"
+#include "utils.h"
 
 #include "rmw/allocators.h"
 #include "rmw/error_handling.h"
 #include "rosidl_typesupport_micrortps_c/identifier.h"
+
+#include <micrortps/client/client.h>
+
 
 const char* rmw_get_implementation_identifier()
 {
@@ -21,21 +24,28 @@ rmw_ret_t rmw_init()
     return RMW_RET_OK;
 }
 
-rmw_node_t* rmw_create_node(const char* name, const char* namespace_, size_t domain_id,
+rmw_node_t* rmw_create_node(const char* name, const char* namespace, size_t domain_id,
                             const rmw_node_security_options_t* security_options)
 {
     EPROS_PRINT_TRACE()
-    if (!name)
+    if (!name || strlen(name) == 0)
     {
         RMW_SET_ERROR_MSG("name is null");
         return NULL;
     }
-    if (!security_options)
+    if (!namespace || strlen(namespace) == 0)
     {
-        RMW_SET_ERROR_MSG("security_options is null");
-        return NULL;
+        {
+            RMW_SET_ERROR_MSG("node handle not from this implementation");
+            return NULL;
+        }
+        if (!security_options)
+        {
+            RMW_SET_ERROR_MSG("security_options is null");
+            return NULL;
+        }
+        return create_node(name, namespace, domain_id);
     }
-    return create_node(name, namespace_, domain_id);
 }
 
 rmw_ret_t rmw_destroy_node(rmw_node_t* node)
@@ -50,6 +60,7 @@ rmw_ret_t rmw_destroy_node(rmw_node_t* node)
 
 const rmw_guard_condition_t* rmw_node_get_graph_guard_condition(const rmw_node_t* node)
 {
+    // TODO
     (void)node;
     EPROS_PRINT_TRACE()
     rmw_guard_condition_t* ret     = (rmw_guard_condition_t*)rmw_allocate(sizeof(rmw_guard_condition_t));
@@ -62,55 +73,34 @@ rmw_publisher_t* rmw_create_publisher(const rmw_node_t* node, const rosidl_messa
                                       const char* topic_name, const rmw_qos_profile_t* qos_policies)
 {
     EPROS_PRINT_TRACE()
-    (void)qos_policies;
-    rmw_publisher_t* ret           = (rmw_publisher_t*)rmw_allocate(sizeof(rmw_publisher_t));
-    ret->data                      = NULL;
-    ret->implementation_identifier = eprosima_micrortps_identifier;
-    ret->topic_name                = topic_name;
-
-    const rosidl_message_type_support_t* meessage_type_support =
-        get_message_typesupport_handle(type_support, rosidl_typesupport_micrortps_c__identifier);
-    if (!type_support)
+    rmw_publisher_t* rmw_publisher = NULL;
+    if (!node)
     {
-        RMW_SET_ERROR_MSG("type support not from this implementation");
+        RMW_SET_ERROR_MSG("node handle is null");
+    }
+    else if (!type_support)
+    {
+        RMW_SET_ERROR_MSG("type support is null");
+    }
+    else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) == 0)
+    {
+        RMW_SET_ERROR_MSG("node handle not from this implementation");
+    }
+    else if (!topic_name || strlen(topic_name) == 0)
+    {
+        RMW_SET_ERROR_MSG("publisher topic is null or empty string");
         return NULL;
     }
-    // rosidl_typesupport_introspection_c__MessageMembers* members =
-    // (rosidl_typesupport_introspection_c__MessageMembers*)meessage_type_support->data; if (!members) {
-    //     RMW_SET_ERROR_MSG("members handle is null");
-    //     return NULL;
-    // }
-
-    // TODO(Borja) Check NULL on node
-    MicroNode* micro_node     = (MicroNode*)node->data;
-    micro_node->publisher_id  = mr_object_id(0x01, MR_PUBLISHER_ID);
-    const char* publisher_xml = "<publisher name=\"MyPublisher\">";
-    uint16_t publisher_req =
-        mr_write_configure_publisher_xml(&micro_node->session, reliable_output, micro_node->publisher_id,
-                                         micro_node->participant_id, publisher_xml, MR_REPLACE);
-
-    mrObjectId topic_id   = mr_object_id(0x01, MR_TOPIC_ID);
-    const char* topic_xml = "<dds><topic><name>HelloWorldTopic</name><dataType>HelloWorld</dataType></topic></dds>";
-    uint16_t topic_req    = mr_write_configure_topic_xml(&micro_node->session, reliable_output, topic_id,
-                                                      micro_node->participant_id, topic_xml, MR_REPLACE);
-
-    micro_node->datawriter_id = mr_object_id(0x01, MR_DATAWRITER_ID);
-    const char* datawriter_xml =
-        "<profiles><publisher "
-        "profile_name=\"default_xrce_publisher_profile\"><topic><kind>NO_KEY</kind><name>HelloWorldTopic</"
-        "name><dataType>HelloWorld</dataType><historyQos><kind>KEEP_LAST</kind><depth>5</depth></"
-        "historyQos><durability><kind>TRANSIENT_LOCAL</kind></durability></topic></publisher></profiles>";
-    uint16_t datawriter_req =
-        mr_write_configure_datawriter_xml(&micro_node->session, reliable_output, micro_node->datawriter_id,
-                                          micro_node->publisher_id, datawriter_xml, MR_REPLACE);
-    uint8_t status[3];
-    uint16_t requests[] = {publisher_req, datawriter_req, topic_req};
-    if (!mr_run_session_until_status(&micro_node->session, 1000, requests, status, 3))
+    else if (!qos_policies)
     {
-        rmw_free(ret);
-        ret = NULL;
+        RMW_SET_ERROR_MSG("qos_profile is null");
+        return NULL;
     }
-    return ret;
+    else
+    {
+        rmw_publisher = create_publisher(node, type_support, topic_name, qos_policies);
+    }
+    return rmw_publisher;
 }
 
 rmw_ret_t rmw_destroy_publisher(rmw_node_t* node, rmw_publisher_t* publisher)
