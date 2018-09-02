@@ -38,7 +38,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
     if (micro_node->num_publishers == MAX_PUBLISHERS     - 1)
     {
         RMW_SET_ERROR_MSG("Max number of publisher reached")
-        rmw_free_and_null(rmw_publish);
+        rmw_free_and_null(rmw_publisher);
     }
 
     // TODO micro_rtps_id is duplicated in publisher_id and in publisher_gid.data
