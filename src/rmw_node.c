@@ -122,8 +122,9 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     return node_handle;
 }
 
-rmw_ret_t destroy_node(rmw_node_t* node)
+rmw_ret_t rmw_destroy_node(rmw_node_t* node)
 {
+    EPROS_PRINT_TRACE()
     rmw_ret_t result_ret = RMW_RET_OK;
     if (!node)
     {

@@ -1,12 +1,13 @@
 #include "rmw_publisher.h"
 
 #include "micronode.h"
+#include "rmw_micrortps.h"
 #include "rmw_node.h"
 #include "utils.h"
 
-#include <rmw/rmw.h>
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
+#include <rmw/rmw.h>
 #include <rosidl_typesupport_micrortps_c/identifier.h>
 
 rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_type_support_t* type_support,
@@ -35,7 +36,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
 
     // TODO(Borja) Check NULL on node
     MicroNode* micro_node = (MicroNode*)node->data;
-    if (micro_node->num_publishers == MAX_PUBLISHERS     - 1)
+    if (micro_node->num_publishers == MAX_PUBLISHERS - 1)
     {
         RMW_SET_ERROR_MSG("Max number of publisher reached")
         rmw_free_and_null(rmw_publisher);
@@ -78,4 +79,31 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
         rmw_publisher = NULL;
     }
     return rmw_publisher;
+}
+
+rmw_ret_t rmw_destroy_publisher(rmw_node_t* node, rmw_publisher_t* publisher)
+{
+    EPROS_PRINT_TRACE()
+        rmw_ret_t result_ret = RMW_RET_OK;
+    if (!node)
+    {
+        RMW_SET_ERROR_MSG("node handle is null");
+        return RMW_RET_ERROR;
+    }
+
+    if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) == 0)
+    {
+        RMW_SET_ERROR_MSG("node handle not from this implementation");
+        return RMW_RET_ERROR;
+    }
+
+    if (!node->data)
+    {
+        RMW_SET_ERROR_MSG("node impl is null");
+        return RMW_RET_ERROR;
+    }
+
+    clear_node(node);
+    return result_ret;
+    return RMW_RET_OK;
 }

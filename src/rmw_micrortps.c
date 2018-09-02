@@ -47,16 +47,6 @@ rmw_node_t* rmw_create_node(const char* name, const char* namespace, size_t doma
     return rmw_node;
 }
 
-rmw_ret_t rmw_destroy_node(rmw_node_t* node)
-{
-    EPROS_PRINT_TRACE()
-    if (destroy_node(node))
-    {
-        return RMW_RET_OK;
-    }
-    return RMW_RET_ERROR;
-}
-
 const rmw_guard_condition_t* rmw_node_get_graph_guard_condition(const rmw_node_t* node)
 {
     // TODO
@@ -100,12 +90,6 @@ rmw_publisher_t* rmw_create_publisher(const rmw_node_t* node, const rosidl_messa
         rmw_publisher = create_publisher(node, type_support, topic_name, qos_policies);
     }
     return rmw_publisher;
-}
-
-rmw_ret_t rmw_destroy_publisher(rmw_node_t* node, rmw_publisher_t* publisher)
-{
-    EPROS_PRINT_TRACE()
-    return RMW_RET_OK;
 }
 
 rmw_ret_t rmw_publish(const rmw_publisher_t* publisher, const void* ros_message)
