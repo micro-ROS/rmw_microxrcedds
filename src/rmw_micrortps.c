@@ -11,7 +11,6 @@
 
 #include <micrortps/client/client.h>
 
-
 const char* rmw_get_implementation_identifier()
 {
     EPROS_PRINT_TRACE()
@@ -28,24 +27,24 @@ rmw_node_t* rmw_create_node(const char* name, const char* namespace, size_t doma
                             const rmw_node_security_options_t* security_options)
 {
     EPROS_PRINT_TRACE()
+    rmw_node_t* rmw_node = NULL;
     if (!name || strlen(name) == 0)
     {
         RMW_SET_ERROR_MSG("name is null");
-        return NULL;
     }
-    if (!namespace || strlen(namespace) == 0)
+    else if (!namespace || strlen(namespace) == 0)
     {
-        {
-            RMW_SET_ERROR_MSG("node handle not from this implementation");
-            return NULL;
-        }
-        if (!security_options)
-        {
-            RMW_SET_ERROR_MSG("security_options is null");
-            return NULL;
-        }
-        return create_node(name, namespace, domain_id);
+        RMW_SET_ERROR_MSG("node handle not from this implementation");
     }
+    else if (!security_options)
+    {
+        RMW_SET_ERROR_MSG("security_options is null");
+    }
+    else
+    {
+        rmw_node = create_node(name, namespace, domain_id);
+    }
+    return rmw_node;
 }
 
 rmw_ret_t rmw_destroy_node(rmw_node_t* node)
