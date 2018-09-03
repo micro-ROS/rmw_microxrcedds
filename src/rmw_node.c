@@ -38,9 +38,10 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
 void clear_node(rmw_node_t* node)
 {
     MicroNode* micro_node = (MicroNode*)node->data;
+    // TODO make sure that session deletion deletes participant and related entities.
     mr_delete_session(&micro_node->session);
     mr_close_udp_transport(&micro_node->udp);
-    rmw_node_free_and_null_all(node);
+    rmw_node_delete(node);
 }
 
 rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_id)
@@ -83,7 +84,8 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     if (!node_handle->name)
     {
         RMW_SET_ERROR_MSG("failed to allocate memory");
-        rmw_node_free_and_null(node_handle);
+        mr_close_udp_transport(&node_info.udp);
+        rmw_node_delete(node_handle);
         return NULL;
     }
     memcpy((char*)node_handle->name, name, strlen(name) + 1);
@@ -92,15 +94,16 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     if (!node_handle->namespace_)
     {
         RMW_SET_ERROR_MSG("failed to allocate memory");
-        rmw_free_and_null((char*)node_handle->name);
-        rmw_node_free_and_null(node_handle);
+        mr_close_udp_transport(&node_info.udp);
+        rmw_node_delete(node_handle);
         return NULL;
     }
     memcpy((char*)node_handle->namespace_, namespace_, strlen(namespace_) + 1);
 
     if (!mr_create_session(&node_info.session))
     {
-        rmw_node_free_and_null_all(node_handle);
+        mr_close_udp_transport(&node_info.udp);
+        rmw_node_delete(node_handle);
         return NULL;
     }
 
@@ -115,9 +118,14 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     if (!mr_run_session_until_status(&node_info.session, 1000, requests, status, 1))
     {
         mr_delete_session(&node_info.session);
-        rmw_node_free_and_null_all(node_handle);
+        mr_close_udp_transport(&node_info.udp);
+        rmw_node_delete(node_handle);
+        RMW_SET_ERROR_MSG("Issues creating micro RTPS entities");
         return NULL;
     }
+
+    // TODO create utils methods to handle publishers array.
+    micronode_clear(&node_info);
 
     return node_handle;
 }

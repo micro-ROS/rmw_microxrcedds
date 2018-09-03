@@ -16,6 +16,7 @@
 // TODO(Borja): use static memory allocations with a fixed number of sessions/nodes.
 typedef struct
 {
+    bool in_use;
     mrObjectId publisher_id;
     mrObjectId datawriter_id;
     mrObjectId topic_id;
