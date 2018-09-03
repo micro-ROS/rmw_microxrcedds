@@ -13,6 +13,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
 {
     bool success = false;
     (void)qos_policies;
+    (void)ignore_local_publications;
 
     rmw_subscription_t* rmw_subscriber        = (rmw_subscription_t*)rmw_allocate(sizeof(rmw_subscription_t));
     rmw_subscriber->data                      = NULL;
@@ -99,4 +100,69 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
         rmw_subscription_delete(rmw_subscriber);
     }
     return rmw_subscriber;
+}
+
+rmw_ret_t rmw_destroy_subscription(rmw_node_t* node, rmw_subscription_t* subscription)
+{
+    EPROS_PRINT_TRACE()
+    rmw_ret_t result_ret = RMW_RET_OK;
+    if (!node)
+    {
+        RMW_SET_ERROR_MSG("node handle is null");
+        result_ret = RMW_RET_ERROR;
+    }
+    else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) == 0)
+    {
+        RMW_SET_ERROR_MSG("node handle not from this implementation");
+        result_ret = RMW_RET_ERROR;
+    }
+    else if (!node->data)
+    {
+        RMW_SET_ERROR_MSG("node imp is null");
+        result_ret = RMW_RET_ERROR;
+    }
+    else if (!subscription)
+    {
+        RMW_SET_ERROR_MSG("subscription handle is null");
+        result_ret = RMW_RET_ERROR;
+    }
+    else if (strcmp(subscription->implementation_identifier, rmw_get_implementation_identifier()))
+    {
+        RMW_SET_ERROR_MSG("subscription handle not from this implementation");
+        result_ret = RMW_RET_ERROR;
+    }
+    else if (!subscription->data)
+    {
+        RMW_SET_ERROR_MSG("subscription imp is null");
+        result_ret = RMW_RET_ERROR;
+    }
+    else
+    {
+        MicroNode* micro_node = (MicroNode*)node->data;
+        if (micro_node->num_subscriptions > 0)
+        {
+            SubscriptionInfo* subscripion_info = (SubscriptionInfo*)subscription->data;
+            int delete_datareader =
+                mr_write_delete_entity(&micro_node->session, reliable_output, subscripion_info->datareader_id);
+            int delete_topic = mr_write_delete_entity(&micro_node->session, reliable_output, subscripion_info->topic_id);
+            int delete_subscriber =
+                mr_write_delete_entity(&micro_node->session, reliable_output, subscripion_info->subscriber_id);
+
+            uint8_t status[3];
+            uint16_t requests[] = {delete_datareader, delete_topic, delete_subscriber};
+            if (!mr_run_session_until_status(&micro_node->session, 1000, requests, status, 3))
+            {
+                RMW_SET_ERROR_MSG("unable to remove publisher from the server");
+                result_ret = RMW_RET_ERROR;
+            }
+            else
+            {
+                rmw_subscription_delete(subscription);
+                micro_node->num_subscriptions -= 1;
+                result_ret = RMW_RET_OK;
+            }
+        }
+    }
+
+    return result_ret;
 }

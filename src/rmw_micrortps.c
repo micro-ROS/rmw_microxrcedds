@@ -155,12 +155,6 @@ rmw_subscription_t* rmw_create_subscription(const rmw_node_t* node, const rosidl
     return rmw_subscription;
 }
 
-rmw_ret_t rmw_destroy_subscription(rmw_node_t* node, rmw_subscription_t* subscription)
-{
-    EPROS_PRINT_TRACE()
-    return RMW_RET_OK;
-}
-
 rmw_ret_t rmw_take(const rmw_subscription_t* subscription, void* ros_message, bool* taken)
 {
     EPROS_PRINT_TRACE()
