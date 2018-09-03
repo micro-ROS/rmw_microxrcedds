@@ -12,6 +12,7 @@
 #define MAX_BUFFER_SIZE MAX_TRANSPORT_MTU* MAX_HISTORY
 
 #define MAX_PUBLISHERS 10
+#define MAX_SUBSCRIPTIONS 10
 
 // TODO(Borja): use static memory allocations with a fixed number of sessions/nodes.
 typedef struct
@@ -26,11 +27,23 @@ typedef struct
 
 typedef struct
 {
+    bool in_use;
+    mrObjectId subscriber_id;
+    mrObjectId datareader_id;
+    mrObjectId topic_id;
+    rmw_gid_t subscription_gid;
+    const char* typesupport_identifier;
+} SubscriptionInfo;
+
+typedef struct
+{
     mrUDPTransport udp;
     mrSession session;
     mrObjectId participant_id;
     PublisherInfo publisher_info[MAX_PUBLISHERS];
     size_t num_publishers;
+    SubscriptionInfo subscription_info[MAX_SUBSCRIPTIONS];
+    size_t num_subscriptions;
 } MicroNode;
 
 mrStreamId best_input;

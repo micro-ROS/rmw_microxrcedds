@@ -3,6 +3,7 @@
 #include "identifier.h"
 #include "rmw_node.h"
 #include "rmw_publisher.h"
+#include "rmw_subscriber.h"
 #include "utils.h"
 
 #include "rmw/allocators.h"
@@ -124,7 +125,34 @@ rmw_subscription_t* rmw_create_subscription(const rmw_node_t* node, const rosidl
                                             bool ignore_local_publications)
 {
     EPROS_PRINT_TRACE()
-    return NULL;
+    rmw_subscription_t* rmw_subscription = NULL;
+    if (!node)
+    {
+        RMW_SET_ERROR_MSG("node handle is null");
+    }
+    else if (!type_support)
+    {
+        RMW_SET_ERROR_MSG("type support is null");
+    }
+    else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) == 0)
+    {
+        RMW_SET_ERROR_MSG("node handle not from this implementation");
+    }
+    else if (!topic_name || strlen(topic_name) == 0)
+    {
+        RMW_SET_ERROR_MSG("subscription topic is null or empty string");
+        return NULL;
+    }
+    else if (!qos_policies)
+    {
+        RMW_SET_ERROR_MSG("qos_profile is null");
+        return NULL;
+    }
+    else
+    {
+        rmw_subscription = create_subscriber(node, type_support, topic_name, qos_policies, ignore_local_publications);
+    }
+    return rmw_subscription;
 }
 
 rmw_ret_t rmw_destroy_subscription(rmw_node_t* node, rmw_subscription_t* subscription)
