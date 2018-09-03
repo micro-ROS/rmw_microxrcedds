@@ -52,7 +52,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
 
             if (sizeof(mrObjectId) > RMW_GID_STORAGE_SIZE)
             {
-                RMW_SET_ERROR_MSG("Max number of publisher reached")
+                RMW_SET_ERROR_MSG("Not enough memory for impl ids")
             }
             else
             {
