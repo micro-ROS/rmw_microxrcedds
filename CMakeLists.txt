@@ -37,16 +37,16 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     C_STANDARD 99
     C_STANDARD_REQUIRED YES
     )
-target_compile_options(${PROJECT_NAME}
-    PRIVATE
+
+target_compile_options(${PROJECT_NAME} PRIVATE
         -Wall
         -Wextra
         -pedantic
         -Werror-implicit-function-declaration
-        -Wcast-align=strict
+        $<$<C_COMPILER_ID:GNU>:$<$<VERSION_GREATER:$<C_COMPILER_VERSION>,8.1>:-Wcast-align=strict>>
         # -Werror
         # -pedantic-errors
-    )
+)
 
 ament_export_include_directories(${PROJECT_SOURCE_DIR}/include)
 ament_export_libraries(${PROJECT_NAME})
