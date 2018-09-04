@@ -62,7 +62,7 @@ ament_export_dependencies(
 
 register_rmw_implementation(
     "c:rosidl_typesupport_c:rosidl_typesupport_micrortps_c"
-    # "cpp:rosidl_typesupport_cpp:rosidl_typesupport_introspection_cpp"
+    "cpp:rosidl_typesupport_cpp:rosidl_typesupport_introspection_cpp"
 )
 
 ament_package()
