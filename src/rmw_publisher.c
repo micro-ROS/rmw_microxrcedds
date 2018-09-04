@@ -9,6 +9,10 @@
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 #include <rosidl_typesupport_micrortps_c/identifier.h>
+#include <rosidl_typesupport_micrortps_c/message_type_support.h>
+
+#include <micrortps/client/core/serialization/xrce_protocol.h>
+#include <micrortps/client/core/session/submessage.h>
 
 rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_type_support_t* type_support,
                                   const char* topic_name, const rmw_qos_profile_t* qos_policies)
@@ -24,16 +28,6 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
     {
         RMW_SET_ERROR_MSG("failed to allocate memory");
     }
-    // // TODO custom publisher info contining typesuppot pointer and id
-    // const rosidl_message_type_support_t* message_type_support =
-    //     get_message_typesupport_handle(type_support, rosidl_typesupport_micrortps_c__identifier);
-    // if (!type_support)
-    // {
-    //     RMW_SET_ERROR_MSG("type support not from this implementation");
-    //     return NULL;
-    // }
-
-    // TODO(Borja) Check NULL on node
     else
     {
         MicroNode* micro_node = (MicroNode*)node->data;
@@ -49,8 +43,14 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
             publisher_info->publisher_id           = mr_object_id(0x01, MR_PUBLISHER_ID);
             publisher_info->typesupport_identifier = type_support->typesupport_identifier;
             publisher_info->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
-
-            if (sizeof(mrObjectId) > RMW_GID_STORAGE_SIZE)
+            publisher_info->node                                    = node;
+            publisher_info->type_support =
+                get_message_typesupport_handle(type_support, rosidl_typesupport_micrortps_c__identifier);
+            if (!publisher_info->type_support)
+            {
+                RMW_SET_ERROR_MSG("type support not from this implementation");
+            }
+            else if (sizeof(mrObjectId) > RMW_GID_STORAGE_SIZE)
             {
                 RMW_SET_ERROR_MSG("Not enough memory for impl ids")
             }
@@ -112,7 +112,7 @@ rmw_ret_t rmw_destroy_publisher(rmw_node_t* node, rmw_publisher_t* publisher)
         RMW_SET_ERROR_MSG("node handle is null");
         result_ret = RMW_RET_ERROR;
     }
-    else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) == 0)
+    else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0)
     {
         RMW_SET_ERROR_MSG("node handle not from this implementation");
         result_ret = RMW_RET_ERROR;
@@ -127,7 +127,7 @@ rmw_ret_t rmw_destroy_publisher(rmw_node_t* node, rmw_publisher_t* publisher)
         RMW_SET_ERROR_MSG("publisher handle is null");
         result_ret = RMW_RET_ERROR;
     }
-    else if (strcmp(publisher->implementation_identifier, rmw_get_implementation_identifier()))
+    else if (strcmp(publisher->implementation_identifier, rmw_get_implementation_identifier()) != 0)
     {
         RMW_SET_ERROR_MSG("publisher handle not from this implementation");
         result_ret = RMW_RET_ERROR;
@@ -166,4 +166,66 @@ rmw_ret_t rmw_destroy_publisher(rmw_node_t* node, rmw_publisher_t* publisher)
     }
 
     return result_ret;
+}
+
+rmw_ret_t rmw_publish(const rmw_publisher_t* publisher, const void* ros_message)
+{
+    EPROS_PRINT_TRACE()
+    rmw_ret_t ret = RMW_RET_OK;
+    if (!publisher)
+    {
+        RMW_SET_ERROR_MSG("publisher pointer is null");
+        ret = RMW_RET_ERROR;
+    }
+    else if (!ros_message)
+    {
+        RMW_SET_ERROR_MSG("ros_message pointer is null");
+        ret = RMW_RET_ERROR;
+    }
+    if (strcmp(publisher->implementation_identifier, rmw_get_implementation_identifier()) != 0)
+    {
+        RMW_SET_ERROR_MSG("publisher handle not from this implementation");
+        ret = RMW_RET_ERROR;
+    }
+    else if (!publisher->data)
+    {
+        RMW_SET_ERROR_MSG("publisher imp is null");
+        ret = RMW_RET_ERROR;
+    }
+    else
+    {
+        PublisherInfo* publisher_info               = (PublisherInfo*)publisher->data;
+        MicroNode* node                             = (MicroNode*)publisher_info->node;
+        message_type_support_callbacks_t* functions = publisher_info->type_support->data;
+        bool written                                = true;
+        uint32_t topic_length                       = functions->get_serialized_size(ros_message);
+        uint32_t payload_length                     = 0;
+        payload_length                              = (uint16_t)(payload_length + 4); // request_id + object_id
+        payload_length = (uint16_t)(payload_length + 4); // topic_length (remove in future version to be compliant)
+
+        MicroBuffer mb;
+        if (prepare_stream_to_write(&node->session.streams, reliable_output,
+                                    (uint16_t)(payload_length + topic_length + SUBHEADER_SIZE), &mb))
+        {
+            written &= write_submessage_header(&mb, SUBMESSAGE_ID_WRITE_DATA, (uint16_t)(payload_length + topic_length),
+                                               FORMAT_DATA);
+
+            WRITE_DATA_Payload_Data payload;
+            init_base_object_request(&node->session.info, publisher_info->datawriter_id, &payload.base);
+            written &= serialize_WRITE_DATA_Payload_Data(&mb, &payload);
+            written &=
+                serialize_uint32_t(&mb, topic_length); // REMOVE: when topics have not a previous size in the agent.
+
+            MicroBuffer mb_topic;
+            init_micro_buffer(&mb_topic, mb.iterator, topic_length);
+            written &= functions->cdr_serialize(ros_message, &mb_topic);
+            written &= mr_run_session_until_timeout(&node->session, 1000);
+        }
+        if (!written)
+        {
+            RMW_SET_ERROR_MSG("error publishing message");
+            ret = RMW_RET_ERROR;
+        }
+    }
+    return ret;
 }

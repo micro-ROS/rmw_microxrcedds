@@ -72,7 +72,7 @@ rmw_publisher_t* rmw_create_publisher(const rmw_node_t* node, const rosidl_messa
     {
         RMW_SET_ERROR_MSG("type support is null");
     }
-    else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) == 0)
+    else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0)
     {
         RMW_SET_ERROR_MSG("node handle not from this implementation");
     }
@@ -91,12 +91,6 @@ rmw_publisher_t* rmw_create_publisher(const rmw_node_t* node, const rosidl_messa
         rmw_publisher = create_publisher(node, type_support, topic_name, qos_policies);
     }
     return rmw_publisher;
-}
-
-rmw_ret_t rmw_publish(const rmw_publisher_t* publisher, const void* ros_message)
-{
-    EPROS_PRINT_TRACE()
-    return RMW_RET_OK;
 }
 
 rmw_ret_t rmw_publish_serialized_message(const rmw_publisher_t* publisher,
@@ -134,7 +128,7 @@ rmw_subscription_t* rmw_create_subscription(const rmw_node_t* node, const rosidl
     {
         RMW_SET_ERROR_MSG("type support is null");
     }
-    else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) == 0)
+    else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0)
     {
         RMW_SET_ERROR_MSG("node handle not from this implementation");
     }

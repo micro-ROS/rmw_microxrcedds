@@ -3,6 +3,7 @@
 
 #include <micrortps/client/client.h>
 
+#include "rosidl_generator_c/message_type_support_struct.h"
 #include <rmw/types.h>
 
 #include <stddef.h>
@@ -23,6 +24,8 @@ typedef struct
     mrObjectId topic_id;
     rmw_gid_t publisher_gid;
     const char* typesupport_identifier;
+    const rosidl_message_type_support_t* type_support;
+    rmw_node_t* node;
 } PublisherInfo;
 
 typedef struct

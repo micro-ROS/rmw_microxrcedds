@@ -111,7 +111,7 @@ rmw_ret_t rmw_destroy_subscription(rmw_node_t* node, rmw_subscription_t* subscri
         RMW_SET_ERROR_MSG("node handle is null");
         result_ret = RMW_RET_ERROR;
     }
-    else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) == 0)
+    else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0)
     {
         RMW_SET_ERROR_MSG("node handle not from this implementation");
         result_ret = RMW_RET_ERROR;
@@ -126,7 +126,7 @@ rmw_ret_t rmw_destroy_subscription(rmw_node_t* node, rmw_subscription_t* subscri
         RMW_SET_ERROR_MSG("subscription handle is null");
         result_ret = RMW_RET_ERROR;
     }
-    else if (strcmp(subscription->implementation_identifier, rmw_get_implementation_identifier()))
+    else if (strcmp(subscription->implementation_identifier, rmw_get_implementation_identifier()) != 0)
     {
         RMW_SET_ERROR_MSG("subscription handle not from this implementation");
         result_ret = RMW_RET_ERROR;
@@ -144,7 +144,8 @@ rmw_ret_t rmw_destroy_subscription(rmw_node_t* node, rmw_subscription_t* subscri
             SubscriptionInfo* subscripion_info = (SubscriptionInfo*)subscription->data;
             int delete_datareader =
                 mr_write_delete_entity(&micro_node->session, reliable_output, subscripion_info->datareader_id);
-            int delete_topic = mr_write_delete_entity(&micro_node->session, reliable_output, subscripion_info->topic_id);
+            int delete_topic =
+                mr_write_delete_entity(&micro_node->session, reliable_output, subscripion_info->topic_id);
             int delete_subscriber =
                 mr_write_delete_entity(&micro_node->session, reliable_output, subscripion_info->subscriber_id);
 
