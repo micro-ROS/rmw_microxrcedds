@@ -292,6 +292,7 @@ rmw_wait_set_t* rmw_create_wait_set(size_t max_conditions)
     // Check if there are any available
     if (Unused_Internal_wait_set == NULL)
     {
+        RMW_SET_ERROR_MSG("Not available wait set");
         return NULL;
     }
 
@@ -319,10 +320,12 @@ rmw_ret_t rmw_destroy_wait_set(rmw_wait_set_t* wait_set)
     // Check if null
     if (wait_set == NULL)
     {
+        RMW_SET_ERROR_MSG("wait_set pointer is null");
         return RMW_RET_ERROR;
     }
     if (wait_set->data == NULL)
     {
+        RMW_SET_ERROR_MSG("wait_set->data is null");
         return RMW_RET_ERROR;
     }
 
@@ -344,6 +347,11 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
                    const rmw_time_t* wait_timeout)
 {
     EPROS_PRINT_TRACE()
+    
+
+    
+    
+    
     return RMW_RET_OK;
 }
 
