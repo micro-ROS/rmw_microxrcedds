@@ -49,6 +49,12 @@ typedef struct
     size_t num_subscriptions;
 } MicroNode;
 
+typedef struct 
+{
+    rmw_wait_set_t wait_set;
+    struct Internal_wait_set_t * Next;
+} Internal_wait_set_t;
+
 mrStreamId best_input;
 mrStreamId reliable_input;
 mrStreamId best_output;
