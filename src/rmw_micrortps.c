@@ -12,6 +12,28 @@
 
 #include <micrortps/client/client.h>
 
+// Default array mem size
+#ifndef rmw_micrortps_default_Mem_size
+#define rmw_micrortps_default_Mem_size 5
+#endif
+
+
+// Wait set
+#ifndef rmw_micrortps_Internal_wait_set_size
+#define rmw_micrortps_Internal_wait_set_size rmw_micrortps_default_Mem_size
+#endif
+
+struct private_wait_set_t
+{
+    rmw_wait_set_t wait_set;
+    struct private_wait_set_t *Next;
+};
+
+struct private_wait_set_t Internal_wait_set_Mem[rmw_micrortps_Internal_wait_set_size];
+struct private_wait_set_t *Unused_Internal_wait_set = NULL;
+
+
+
 const char* rmw_get_implementation_identifier()
 {
     EPROS_PRINT_TRACE()
@@ -20,6 +42,18 @@ const char* rmw_get_implementation_identifier()
 
 rmw_ret_t rmw_init()
 {
+    EPROS_PRINT_TRACE()
+
+
+    // initialize wait set memory 
+    Unused_Internal_wait_set = Internal_wait_set_Mem;
+    for (unsigned i=0; i < rmw_micrortps_Internal_wait_set_size - 1; i++)
+    {
+        Internal_wait_set_Mem[i].Next = &Internal_wait_set_Mem[i++];
+    }
+    Internal_wait_set_Mem[rmw_micrortps_Internal_wait_set_size - 1].Next = NULL;
+
+
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
@@ -250,18 +284,58 @@ rmw_ret_t rmw_trigger_guard_condition(const rmw_guard_condition_t* guard_conditi
 rmw_wait_set_t* rmw_create_wait_set(size_t max_conditions)
 {
     EPROS_PRINT_TRACE()
+
     (void)max_conditions;
-    rmw_wait_set_t* wait_set            = (rmw_wait_set_t*)rmw_allocate(sizeof(rmw_wait_set_t));
-    wait_set->data                      = NULL;
-    wait_set->guard_conditions          = NULL;
-    wait_set->implementation_identifier = rmw_get_implementation_identifier();
-    return wait_set;
+
+    struct private_wait_set_t* Retured_wait_set;
+  
+    // Check if there are any available
+    if (Unused_Internal_wait_set == NULL)
+    {
+        return NULL;
+    }
+
+    // Get first
+    Retured_wait_set = Unused_Internal_wait_set;
+
+    // Remove given from the stack
+    Unused_Internal_wait_set = Unused_Internal_wait_set->Next;
+    Retured_wait_set->Next = NULL;
+
+    // Configure 
+    Retured_wait_set->wait_set.data = (void*)Retured_wait_set;
+    Retured_wait_set->wait_set.guard_conditions = NULL;
+    Retured_wait_set->wait_set.implementation_identifier = rmw_get_implementation_identifier();
+    
+    // Return vaule
+    EPROS_PRINT_TRACE()
+    return &Retured_wait_set->wait_set;
 }
 
 rmw_ret_t rmw_destroy_wait_set(rmw_wait_set_t* wait_set)
 {
     EPROS_PRINT_TRACE()
-    rmw_free(wait_set);
+
+    // Check if null
+    if (wait_set == NULL)
+    {
+        return RMW_RET_ERROR;
+    }
+    if (wait_set->data == NULL)
+    {
+        return RMW_RET_ERROR;
+    }
+
+    // Extract
+    struct private_wait_set_t* Internal_wait_set = wait_set->data;
+    
+    
+    //> Add to unused stack
+    Internal_wait_set->Next = Unused_Internal_wait_set;
+    Unused_Internal_wait_set = Internal_wait_set;
+    
+    
+    EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
 
