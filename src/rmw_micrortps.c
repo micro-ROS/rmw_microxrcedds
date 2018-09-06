@@ -13,6 +13,8 @@
 
 #include <micrortps/client/client.h>
 
+#include <limits.h>
+
 // Declare internal memory structs
 RMW_MICRORTPS_DECLARE_INTENAL_MEMORY(Internal_wait_set_t, INTERNAL_WAIT_SET)
 
@@ -324,25 +326,116 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
 {
     EPROS_PRINT_TRACE()
 
-    if (!wait_set)
+    // Wait set is not used
+    (void)wait_set;
+  
+
+    // Search sesion 
+    mrSession* session = NULL;
+    if ((subscriptions != NULL) && (subscriptions->subscriber_count > 0))
     {
-        RMW_SET_ERROR_MSG("wait set handle is null");
+        // Extract first session pointer
+        for (size_t i = 0; i < subscriptions->subscriber_count; ++i) 
+        {
+            if (subscriptions->subscribers[0] != NULL)
+            {
+                //session = ((SubscriptionInfo *)(subscriptions->subscribers[0])->node.sesion;
+            }
+        }
+    }
+    /*
+    else if ((services != NULL) && (services->service_count > 0))
+    {
+        // Extract first session pointer
+        //services->services[0];
+    }
+    */
+    /*
+    else if ((clients != NULL) && (clients->client_count > 0))
+    {
+        // Extract first session pointer
+        //clients->clients[0];
+    }
+    */
+
+
+    // Check if sesion is null 
+    if (session == NULL)
+    {
         return RMW_RET_ERROR;
     }
 
-    Internal_wait_set_t* Internal_wait_set = (Internal_wait_set_t*)(wait_set->data);
-    if (Internal_wait_set == NULL)
+  
+    // read this no timeout
+    if (mr_run_session_until_timeout(session, 0))
     {
-        RMW_SET_ERROR_MSG("Internal wait set struct is null");
-        return RMW_RET_ERROR;
+        // Read until no more data is available
+        while (mr_run_session_until_timeout(session, 0)){}
+    }
+    else
+    {
+        // Check if timeout
+        if (wait_timeout =! NULL)
+        {
+            // Convert to int checking overflow
+            uint64_t Timeout;
+            if (wait_timeout->sec >= (UINT64_MAX / 1000))
+            {
+                // Overflow
+                Timeout = INT_MAX;
+                RMW_SET_ERROR_MSG("Wait timeout overflow");
+            }
+            else
+            {
+                Timeout = wait_timeout->sec * 1000;
+
+                uint64_t TimeoutNS = wait_timeout->nsec / 1000;
+                if ((UINT64_MAX - Timeout) >= TimeoutNS)
+                {
+                    // Overflow
+                    Timeout = INT_MAX;
+                    RMW_SET_ERROR_MSG("Wait timeout overflow");
+                }
+                else
+                {
+                    Timeout += TimeoutNS;
+                    if (Timeout > INT_MAX)
+                    {
+                        // Overflow
+                        Timeout = INT_MAX;
+                        RMW_SET_ERROR_MSG("Wait timeout overflow");
+                    }
+                }
+            }
+
+            
+            // Read with timeout
+            mr_run_session_until_timeout(session, (int)Timeout);
+        }
     }
 
-    if (subscriptions)
+
+    // Clean non-received
+    if (subscriptions =! NULL) 
     {
         for (size_t i = 0; i < subscriptions->subscriber_count; ++i)
         {
-            CustomSubscription* subscriber_info = (CustomSubscription*)(subscriptions->subscribers[i]);
-            // custom_subscriber_info->listener_->attachCondition(conditionMutex, conditionVariable);
+            //SubscriptionInfo * subscriber_info = (SubscriptionInfo *)(subscriptions->subscribers[i]);
+            subscriptions->subscribers[i] = NULL;
+        }
+    }
+    if (services =! NULL) 
+    {
+        for (size_t i = 0; i < services->service_count; ++i) 
+        {
+            services->services[i] = NULL;
+        }
+    }
+    if (clients =! NULL) 
+    {
+        for (size_t i = 0; i < clients->client_count; ++i) 
+        {
+            clients->clients[i] = NULL;
         }
     }
 
