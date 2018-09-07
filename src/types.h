@@ -1,13 +1,13 @@
 #ifndef RMW_MICRORTPS_TYPES_H_
 #define RMW_MICRORTPS_TYPES_H_
 
-#include "rmw_macros.h"
-
 #include "memory.h"
+#include "rmw_macros.h"
 
 #include <rmw/types.h>
 
 #include <micrortps/client/client.h>
+#include <microcdr/microcdr.h>
 
 #include <stddef.h>
 
@@ -32,6 +32,15 @@ typedef struct CustomSubscription
     rmw_gid_t subscription_gid;
     const char* typesupport_identifier;
     struct Item mem;
+
+    struct 
+    {
+        uint8_t MemHead[RMW_MICRORTPS_SUBSCRIBER_RAW_BUFFER_SIZE];
+        uint8_t * MemTail; /// \Note MemTail always points to the last non readable array data
+        uint8_t * Write;
+        uint8_t * Read;
+        size_t RawDataSize; /// \Note Used to keep track of the DataSize type
+    } TmpRawBuffer /// Temp
 } CustomSubscription;
 
 typedef struct CustomPublisher

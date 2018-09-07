@@ -30,18 +30,79 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
               struct MicroBuffer* serialization, void* args)
 {
     (void)session;
-    (void)object_id;
     (void)request_id;
     (void)stream_id;
-    (void)serialization;
-    (void)args;
 
-    // ShapeType topic;
-    // deserialize_ShapeType_topic(serialization, &topic);
 
-    printf("Receiving... ");
-    // print_ShapeType_topic(&topic);
+    // Get node pointer
+    MicroNode* Node = (MicroNode*) args;
+
+
+    // Search subcription
+    SubscriptionInfo * Subscription = Node->Used_Subscriptor_Stack; ///< Changes need to be applied
+    while (true)
+    {
+        // Check if end of stack
+        if (Subscription != NULL)
+        {
+            return;
+        }
+        
+        
+        // Compare id
+        if (memcmp(&Subscription->datareader_id, &object_id, sizeof(mrObjectId)) == 0)
+        {
+            break;
+        }
+            
+        // Next subcription of the stack
+        Subscription = Subscription->Next;
+    }
+
+    // get buffer size
+    Subscription->TmpRawBuffer.RawDataSize = serialization->iterator - Subscription->TmpRawBuffer.Write;
+    if (Subscription->TmpRawBuffer.RawDataSize == 0)
+    {
+        return;
+    }
+
+
+    // get needed bytes space
+    size_t NeededSpace = sizeof(serialization->endianness) + sizeof(Subscription->TmpRawBuffer.RawDataSize) + Subscription->TmpRawBuffer.RawDataSize;
+
+
+    // check if there is enogh space at the end of the tmp raw buffer
+    if ((&(Subscription->TmpRawBuffer.MemHead[sizeof(Subscription->TmpRawBuffer.MemHead)]) - Subscription->TmpRawBuffer.Write) < NeededSpace)
+    {
+        
+        // check if there is enogh space at the begining of the tmp raw buffer
+        if ((Subscription->TmpRawBuffer.Read - Subscription->TmpRawBuffer.MemHead) < NeededSpace)
+        {
+            // not enough space to store the data
+            RMW_SET_ERROR_MSG("Incomming data lost due to not enoght storage memory");
+            return;
+        }
+
+        
+        // Move tail pointer to the bigining and relocate tail
+        Subscription->TmpRawBuffer.MemTail = Subscription->TmpRawBuffer.Write;
+        Subscription->TmpRawBuffer.Write = Subscription->TmpRawBuffer.MemHead;
+    }
+
+
+    // Save microbuffer for a future processing (Endianness + Subscription->TmpRawBuffer.RawDataSize + MicroBufferData)
+    memcpy(Subscription->TmpRawBuffer.Write, &serialization->endianness, sizeof(serialization->endianness));
+    Subscription->TmpRawBuffer.Write += sizeof(serialization->endianness);
+
+    memcpy(Subscription->TmpRawBuffer.Write, Subscription->TmpRawBuffer.RawDataSize, sizeof(Subscription->TmpRawBuffer.RawDataSize));
+    Subscription->TmpRawBuffer.Write += sizeof(Subscription->TmpRawBuffer.RawDataSize);
+    
+    memcpy(Subscription->TmpRawBuffer.Write, serialization->iterator, Subscription->TmpRawBuffer.RawDataSize);
+    Subscription->TmpRawBuffer.Write += Subscription->TmpRawBuffer.RawDataSize;
+
+    return;
 }
+
 
 void clear_node(rmw_node_t* node)
 {
@@ -76,7 +137,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     printf("UDP mode => ip: %s - port: %hu\n", ip, port);
 
     mr_init_session(&node_info->session, &node_info->udp.comm, key);
-    mr_set_topic_callback(&node_info->session, on_topic, NULL);
+    mr_set_topic_callback(&node_info->session, on_topic, node_info);
     mr_set_status_callback(&node_info->session, on_status, NULL);
 
     best_input      = mr_create_input_best_effort_stream(&node_info->session);

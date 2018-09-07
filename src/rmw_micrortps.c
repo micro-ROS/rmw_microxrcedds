@@ -16,7 +16,7 @@
 #include <limits.h>
 
 // Declare internal memory structs
-RMW_MICRORTPS_DECLARE_INTENAL_MEMORY(Internal_wait_set_t, INTERNAL_WAIT_SET)
+//RMW_MICRORTPS_DECLARE_INTENAL_MEMORY(Internal_wait_set_t, INTERNAL_WAIT_SET)
 
 const char* rmw_get_implementation_identifier()
 {
@@ -29,7 +29,7 @@ rmw_ret_t rmw_init()
     EPROS_PRINT_TRACE()
 
     // initialize internal memories
-    RMW_MICRORTPS_INIT_INTERNAL_MEM(INTERNAL_WAIT_SET);
+    //RMW_MICRORTPS_INIT_INTERNAL_MEM(INTERNAL_WAIT_SET);
 
     init_rmw_node();
 
@@ -165,12 +165,93 @@ rmw_subscription_t* rmw_create_subscription(const rmw_node_t* node, const rosidl
 rmw_ret_t rmw_take(const rmw_subscription_t* subscription, void* ros_message, bool* taken)
 {
     EPROS_PRINT_TRACE()
+
+    // Extract subscriber info
+
+
+
+    // Extract serialiced message
+
+
+
+    // Desserialice using typesupport
+
+
+
+    EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
 
 rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_message, bool* taken,
                              rmw_message_info_t* message_info)
 {
+    EPROS_PRINT_TRACE()
+
+    // Check id
+    if (strcmp(subscription->implementation_identifier, rmw_get_implementation_identifier()) != 0)
+    {
+        RMW_SET_ERROR_MSG("Wrong implementation");
+        return RMW_RET_ERROR;
+    }
+
+
+    // Extract subscriber info
+    SubscriptionInfo *Subscription = (SubscriptionInfo *)subscription->data;
+
+
+    // Check reading zone
+    Endianness endianness;
+    if (Subscription->TmpRawBuffer.Read == Subscription->TmpRawBuffer.Write)
+    {
+        RMW_SET_ERROR_MSG("Nothing to be read from temporal raw buffer");
+        return RMW_RET_ERROR;
+    }
+    if ((Subscription->TmpRawBuffer.Read + sizeof(endianness) + sizeof(Subscription->TmpRawBuffer.RawDataSize)) >= Subscription->TmpRawBuffer.Write)
+    {
+        RMW_SET_ERROR_MSG("Error in raw buffer. Temporal raw buffer will be restarted");
+
+        Subscription->TmpRawBuffer.Read = Subscription->TmpRawBuffer.MemHead;
+        Subscription->TmpRawBuffer.Write = Subscription->TmpRawBuffer.MemHead;
+        Subscription->TmpRawBuffer.MemTail = &Subscription->TmpRawBuffer.MemHead[sizeof(Subscription->TmpRawBuffer.MemHead)];
+
+        return RMW_RET_ERROR;
+    }
+
+
+    // Extract raw message from temporal buffer
+    memcpy(&endianness, Subscription->TmpRawBuffer.Read, sizeof(endianness));
+    Subscription->TmpRawBuffer.Read += sizeof(endianness);
+
+    memcpy(&Subscription->TmpRawBuffer.RawDataSize, Subscription->TmpRawBuffer.Read, sizeof(Subscription->TmpRawBuffer.RawDataSize));
+    Subscription->TmpRawBuffer.Read += sizeof(Subscription->TmpRawBuffer.RawDataSize);
+
+    if ((Subscription->TmpRawBuffer.Read + Subscription->TmpRawBuffer.RawDataSize) > Subscription->TmpRawBuffer.Write)
+    {
+        RMW_SET_ERROR_MSG("Error in raw buffer. Temporal raw buffer will be restarted");
+
+        Subscription->TmpRawBuffer.Read = Subscription->TmpRawBuffer.MemHead;
+        Subscription->TmpRawBuffer.Write = Subscription->TmpRawBuffer.MemHead;
+        Subscription->TmpRawBuffer.MemTail = &Subscription->TmpRawBuffer.MemHead[sizeof(Subscription->TmpRawBuffer.MemHead)];
+
+        return RMW_RET_ERROR;
+    }
+
+    struct MicroBuffer serialization;    
+    init_micro_buffer(&serialization, Subscription->TmpRawBuffer.Read , Subscription->TmpRawBuffer.RawDataSize);
+    serialization.endianness = endianness;
+
+    Subscription->TmpRawBuffer.Read += sizeof(Subscription->TmpRawBuffer.RawDataSize);
+
+
+
+    // Extract serialiced message
+
+
+
+    // Desserialice using typesupport
+
+
+
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
@@ -263,7 +344,7 @@ rmw_ret_t rmw_trigger_guard_condition(const rmw_guard_condition_t* guard_conditi
 rmw_wait_set_t* rmw_create_wait_set(size_t max_conditions)
 {
     EPROS_PRINT_TRACE()
-
+    /*
     (void)max_conditions;
 
     // Check if available
@@ -281,16 +362,19 @@ rmw_wait_set_t* rmw_create_wait_set(size_t max_conditions)
     Retured_wait_set->wait_set.data                      = (void*)Retured_wait_set;
     Retured_wait_set->wait_set.guard_conditions          = NULL;
     Retured_wait_set->wait_set.implementation_identifier = rmw_get_implementation_identifier();
+    */    
 
     // Return vaule
     EPROS_PRINT_TRACE()
-    return &Retured_wait_set->wait_set;
+    return NULL;
+    //return &Retured_wait_set->wait_set;
 }
 
 rmw_ret_t rmw_destroy_wait_set(rmw_wait_set_t* wait_set)
 {
     EPROS_PRINT_TRACE()
 
+    /*
     // Check if null
     if (wait_set == NULL)
     {
@@ -315,7 +399,8 @@ rmw_ret_t rmw_destroy_wait_set(rmw_wait_set_t* wait_set)
 
     // Release
     RMW_MICRORTPS_RETURN_TO_INTERNAL_MEM(INTERNAL_WAIT_SET, Internal_wait_set)
-
+    */
+    
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
@@ -365,21 +450,25 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
         return RMW_RET_ERROR;
     }
 
-  
-    // read this no timeout
-    if (mr_run_session_until_timeout(session, 0))
+
+
+    // Check if timeout
+    uint64_t Timeout;
+    if (wait_timeout != NULL)
     {
-        // Read until no more data is available
-        while (mr_run_session_until_timeout(session, 0)){}
-    }
-    else
-    {
-        // Check if timeout
-        if (wait_timeout =! NULL)
+        // Convert to int (checking overflow)
+        if (wait_timeout->sec >= (UINT64_MAX / 1000))
         {
-            // Convert to int checking overflow
-            uint64_t Timeout;
-            if (wait_timeout->sec >= (UINT64_MAX / 1000))
+            // Overflow
+            Timeout = INT_MAX;
+            RMW_SET_ERROR_MSG("Wait timeout overflow");
+        }
+        else
+        {
+            Timeout = wait_timeout->sec * 1000;
+
+            uint64_t TimeoutNS = wait_timeout->nsec / 1000;
+            if ((UINT64_MAX - Timeout) >= TimeoutNS)
             {
                 // Overflow
                 Timeout = INT_MAX;
@@ -387,54 +476,60 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
             }
             else
             {
-                Timeout = wait_timeout->sec * 1000;
-
-                uint64_t TimeoutNS = wait_timeout->nsec / 1000;
-                if ((UINT64_MAX - Timeout) >= TimeoutNS)
+                Timeout += TimeoutNS;
+                if (Timeout > INT_MAX)
                 {
                     // Overflow
                     Timeout = INT_MAX;
                     RMW_SET_ERROR_MSG("Wait timeout overflow");
                 }
-                else
-                {
-                    Timeout += TimeoutNS;
-                    if (Timeout > INT_MAX)
-                    {
-                        // Overflow
-                        Timeout = INT_MAX;
-                        RMW_SET_ERROR_MSG("Wait timeout overflow");
-                    }
-                }
             }
-
-            
-            // Read with timeout
-            mr_run_session_until_timeout(session, (int)Timeout);
         }
+    }
+    else
+    {
+        Timeout = 0;
+    }
+  
+  
+    // read until no more data are available
+    if (mr_run_session_until_timeout(session, (int)Timeout))
+    {
+        // Read until no more data is available
+        while (mr_run_session_until_timeout(session, 0)){}
+    }
+    else
+    {
+        return RMW_RET_TIMEOUT;
     }
 
 
     // Clean non-received
-    if (subscriptions =! NULL) 
+    if (subscriptions != NULL) 
     {
         for (size_t i = 0; i < subscriptions->subscriber_count; ++i)
         {
-            //SubscriptionInfo * subscriber_info = (SubscriptionInfo *)(subscriptions->subscribers[i]);
-            subscriptions->subscribers[i] = NULL;
+            // Check if there are any data
+            SubscriptionInfo * subscriber_info = (SubscriptionInfo *)(subscriptions->subscribers[i]);
+            if (subscriber_info->TmpRawBuffer.Write == subscriber_info->TmpRawBuffer.MemHead)
+            {
+                subscriptions->subscribers[i] = NULL;
+            }
         }
     }
-    if (services =! NULL) 
+    if (services != NULL) 
     {
         for (size_t i = 0; i < services->service_count; ++i) 
         {
+            RMW_SET_ERROR_MSG("Services are not supported yet");
             services->services[i] = NULL;
         }
     }
-    if (clients =! NULL) 
+    if (clients != NULL) 
     {
         for (size_t i = 0; i < clients->client_count; ++i) 
         {
+            RMW_SET_ERROR_MSG("Clients are not supported yet");
             clients->clients[i] = NULL;
         }
     }
