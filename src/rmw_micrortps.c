@@ -145,6 +145,10 @@ rmw_subscription_t* rmw_create_subscription(const rmw_node_t* node, const rosidl
     {
         RMW_SET_ERROR_MSG("node handle not from this implementation");
     }
+    else if (strcmp(type_support->typesupport_identifier, rmw_get_implementation_identifier()) != 0)
+    {
+        RMW_SET_ERROR_MSG("TypeSupport handle not from this implementation");
+    }
     else if (!topic_name || strlen(topic_name) == 0)
     {
         RMW_SET_ERROR_MSG("subscription topic is null or empty string");
@@ -159,6 +163,10 @@ rmw_subscription_t* rmw_create_subscription(const rmw_node_t* node, const rosidl
     {
         rmw_subscription = create_subscriber(node, type_support, topic_name, qos_policies, ignore_local_publications);
     }
+
+    
+
+
     return rmw_subscription;
 }
 
@@ -186,6 +194,17 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
                              rmw_message_info_t* message_info)
 {
     EPROS_PRINT_TRACE()
+
+    // Not used variables
+    (void) message_info; 
+
+
+    // Preconfigure taken
+    if (taken != NULL)
+    {
+        *taken = false;
+    }
+
 
     // Check id
     if (strcmp(subscription->implementation_identifier, rmw_get_implementation_identifier()) != 0)
@@ -243,13 +262,16 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
     Subscription->TmpRawBuffer.Read += sizeof(Subscription->TmpRawBuffer.RawDataSize);
 
 
-
-    // Extract serialiced message
-
-
-
-    // Desserialice using typesupport
-
+    // Extract serialiced message using typesupport
+    bool OK = Subscription->type_support->cdr_deserialize(&serialization, ros_message);
+    if (taken != NULL)
+    {
+        *taken = OK;
+    }
+    if (!OK)
+    {
+        return RMW_RET_ERROR;
+    }
 
 
     EPROS_PRINT_TRACE()

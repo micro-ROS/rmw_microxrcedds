@@ -5,11 +5,14 @@
 #include "rmw_macros.h"
 
 #include <rmw/types.h>
+#include "rosidl_generator_c/message_type_support_struct.h"
+#include "rosidl_typesupport_micrortps_c/message_type_support.h"
 
 #include <micrortps/client/client.h>
 #include <microcdr/microcdr.h>
 
 #include <stddef.h>
+
 
 #define MAX_TRANSPORT_MTU 512
 #define MAX_HISTORY 16
@@ -19,9 +22,7 @@
 #define MAX_PUBLISHERS_X_NODE 10
 #define MAX_SUBSCRIPTIONS_X_NODE 10
 
-RMW_MICRORTPS_DECLARE_INTERNAL_MEMORY_STRUCT(Internal_wait_set_t, rmw_wait_set_t, wait_set)
-
-typedef struct rosidl_message_type_support_t rosidl_message_type_support_t;
+#define RMW_MICRORTPS_SUBSCRIBER_RAW_BUFFER_SIZE 500
 
 typedef struct CustomSubscription
 {
@@ -33,6 +34,8 @@ typedef struct CustomSubscription
     const char* typesupport_identifier;
     struct Item mem;
 
+    const message_type_support_callbacks_t* type_support;
+
     struct 
     {
         uint8_t MemHead[RMW_MICRORTPS_SUBSCRIBER_RAW_BUFFER_SIZE];
@@ -40,7 +43,7 @@ typedef struct CustomSubscription
         uint8_t * Write;
         uint8_t * Read;
         size_t RawDataSize; /// \Note Used to keep track of the DataSize type
-    } TmpRawBuffer /// Temp
+    } TmpRawBuffer
 } CustomSubscription;
 
 typedef struct CustomPublisher
