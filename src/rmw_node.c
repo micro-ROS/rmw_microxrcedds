@@ -35,70 +35,70 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
 
 
     // Get node pointer
-    MicroNode* Node = (MicroNode*) args;
+    CustomNode* node = (CustomNode*) args;
 
 
     // Search subcription
-    SubscriptionInfo * Subscription = Node->Used_Subscriptor_Stack; ///< Changes need to be applied
+    struct Item * subscription_item = node->subscription_mem.allocateditems;
     while (true)
     {
         // Check if end of stack
-        if (Subscription != NULL)
+        if (subscription_item == NULL)
         {
             return;
         }
         
-        
-        // Compare id
-        if (memcmp(&Subscription->datareader_id, &object_id, sizeof(mrObjectId)) == 0)
+        // Compare id        
+        if (memcmp(&(((CustomSubscription*)subscription_item->data)->datareader_id), &object_id, sizeof(mrObjectId)) == 0)
         {
             break;
         }
             
         // Next subcription of the stack
-        Subscription = Subscription->Next;
+        subscription_item = subscription_item->next;
     }
 
     // get buffer size
-    Subscription->TmpRawBuffer.RawDataSize = serialization->iterator - Subscription->TmpRawBuffer.Write;
-    if (Subscription->TmpRawBuffer.RawDataSize == 0)
+    CustomSubscription* subscription = ((CustomSubscription*)subscription_item->data);
+    subscription->TmpRawBuffer.RawDataSize = micro_buffer_remaining(serialization);
+    if (subscription->TmpRawBuffer.RawDataSize == 0)
     {
         return;
     }
 
 
     // get needed bytes space
-    size_t NeededSpace = sizeof(serialization->endianness) + sizeof(Subscription->TmpRawBuffer.RawDataSize) + Subscription->TmpRawBuffer.RawDataSize;
+    size_t NeededSpace = sizeof(serialization->endianness) + sizeof(subscription->TmpRawBuffer.RawDataSize) + subscription->TmpRawBuffer.RawDataSize;
 
 
     // check if there is enogh space at the end of the tmp raw buffer
-    if ((&(Subscription->TmpRawBuffer.MemHead[sizeof(Subscription->TmpRawBuffer.MemHead)]) - Subscription->TmpRawBuffer.Write) < NeededSpace)
+    if ((&(subscription->TmpRawBuffer.MemHead[sizeof(subscription->TmpRawBuffer.MemHead)]) - subscription->TmpRawBuffer.Write) < NeededSpace)
     {
         
         // check if there is enogh space at the begining of the tmp raw buffer
-        if ((Subscription->TmpRawBuffer.Read - Subscription->TmpRawBuffer.MemHead) < NeededSpace)
+        if ((subscription->TmpRawBuffer.Read - subscription->TmpRawBuffer.MemHead) < NeededSpace)
         {
             // not enough space to store the data
-            RMW_SET_ERROR_MSG("Incomming data lost due to not enoght storage memory");
+            RMW_SET_ERROR_MSG("Incomming data lost due to not enough storage memory");
             return;
         }
 
         
         // Move tail pointer to the bigining and relocate tail
-        Subscription->TmpRawBuffer.MemTail = Subscription->TmpRawBuffer.Write;
-        Subscription->TmpRawBuffer.Write = Subscription->TmpRawBuffer.MemHead;
+        subscription->TmpRawBuffer.MemTail = subscription->TmpRawBuffer.Write;
+        subscription->TmpRawBuffer.Write = subscription->TmpRawBuffer.MemHead;
     }
 
 
-    // Save microbuffer for a future processing (Endianness + Subscription->TmpRawBuffer.RawDataSize + MicroBufferData)
-    memcpy(Subscription->TmpRawBuffer.Write, &serialization->endianness, sizeof(serialization->endianness));
-    Subscription->TmpRawBuffer.Write += sizeof(serialization->endianness);
+    // Save microbuffer for a future processing (Endianness + subscription->TmpRawBuffer.RawDataSize + MicroBufferData)
+    memcpy(subscription->TmpRawBuffer.Write, &serialization->endianness, sizeof(serialization->endianness));
+    subscription->TmpRawBuffer.Write += sizeof(serialization->endianness);
 
-    memcpy(Subscription->TmpRawBuffer.Write, Subscription->TmpRawBuffer.RawDataSize, sizeof(Subscription->TmpRawBuffer.RawDataSize));
-    Subscription->TmpRawBuffer.Write += sizeof(Subscription->TmpRawBuffer.RawDataSize);
+    memcpy(subscription->TmpRawBuffer.Write, &subscription->TmpRawBuffer.RawDataSize, sizeof(subscription->TmpRawBuffer.RawDataSize));
+    subscription->TmpRawBuffer.Write += sizeof(subscription->TmpRawBuffer.RawDataSize);
     
-    memcpy(Subscription->TmpRawBuffer.Write, serialization->iterator, Subscription->TmpRawBuffer.RawDataSize);
-    Subscription->TmpRawBuffer.Write += Subscription->TmpRawBuffer.RawDataSize;
+    memcpy(subscription->TmpRawBuffer.Write, serialization->iterator, subscription->TmpRawBuffer.RawDataSize);
+    subscription->TmpRawBuffer.Write += subscription->TmpRawBuffer.RawDataSize;
 
     return;
 }

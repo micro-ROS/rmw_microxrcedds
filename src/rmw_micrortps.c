@@ -1,7 +1,7 @@
 #include "rmw_micrortps.h"
 
 #include "identifier.h"
-#include "rmw_macros.h"
+
 #include "rmw_node.h"
 #include "rmw_publisher.h"
 #include "rmw_subscriber.h"
@@ -215,55 +215,55 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
 
 
     // Extract subscriber info
-    SubscriptionInfo *Subscription = (SubscriptionInfo *)subscription->data;
+    CustomSubscription *custom_subscription = (CustomSubscription *)subscription->data;
 
 
     // Check reading zone
     Endianness endianness;
-    if (Subscription->TmpRawBuffer.Read == Subscription->TmpRawBuffer.Write)
+    if (custom_subscription->TmpRawBuffer.Read == custom_subscription->TmpRawBuffer.Write)
     {
         RMW_SET_ERROR_MSG("Nothing to be read from temporal raw buffer");
         return RMW_RET_ERROR;
     }
-    if ((Subscription->TmpRawBuffer.Read + sizeof(endianness) + sizeof(Subscription->TmpRawBuffer.RawDataSize)) >= Subscription->TmpRawBuffer.Write)
+    if ((custom_subscription->TmpRawBuffer.Read + sizeof(endianness) + sizeof(custom_subscription->TmpRawBuffer.RawDataSize)) >= custom_subscription->TmpRawBuffer.Write)
     {
         RMW_SET_ERROR_MSG("Error in raw buffer. Temporal raw buffer will be restarted");
 
-        Subscription->TmpRawBuffer.Read = Subscription->TmpRawBuffer.MemHead;
-        Subscription->TmpRawBuffer.Write = Subscription->TmpRawBuffer.MemHead;
-        Subscription->TmpRawBuffer.MemTail = &Subscription->TmpRawBuffer.MemHead[sizeof(Subscription->TmpRawBuffer.MemHead)];
+        custom_subscription->TmpRawBuffer.Read = custom_subscription->TmpRawBuffer.MemHead;
+        custom_subscription->TmpRawBuffer.Write = custom_subscription->TmpRawBuffer.MemHead;
+        custom_subscription->TmpRawBuffer.MemTail = &custom_subscription->TmpRawBuffer.MemHead[sizeof(custom_subscription->TmpRawBuffer.MemHead)];
 
         return RMW_RET_ERROR;
     }
 
 
     // Extract raw message from temporal buffer
-    memcpy(&endianness, Subscription->TmpRawBuffer.Read, sizeof(endianness));
-    Subscription->TmpRawBuffer.Read += sizeof(endianness);
+    memcpy(&endianness, custom_subscription->TmpRawBuffer.Read, sizeof(endianness));
+    custom_subscription->TmpRawBuffer.Read += sizeof(endianness);
 
-    memcpy(&Subscription->TmpRawBuffer.RawDataSize, Subscription->TmpRawBuffer.Read, sizeof(Subscription->TmpRawBuffer.RawDataSize));
-    Subscription->TmpRawBuffer.Read += sizeof(Subscription->TmpRawBuffer.RawDataSize);
+    memcpy(&custom_subscription->TmpRawBuffer.RawDataSize, custom_subscription->TmpRawBuffer.Read, sizeof(custom_subscription->TmpRawBuffer.RawDataSize));
+    custom_subscription->TmpRawBuffer.Read += sizeof(custom_subscription->TmpRawBuffer.RawDataSize);
 
-    if ((Subscription->TmpRawBuffer.Read + Subscription->TmpRawBuffer.RawDataSize) > Subscription->TmpRawBuffer.Write)
+    if ((custom_subscription->TmpRawBuffer.Read + custom_subscription->TmpRawBuffer.RawDataSize) > custom_subscription->TmpRawBuffer.Write)
     {
         RMW_SET_ERROR_MSG("Error in raw buffer. Temporal raw buffer will be restarted");
 
-        Subscription->TmpRawBuffer.Read = Subscription->TmpRawBuffer.MemHead;
-        Subscription->TmpRawBuffer.Write = Subscription->TmpRawBuffer.MemHead;
-        Subscription->TmpRawBuffer.MemTail = &Subscription->TmpRawBuffer.MemHead[sizeof(Subscription->TmpRawBuffer.MemHead)];
+        custom_subscription->TmpRawBuffer.Read = custom_subscription->TmpRawBuffer.MemHead;
+        custom_subscription->TmpRawBuffer.Write = custom_subscription->TmpRawBuffer.MemHead;
+        custom_subscription->TmpRawBuffer.MemTail = &custom_subscription->TmpRawBuffer.MemHead[sizeof(custom_subscription->TmpRawBuffer.MemHead)];
 
         return RMW_RET_ERROR;
     }
 
     struct MicroBuffer serialization;    
-    init_micro_buffer(&serialization, Subscription->TmpRawBuffer.Read , Subscription->TmpRawBuffer.RawDataSize);
+    init_micro_buffer(&serialization, custom_subscription->TmpRawBuffer.Read , custom_subscription->TmpRawBuffer.RawDataSize);
     serialization.endianness = endianness;
 
-    Subscription->TmpRawBuffer.Read += sizeof(Subscription->TmpRawBuffer.RawDataSize);
+    custom_subscription->TmpRawBuffer.Read += sizeof(custom_subscription->TmpRawBuffer.RawDataSize);
 
 
     // Extract serialiced message using typesupport
-    bool OK = Subscription->type_support->cdr_deserialize(&serialization, ros_message);
+    bool OK = custom_subscription->type_support->cdr_deserialize(&serialization, ros_message);
     if (taken != NULL)
     {
         *taken = OK;
@@ -272,7 +272,6 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
     {
         return RMW_RET_ERROR;
     }
-
 
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
@@ -446,7 +445,8 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
         {
             if (subscriptions->subscribers[0] != NULL)
             {
-                //session = ((SubscriptionInfo *)(subscriptions->subscribers[0])->node.sesion;
+                session = ((CustomSubscription *)subscriptions->subscribers[0])->session;
+                break;
             }
         }
     }
@@ -489,8 +489,8 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
         {
             Timeout = wait_timeout->sec * 1000;
 
-            uint64_t TimeoutNS = wait_timeout->nsec / 1000;
-            if ((UINT64_MAX - Timeout) >= TimeoutNS)
+            uint64_t timeout_ms = wait_timeout->nsec / 1000;
+            if ((UINT64_MAX - Timeout) <= timeout_ms)
             {
                 // Overflow
                 Timeout = INT_MAX;
@@ -498,7 +498,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
             }
             else
             {
-                Timeout += TimeoutNS;
+                Timeout += timeout_ms;
                 if (Timeout > INT_MAX)
                 {
                     // Overflow
@@ -517,6 +517,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     // read until no more data are available
     if (mr_run_session_until_timeout(session, (int)Timeout))
     {
+        // TODO Use timeout on while.
         // Read until no more data is available
         while (mr_run_session_until_timeout(session, 0)){}
     }
@@ -532,8 +533,8 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
         for (size_t i = 0; i < subscriptions->subscriber_count; ++i)
         {
             // Check if there are any data
-            SubscriptionInfo * subscriber_info = (SubscriptionInfo *)(subscriptions->subscribers[i]);
-            if (subscriber_info->TmpRawBuffer.Write == subscriber_info->TmpRawBuffer.MemHead)
+            CustomSubscription * custom_subscription = (CustomSubscription *)(subscriptions->subscribers[i]);
+            if (custom_subscription->TmpRawBuffer.Write == custom_subscription->TmpRawBuffer.Read)
             {
                 subscriptions->subscribers[i] = NULL;
             }

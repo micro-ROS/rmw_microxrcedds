@@ -45,7 +45,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
             publisher_info->publisher_id                            = mr_object_id(0x01, MR_PUBLISHER_ID);
             publisher_info->typesupport_identifier                  = type_support->typesupport_identifier;
             publisher_info->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
-            publisher_info->custom_node                             = micro_node;
+            publisher_info->session                                 = &micro_node->session;
             publisher_info->type_support =
                 get_message_typesupport_handle(type_support, rosidl_typesupport_micrortps_c__identifier);
             if (!publisher_info->type_support)
@@ -63,14 +63,14 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
 
                 const char* publisher_xml = "<publisher name=\"MyPublisher\">";
                 uint16_t publisher_req    = mr_write_configure_publisher_xml(
-                    &micro_node->session, reliable_output, publisher_info->publisher_id, micro_node->participant_id,
+                    publisher_info->session, reliable_output, publisher_info->publisher_id, micro_node->participant_id,
                     publisher_xml, MR_REPLACE);
 
                 publisher_info->topic_id = mr_object_id(0x01, MR_TOPIC_ID);
                 const char* topic_xml =
                     "<dds><topic><name>Int32MsgPubSubTopic</name><dataType>Int32Msg</dataType></topic></dds>";
                 uint16_t topic_req =
-                    mr_write_configure_topic_xml(&micro_node->session, reliable_output, publisher_info->topic_id,
+                    mr_write_configure_topic_xml(publisher_info->session, reliable_output, publisher_info->topic_id,
                                                  micro_node->participant_id, topic_xml, MR_REPLACE);
 
                 publisher_info->datawriter_id = mr_object_id(0x01, MR_DATAWRITER_ID);
@@ -80,13 +80,13 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     "name><dataType>Int32Msg</dataType><historyQos><kind>KEEP_LAST</kind><depth>5</depth></"
                     "historyQos><durability><kind>TRANSIENT_LOCAL</kind></durability></topic></publisher></profiles>";
                 uint16_t datawriter_req = mr_write_configure_datawriter_xml(
-                    &micro_node->session, reliable_output, publisher_info->datawriter_id, publisher_info->publisher_id,
+                    publisher_info->session, reliable_output, publisher_info->datawriter_id, publisher_info->publisher_id,
                     datawriter_xml, MR_REPLACE);
                 
                 rmw_publisher->data = publisher_info;
                 uint16_t requests[] = {publisher_req, datawriter_req, topic_req};
                 uint8_t status[sizeof(requests)/2];
-                if (!mr_run_session_until_status(&micro_node->session, 1000, requests, status, 3))
+                if (!mr_run_session_until_status(publisher_info->session, 1000, requests, status, 3))
                 {
                     RMW_SET_ERROR_MSG("Issues creating micro RTPS entities");
                 }
@@ -144,14 +144,14 @@ rmw_ret_t rmw_destroy_publisher(rmw_node_t* node, rmw_publisher_t* publisher)
         CustomNode* micro_node          = (CustomNode*)node->data;
         CustomPublisher* publisher_info = (CustomPublisher*)publisher->data;
         int delete_writer =
-            mr_write_delete_entity(&micro_node->session, reliable_output, publisher_info->datawriter_id);
-        int delete_topic = mr_write_delete_entity(&micro_node->session, reliable_output, publisher_info->topic_id);
+            mr_write_delete_entity(publisher_info->session, reliable_output, publisher_info->datawriter_id);
+        int delete_topic = mr_write_delete_entity(publisher_info->session, reliable_output, publisher_info->topic_id);
         int delete_publisher =
-            mr_write_delete_entity(&micro_node->session, reliable_output, publisher_info->publisher_id);
+            mr_write_delete_entity(publisher_info->session, reliable_output, publisher_info->publisher_id);
 
         uint8_t status[3];
         uint16_t requests[] = {delete_writer, delete_topic, delete_publisher};
-        if (!mr_run_session_until_status(&micro_node->session, 1000, requests, status, 3))
+        if (!mr_run_session_until_status(publisher_info->session, 1000, requests, status, 3))
         {
             RMW_SET_ERROR_MSG("unable to remove publisher from the server");
             result_ret = RMW_RET_ERROR;
@@ -194,7 +194,6 @@ rmw_ret_t rmw_publish(const rmw_publisher_t* publisher, const void* ros_message)
     {
 
         CustomPublisher* publisher_info                   = (CustomPublisher*)publisher->data;
-        CustomNode* node                                  = (CustomNode*)publisher_info->custom_node;
         const message_type_support_callbacks_t* functions = publisher_info->type_support->data;
         bool written                                      = true;
         uint32_t topic_length                             = functions->get_serialized_size(ros_message);
@@ -203,14 +202,14 @@ rmw_ret_t rmw_publish(const rmw_publisher_t* publisher, const void* ros_message)
         payload_length = (uint16_t)(payload_length + 4); // topic_length (remove in future version to be compliant)
 
         MicroBuffer mb;
-        if (prepare_stream_to_write(&node->session.streams, reliable_output,
+        if (prepare_stream_to_write(publisher_info->session , reliable_output,
                                     (uint16_t)(payload_length + topic_length + SUBHEADER_SIZE), &mb))
         {
             written &= write_submessage_header(&mb, SUBMESSAGE_ID_WRITE_DATA, (uint16_t)(payload_length + topic_length),
                                                FORMAT_DATA);
 
             WRITE_DATA_Payload_Data payload;
-            init_base_object_request(&node->session.info, publisher_info->datawriter_id, &payload.base);
+            init_base_object_request(publisher_info->session , publisher_info->datawriter_id, &payload.base);
             written &= serialize_WRITE_DATA_Payload_Data(&mb, &payload);
             written &=
                 serialize_uint32_t(&mb, topic_length); // REMOVE: when topics have not a previous size in the agent.
@@ -218,7 +217,7 @@ rmw_ret_t rmw_publish(const rmw_publisher_t* publisher, const void* ros_message)
             MicroBuffer mb_topic;
             init_micro_buffer(&mb_topic, mb.iterator, topic_length);
             written &= functions->cdr_serialize(ros_message, &mb_topic);
-            written &= mr_run_session_until_timeout(&node->session, 1000);
+            written &= mr_run_session_until_timeout(publisher_info->session , 1000);
         }
         if (!written)
         {

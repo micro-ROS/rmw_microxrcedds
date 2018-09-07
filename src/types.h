@@ -2,7 +2,6 @@
 #define RMW_MICRORTPS_TYPES_H_
 
 #include "memory.h"
-#include "rmw_macros.h"
 
 #include <rmw/types.h>
 #include "rosidl_generator_c/message_type_support_struct.h"
@@ -21,7 +20,6 @@
 #define MAX_NODES 1
 #define MAX_PUBLISHERS_X_NODE 10
 #define MAX_SUBSCRIPTIONS_X_NODE 10
-
 #define RMW_MICRORTPS_SUBSCRIBER_RAW_BUFFER_SIZE 500
 
 typedef struct CustomSubscription
@@ -33,7 +31,7 @@ typedef struct CustomSubscription
     rmw_gid_t subscription_gid;
     const char* typesupport_identifier;
     struct Item mem;
-
+    mrSession* session;
     const message_type_support_callbacks_t* type_support;
 
     struct 
@@ -43,7 +41,7 @@ typedef struct CustomSubscription
         uint8_t * Write;
         uint8_t * Read;
         size_t RawDataSize; /// \Note Used to keep track of the DataSize type
-    } TmpRawBuffer
+    } TmpRawBuffer;
 } CustomSubscription;
 
 typedef struct CustomPublisher
@@ -55,7 +53,7 @@ typedef struct CustomPublisher
     rmw_gid_t publisher_gid;
     const char* typesupport_identifier;
     const rosidl_message_type_support_t* type_support;
-    struct CustomNode* custom_node;
+    mrSession* session;
     struct Item mem;
 } CustomPublisher;
 

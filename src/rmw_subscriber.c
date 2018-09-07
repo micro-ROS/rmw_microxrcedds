@@ -51,10 +51,11 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
             subscription_info->subscriber_id                              = mr_object_id(0x01, MR_SUBSCRIBER_ID);
             subscription_info->typesupport_identifier                     = type_support->typesupport_identifier;
             subscription_info->subscription_gid.implementation_identifier = rmw_get_implementation_identifier();
+            subscription_info->session                                    = &micro_node->session;
 
             subscription_info->TmpRawBuffer.Write = subscription_info->TmpRawBuffer.MemHead;
             subscription_info->TmpRawBuffer.Read = subscription_info->TmpRawBuffer.MemHead;
-            subscription_info->TmpRawBuffer.MemTail = subscription_info->TmpRawBuffer.MemHead[sizeof(subscription_info->TmpRawBuffer.MemHead)];
+            subscription_info->TmpRawBuffer.MemTail = &subscription_info->TmpRawBuffer.MemHead[sizeof(subscription_info->TmpRawBuffer.MemHead)];
 
             if (sizeof(mrObjectId) > RMW_GID_STORAGE_SIZE)
             {
