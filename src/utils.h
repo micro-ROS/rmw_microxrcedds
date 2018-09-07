@@ -5,7 +5,7 @@
 
 #include <rmw/rmw.h>
 
-#define EPROS_PRINT_TRACE() printf("func %s, in file %s:%d\n", __func__, __FILE__, __LINE__);
+#define EPROS_PRINT_TRACE() ;//printf("func %s, in file %s:%d\n", __func__, __FILE__, __LINE__);
 
 void rmw_delete(void* rmw_allocated_ptr);
 void rmw_node_delete(rmw_node_t* node);

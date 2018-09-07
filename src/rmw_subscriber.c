@@ -52,6 +52,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
             subscription_info->typesupport_identifier                     = type_support->typesupport_identifier;
             subscription_info->subscription_gid.implementation_identifier = rmw_get_implementation_identifier();
             subscription_info->session                                    = &micro_node->session;
+            subscription_info->owner_node                                 = micro_node;
 
             subscription_info->TmpRawBuffer.Write = subscription_info->TmpRawBuffer.MemHead;
             subscription_info->TmpRawBuffer.Read = subscription_info->TmpRawBuffer.MemHead;
@@ -73,7 +74,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
 
                 subscription_info->topic_id = mr_object_id(0x01, MR_TOPIC_ID);
                 const char* topic_xml =
-                    "<dds><topic><name>HelloWorldTopic</name><dataType>HelloWorld</dataType></topic></dds>";
+                    "<dds><topic><name>Int32MsgPubSubTopic</name><dataType>Int32Msg</dataType></topic></dds>";
                 uint16_t topic_req =
                     mr_write_configure_topic_xml(&micro_node->session, reliable_output, subscription_info->topic_id,
                                                  micro_node->participant_id, topic_xml, MR_REPLACE);
@@ -81,8 +82,8 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                 subscription_info->datareader_id = mr_object_id(0x01, MR_DATAREADER_ID);
                 const char* datareader_xml =
                     "<profiles><subscriber "
-                    "profile_name=\"default_xrce_subscriber_profile\"><topic><kind>NO_KEY</kind><name>HelloWorldTopic</"
-                    "name><dataType>HelloWorld</dataType><historyQos><kind>KEEP_LAST</kind><depth>5</depth></"
+                    "profile_name=\"default_xrce_subscriber_profile\"><topic><kind>NO_KEY</kind><name>Int32MsgPubSubTopic</"
+                    "name><dataType>Int32Msg</dataType><historyQos><kind>KEEP_LAST</kind><depth>5</depth></"
                     "historyQos><durability><kind>TRANSIENT_LOCAL</kind></durability></topic></subscriber></profiles>";
                 uint16_t datareader_req = mr_write_configure_datareader_xml(
                     &micro_node->session, reliable_output, subscription_info->datareader_id,

@@ -32,6 +32,7 @@ typedef struct CustomSubscription
     const char* typesupport_identifier;
     struct Item mem;
     mrSession* session;
+    struct CustomNode * owner_node;
     const message_type_support_callbacks_t* type_support;
 
     struct 
@@ -65,6 +66,8 @@ typedef struct CustomNode
     struct MemPool publisher_mem;
     struct MemPool subscription_mem;
     struct Item mem;
+
+    bool data_available;
 
     CustomPublisher publisher_info[MAX_PUBLISHERS_X_NODE];
     CustomSubscription subscription_info[MAX_SUBSCRIPTIONS_X_NODE];

@@ -6,6 +6,7 @@
 #include "rmw_publisher.h"
 #include "rmw_subscriber.h"
 #include "utils.h"
+#include "types.h"
 
 #include "rmw/allocators.h"
 #include "rmw/error_handling.h"
@@ -145,7 +146,7 @@ rmw_subscription_t* rmw_create_subscription(const rmw_node_t* node, const rosidl
     {
         RMW_SET_ERROR_MSG("node handle not from this implementation");
     }
-    else if (strcmp(type_support->typesupport_identifier, rmw_get_implementation_identifier()) != 0)
+    else if (strcmp(type_support->typesupport_identifier, rosidl_typesupport_micrortps_c__identifier) != 0)
     {
         RMW_SET_ERROR_MSG("TypeSupport handle not from this implementation");
     }
@@ -262,6 +263,16 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
     custom_subscription->TmpRawBuffer.Read += sizeof(custom_subscription->TmpRawBuffer.RawDataSize);
 
 
+    // Check if there are more data
+    if (custom_subscription->TmpRawBuffer.Read == custom_subscription->TmpRawBuffer.Write)
+    {
+        custom_subscription->owner_node->data_available = false;
+        custom_subscription->TmpRawBuffer.Read = custom_subscription->TmpRawBuffer.MemHead;
+        custom_subscription->TmpRawBuffer.Write = custom_subscription->TmpRawBuffer.MemHead;
+        custom_subscription->TmpRawBuffer.MemTail = &custom_subscription->TmpRawBuffer.MemHead[sizeof(custom_subscription->TmpRawBuffer.MemHead)];
+    }
+
+
     // Extract serialiced message using typesupport
     bool OK = custom_subscription->type_support->cdr_deserialize(&serialization, ros_message);
     if (taken != NULL)
@@ -365,6 +376,10 @@ rmw_ret_t rmw_trigger_guard_condition(const rmw_guard_condition_t* guard_conditi
 rmw_wait_set_t* rmw_create_wait_set(size_t max_conditions)
 {
     EPROS_PRINT_TRACE()
+
+    // wait set is not used
+    static rmw_wait_set_t NotUsed;
+
     /*
     (void)max_conditions;
 
@@ -387,8 +402,7 @@ rmw_wait_set_t* rmw_create_wait_set(size_t max_conditions)
 
     // Return vaule
     EPROS_PRINT_TRACE()
-    return NULL;
-    //return &Retured_wait_set->wait_set;
+    return &NotUsed;
 }
 
 rmw_ret_t rmw_destroy_wait_set(rmw_wait_set_t* wait_set)
@@ -438,6 +452,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
 
     // Search sesion 
     mrSession* session = NULL;
+    CustomNode* custom_node = NULL;
     if ((subscriptions != NULL) && (subscriptions->subscriber_count > 0))
     {
         // Extract first session pointer
@@ -446,6 +461,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
             if (subscriptions->subscribers[0] != NULL)
             {
                 session = ((CustomSubscription *)subscriptions->subscribers[0])->session;
+                custom_node = ((CustomSubscription *)subscriptions->subscribers[0])->owner_node;
                 break;
             }
         }
@@ -515,7 +531,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
   
   
     // read until no more data are available
-    if (mr_run_session_until_timeout(session, (int)Timeout))
+    if (custom_node->data_available)
     {
         // TODO Use timeout on while.
         // Read until no more data is available
@@ -523,11 +539,11 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     }
     else
     {
-        return RMW_RET_TIMEOUT;
+        mr_run_session_until_timeout(session, (int)Timeout);
     }
 
-
     // Clean non-received
+    bool is_timeout = true;
     if (subscriptions != NULL) 
     {
         for (size_t i = 0; i < subscriptions->subscriber_count; ++i)
@@ -537,6 +553,10 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
             if (custom_subscription->TmpRawBuffer.Write == custom_subscription->TmpRawBuffer.Read)
             {
                 subscriptions->subscribers[i] = NULL;
+            }
+            else
+            {
+                is_timeout = false;
             }
         }
     }
@@ -555,6 +575,13 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
             RMW_SET_ERROR_MSG("Clients are not supported yet");
             clients->clients[i] = NULL;
         }
+    }
+
+    
+    // Check if timeout
+    if (!is_timeout)
+    {
+        return RMW_RET_TIMEOUT;
     }
 
     EPROS_PRINT_TRACE()

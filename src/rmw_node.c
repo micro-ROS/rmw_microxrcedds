@@ -96,6 +96,10 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
     memcpy(subscription->TmpRawBuffer.Write, serialization->iterator, subscription->TmpRawBuffer.RawDataSize);
     subscription->TmpRawBuffer.Write += subscription->TmpRawBuffer.RawDataSize;
 
+
+    // Set data available
+    node->data_available = true;
+
     return;
 }
 
@@ -198,6 +202,8 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
 
     // TODO create utils methods to handle publishers array.
     customnode_clear(node_info);
+
+    node_info->data_available = false;
 
     return node_handle;
 }
