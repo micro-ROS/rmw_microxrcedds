@@ -76,16 +76,17 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 publisher_info->datawriter_id = mr_object_id(0x01, MR_DATAWRITER_ID);
                 const char* datawriter_xml =
                     "<profiles><publisher "
-                    "profile_name=\"default_xrce_publisher_profile\"><topic><kind>NO_KEY</kind><name>Int32MsgPubSubTopic</"
+                    "profile_name=\"default_xrce_publisher_profile\"><topic><kind>NO_KEY</"
+                    "kind><name>Int32MsgPubSubTopic</"
                     "name><dataType>Int32Msg</dataType><historyQos><kind>KEEP_LAST</kind><depth>5</depth></"
                     "historyQos><durability><kind>TRANSIENT_LOCAL</kind></durability></topic></publisher></profiles>";
                 uint16_t datawriter_req = mr_write_configure_datawriter_xml(
-                    publisher_info->session, reliable_output, publisher_info->datawriter_id, publisher_info->publisher_id,
-                    datawriter_xml, MR_REPLACE);
-                
+                    publisher_info->session, reliable_output, publisher_info->datawriter_id,
+                    publisher_info->publisher_id, datawriter_xml, MR_REPLACE);
+
                 rmw_publisher->data = publisher_info;
                 uint16_t requests[] = {publisher_req, datawriter_req, topic_req};
-                uint8_t status[sizeof(requests)/2];
+                uint8_t status[sizeof(requests) / 2];
                 if (!mr_run_session_until_status(publisher_info->session, 1000, requests, status, 3))
                 {
                     RMW_SET_ERROR_MSG("Issues creating micro RTPS entities");
@@ -199,17 +200,17 @@ rmw_ret_t rmw_publish(const rmw_publisher_t* publisher, const void* ros_message)
         uint32_t topic_length                             = functions->get_serialized_size(ros_message);
         uint32_t payload_length                           = 0;
         payload_length                                    = (uint16_t)(payload_length + 4); // request_id + object_id
-        payload_length = (uint16_t)(payload_length + 4); // topic_length (remove in future version to be compliant)
+        payload_length                                    = (uint16_t)(payload_length + 4); // request_id + object_id
 
         MicroBuffer mb;
-        if (prepare_stream_to_write(publisher_info->session , reliable_output,
+        if (prepare_stream_to_write(&publisher_info->session->streams, reliable_output,
                                     (uint16_t)(payload_length + topic_length + SUBHEADER_SIZE), &mb))
         {
             written &= write_submessage_header(&mb, SUBMESSAGE_ID_WRITE_DATA, (uint16_t)(payload_length + topic_length),
                                                FORMAT_DATA);
 
             WRITE_DATA_Payload_Data payload;
-            init_base_object_request(publisher_info->session , publisher_info->datawriter_id, &payload.base);
+            init_base_object_request(&publisher_info->session->info, publisher_info->datawriter_id, &payload.base);
             written &= serialize_WRITE_DATA_Payload_Data(&mb, &payload);
             written &=
                 serialize_uint32_t(&mb, topic_length); // REMOVE: when topics have not a previous size in the agent.
@@ -217,7 +218,7 @@ rmw_ret_t rmw_publish(const rmw_publisher_t* publisher, const void* ros_message)
             MicroBuffer mb_topic;
             init_micro_buffer(&mb_topic, mb.iterator, topic_length);
             written &= functions->cdr_serialize(ros_message, &mb_topic);
-            written &= mr_run_session_until_timeout(publisher_info->session , 1000);
+            written &= mr_run_session_until_timeout(publisher_info->session, 1000);
         }
         if (!written)
         {
