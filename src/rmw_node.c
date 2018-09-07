@@ -7,8 +7,6 @@
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 
-#define MAX_NODES 8
-
 static struct MemPool node_memory;
 static CustomNode custom_nodes[MAX_NODES];
 
@@ -33,13 +31,11 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
     (void)request_id;
     (void)stream_id;
 
-
     // Get node pointer
-    CustomNode* node = (CustomNode*) args;
-
+    CustomNode* node = (CustomNode*)args;
 
     // Search subcription
-    struct Item * subscription_item = node->subscription_mem.allocateditems;
+    struct Item* subscription_item = node->subscription_mem.allocateditems;
     while (true)
     {
         // Check if end of stack
@@ -47,34 +43,35 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
         {
             return;
         }
-        
-        // Compare id        
-        if (memcmp(&(((CustomSubscription*)subscription_item->data)->datareader_id), &object_id, sizeof(mrObjectId)) == 0)
+
+        // Compare id
+        if (memcmp(&(((CustomSubscription*)subscription_item->data)->datareader_id), &object_id, sizeof(mrObjectId)) ==
+            0)
         {
             break;
         }
-            
+
         // Next subcription of the stack
         subscription_item = subscription_item->next;
     }
 
     // get buffer size
-    CustomSubscription* subscription = ((CustomSubscription*)subscription_item->data);
+    CustomSubscription* subscription       = ((CustomSubscription*)subscription_item->data);
     subscription->TmpRawBuffer.RawDataSize = micro_buffer_remaining(serialization);
     if (subscription->TmpRawBuffer.RawDataSize == 0)
     {
         return;
     }
 
-
     // get needed bytes space
-    size_t NeededSpace = sizeof(serialization->endianness) + sizeof(subscription->TmpRawBuffer.RawDataSize) + subscription->TmpRawBuffer.RawDataSize;
-
+    size_t NeededSpace = sizeof(serialization->endianness) + sizeof(subscription->TmpRawBuffer.RawDataSize) +
+                         subscription->TmpRawBuffer.RawDataSize;
 
     // check if there is enogh space at the end of the tmp raw buffer
-    if ((&(subscription->TmpRawBuffer.MemHead[sizeof(subscription->TmpRawBuffer.MemHead)]) - subscription->TmpRawBuffer.Write) < NeededSpace)
+    if ((&(subscription->TmpRawBuffer.MemHead[sizeof(subscription->TmpRawBuffer.MemHead)]) -
+         subscription->TmpRawBuffer.Write) < NeededSpace)
     {
-        
+
         // check if there is enogh space at the begining of the tmp raw buffer
         if ((subscription->TmpRawBuffer.Read - subscription->TmpRawBuffer.MemHead) < NeededSpace)
         {
@@ -83,26 +80,24 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
             return;
         }
 
-        
         // Move tail pointer to the bigining and relocate tail
         subscription->TmpRawBuffer.MemTail = subscription->TmpRawBuffer.Write;
-        subscription->TmpRawBuffer.Write = subscription->TmpRawBuffer.MemHead;
+        subscription->TmpRawBuffer.Write   = subscription->TmpRawBuffer.MemHead;
     }
-
 
     // Save microbuffer for a future processing (Endianness + subscription->TmpRawBuffer.RawDataSize + MicroBufferData)
     memcpy(subscription->TmpRawBuffer.Write, &serialization->endianness, sizeof(serialization->endianness));
     subscription->TmpRawBuffer.Write += sizeof(serialization->endianness);
 
-    memcpy(subscription->TmpRawBuffer.Write, &subscription->TmpRawBuffer.RawDataSize, sizeof(subscription->TmpRawBuffer.RawDataSize));
+    memcpy(subscription->TmpRawBuffer.Write, &subscription->TmpRawBuffer.RawDataSize,
+           sizeof(subscription->TmpRawBuffer.RawDataSize));
     subscription->TmpRawBuffer.Write += sizeof(subscription->TmpRawBuffer.RawDataSize);
-    
+
     memcpy(subscription->TmpRawBuffer.Write, serialization->iterator, subscription->TmpRawBuffer.RawDataSize);
     subscription->TmpRawBuffer.Write += subscription->TmpRawBuffer.RawDataSize;
 
     return;
 }
-
 
 void clear_node(rmw_node_t* node)
 {
@@ -185,7 +180,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     }
 
     // Create the Node participant. At this point a Node correspond with a Session with one participant.
-    node_info->participant_id    = mr_object_id(1, MR_PARTICIPANT_ID);
+    node_info->participant_id   = mr_object_id(1, MR_PARTICIPANT_ID);
     const char* participant_ref = "default participant";
     uint16_t participant_req    = mr_write_create_participant_ref(
         &node_info->session, reliable_output, node_info->participant_id, domain_id, participant_ref, MR_REPLACE);
