@@ -1,7 +1,7 @@
 #include "rmw_subscriber.h"
 
-#include "micronode.h"
 #include "rmw_micrortps.h"
+#include "types.h"
 #include "utils.h"
 
 #include <rmw/allocators.h>
@@ -35,18 +35,21 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
     // TODO(Borja) Check NULL on node
     else
     {
-        MicroNode* micro_node = (MicroNode*)node->data;
-        if (micro_node->num_subscriptions == MAX_SUBSCRIPTIONS - 1)
+
+        CustomNode* micro_node   = (CustomNode*)node->data;
+        struct Item* memory_node = get_memory(&micro_node->subscription_mem);
+        if (!memory_node)
         {
-            RMW_SET_ERROR_MSG("Not enough memory for impl ids")
+            RMW_SET_ERROR_MSG("Not available memory node");
+            return NULL;
         }
         else
         {
             // TODO micro_rtps_id is duplicated in subscriber_id and in subscription_gid.data
-            SubscriptionInfo* subscription_info       = &micro_node->subscription_info[micro_node->num_publishers++];
-            subscription_info->in_use                 = true;
-            subscription_info->subscriber_id          = mr_object_id(0x01, MR_SUBSCRIBER_ID);
-            subscription_info->typesupport_identifier = type_support->typesupport_identifier;
+            CustomSubscription* subscription_info                         = (CustomSubscription*)memory_node->data;
+            subscription_info->in_use                                     = true;
+            subscription_info->subscriber_id                              = mr_object_id(0x01, MR_SUBSCRIBER_ID);
+            subscription_info->typesupport_identifier                     = type_support->typesupport_identifier;
             subscription_info->subscription_gid.implementation_identifier = rmw_get_implementation_identifier();
 
             if (sizeof(mrObjectId) > RMW_GID_STORAGE_SIZE)
@@ -138,30 +141,25 @@ rmw_ret_t rmw_destroy_subscription(rmw_node_t* node, rmw_subscription_t* subscri
     }
     else
     {
-        MicroNode* micro_node = (MicroNode*)node->data;
-        if (micro_node->num_subscriptions > 0)
-        {
-            SubscriptionInfo* subscripion_info = (SubscriptionInfo*)subscription->data;
-            int delete_datareader =
-                mr_write_delete_entity(&micro_node->session, reliable_output, subscripion_info->datareader_id);
-            int delete_topic =
-                mr_write_delete_entity(&micro_node->session, reliable_output, subscripion_info->topic_id);
-            int delete_subscriber =
-                mr_write_delete_entity(&micro_node->session, reliable_output, subscripion_info->subscriber_id);
+        CustomNode* micro_node               = (CustomNode*)node->data;
+        CustomSubscription* subscripion_info = (CustomSubscription*)subscription->data;
+        int delete_datareader =
+            mr_write_delete_entity(&micro_node->session, reliable_output, subscripion_info->datareader_id);
+        int delete_topic = mr_write_delete_entity(&micro_node->session, reliable_output, subscripion_info->topic_id);
+        int delete_subscriber =
+            mr_write_delete_entity(&micro_node->session, reliable_output, subscripion_info->subscriber_id);
 
-            uint8_t status[3];
-            uint16_t requests[] = {delete_datareader, delete_topic, delete_subscriber};
-            if (!mr_run_session_until_status(&micro_node->session, 1000, requests, status, 3))
-            {
-                RMW_SET_ERROR_MSG("unable to remove publisher from the server");
-                result_ret = RMW_RET_ERROR;
-            }
-            else
-            {
-                rmw_subscription_delete(subscription);
-                micro_node->num_subscriptions -= 1;
-                result_ret = RMW_RET_OK;
-            }
+        uint8_t status[3];
+        uint16_t requests[] = {delete_datareader, delete_topic, delete_subscriber};
+        if (!mr_run_session_until_status(&micro_node->session, 1000, requests, status, 3))
+        {
+            RMW_SET_ERROR_MSG("unable to remove publisher from the server");
+            result_ret = RMW_RET_ERROR;
+        }
+        else
+        {
+            rmw_subscription_delete(subscription);
+            result_ret = RMW_RET_OK;
         }
     }
 

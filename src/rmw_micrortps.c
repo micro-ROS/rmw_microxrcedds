@@ -1,12 +1,11 @@
 #include "rmw_micrortps.h"
 
 #include "identifier.h"
+#include "rmw_macros.h"
 #include "rmw_node.h"
 #include "rmw_publisher.h"
 #include "rmw_subscriber.h"
 #include "utils.h"
-#include "rmw_macros.h"
-#include "micronode.h"
 
 #include "rmw/allocators.h"
 #include "rmw/error_handling.h"
@@ -14,10 +13,8 @@
 
 #include <micrortps/client/client.h>
 
-
 // Declare internal memory structs
 RMW_MICRORTPS_DECLARE_INTENAL_MEMORY(Internal_wait_set_t, INTERNAL_WAIT_SET)
-
 
 const char* rmw_get_implementation_identifier()
 {
@@ -29,10 +26,10 @@ rmw_ret_t rmw_init()
 {
     EPROS_PRINT_TRACE()
 
-
     // initialize internal memories
     RMW_MICRORTPS_INIT_INTERNAL_MEM(INTERNAL_WAIT_SET);
 
+    init_rmw_node();
 
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
@@ -267,7 +264,6 @@ rmw_wait_set_t* rmw_create_wait_set(size_t max_conditions)
 
     (void)max_conditions;
 
-    
     // Check if available
     if (RMW_MICRORTPS_CHECK_AVAILABLE(INTERNAL_WAIT_SET))
     {
@@ -275,17 +271,14 @@ rmw_wait_set_t* rmw_create_wait_set(size_t max_conditions)
         return NULL;
     }
 
-
     // Extract from internal memory
     Internal_wait_set_t* Retured_wait_set;
     RMW_MICRORTPS_EXTRACT_FROM_INTERNAL_MEM(INTERNAL_WAIT_SET, Retured_wait_set);
 
-
-    // Configure 
-    Retured_wait_set->wait_set.data = (void*)Retured_wait_set;
-    Retured_wait_set->wait_set.guard_conditions = NULL;
+    // Configure
+    Retured_wait_set->wait_set.data                      = (void*)Retured_wait_set;
+    Retured_wait_set->wait_set.guard_conditions          = NULL;
     Retured_wait_set->wait_set.implementation_identifier = rmw_get_implementation_identifier();
-    
 
     // Return vaule
     EPROS_PRINT_TRACE()
@@ -308,7 +301,6 @@ rmw_ret_t rmw_destroy_wait_set(rmw_wait_set_t* wait_set)
         return RMW_RET_ERROR;
     }
 
-
     // Check implementation
     if (wait_set->implementation_identifier != rmw_get_implementation_identifier())
     {
@@ -316,15 +308,12 @@ rmw_ret_t rmw_destroy_wait_set(rmw_wait_set_t* wait_set)
         return RMW_RET_ERROR;
     }
 
-
     // Extract
     Internal_wait_set_t* Internal_wait_set = wait_set->data;
-    
-    
+
     // Release
     RMW_MICRORTPS_RETURN_TO_INTERNAL_MEM(INTERNAL_WAIT_SET, Internal_wait_set)
-    
-    
+
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
@@ -334,33 +323,29 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
                    const rmw_time_t* wait_timeout)
 {
     EPROS_PRINT_TRACE()
-    
-    if (!wait_set) 
+
+    if (!wait_set)
     {
         RMW_SET_ERROR_MSG("wait set handle is null");
         return RMW_RET_ERROR;
     }
-  
-  
-  
-    Internal_wait_set_t * Internal_wait_set = (Internal_wait_set_t *)(wait_set->data);
-    if (Internal_wait_set == NULL) 
+
+    Internal_wait_set_t* Internal_wait_set = (Internal_wait_set_t*)(wait_set->data);
+    if (Internal_wait_set == NULL)
     {
         RMW_SET_ERROR_MSG("Internal wait set struct is null");
         return RMW_RET_ERROR;
     }
 
-
-    if (subscriptions) 
+    if (subscriptions)
     {
-        for (size_t i = 0; i < subscriptions->subscriber_count; ++i) 
+        for (size_t i = 0; i < subscriptions->subscriber_count; ++i)
         {
-            SubscriptionInfo * subscriber_info = (SubscriptionInfo *)(subscriptions->subscribers[i]);
-            //custom_subscriber_info->listener_->attachCondition(conditionMutex, conditionVariable);
+            CustomSubscription* subscriber_info = (CustomSubscription*)(subscriptions->subscribers[i]);
+            // custom_subscriber_info->listener_->attachCondition(conditionMutex, conditionVariable);
         }
     }
 
-    
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }

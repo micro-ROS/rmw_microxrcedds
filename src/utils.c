@@ -2,8 +2,8 @@
 
 #include "rmw/allocators.h"
 
-void publisherinfo_clear(PublisherInfo* publisher);
-void subscriptioninfo_clear(SubscriptionInfo* subscription);
+void custompublisher_clear(CustomPublisher* publisher);
+void customsubscription_clear(CustomSubscription* subscription);
 
 void rmw_delete(void* rmw_allocated_ptr)
 {
@@ -27,7 +27,7 @@ void rmw_node_delete(rmw_node_t* node)
     }
     if (node->data)
     {
-        micronode_clear((MicroNode*)node->data);
+        customnode_clear((CustomNode*)node->data);
         node->data = NULL;
     }
 
@@ -47,13 +47,13 @@ void rmw_publisher_delete(rmw_publisher_t* publisher)
     }
     if (publisher->data)
     {
-        publisherinfo_clear((PublisherInfo*)publisher->data);
+        custompublisher_clear((CustomPublisher*)publisher->data);
         publisher->data = NULL;
     }
     rmw_delete(publisher);
 }
 
-void publisherinfo_clear(PublisherInfo* publisher)
+void custompublisher_clear(CustomPublisher* publisher)
 {
     if (publisher)
     {
@@ -67,11 +67,11 @@ void publisherinfo_clear(PublisherInfo* publisher)
     }
 }
 
-void publishers_clear(PublisherInfo publishers[static MAX_PUBLISHERS])
+void publishers_clear(CustomPublisher publishers[static MAX_PUBLISHERS_X_NODE])
 {
-    for (size_t i = 0; i < MAX_PUBLISHERS; i++)
+    for (size_t i = 0; i < MAX_PUBLISHERS_X_NODE; i++)
     {
-        publisherinfo_clear(&publishers[i]);
+        custompublisher_clear(&publishers[i]);
     }
 }
 
@@ -87,13 +87,13 @@ void rmw_subscription_delete(rmw_subscription_t* subscriber)
     }
     if (subscriber->data)
     {
-        subscriptioninfo_clear((SubscriptionInfo*)subscriber->data);
+        customsubscription_clear((CustomSubscription*)subscriber->data);
         subscriber->data = NULL;
     }
     rmw_delete(subscriber);
 }
 
-void subscriptioninfo_clear(SubscriptionInfo* subscription)
+void customsubscription_clear(CustomSubscription* subscription)
 {
     if (subscription)
     {
@@ -107,22 +107,21 @@ void subscriptioninfo_clear(SubscriptionInfo* subscription)
     }
 }
 
-void subscriptions_clear(SubscriptionInfo subscriptions[static MAX_SUBSCRIPTIONS])
+void subscriptions_clear(CustomSubscription subscriptions[static MAX_SUBSCRIPTIONS_X_NODE])
 {
-    for (size_t i = 0; i < MAX_SUBSCRIPTIONS; i++)
+    for (size_t i = 0; i < MAX_SUBSCRIPTIONS_X_NODE; i++)
     {
-        subscriptioninfo_clear(&subscriptions[i]);
+        customsubscription_clear(&subscriptions[i]);
     }
 }
 
-void micronode_clear(MicroNode* node)
+void customnode_clear(CustomNode* node)
 {
     if (node)
     {
-        memset(&node->participant_id, 0, sizeof(mrObjectId));
         publishers_clear(node->publisher_info);
-        node->num_publishers = 0;
+        free_mem_pool(&node->publisher_mem);
         subscriptions_clear(node->subscription_info);
-        node->num_subscriptions = 0;
+        free_mem_pool(&node->subscription_mem);
     }
 }

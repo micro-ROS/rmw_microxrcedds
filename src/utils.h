@@ -1,7 +1,7 @@
-#ifndef UTILS_H_
-#define UTILS_H_
+#ifndef RMW_MICRORTPS_UTILS_H_
+#define RMW_MICRORTPS_UTILS_H_
 
-#include "micronode.h"
+#include "types.h"
 
 #include <rmw/rmw.h>
 
@@ -12,6 +12,6 @@ void rmw_node_delete(rmw_node_t* node);
 void rmw_publisher_delete(rmw_publisher_t* publisher);
 void rmw_subscription_delete(rmw_subscription_t* subscriber);
 
-void micronode_clear(MicroNode* node);
+void customnode_clear(CustomNode* node);
 
 #endif // !UTILS_H
