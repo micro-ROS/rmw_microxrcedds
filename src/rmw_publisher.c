@@ -66,14 +66,14 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     publisher_info->session, reliable_output, publisher_info->publisher_id, micro_node->participant_id,
                     publisher_xml, MR_REPLACE);
 
-                publisher_info->topic_id = mr_object_id(0x01, MR_TOPIC_ID);
+                publisher_info->topic_id = mr_object_id(rand(), MR_TOPIC_ID);
                 const char* topic_xml =
                     "<dds><topic><name>Int32MsgPubSubTopic</name><dataType>Int32Msg</dataType></topic></dds>";
                 uint16_t topic_req =
                     mr_write_configure_topic_xml(publisher_info->session, reliable_output, publisher_info->topic_id,
                                                  micro_node->participant_id, topic_xml, MR_REPLACE);
 
-                publisher_info->datawriter_id = mr_object_id(0x01, MR_DATAWRITER_ID);
+                publisher_info->datawriter_id = mr_object_id(0x03, MR_DATAWRITER_ID);
                 const char* datawriter_xml =
                     "<profiles><publisher "
                     "profile_name=\"default_xrce_publisher_profile\"><topic><kind>NO_KEY</"

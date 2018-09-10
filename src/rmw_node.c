@@ -31,11 +31,13 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
     (void)request_id;
     (void)stream_id;
 
+
     // Get node pointer
     CustomNode* node = (CustomNode*)args;
 
     // Search subcription
     struct Item* subscription_item = node->subscription_mem.allocateditems;
+    CustomSubscription* custom_subscription = NULL;
     while (true)
     {
         // Check if end of stack
@@ -45,8 +47,8 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
         }
 
         // Compare id
-        if (memcmp(&(((CustomSubscription*)subscription_item->data)->datareader_id), &object_id, sizeof(mrObjectId)) ==
-            0)
+        custom_subscription = (CustomSubscription*)subscription_item->data;
+        if ((custom_subscription->datareader_id.id == object_id.id) && (custom_subscription->datareader_id.type == object_id.type))
         {
             break;
         }
@@ -56,24 +58,22 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
     }
 
     // get buffer size
-    CustomSubscription* subscription       = ((CustomSubscription*)subscription_item->data);
-    subscription->TmpRawBuffer.RawDataSize = micro_buffer_remaining(serialization);
-    if (subscription->TmpRawBuffer.RawDataSize == 0)
+    custom_subscription->TmpRawBuffer.RawDataSize = micro_buffer_remaining(serialization);
+    if (custom_subscription->TmpRawBuffer.RawDataSize == 0)
     {
         return;
     }
 
     // get needed bytes space
-    size_t NeededSpace = sizeof(serialization->endianness) + sizeof(subscription->TmpRawBuffer.RawDataSize) +
-                         subscription->TmpRawBuffer.RawDataSize;
+    size_t NeededSpace = sizeof(serialization->endianness) + sizeof(custom_subscription->TmpRawBuffer.RawDataSize) + custom_subscription->TmpRawBuffer.RawDataSize;
 
     // check if there is enogh space at the end of the tmp raw buffer
-    if ((&(subscription->TmpRawBuffer.MemHead[sizeof(subscription->TmpRawBuffer.MemHead)]) -
-         subscription->TmpRawBuffer.Write) < NeededSpace)
+    if ((&(custom_subscription->TmpRawBuffer.MemHead[sizeof(custom_subscription->TmpRawBuffer.MemHead)]) -
+         custom_subscription->TmpRawBuffer.Write) < NeededSpace)
     {
 
         // check if there is enogh space at the begining of the tmp raw buffer
-        if ((subscription->TmpRawBuffer.Read - subscription->TmpRawBuffer.MemHead) < NeededSpace)
+        if ((custom_subscription->TmpRawBuffer.Read - custom_subscription->TmpRawBuffer.MemHead) < NeededSpace)
         {
             // not enough space to store the data
             RMW_SET_ERROR_MSG("Incomming data lost due to not enough storage memory");
@@ -81,20 +81,20 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
         }
 
         // Move tail pointer to the bigining and relocate tail
-        subscription->TmpRawBuffer.MemTail = subscription->TmpRawBuffer.Write;
-        subscription->TmpRawBuffer.Write   = subscription->TmpRawBuffer.MemHead;
+        custom_subscription->TmpRawBuffer.MemTail = custom_subscription->TmpRawBuffer.Write;
+        custom_subscription->TmpRawBuffer.Write   = custom_subscription->TmpRawBuffer.MemHead;
     }
 
-    // Save microbuffer for a future processing (Endianness + subscription->TmpRawBuffer.RawDataSize + MicroBufferData)
-    memcpy(subscription->TmpRawBuffer.Write, &serialization->endianness, sizeof(serialization->endianness));
-    subscription->TmpRawBuffer.Write += sizeof(serialization->endianness);
+    // Save microbuffer for a future processing (Endianness + custom_subscription->TmpRawBuffer.RawDataSize + MicroBufferData)
+    memcpy(custom_subscription->TmpRawBuffer.Write, &serialization->endianness, sizeof(serialization->endianness));
+    custom_subscription->TmpRawBuffer.Write += sizeof(serialization->endianness);
 
-    memcpy(subscription->TmpRawBuffer.Write, &subscription->TmpRawBuffer.RawDataSize,
-           sizeof(subscription->TmpRawBuffer.RawDataSize));
-    subscription->TmpRawBuffer.Write += sizeof(subscription->TmpRawBuffer.RawDataSize);
+    memcpy(custom_subscription->TmpRawBuffer.Write, &custom_subscription->TmpRawBuffer.RawDataSize,
+           sizeof(custom_subscription->TmpRawBuffer.RawDataSize));
+    custom_subscription->TmpRawBuffer.Write += sizeof(custom_subscription->TmpRawBuffer.RawDataSize);
 
-    memcpy(subscription->TmpRawBuffer.Write, serialization->iterator, subscription->TmpRawBuffer.RawDataSize);
-    subscription->TmpRawBuffer.Write += subscription->TmpRawBuffer.RawDataSize;
+    memcpy(custom_subscription->TmpRawBuffer.Write, serialization->iterator, custom_subscription->TmpRawBuffer.RawDataSize);
+    custom_subscription->TmpRawBuffer.Write += custom_subscription->TmpRawBuffer.RawDataSize;
 
 
     // Set data available
@@ -115,8 +115,9 @@ void clear_node(rmw_node_t* node)
 rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_id)
 {
     static const char* ip       = "127.0.0.1";
-    static const uint16_t port  = 8888;
-    static const uint32_t key   = 0xAABBCCDD;
+    static const uint16_t port  = 8881;
+    //static const uint32_t key   = 0xAABBCCDD;
+    uint32_t key   = rand();
     static const size_t history = 8;
 
     struct Item* memory_node = get_memory(&node_memory);

@@ -72,6 +72,9 @@ typedef struct CustomNode
     CustomPublisher publisher_info[MAX_PUBLISHERS_X_NODE];
     CustomSubscription subscription_info[MAX_SUBSCRIPTIONS_X_NODE];
 
+    uint8_t read_subscriptions_status[MAX_SUBSCRIPTIONS_X_NODE];
+    uint16_t read_subscriptions_requests[MAX_SUBSCRIPTIONS_X_NODE]
+
 } CustomNode;
 
 mrStreamId best_input;

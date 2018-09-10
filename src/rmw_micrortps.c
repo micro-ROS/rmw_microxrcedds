@@ -15,6 +15,7 @@
 #include <micrortps/client/client.h>
 
 #include <limits.h>
+#include <time.h>
 
 // Declare internal memory structs
 //RMW_MICRORTPS_DECLARE_INTENAL_MEMORY(Internal_wait_set_t, INTERNAL_WAIT_SET)
@@ -29,8 +30,9 @@ rmw_ret_t rmw_init()
 {
     EPROS_PRINT_TRACE()
 
-    // initialize internal memories
-    //RMW_MICRORTPS_INIT_INTERNAL_MEM(INTERNAL_WAIT_SET);
+    // Intialize random number generator
+    time_t t;
+    srand((unsigned) time(&t));
 
     init_rmw_node();
 
@@ -173,22 +175,7 @@ rmw_subscription_t* rmw_create_subscription(const rmw_node_t* node, const rosidl
 
 rmw_ret_t rmw_take(const rmw_subscription_t* subscription, void* ros_message, bool* taken)
 {
-    EPROS_PRINT_TRACE()
-
-    // Extract subscriber info
-
-
-
-    // Extract serialiced message
-
-
-
-    // Desserialice using typesupport
-
-
-
-    EPROS_PRINT_TRACE()
-    return RMW_RET_OK;
+    return rmw_take_with_info(subscription, ros_message, taken, NULL);
 }
 
 rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_message, bool* taken,
@@ -226,14 +213,13 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
         RMW_SET_ERROR_MSG("Nothing to be read from temporal raw buffer");
         return RMW_RET_ERROR;
     }
-    if ((custom_subscription->TmpRawBuffer.Read + sizeof(endianness) + sizeof(custom_subscription->TmpRawBuffer.RawDataSize)) >= custom_subscription->TmpRawBuffer.Write)
+    if ((custom_subscription->TmpRawBuffer.Read + sizeof(endianness) + sizeof(custom_subscription->TmpRawBuffer.RawDataSize)) > custom_subscription->TmpRawBuffer.Write)
     {
-        RMW_SET_ERROR_MSG("Error in raw buffer. Temporal raw buffer will be restarted");
-
         custom_subscription->TmpRawBuffer.Read = custom_subscription->TmpRawBuffer.MemHead;
         custom_subscription->TmpRawBuffer.Write = custom_subscription->TmpRawBuffer.MemHead;
         custom_subscription->TmpRawBuffer.MemTail = &custom_subscription->TmpRawBuffer.MemHead[sizeof(custom_subscription->TmpRawBuffer.MemHead)];
 
+        RMW_SET_ERROR_MSG("Error in raw buffer. Temporal raw buffer will be restarted");
         return RMW_RET_ERROR;
     }
 
@@ -247,12 +233,11 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
 
     if ((custom_subscription->TmpRawBuffer.Read + custom_subscription->TmpRawBuffer.RawDataSize) > custom_subscription->TmpRawBuffer.Write)
     {
-        RMW_SET_ERROR_MSG("Error in raw buffer. Temporal raw buffer will be restarted");
-
         custom_subscription->TmpRawBuffer.Read = custom_subscription->TmpRawBuffer.MemHead;
         custom_subscription->TmpRawBuffer.Write = custom_subscription->TmpRawBuffer.MemHead;
         custom_subscription->TmpRawBuffer.MemTail = &custom_subscription->TmpRawBuffer.MemHead[sizeof(custom_subscription->TmpRawBuffer.MemHead)];
 
+        RMW_SET_ERROR_MSG("Error in raw buffer. Temporal raw buffer will be restarted");
         return RMW_RET_ERROR;
     }
 
@@ -260,7 +245,7 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
     init_micro_buffer(&serialization, custom_subscription->TmpRawBuffer.Read , custom_subscription->TmpRawBuffer.RawDataSize);
     serialization.endianness = endianness;
 
-    custom_subscription->TmpRawBuffer.Read += sizeof(custom_subscription->TmpRawBuffer.RawDataSize);
+    custom_subscription->TmpRawBuffer.Read += custom_subscription->TmpRawBuffer.RawDataSize;
 
 
     // Check if there are more data
@@ -281,6 +266,7 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
     }
     if (!OK)
     {
+        RMW_SET_ERROR_MSG("Typesupport desserialize error.");
         return RMW_RET_ERROR;
     }
 
@@ -450,9 +436,9 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     (void)wait_set;
   
 
-    // Search sesion 
-    mrSession* session = NULL;
+    // go throw all subscriptions
     CustomNode* custom_node = NULL;
+    size_t subscriber_requests_count = 0;
     if ((subscriptions != NULL) && (subscriptions->subscriber_count > 0))
     {
         // Extract first session pointer
@@ -460,12 +446,16 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
         {
             if (subscriptions->subscribers[0] != NULL)
             {
-                session = ((CustomSubscription *)subscriptions->subscribers[0])->session;
-                custom_node = ((CustomSubscription *)subscriptions->subscribers[0])->owner_node;
-                break;
+                CustomSubscription* custom_subscription = (CustomSubscription *)subscriptions->subscribers[0];
+                custom_node = custom_subscription->owner_node;
+
+                // Request all data
+                custom_node->read_subscriptions_requests[subscriber_requests_count++] =  mr_write_request_data(&custom_node->session, reliable_output, custom_subscription->datareader_id, reliable_input, NULL);
             }
         }
     }
+
+    // go throw all services
     /*
     else if ((services != NULL) && (services->service_count > 0))
     {
@@ -473,6 +463,8 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
         //services->services[0];
     }
     */
+
+    // go throw all clients
     /*
     else if ((clients != NULL) && (clients->client_count > 0))
     {
@@ -482,13 +474,36 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     */
 
 
-    // Check if sesion is null 
-    if (session == NULL)
+    // Check node pointer
+    if (custom_node == NULL)
     {
-        return RMW_RET_OK;
+        if (subscriptions != NULL) 
+        {
+            for (size_t i = 0; i < subscriptions->subscriber_count; ++i)
+            {
+                subscriptions->subscribers[i] = NULL;
+                
+            }
+        }
+        if (services != NULL) 
+        {
+            for (size_t i = 0; i < services->service_count; ++i) 
+            {
+                services->services[i] = NULL;
+            }
+        }
+        if (clients != NULL) 
+        {
+            for (size_t i = 0; i < clients->client_count; ++i) 
+            {
+                clients->clients[i] = NULL;
+            }
+        }
+
+
+        EPROS_PRINT_TRACE()
+        return RMW_RET_OK; 
     }
-
-
 
     // Check if timeout
     uint64_t Timeout;
@@ -526,21 +541,13 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     }
     else
     {
-        Timeout = 0;
+        Timeout = MR_TIMEOUT_INF;
     }
-  
-  
-    // read until no more data are available
-    if (custom_node->data_available)
-    {
-        // TODO Use timeout on while.
-        // Read until no more data is available
-        while (mr_run_session_until_timeout(session, 0)){}
-    }
-    else
-    {
-        mr_run_session_until_timeout(session, (int)Timeout);
-    }
+
+
+    // read until status or timeout
+    mr_run_session_until_status(&custom_node->session, Timeout, custom_node->read_subscriptions_requests, custom_node->read_subscriptions_status, subscriber_requests_count);
+
 
     // Clean non-received
     bool is_timeout = true;
@@ -564,7 +571,6 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     {
         for (size_t i = 0; i < services->service_count; ++i) 
         {
-            RMW_SET_ERROR_MSG("Services are not supported yet");
             services->services[i] = NULL;
         }
     }
@@ -572,20 +578,22 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     {
         for (size_t i = 0; i < clients->client_count; ++i) 
         {
-            RMW_SET_ERROR_MSG("Clients are not supported yet");
             clients->clients[i] = NULL;
         }
     }
 
-    
+        
     // Check if timeout
-    if (!is_timeout)
+    if (is_timeout)
     {
+        EPROS_PRINT_TRACE()
         return RMW_RET_TIMEOUT;
     }
-
+    
+    
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
+    
 }
 
 rmw_ret_t rmw_get_node_names(const rmw_node_t* node, rcutils_string_array_t* node_names)

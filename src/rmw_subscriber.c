@@ -48,8 +48,9 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
             // TODO micro_rtps_id is duplicated in subscriber_id and in subscription_gid.data
             CustomSubscription* subscription_info                         = (CustomSubscription*)memory_node->data;
             subscription_info->in_use                                     = true;
-            subscription_info->subscriber_id                              = mr_object_id(0x01, MR_SUBSCRIBER_ID);
+            subscription_info->subscriber_id                              = mr_object_id(rand(), MR_SUBSCRIBER_ID);
             subscription_info->typesupport_identifier                     = type_support->typesupport_identifier;
+            subscription_info->type_support                               = (message_type_support_callbacks_t* )type_support->data;
             subscription_info->subscription_gid.implementation_identifier = rmw_get_implementation_identifier();
             subscription_info->session                                    = &micro_node->session;
             subscription_info->owner_node                                 = micro_node;
@@ -72,14 +73,14 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                     &micro_node->session, reliable_output, subscription_info->subscriber_id, micro_node->participant_id,
                     subscriber_xml, MR_REPLACE);
 
-                subscription_info->topic_id = mr_object_id(0x01, MR_TOPIC_ID);
+                subscription_info->topic_id = mr_object_id(rand(), MR_TOPIC_ID);
                 const char* topic_xml =
                     "<dds><topic><name>Int32MsgPubSubTopic</name><dataType>Int32Msg</dataType></topic></dds>";
                 uint16_t topic_req =
                     mr_write_configure_topic_xml(&micro_node->session, reliable_output, subscription_info->topic_id,
                                                  micro_node->participant_id, topic_xml, MR_REPLACE);
 
-                subscription_info->datareader_id = mr_object_id(0x01, MR_DATAREADER_ID);
+                subscription_info->datareader_id = mr_object_id(0x05, MR_DATAREADER_ID);
                 const char* datareader_xml =
                     "<profiles><subscriber "
                     "profile_name=\"default_xrce_subscriber_profile\"><topic><kind>NO_KEY</kind><name>Int32MsgPubSubTopic</"
