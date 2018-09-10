@@ -485,7 +485,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     // Check if sesion is null 
     if (session == NULL)
     {
-        return RMW_RET_ERROR;
+        return RMW_RET_OK;
     }
 
 
