@@ -56,7 +56,7 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
     }
 
     // get buffer size
-    CustomSubscription* subscription       = ((CustomSubscription*)subscription_item->data);
+    CustomSubscription* subscription       = (CustomSubscription*)subscription_item->data;
     subscription->TmpRawBuffer.RawDataSize = micro_buffer_remaining(serialization);
     if (subscription->TmpRawBuffer.RawDataSize == 0)
     {
@@ -68,17 +68,20 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
                          subscription->TmpRawBuffer.RawDataSize;
 
     // check if there is enogh space at the end of the tmp raw buffer
-    if ((&(subscription->TmpRawBuffer.MemHead[sizeof(subscription->TmpRawBuffer.MemHead)]) -
-         subscription->TmpRawBuffer.Write) < NeededSpace)
+    if (subscription->TmpRawBuffer.Write <=
+            &subscription->TmpRawBuffer.MemHead[sizeof(subscription->TmpRawBuffer.MemHead)] &&
+        (size_t)((&subscription->TmpRawBuffer.MemHead[sizeof(subscription->TmpRawBuffer.MemHead)] -
+                  subscription->TmpRawBuffer.Write)) < NeededSpace)
     {
 
         // check if there is enogh space at the begining of the tmp raw buffer
-        if ((subscription->TmpRawBuffer.Read - subscription->TmpRawBuffer.MemHead) < NeededSpace)
-        {
-            // not enough space to store the data
-            RMW_SET_ERROR_MSG("Incomming data lost due to not enough storage memory");
-            return;
-        }
+        if ((subscription->TmpRawBuffer.MemHead <= subscription->TmpRawBuffer.Read) &&
+            (size_t)(subscription->TmpRawBuffer.Read - subscription->TmpRawBuffer.MemHead) < NeededSpace)
+            {
+                // not enough space to store the data
+                RMW_SET_ERROR_MSG("Incomming data lost due to not enough storage memory");
+                return;
+            }
 
         // Move tail pointer to the bigining and relocate tail
         subscription->TmpRawBuffer.MemTail = subscription->TmpRawBuffer.Write;
