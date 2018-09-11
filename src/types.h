@@ -41,7 +41,7 @@ typedef struct CustomSubscription
         uint8_t * write;
         uint8_t * read;
         size_t raw_data_size; /// \Note Used to keep track of the DataSize type
-    } TmpRawBuffer;
+    } tmp_raw_buffer;
 } CustomSubscription;
 
 typedef struct CustomPublisher

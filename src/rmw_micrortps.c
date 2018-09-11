@@ -206,16 +206,16 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
 
     // Check reading zone
     Endianness endianness;
-    if (custom_subscription->TmpRawBuffer.read == custom_subscription->TmpRawBuffer.write)
+    if (custom_subscription->tmp_raw_buffer.read == custom_subscription->tmp_raw_buffer.write)
     {
         RMW_SET_ERROR_MSG("Nothing to be read from temporal raw buffer");
         return RMW_RET_ERROR;
     }
-    if ((custom_subscription->TmpRawBuffer.read + sizeof(endianness) + sizeof(custom_subscription->TmpRawBuffer.raw_data_size)) > custom_subscription->TmpRawBuffer.write)
+    if ((custom_subscription->tmp_raw_buffer.read + sizeof(endianness) + sizeof(custom_subscription->tmp_raw_buffer.raw_data_size)) > custom_subscription->tmp_raw_buffer.write)
     {
-        custom_subscription->TmpRawBuffer.read = custom_subscription->TmpRawBuffer.mem_head;
-        custom_subscription->TmpRawBuffer.write = custom_subscription->TmpRawBuffer.mem_head;
-        custom_subscription->TmpRawBuffer.mem_tail = &custom_subscription->TmpRawBuffer.mem_head[sizeof(custom_subscription->TmpRawBuffer.mem_head)];
+        custom_subscription->tmp_raw_buffer.read = custom_subscription->tmp_raw_buffer.mem_head;
+        custom_subscription->tmp_raw_buffer.write = custom_subscription->tmp_raw_buffer.mem_head;
+        custom_subscription->tmp_raw_buffer.mem_tail = &custom_subscription->tmp_raw_buffer.mem_head[sizeof(custom_subscription->tmp_raw_buffer.mem_head)];
 
         RMW_SET_ERROR_MSG("Error in raw buffer. Temporal raw buffer will be restarted");
         return RMW_RET_ERROR;
@@ -223,35 +223,35 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
 
 
     // Extract raw message from temporal buffer
-    memcpy(&endianness, custom_subscription->TmpRawBuffer.read, sizeof(endianness));
-    custom_subscription->TmpRawBuffer.read += sizeof(endianness);
+    memcpy(&endianness, custom_subscription->tmp_raw_buffer.read, sizeof(endianness));
+    custom_subscription->tmp_raw_buffer.read += sizeof(endianness);
 
-    memcpy(&custom_subscription->TmpRawBuffer.raw_data_size, custom_subscription->TmpRawBuffer.read, sizeof(custom_subscription->TmpRawBuffer.raw_data_size));
-    custom_subscription->TmpRawBuffer.read += sizeof(custom_subscription->TmpRawBuffer.raw_data_size);
+    memcpy(&custom_subscription->tmp_raw_buffer.raw_data_size, custom_subscription->tmp_raw_buffer.read, sizeof(custom_subscription->tmp_raw_buffer.raw_data_size));
+    custom_subscription->tmp_raw_buffer.read += sizeof(custom_subscription->tmp_raw_buffer.raw_data_size);
 
-    if ((custom_subscription->TmpRawBuffer.read + custom_subscription->TmpRawBuffer.raw_data_size) > custom_subscription->TmpRawBuffer.write)
+    if ((custom_subscription->tmp_raw_buffer.read + custom_subscription->tmp_raw_buffer.raw_data_size) > custom_subscription->tmp_raw_buffer.write)
     {
-        custom_subscription->TmpRawBuffer.read = custom_subscription->TmpRawBuffer.mem_head;
-        custom_subscription->TmpRawBuffer.write = custom_subscription->TmpRawBuffer.mem_head;
-        custom_subscription->TmpRawBuffer.mem_tail = &custom_subscription->TmpRawBuffer.mem_head[sizeof(custom_subscription->TmpRawBuffer.mem_head)];
+        custom_subscription->tmp_raw_buffer.read = custom_subscription->tmp_raw_buffer.mem_head;
+        custom_subscription->tmp_raw_buffer.write = custom_subscription->tmp_raw_buffer.mem_head;
+        custom_subscription->tmp_raw_buffer.mem_tail = &custom_subscription->tmp_raw_buffer.mem_head[sizeof(custom_subscription->tmp_raw_buffer.mem_head)];
 
         RMW_SET_ERROR_MSG("Error in raw buffer. Temporal raw buffer will be restarted");
         return RMW_RET_ERROR;
     }
 
     struct MicroBuffer serialization;    
-    init_micro_buffer(&serialization, custom_subscription->TmpRawBuffer.read , custom_subscription->TmpRawBuffer.raw_data_size);
+    init_micro_buffer(&serialization, custom_subscription->tmp_raw_buffer.read , custom_subscription->tmp_raw_buffer.raw_data_size);
     serialization.endianness = endianness;
 
-    custom_subscription->TmpRawBuffer.read += custom_subscription->TmpRawBuffer.raw_data_size;
+    custom_subscription->tmp_raw_buffer.read += custom_subscription->tmp_raw_buffer.raw_data_size;
 
 
     // Check if there are more data
-    if (custom_subscription->TmpRawBuffer.read == custom_subscription->TmpRawBuffer.write)
+    if (custom_subscription->tmp_raw_buffer.read == custom_subscription->tmp_raw_buffer.write)
     {
-        custom_subscription->TmpRawBuffer.read = custom_subscription->TmpRawBuffer.mem_head;
-        custom_subscription->TmpRawBuffer.write = custom_subscription->TmpRawBuffer.mem_head;
-        custom_subscription->TmpRawBuffer.mem_tail = &custom_subscription->TmpRawBuffer.mem_head[sizeof(custom_subscription->TmpRawBuffer.mem_head)];
+        custom_subscription->tmp_raw_buffer.read = custom_subscription->tmp_raw_buffer.mem_head;
+        custom_subscription->tmp_raw_buffer.write = custom_subscription->tmp_raw_buffer.mem_head;
+        custom_subscription->tmp_raw_buffer.mem_tail = &custom_subscription->tmp_raw_buffer.mem_head[sizeof(custom_subscription->tmp_raw_buffer.mem_head)];
     }
 
 
@@ -510,7 +510,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
         {
             // Check if there are any data
             CustomSubscription * custom_subscription = (CustomSubscription *)(subscriptions->subscribers[i]);
-            if (custom_subscription->TmpRawBuffer.write == custom_subscription->TmpRawBuffer.read)
+            if (custom_subscription->tmp_raw_buffer.write == custom_subscription->tmp_raw_buffer.read)
             {
                 subscriptions->subscribers[i] = NULL;
             }

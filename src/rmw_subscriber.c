@@ -54,9 +54,9 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
             subscription_info->session                                    = &micro_node->session;
             subscription_info->owner_node                                 = micro_node;
 
-            subscription_info->TmpRawBuffer.write = subscription_info->TmpRawBuffer.mem_head;
-            subscription_info->TmpRawBuffer.read = subscription_info->TmpRawBuffer.mem_head;
-            subscription_info->TmpRawBuffer.mem_tail = &subscription_info->TmpRawBuffer.mem_head[sizeof(subscription_info->TmpRawBuffer.mem_head)];
+            subscription_info->tmp_raw_buffer.write = subscription_info->tmp_raw_buffer.mem_head;
+            subscription_info->tmp_raw_buffer.read = subscription_info->tmp_raw_buffer.mem_head;
+            subscription_info->tmp_raw_buffer.mem_tail = &subscription_info->tmp_raw_buffer.mem_head[sizeof(subscription_info->tmp_raw_buffer.mem_head)];
 
             if (sizeof(mrObjectId) > RMW_GID_STORAGE_SIZE)
             {

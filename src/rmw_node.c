@@ -58,22 +58,22 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
     }
 
     // get buffer size
-    custom_subscription->TmpRawBuffer.raw_data_size = micro_buffer_remaining(serialization);
-    if (custom_subscription->TmpRawBuffer.raw_data_size == 0)
+    custom_subscription->tmp_raw_buffer.raw_data_size = micro_buffer_remaining(serialization);
+    if (custom_subscription->tmp_raw_buffer.raw_data_size == 0)
     {
         return;
     }
 
     // get needed bytes space
-    int64_t needed_space = sizeof(serialization->endianness) + sizeof(custom_subscription->TmpRawBuffer.raw_data_size) + custom_subscription->TmpRawBuffer.raw_data_size;
+    int64_t needed_space = sizeof(serialization->endianness) + sizeof(custom_subscription->tmp_raw_buffer.raw_data_size) + custom_subscription->tmp_raw_buffer.raw_data_size;
 
     // check if there is enogh space at the end of the tmp raw buffer
-    if ((&(custom_subscription->TmpRawBuffer.mem_head[sizeof(custom_subscription->TmpRawBuffer.mem_head)]) -
-         custom_subscription->TmpRawBuffer.write) < needed_space)
+    if ((&(custom_subscription->tmp_raw_buffer.mem_head[sizeof(custom_subscription->tmp_raw_buffer.mem_head)]) -
+         custom_subscription->tmp_raw_buffer.write) < needed_space)
     {
 
         // check if there is enogh space at the begining of the tmp raw buffer
-        if ((custom_subscription->TmpRawBuffer.read - custom_subscription->TmpRawBuffer.mem_head) < needed_space)
+        if ((custom_subscription->tmp_raw_buffer.read - custom_subscription->tmp_raw_buffer.mem_head) < needed_space)
         {
             // not enough space to store the data
             RMW_SET_ERROR_MSG("Incomming data lost due to not enough storage memory");
@@ -81,20 +81,20 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
         }
 
         // Move tail pointer to the bigining and relocate tail
-        custom_subscription->TmpRawBuffer.mem_tail = custom_subscription->TmpRawBuffer.write;
-        custom_subscription->TmpRawBuffer.write   = custom_subscription->TmpRawBuffer.mem_head;
+        custom_subscription->tmp_raw_buffer.mem_tail = custom_subscription->tmp_raw_buffer.write;
+        custom_subscription->tmp_raw_buffer.write   = custom_subscription->tmp_raw_buffer.mem_head;
     }
 
-    // Save microbuffer for a future processing (Endianness + custom_subscription->TmpRawBuffer.raw_data_size + MicroBufferData)
-    memcpy(custom_subscription->TmpRawBuffer.write, &serialization->endianness, sizeof(serialization->endianness));
-    custom_subscription->TmpRawBuffer.write += sizeof(serialization->endianness);
+    // Save microbuffer for a future processing (Endianness + custom_subscription->tmp_raw_buffer.raw_data_size + MicroBufferData)
+    memcpy(custom_subscription->tmp_raw_buffer.write, &serialization->endianness, sizeof(serialization->endianness));
+    custom_subscription->tmp_raw_buffer.write += sizeof(serialization->endianness);
 
-    memcpy(custom_subscription->TmpRawBuffer.write, &custom_subscription->TmpRawBuffer.raw_data_size,
-           sizeof(custom_subscription->TmpRawBuffer.raw_data_size));
-    custom_subscription->TmpRawBuffer.write += sizeof(custom_subscription->TmpRawBuffer.raw_data_size);
+    memcpy(custom_subscription->tmp_raw_buffer.write, &custom_subscription->tmp_raw_buffer.raw_data_size,
+           sizeof(custom_subscription->tmp_raw_buffer.raw_data_size));
+    custom_subscription->tmp_raw_buffer.write += sizeof(custom_subscription->tmp_raw_buffer.raw_data_size);
 
-    memcpy(custom_subscription->TmpRawBuffer.write, serialization->iterator, custom_subscription->TmpRawBuffer.raw_data_size);
-    custom_subscription->TmpRawBuffer.write += custom_subscription->TmpRawBuffer.raw_data_size;
+    memcpy(custom_subscription->tmp_raw_buffer.write, serialization->iterator, custom_subscription->tmp_raw_buffer.raw_data_size);
+    custom_subscription->tmp_raw_buffer.write += custom_subscription->tmp_raw_buffer.raw_data_size;
 
     return;
 }
