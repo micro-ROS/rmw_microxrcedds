@@ -167,8 +167,6 @@ rmw_subscription_t* rmw_create_subscription(const rmw_node_t* node, const rosidl
         rmw_subscription = create_subscriber(node, type_support, topic_name, qos_policies, ignore_local_publications);
     }
 
-    
-
 
     return rmw_subscription;
 }
@@ -208,16 +206,16 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
 
     // Check reading zone
     Endianness endianness;
-    if (custom_subscription->TmpRawBuffer.Read == custom_subscription->TmpRawBuffer.Write)
+    if (custom_subscription->TmpRawBuffer.read == custom_subscription->TmpRawBuffer.write)
     {
         RMW_SET_ERROR_MSG("Nothing to be read from temporal raw buffer");
         return RMW_RET_ERROR;
     }
-    if ((custom_subscription->TmpRawBuffer.Read + sizeof(endianness) + sizeof(custom_subscription->TmpRawBuffer.RawDataSize)) > custom_subscription->TmpRawBuffer.Write)
+    if ((custom_subscription->TmpRawBuffer.read + sizeof(endianness) + sizeof(custom_subscription->TmpRawBuffer.raw_data_size)) > custom_subscription->TmpRawBuffer.write)
     {
-        custom_subscription->TmpRawBuffer.Read = custom_subscription->TmpRawBuffer.MemHead;
-        custom_subscription->TmpRawBuffer.Write = custom_subscription->TmpRawBuffer.MemHead;
-        custom_subscription->TmpRawBuffer.MemTail = &custom_subscription->TmpRawBuffer.MemHead[sizeof(custom_subscription->TmpRawBuffer.MemHead)];
+        custom_subscription->TmpRawBuffer.read = custom_subscription->TmpRawBuffer.mem_head;
+        custom_subscription->TmpRawBuffer.write = custom_subscription->TmpRawBuffer.mem_head;
+        custom_subscription->TmpRawBuffer.mem_tail = &custom_subscription->TmpRawBuffer.mem_head[sizeof(custom_subscription->TmpRawBuffer.mem_head)];
 
         RMW_SET_ERROR_MSG("Error in raw buffer. Temporal raw buffer will be restarted");
         return RMW_RET_ERROR;
@@ -225,36 +223,35 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
 
 
     // Extract raw message from temporal buffer
-    memcpy(&endianness, custom_subscription->TmpRawBuffer.Read, sizeof(endianness));
-    custom_subscription->TmpRawBuffer.Read += sizeof(endianness);
+    memcpy(&endianness, custom_subscription->TmpRawBuffer.read, sizeof(endianness));
+    custom_subscription->TmpRawBuffer.read += sizeof(endianness);
 
-    memcpy(&custom_subscription->TmpRawBuffer.RawDataSize, custom_subscription->TmpRawBuffer.Read, sizeof(custom_subscription->TmpRawBuffer.RawDataSize));
-    custom_subscription->TmpRawBuffer.Read += sizeof(custom_subscription->TmpRawBuffer.RawDataSize);
+    memcpy(&custom_subscription->TmpRawBuffer.raw_data_size, custom_subscription->TmpRawBuffer.read, sizeof(custom_subscription->TmpRawBuffer.raw_data_size));
+    custom_subscription->TmpRawBuffer.read += sizeof(custom_subscription->TmpRawBuffer.raw_data_size);
 
-    if ((custom_subscription->TmpRawBuffer.Read + custom_subscription->TmpRawBuffer.RawDataSize) > custom_subscription->TmpRawBuffer.Write)
+    if ((custom_subscription->TmpRawBuffer.read + custom_subscription->TmpRawBuffer.raw_data_size) > custom_subscription->TmpRawBuffer.write)
     {
-        custom_subscription->TmpRawBuffer.Read = custom_subscription->TmpRawBuffer.MemHead;
-        custom_subscription->TmpRawBuffer.Write = custom_subscription->TmpRawBuffer.MemHead;
-        custom_subscription->TmpRawBuffer.MemTail = &custom_subscription->TmpRawBuffer.MemHead[sizeof(custom_subscription->TmpRawBuffer.MemHead)];
+        custom_subscription->TmpRawBuffer.read = custom_subscription->TmpRawBuffer.mem_head;
+        custom_subscription->TmpRawBuffer.write = custom_subscription->TmpRawBuffer.mem_head;
+        custom_subscription->TmpRawBuffer.mem_tail = &custom_subscription->TmpRawBuffer.mem_head[sizeof(custom_subscription->TmpRawBuffer.mem_head)];
 
         RMW_SET_ERROR_MSG("Error in raw buffer. Temporal raw buffer will be restarted");
         return RMW_RET_ERROR;
     }
 
     struct MicroBuffer serialization;    
-    init_micro_buffer(&serialization, custom_subscription->TmpRawBuffer.Read , custom_subscription->TmpRawBuffer.RawDataSize);
+    init_micro_buffer(&serialization, custom_subscription->TmpRawBuffer.read , custom_subscription->TmpRawBuffer.raw_data_size);
     serialization.endianness = endianness;
 
-    custom_subscription->TmpRawBuffer.Read += custom_subscription->TmpRawBuffer.RawDataSize;
+    custom_subscription->TmpRawBuffer.read += custom_subscription->TmpRawBuffer.raw_data_size;
 
 
     // Check if there are more data
-    if (custom_subscription->TmpRawBuffer.Read == custom_subscription->TmpRawBuffer.Write)
+    if (custom_subscription->TmpRawBuffer.read == custom_subscription->TmpRawBuffer.write)
     {
-        custom_subscription->owner_node->data_available = false;
-        custom_subscription->TmpRawBuffer.Read = custom_subscription->TmpRawBuffer.MemHead;
-        custom_subscription->TmpRawBuffer.Write = custom_subscription->TmpRawBuffer.MemHead;
-        custom_subscription->TmpRawBuffer.MemTail = &custom_subscription->TmpRawBuffer.MemHead[sizeof(custom_subscription->TmpRawBuffer.MemHead)];
+        custom_subscription->TmpRawBuffer.read = custom_subscription->TmpRawBuffer.mem_head;
+        custom_subscription->TmpRawBuffer.write = custom_subscription->TmpRawBuffer.mem_head;
+        custom_subscription->TmpRawBuffer.mem_tail = &custom_subscription->TmpRawBuffer.mem_head[sizeof(custom_subscription->TmpRawBuffer.mem_head)];
     }
 
 
@@ -364,63 +361,19 @@ rmw_wait_set_t* rmw_create_wait_set(size_t max_conditions)
     EPROS_PRINT_TRACE()
 
     // wait set is not used
-    static rmw_wait_set_t NotUsed;
+    static rmw_wait_set_t not_used;
 
-    /*
-    (void)max_conditions;
-
-    // Check if available
-    if (RMW_MICRORTPS_CHECK_AVAILABLE(INTERNAL_WAIT_SET))
-    {
-        RMW_SET_ERROR_MSG("Not available memory for Retured_wait_set");
-        return NULL;
-    }
-
-    // Extract from internal memory
-    Internal_wait_set_t* Retured_wait_set;
-    RMW_MICRORTPS_EXTRACT_FROM_INTERNAL_MEM(INTERNAL_WAIT_SET, Retured_wait_set);
-
-    // Configure
-    Retured_wait_set->wait_set.data                      = (void*)Retured_wait_set;
-    Retured_wait_set->wait_set.guard_conditions          = NULL;
-    Retured_wait_set->wait_set.implementation_identifier = rmw_get_implementation_identifier();
-    */    
-
+   
     // Return vaule
     EPROS_PRINT_TRACE()
-    return &NotUsed;
+    return &not_used;
 }
 
 rmw_ret_t rmw_destroy_wait_set(rmw_wait_set_t* wait_set)
 {
     EPROS_PRINT_TRACE()
 
-    /*
-    // Check if null
-    if (wait_set == NULL)
-    {
-        RMW_SET_ERROR_MSG("wait_set pointer is null");
-        return RMW_RET_ERROR;
-    }
-    if (wait_set->data == NULL)
-    {
-        RMW_SET_ERROR_MSG("wait_set->data is null");
-        return RMW_RET_ERROR;
-    }
-
-    // Check implementation
-    if (wait_set->implementation_identifier != rmw_get_implementation_identifier())
-    {
-        RMW_SET_ERROR_MSG("Wrong rmw implementation");
-        return RMW_RET_ERROR;
-    }
-
-    // Extract
-    Internal_wait_set_t* Internal_wait_set = wait_set->data;
-
-    // Release
-    RMW_MICRORTPS_RETURN_TO_INTERNAL_MEM(INTERNAL_WAIT_SET, Internal_wait_set)
-    */
+    // Nothing to be done due to rmw_wait_set_t is not used
     
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
@@ -436,7 +389,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     (void)wait_set;
   
 
-    // go throw all subscriptions
+    // Go throw all subscriptions
     CustomNode* custom_node = NULL;
     size_t subscriber_requests_count = 0;
     if ((subscriptions != NULL) && (subscriptions->subscriber_count > 0))
@@ -455,7 +408,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
         }
     }
 
-    // go throw all services
+    // Go throw all services
     /*
     else if ((services != NULL) && (services->service_count > 0))
     {
@@ -464,7 +417,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     }
     */
 
-    // go throw all clients
+    // Go throw all clients
     /*
     else if ((clients != NULL) && (clients->client_count > 0))
     {
@@ -557,7 +510,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
         {
             // Check if there are any data
             CustomSubscription * custom_subscription = (CustomSubscription *)(subscriptions->subscribers[i]);
-            if (custom_subscription->TmpRawBuffer.Write == custom_subscription->TmpRawBuffer.Read)
+            if (custom_subscription->TmpRawBuffer.write == custom_subscription->TmpRawBuffer.read)
             {
                 subscriptions->subscribers[i] = NULL;
             }

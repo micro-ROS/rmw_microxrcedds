@@ -57,7 +57,6 @@ void custompublisher_clear(CustomPublisher* publisher)
 {
     if (publisher)
     {
-        publisher->in_use = false;
         memset(&publisher->publisher_id, 0, sizeof(mrObjectId));
         memset(&publisher->datawriter_id, 0, sizeof(mrObjectId));
         memset(&publisher->topic_id, 0, sizeof(mrObjectId));
@@ -97,7 +96,6 @@ void customsubscription_clear(CustomSubscription* subscription)
 {
     if (subscription)
     {
-        subscription->in_use = false;
         memset(&subscription->subscriber_id, 0, sizeof(mrObjectId));
         memset(&subscription->datareader_id, 0, sizeof(mrObjectId));
         memset(&subscription->topic_id, 0, sizeof(mrObjectId));

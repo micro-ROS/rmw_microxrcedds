@@ -58,22 +58,22 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
     }
 
     // get buffer size
-    custom_subscription->TmpRawBuffer.RawDataSize = micro_buffer_remaining(serialization);
-    if (custom_subscription->TmpRawBuffer.RawDataSize == 0)
+    custom_subscription->TmpRawBuffer.raw_data_size = micro_buffer_remaining(serialization);
+    if (custom_subscription->TmpRawBuffer.raw_data_size == 0)
     {
         return;
     }
 
     // get needed bytes space
-    size_t NeededSpace = sizeof(serialization->endianness) + sizeof(custom_subscription->TmpRawBuffer.RawDataSize) + custom_subscription->TmpRawBuffer.RawDataSize;
+    int64_t needed_space = sizeof(serialization->endianness) + sizeof(custom_subscription->TmpRawBuffer.raw_data_size) + custom_subscription->TmpRawBuffer.raw_data_size;
 
     // check if there is enogh space at the end of the tmp raw buffer
-    if ((&(custom_subscription->TmpRawBuffer.MemHead[sizeof(custom_subscription->TmpRawBuffer.MemHead)]) -
-         custom_subscription->TmpRawBuffer.Write) < NeededSpace)
+    if ((&(custom_subscription->TmpRawBuffer.mem_head[sizeof(custom_subscription->TmpRawBuffer.mem_head)]) -
+         custom_subscription->TmpRawBuffer.write) < needed_space)
     {
 
         // check if there is enogh space at the begining of the tmp raw buffer
-        if ((custom_subscription->TmpRawBuffer.Read - custom_subscription->TmpRawBuffer.MemHead) < NeededSpace)
+        if ((custom_subscription->TmpRawBuffer.read - custom_subscription->TmpRawBuffer.mem_head) < needed_space)
         {
             // not enough space to store the data
             RMW_SET_ERROR_MSG("Incomming data lost due to not enough storage memory");
@@ -81,24 +81,20 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
         }
 
         // Move tail pointer to the bigining and relocate tail
-        custom_subscription->TmpRawBuffer.MemTail = custom_subscription->TmpRawBuffer.Write;
-        custom_subscription->TmpRawBuffer.Write   = custom_subscription->TmpRawBuffer.MemHead;
+        custom_subscription->TmpRawBuffer.mem_tail = custom_subscription->TmpRawBuffer.write;
+        custom_subscription->TmpRawBuffer.write   = custom_subscription->TmpRawBuffer.mem_head;
     }
 
-    // Save microbuffer for a future processing (Endianness + custom_subscription->TmpRawBuffer.RawDataSize + MicroBufferData)
-    memcpy(custom_subscription->TmpRawBuffer.Write, &serialization->endianness, sizeof(serialization->endianness));
-    custom_subscription->TmpRawBuffer.Write += sizeof(serialization->endianness);
+    // Save microbuffer for a future processing (Endianness + custom_subscription->TmpRawBuffer.raw_data_size + MicroBufferData)
+    memcpy(custom_subscription->TmpRawBuffer.write, &serialization->endianness, sizeof(serialization->endianness));
+    custom_subscription->TmpRawBuffer.write += sizeof(serialization->endianness);
 
-    memcpy(custom_subscription->TmpRawBuffer.Write, &custom_subscription->TmpRawBuffer.RawDataSize,
-           sizeof(custom_subscription->TmpRawBuffer.RawDataSize));
-    custom_subscription->TmpRawBuffer.Write += sizeof(custom_subscription->TmpRawBuffer.RawDataSize);
+    memcpy(custom_subscription->TmpRawBuffer.write, &custom_subscription->TmpRawBuffer.raw_data_size,
+           sizeof(custom_subscription->TmpRawBuffer.raw_data_size));
+    custom_subscription->TmpRawBuffer.write += sizeof(custom_subscription->TmpRawBuffer.raw_data_size);
 
-    memcpy(custom_subscription->TmpRawBuffer.Write, serialization->iterator, custom_subscription->TmpRawBuffer.RawDataSize);
-    custom_subscription->TmpRawBuffer.Write += custom_subscription->TmpRawBuffer.RawDataSize;
-
-
-    // Set data available
-    node->data_available = true;
+    memcpy(custom_subscription->TmpRawBuffer.write, serialization->iterator, custom_subscription->TmpRawBuffer.raw_data_size);
+    custom_subscription->TmpRawBuffer.write += custom_subscription->TmpRawBuffer.raw_data_size;
 
     return;
 }
@@ -116,7 +112,6 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
 {
     static const char* ip       = "127.0.0.1";
     static const uint16_t port  = 8881;
-    //static const uint32_t key   = 0xAABBCCDD;
     uint32_t key   = rand();
     static const size_t history = 8;
 
@@ -184,8 +179,9 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
         return NULL;
     }
 
+
     // Create the Node participant. At this point a Node correspond with a Session with one participant.
-    node_info->participant_id   = mr_object_id(1, MR_PARTICIPANT_ID);
+    node_info->participant_id   = mr_object_id(node_info->id_gen++, MR_PARTICIPANT_ID);
     const char* participant_ref = "default participant";
     uint16_t participant_req    = mr_write_create_participant_ref(
         &node_info->session, reliable_output, node_info->participant_id, domain_id, participant_ref, MR_REPLACE);
@@ -203,8 +199,6 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
 
     // TODO create utils methods to handle publishers array.
     customnode_clear(node_info);
-
-    node_info->data_available = false;
 
     return node_handle;
 }
