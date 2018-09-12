@@ -24,7 +24,6 @@
 
 typedef struct CustomSubscription
 {
-    bool in_use;
     mrObjectId subscriber_id;
     mrObjectId datareader_id;
     mrObjectId topic_id;
@@ -32,21 +31,21 @@ typedef struct CustomSubscription
     const char* typesupport_identifier;
     struct Item mem;
     mrSession* session;
+    struct CustomNode * owner_node;
     const message_type_support_callbacks_t* type_support;
 
     struct 
     {
-        uint8_t MemHead[RMW_MICRORTPS_SUBSCRIBER_RAW_BUFFER_SIZE];
-        uint8_t * MemTail; /// \Note MemTail always points to the last non readable array data
-        uint8_t * Write;
-        uint8_t * Read;
-        size_t RawDataSize; /// \Note Used to keep track of the DataSize type
-    } TmpRawBuffer;
+        uint8_t mem_head[RMW_MICRORTPS_SUBSCRIBER_RAW_BUFFER_SIZE];
+        uint8_t * mem_tail; /// \Note MemTail always points to the last non readable array data
+        uint8_t * write;
+        uint8_t * read;
+        size_t raw_data_size; /// \Note Used to keep track of the DataSize type
+    } tmp_raw_buffer;
 } CustomSubscription;
 
 typedef struct CustomPublisher
 {
-    bool in_use;
     mrObjectId publisher_id;
     mrObjectId datawriter_id;
     mrObjectId topic_id;
@@ -68,6 +67,11 @@ typedef struct CustomNode
 
     CustomPublisher publisher_info[MAX_PUBLISHERS_X_NODE];
     CustomSubscription subscription_info[MAX_SUBSCRIPTIONS_X_NODE];
+
+    uint8_t read_subscriptions_status[MAX_SUBSCRIPTIONS_X_NODE];
+    uint16_t read_subscriptions_requests[MAX_SUBSCRIPTIONS_X_NODE];
+
+    uint16_t id_gen;
 
 } CustomNode;
 

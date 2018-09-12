@@ -6,6 +6,7 @@
 #include "rmw_publisher.h"
 #include "rmw_subscriber.h"
 #include "utils.h"
+#include "types.h"
 
 #include "rmw/allocators.h"
 #include "rmw/error_handling.h"
@@ -14,6 +15,7 @@
 #include <micrortps/client/client.h>
 
 #include <limits.h>
+#include <time.h>
 
 // Declare internal memory structs
 //RMW_MICRORTPS_DECLARE_INTENAL_MEMORY(Internal_wait_set_t, INTERNAL_WAIT_SET)
@@ -28,8 +30,9 @@ rmw_ret_t rmw_init()
 {
     EPROS_PRINT_TRACE()
 
-    // initialize internal memories
-    //RMW_MICRORTPS_INIT_INTERNAL_MEM(INTERNAL_WAIT_SET);
+    // Intialize random number generator
+    time_t t;
+    srand((unsigned) time(&t));
 
     init_rmw_node();
 
@@ -145,7 +148,7 @@ rmw_subscription_t* rmw_create_subscription(const rmw_node_t* node, const rosidl
     {
         RMW_SET_ERROR_MSG("node handle not from this implementation");
     }
-    else if (strcmp(type_support->typesupport_identifier, rmw_get_implementation_identifier()) != 0)
+    else if (strcmp(type_support->typesupport_identifier, rosidl_typesupport_micrortps_c__identifier) != 0)
     {
         RMW_SET_ERROR_MSG("TypeSupport handle not from this implementation");
     }
@@ -164,30 +167,13 @@ rmw_subscription_t* rmw_create_subscription(const rmw_node_t* node, const rosidl
         rmw_subscription = create_subscriber(node, type_support, topic_name, qos_policies, ignore_local_publications);
     }
 
-    
-
 
     return rmw_subscription;
 }
 
 rmw_ret_t rmw_take(const rmw_subscription_t* subscription, void* ros_message, bool* taken)
 {
-    EPROS_PRINT_TRACE()
-
-    // Extract subscriber info
-
-
-
-    // Extract serialiced message
-
-
-
-    // Desserialice using typesupport
-
-
-
-    EPROS_PRINT_TRACE()
-    return RMW_RET_OK;
+    return rmw_take_with_info(subscription, ros_message, taken, NULL);
 }
 
 rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_message, bool* taken,
@@ -220,46 +206,53 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
 
     // Check reading zone
     Endianness endianness;
-    if (custom_subscription->TmpRawBuffer.Read == custom_subscription->TmpRawBuffer.Write)
+    if (custom_subscription->tmp_raw_buffer.read == custom_subscription->tmp_raw_buffer.write)
     {
         RMW_SET_ERROR_MSG("Nothing to be read from temporal raw buffer");
         return RMW_RET_ERROR;
     }
-    if ((custom_subscription->TmpRawBuffer.Read + sizeof(endianness) + sizeof(custom_subscription->TmpRawBuffer.RawDataSize)) >= custom_subscription->TmpRawBuffer.Write)
+    if ((custom_subscription->tmp_raw_buffer.read + sizeof(endianness) + sizeof(custom_subscription->tmp_raw_buffer.raw_data_size)) > custom_subscription->tmp_raw_buffer.write)
     {
+        custom_subscription->tmp_raw_buffer.read = custom_subscription->tmp_raw_buffer.mem_head;
+        custom_subscription->tmp_raw_buffer.write = custom_subscription->tmp_raw_buffer.mem_head;
+        custom_subscription->tmp_raw_buffer.mem_tail = &custom_subscription->tmp_raw_buffer.mem_head[sizeof(custom_subscription->tmp_raw_buffer.mem_head)];
+
         RMW_SET_ERROR_MSG("Error in raw buffer. Temporal raw buffer will be restarted");
-
-        custom_subscription->TmpRawBuffer.Read = custom_subscription->TmpRawBuffer.MemHead;
-        custom_subscription->TmpRawBuffer.Write = custom_subscription->TmpRawBuffer.MemHead;
-        custom_subscription->TmpRawBuffer.MemTail = &custom_subscription->TmpRawBuffer.MemHead[sizeof(custom_subscription->TmpRawBuffer.MemHead)];
-
         return RMW_RET_ERROR;
     }
 
 
     // Extract raw message from temporal buffer
-    memcpy(&endianness, custom_subscription->TmpRawBuffer.Read, sizeof(endianness));
-    custom_subscription->TmpRawBuffer.Read += sizeof(endianness);
+    memcpy(&endianness, custom_subscription->tmp_raw_buffer.read, sizeof(endianness));
+    custom_subscription->tmp_raw_buffer.read += sizeof(endianness);
 
-    memcpy(&custom_subscription->TmpRawBuffer.RawDataSize, custom_subscription->TmpRawBuffer.Read, sizeof(custom_subscription->TmpRawBuffer.RawDataSize));
-    custom_subscription->TmpRawBuffer.Read += sizeof(custom_subscription->TmpRawBuffer.RawDataSize);
+    memcpy(&custom_subscription->tmp_raw_buffer.raw_data_size, custom_subscription->tmp_raw_buffer.read, sizeof(custom_subscription->tmp_raw_buffer.raw_data_size));
+    custom_subscription->tmp_raw_buffer.read += sizeof(custom_subscription->tmp_raw_buffer.raw_data_size);
 
-    if ((custom_subscription->TmpRawBuffer.Read + custom_subscription->TmpRawBuffer.RawDataSize) > custom_subscription->TmpRawBuffer.Write)
+    if ((custom_subscription->tmp_raw_buffer.read + custom_subscription->tmp_raw_buffer.raw_data_size) > custom_subscription->tmp_raw_buffer.write)
     {
+        custom_subscription->tmp_raw_buffer.read = custom_subscription->tmp_raw_buffer.mem_head;
+        custom_subscription->tmp_raw_buffer.write = custom_subscription->tmp_raw_buffer.mem_head;
+        custom_subscription->tmp_raw_buffer.mem_tail = &custom_subscription->tmp_raw_buffer.mem_head[sizeof(custom_subscription->tmp_raw_buffer.mem_head)];
+
         RMW_SET_ERROR_MSG("Error in raw buffer. Temporal raw buffer will be restarted");
-
-        custom_subscription->TmpRawBuffer.Read = custom_subscription->TmpRawBuffer.MemHead;
-        custom_subscription->TmpRawBuffer.Write = custom_subscription->TmpRawBuffer.MemHead;
-        custom_subscription->TmpRawBuffer.MemTail = &custom_subscription->TmpRawBuffer.MemHead[sizeof(custom_subscription->TmpRawBuffer.MemHead)];
-
         return RMW_RET_ERROR;
     }
 
     struct MicroBuffer serialization;    
-    init_micro_buffer(&serialization, custom_subscription->TmpRawBuffer.Read , custom_subscription->TmpRawBuffer.RawDataSize);
+    init_micro_buffer(&serialization, custom_subscription->tmp_raw_buffer.read , custom_subscription->tmp_raw_buffer.raw_data_size);
     serialization.endianness = endianness;
 
-    custom_subscription->TmpRawBuffer.Read += sizeof(custom_subscription->TmpRawBuffer.RawDataSize);
+    custom_subscription->tmp_raw_buffer.read += custom_subscription->tmp_raw_buffer.raw_data_size;
+
+
+    // Check if there are more data
+    if (custom_subscription->tmp_raw_buffer.read == custom_subscription->tmp_raw_buffer.write)
+    {
+        custom_subscription->tmp_raw_buffer.read = custom_subscription->tmp_raw_buffer.mem_head;
+        custom_subscription->tmp_raw_buffer.write = custom_subscription->tmp_raw_buffer.mem_head;
+        custom_subscription->tmp_raw_buffer.mem_tail = &custom_subscription->tmp_raw_buffer.mem_head[sizeof(custom_subscription->tmp_raw_buffer.mem_head)];
+    }
 
 
     // Extract serialiced message using typesupport
@@ -270,6 +263,7 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
     }
     if (!OK)
     {
+        RMW_SET_ERROR_MSG("Typesupport desserialize error.");
         return RMW_RET_ERROR;
     }
 
@@ -365,62 +359,21 @@ rmw_ret_t rmw_trigger_guard_condition(const rmw_guard_condition_t* guard_conditi
 rmw_wait_set_t* rmw_create_wait_set(size_t max_conditions)
 {
     EPROS_PRINT_TRACE()
-    /*
-    (void)max_conditions;
 
-    // Check if available
-    if (RMW_MICRORTPS_CHECK_AVAILABLE(INTERNAL_WAIT_SET))
-    {
-        RMW_SET_ERROR_MSG("Not available memory for Retured_wait_set");
-        return NULL;
-    }
+    // wait set is not used
+    static rmw_wait_set_t not_used;
 
-    // Extract from internal memory
-    Internal_wait_set_t* Retured_wait_set;
-    RMW_MICRORTPS_EXTRACT_FROM_INTERNAL_MEM(INTERNAL_WAIT_SET, Retured_wait_set);
-
-    // Configure
-    Retured_wait_set->wait_set.data                      = (void*)Retured_wait_set;
-    Retured_wait_set->wait_set.guard_conditions          = NULL;
-    Retured_wait_set->wait_set.implementation_identifier = rmw_get_implementation_identifier();
-    */    
-
+   
     // Return vaule
     EPROS_PRINT_TRACE()
-    return NULL;
-    //return &Retured_wait_set->wait_set;
+    return &not_used;
 }
 
 rmw_ret_t rmw_destroy_wait_set(rmw_wait_set_t* wait_set)
 {
     EPROS_PRINT_TRACE()
 
-    /*
-    // Check if null
-    if (wait_set == NULL)
-    {
-        RMW_SET_ERROR_MSG("wait_set pointer is null");
-        return RMW_RET_ERROR;
-    }
-    if (wait_set->data == NULL)
-    {
-        RMW_SET_ERROR_MSG("wait_set->data is null");
-        return RMW_RET_ERROR;
-    }
-
-    // Check implementation
-    if (wait_set->implementation_identifier != rmw_get_implementation_identifier())
-    {
-        RMW_SET_ERROR_MSG("Wrong rmw implementation");
-        return RMW_RET_ERROR;
-    }
-
-    // Extract
-    Internal_wait_set_t* Internal_wait_set = wait_set->data;
-
-    // Release
-    RMW_MICRORTPS_RETURN_TO_INTERNAL_MEM(INTERNAL_WAIT_SET, Internal_wait_set)
-    */
+    // Nothing to be done due to rmw_wait_set_t is not used
     
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
@@ -436,8 +389,9 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     (void)wait_set;
   
 
-    // Search sesion 
-    mrSession* session = NULL;
+    // Go throw all subscriptions
+    CustomNode* custom_node = NULL;
+    size_t subscriber_requests_count = 0;
     if ((subscriptions != NULL) && (subscriptions->subscriber_count > 0))
     {
         // Extract first session pointer
@@ -445,11 +399,16 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
         {
             if (subscriptions->subscribers[0] != NULL)
             {
-                session = ((CustomSubscription *)subscriptions->subscribers[0])->session;
-                break;
+                CustomSubscription* custom_subscription = (CustomSubscription *)subscriptions->subscribers[0];
+                custom_node = custom_subscription->owner_node;
+
+                // Request all data
+                custom_node->read_subscriptions_requests[subscriber_requests_count++] =  mr_write_request_data(&custom_node->session, reliable_output, custom_subscription->datareader_id, reliable_input, NULL);
             }
         }
     }
+
+    // Go throw all services
     /*
     else if ((services != NULL) && (services->service_count > 0))
     {
@@ -457,6 +416,8 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
         //services->services[0];
     }
     */
+
+    // Go throw all clients
     /*
     else if ((clients != NULL) && (clients->client_count > 0))
     {
@@ -466,13 +427,36 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     */
 
 
-    // Check if sesion is null 
-    if (session == NULL)
+    // Check node pointer
+    if (custom_node == NULL)
     {
-        return RMW_RET_ERROR;
+        if (subscriptions != NULL) 
+        {
+            for (size_t i = 0; i < subscriptions->subscriber_count; ++i)
+            {
+                subscriptions->subscribers[i] = NULL;
+                
+            }
+        }
+        if (services != NULL) 
+        {
+            for (size_t i = 0; i < services->service_count; ++i) 
+            {
+                services->services[i] = NULL;
+            }
+        }
+        if (clients != NULL) 
+        {
+            for (size_t i = 0; i < clients->client_count; ++i) 
+            {
+                clients->clients[i] = NULL;
+            }
+        }
+
+
+        EPROS_PRINT_TRACE()
+        return RMW_RET_OK; 
     }
-
-
 
     // Check if timeout
     uint64_t Timeout;
@@ -510,33 +494,29 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     }
     else
     {
-        Timeout = 0;
+        Timeout = MR_TIMEOUT_INF;
     }
-  
-  
-    // read until no more data are available
-    if (mr_run_session_until_timeout(session, (int)Timeout))
-    {
-        // TODO Use timeout on while.
-        // Read until no more data is available
-        while (mr_run_session_until_timeout(session, 0)){}
-    }
-    else
-    {
-        return RMW_RET_TIMEOUT;
-    }
+
+
+    // read until status or timeout
+    mr_run_session_until_status(&custom_node->session, Timeout, custom_node->read_subscriptions_requests, custom_node->read_subscriptions_status, subscriber_requests_count);
 
 
     // Clean non-received
+    bool is_timeout = true;
     if (subscriptions != NULL) 
     {
         for (size_t i = 0; i < subscriptions->subscriber_count; ++i)
         {
             // Check if there are any data
             CustomSubscription * custom_subscription = (CustomSubscription *)(subscriptions->subscribers[i]);
-            if (custom_subscription->TmpRawBuffer.Write == custom_subscription->TmpRawBuffer.Read)
+            if (custom_subscription->tmp_raw_buffer.write == custom_subscription->tmp_raw_buffer.read)
             {
                 subscriptions->subscribers[i] = NULL;
+            }
+            else
+            {
+                is_timeout = false;
             }
         }
     }
@@ -544,7 +524,6 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     {
         for (size_t i = 0; i < services->service_count; ++i) 
         {
-            RMW_SET_ERROR_MSG("Services are not supported yet");
             services->services[i] = NULL;
         }
     }
@@ -552,13 +531,22 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     {
         for (size_t i = 0; i < clients->client_count; ++i) 
         {
-            RMW_SET_ERROR_MSG("Clients are not supported yet");
             clients->clients[i] = NULL;
         }
     }
 
+        
+    // Check if timeout
+    if (is_timeout)
+    {
+        EPROS_PRINT_TRACE()
+        return RMW_RET_TIMEOUT;
+    }
+    
+    
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
+    
 }
 
 rmw_ret_t rmw_get_node_names(const rmw_node_t* node, rcutils_string_array_t* node_names)
