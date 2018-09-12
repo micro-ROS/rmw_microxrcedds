@@ -18,7 +18,6 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                                   const char* topic_name, const rmw_qos_profile_t* qos_policies)
 {
     bool success = false;
-    (void)qos_policies;
 
     rmw_publisher_t* rmw_publisher           = (rmw_publisher_t*)rmw_allocate(sizeof(rmw_publisher_t));
     rmw_publisher->data                      = NULL;
@@ -40,13 +39,12 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
         else
         {
             // TODO micro_rtps_id is duplicated in publisher_id and in publisher_gid.data
-            CustomPublisher* publisher_info                         = (CustomPublisher*)memory_node->data;
-            publisher_info->publisher_id                            = mr_object_id(micro_node->id_gen++, MR_PUBLISHER_ID);
-            publisher_info->typesupport_identifier                  = type_support->typesupport_identifier;
+            CustomPublisher* publisher_info = (CustomPublisher*)memory_node->data;
+            publisher_info->publisher_id    = mr_object_id(micro_node->id_gen++, MR_PUBLISHER_ID);
             publisher_info->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
             publisher_info->session                                 = &micro_node->session;
             publisher_info->type_support =
-                get_message_typesupport_handle(type_support, rosidl_typesupport_micrortps_c__identifier);
+                get_message_typesupport_handle(type_support, rosidl_typesupport_micrortps_c__identifier)->data;
             if (!publisher_info->type_support)
             {
                 RMW_SET_ERROR_MSG("type support not from this implementation");
@@ -60,28 +58,44 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 memset(publisher_info->publisher_gid.data, 0, RMW_GID_STORAGE_SIZE);
                 memcpy(publisher_info->publisher_gid.data, &publisher_info->publisher_id, sizeof(mrObjectId));
 
-                const char* publisher_xml = "<publisher name=\"MyPublisher\">";
-                uint16_t publisher_req    = mr_write_configure_publisher_xml(
+                char publisher_name[20];
+                generate_name(&publisher_info->publisher_id, publisher_name, sizeof(publisher_name));
+                char xml_buffer[400];
+                if (!build_publisher_xml(publisher_name, xml_buffer, sizeof(xml_buffer)))
+                {
+                    RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
+                    return NULL;
+                }
+
+                uint16_t publisher_req = mr_write_configure_publisher_xml(
                     publisher_info->session, reliable_output, publisher_info->publisher_id, micro_node->participant_id,
-                    publisher_xml, MR_REPLACE);
+                    xml_buffer, MR_REPLACE);
 
                 publisher_info->topic_id = mr_object_id(micro_node->id_gen++, MR_TOPIC_ID);
-                const char* topic_xml =
-                    "<dds><topic><name>Int32MsgPubSubTopic</name><dataType>Int32Msg</dataType></topic></dds>";
+
+                if (!build_topic_xml(topic_name, publisher_info->type_support, qos_policies, xml_buffer,
+                                     sizeof(xml_buffer)))
+                {
+                    RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
+                    return NULL;
+                }
+
                 uint16_t topic_req =
                     mr_write_configure_topic_xml(publisher_info->session, reliable_output, publisher_info->topic_id,
-                                                 micro_node->participant_id, topic_xml, MR_REPLACE);
+                                                 micro_node->participant_id, xml_buffer, MR_REPLACE);
 
                 publisher_info->datawriter_id = mr_object_id(micro_node->id_gen++, MR_DATAWRITER_ID);
-                const char* datawriter_xml =
-                    "<profiles><publisher "
-                    "profile_name=\"default_xrce_publisher_profile\"><topic><kind>NO_KEY</"
-                    "kind><name>Int32MsgPubSubTopic</"
-                    "name><dataType>Int32Msg</dataType><historyQos><kind>KEEP_LAST</kind><depth>5</depth></"
-                    "historyQos><durability><kind>TRANSIENT_LOCAL</kind></durability></topic></publisher></profiles>";
+
+                if (!build_datawriter_xml(topic_name, publisher_info->type_support, qos_policies, xml_buffer,
+                                          sizeof(xml_buffer)))
+                {
+                    RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
+                    return NULL;
+                }
+
                 uint16_t datawriter_req = mr_write_configure_datawriter_xml(
                     publisher_info->session, reliable_output, publisher_info->datawriter_id,
-                    publisher_info->publisher_id, datawriter_xml, MR_REPLACE);
+                    publisher_info->publisher_id, xml_buffer, MR_REPLACE);
 
                 rmw_publisher->data = publisher_info;
                 uint16_t requests[] = {publisher_req, datawriter_req, topic_req};
@@ -193,7 +207,7 @@ rmw_ret_t rmw_publish(const rmw_publisher_t* publisher, const void* ros_message)
     {
 
         CustomPublisher* publisher_info                   = (CustomPublisher*)publisher->data;
-        const message_type_support_callbacks_t* functions = publisher_info->type_support->data;
+        const message_type_support_callbacks_t* functions = publisher_info->type_support;
         bool written                                      = true;
         uint32_t topic_length                             = functions->get_serialized_size(ros_message);
         uint32_t payload_length                           = 0;
@@ -216,7 +230,8 @@ rmw_ret_t rmw_publish(const rmw_publisher_t* publisher, const void* ros_message)
             MicroBuffer mb_topic;
             init_micro_buffer(&mb_topic, mb.iterator, topic_length);
             written &= functions->cdr_serialize(ros_message, &mb_topic);
-            written &= mr_run_session_until_timeout(publisher_info->session, 1000);
+
+            written &= mr_run_session_until_confirm_delivery(publisher_info->session, 1000);
         }
         if (!written)
         {

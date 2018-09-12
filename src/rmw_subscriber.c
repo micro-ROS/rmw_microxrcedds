@@ -6,6 +6,7 @@
 
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
+#include <rosidl_typesupport_micrortps_c/identifier.h>
 
 rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_message_type_support_t* type_support,
                                       const char* topic_name, const rmw_qos_profile_t* qos_policies,
@@ -23,16 +24,6 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
     {
         RMW_SET_ERROR_MSG("failed to allocate memory");
     }
-    // // TODO custom publisher info contining typesuppot pointer and id
-    // const rosidl_message_type_support_t* message_type_support =
-    //     get_message_typesupport_handle(type_support, rosidl_typesupport_micrortps_c__identifier);
-    // if (!type_support)
-    // {
-    //     RMW_SET_ERROR_MSG("type support not from this implementation");
-    //     return NULL;
-    // }
-
-    // TODO(Borja) Check NULL on node
     else
     {
 
@@ -46,19 +37,24 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
         else
         {
             // TODO micro_rtps_id is duplicated in subscriber_id and in subscription_gid.data
-            CustomSubscription* subscription_info                         = (CustomSubscription*)memory_node->data;
-            subscription_info->subscriber_id                              = mr_object_id(micro_node->id_gen++, MR_SUBSCRIBER_ID);
-            subscription_info->typesupport_identifier                     = type_support->typesupport_identifier;
-            subscription_info->type_support                               = (message_type_support_callbacks_t* )type_support->data;
+            CustomSubscription* subscription_info = (CustomSubscription*)memory_node->data;
+            subscription_info->subscriber_id      = mr_object_id(micro_node->id_gen++, MR_SUBSCRIBER_ID);
             subscription_info->subscription_gid.implementation_identifier = rmw_get_implementation_identifier();
             subscription_info->session                                    = &micro_node->session;
             subscription_info->owner_node                                 = micro_node;
 
             subscription_info->tmp_raw_buffer.write = subscription_info->tmp_raw_buffer.mem_head;
-            subscription_info->tmp_raw_buffer.read = subscription_info->tmp_raw_buffer.mem_head;
-            subscription_info->tmp_raw_buffer.mem_tail = &subscription_info->tmp_raw_buffer.mem_head[sizeof(subscription_info->tmp_raw_buffer.mem_head)];
+            subscription_info->tmp_raw_buffer.read  = subscription_info->tmp_raw_buffer.mem_head;
+            subscription_info->tmp_raw_buffer.mem_tail =
+                &subscription_info->tmp_raw_buffer.mem_head[sizeof(subscription_info->tmp_raw_buffer.mem_head)];
 
-            if (sizeof(mrObjectId) > RMW_GID_STORAGE_SIZE)
+            subscription_info->type_support =
+                get_message_typesupport_handle(type_support, rosidl_typesupport_micrortps_c__identifier)->data;
+            if (!subscription_info->type_support)
+            {
+                RMW_SET_ERROR_MSG("type support not from this implementation");
+            }
+            else if (sizeof(mrObjectId) > RMW_GID_STORAGE_SIZE)
             {
                 RMW_SET_ERROR_MSG("Max number of publisher reached")
             }
@@ -67,27 +63,42 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                 memset(subscription_info->subscription_gid.data, 0, RMW_GID_STORAGE_SIZE);
                 memcpy(subscription_info->subscription_gid.data, &subscription_info->subscriber_id, sizeof(mrObjectId));
 
-                const char* subscriber_xml = "<subscriber name=\"MySubscriber\">";
-                uint16_t subscriber_req    = mr_write_configure_subscriber_xml(
+                char subscriber_name[20];
+                generate_name(&subscription_info->subscriber_id, subscriber_name, sizeof(subscriber_name));
+                char xml_buffer[512];
+                if (!build_subscriber_xml(subscriber_name, xml_buffer, sizeof(xml_buffer)))
+                {
+                    RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
+                    return NULL;
+                }
+                uint16_t subscriber_req = mr_write_configure_subscriber_xml(
                     &micro_node->session, reliable_output, subscription_info->subscriber_id, micro_node->participant_id,
-                    subscriber_xml, MR_REPLACE);
+                    xml_buffer, MR_REPLACE);
 
                 subscription_info->topic_id = mr_object_id(micro_node->id_gen++, MR_TOPIC_ID);
-                const char* topic_xml =
-                    "<dds><topic><name>Int32MsgPubSubTopic</name><dataType>Int32Msg</dataType></topic></dds>";
+
+                if (!build_topic_xml(topic_name, subscription_info->type_support, qos_policies, xml_buffer,
+                                     sizeof(xml_buffer)))
+                {
+                    RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
+                    return NULL;
+                }
+
                 uint16_t topic_req =
                     mr_write_configure_topic_xml(&micro_node->session, reliable_output, subscription_info->topic_id,
-                                                 micro_node->participant_id, topic_xml, MR_REPLACE);
+                                                 micro_node->participant_id, xml_buffer, MR_REPLACE);
 
                 subscription_info->datareader_id = mr_object_id(micro_node->id_gen++, MR_DATAREADER_ID);
-                const char* datareader_xml =
-                    "<profiles><subscriber "
-                    "profile_name=\"default_xrce_subscriber_profile\"><topic><kind>NO_KEY</kind><name>Int32MsgPubSubTopic</"
-                    "name><dataType>Int32Msg</dataType><historyQos><kind>KEEP_LAST</kind><depth>5</depth></"
-                    "historyQos><durability><kind>TRANSIENT_LOCAL</kind></durability></topic></subscriber></profiles>";
+                if (!build_datareader_xml(topic_name, subscription_info->type_support, qos_policies, xml_buffer,
+                                          sizeof(xml_buffer)))
+                {
+                    RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
+                    return NULL;
+                }
+
                 uint16_t datareader_req = mr_write_configure_datareader_xml(
                     &micro_node->session, reliable_output, subscription_info->datareader_id,
-                    subscription_info->subscriber_id, datareader_xml, MR_REPLACE);
+                    subscription_info->subscriber_id, xml_buffer, MR_REPLACE);
 
                 rmw_subscriber->data = subscription_info;
                 uint8_t status[3];

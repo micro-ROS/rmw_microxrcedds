@@ -31,12 +31,11 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
     (void)request_id;
     (void)stream_id;
 
-
     // Get node pointer
     CustomNode* node = (CustomNode*)args;
 
     // Search subcription
-    struct Item* subscription_item = node->subscription_mem.allocateditems;
+    struct Item* subscription_item          = node->subscription_mem.allocateditems;
     CustomSubscription* custom_subscription = NULL;
     while (true)
     {
@@ -48,7 +47,8 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
 
         // Compare id
         custom_subscription = (CustomSubscription*)subscription_item->data;
-        if ((custom_subscription->datareader_id.id == object_id.id) && (custom_subscription->datareader_id.type == object_id.type))
+        if ((custom_subscription->datareader_id.id == object_id.id) &&
+            (custom_subscription->datareader_id.type == object_id.type))
         {
             break;
         }
@@ -65,15 +65,21 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
     }
 
     // get needed bytes space
-    int64_t needed_space = sizeof(serialization->endianness) + sizeof(custom_subscription->tmp_raw_buffer.raw_data_size) + custom_subscription->tmp_raw_buffer.raw_data_size;
+    size_t needed_space = sizeof(serialization->endianness) +
+                          sizeof(custom_subscription->tmp_raw_buffer.raw_data_size) +
+                          custom_subscription->tmp_raw_buffer.raw_data_size;
 
     // check if there is enogh space at the end of the tmp raw buffer
-    if ((&(custom_subscription->tmp_raw_buffer.mem_head[sizeof(custom_subscription->tmp_raw_buffer.mem_head)]) -
-         custom_subscription->tmp_raw_buffer.write) < needed_space)
+    if (custom_subscription->tmp_raw_buffer.write <=
+            &(custom_subscription->tmp_raw_buffer.mem_head[sizeof(custom_subscription->tmp_raw_buffer.mem_head)]) &&
+        (size_t)(&(custom_subscription->tmp_raw_buffer.mem_head[sizeof(custom_subscription->tmp_raw_buffer.mem_head)]) -
+                 custom_subscription->tmp_raw_buffer.write) < needed_space)
     {
 
         // check if there is enogh space at the begining of the tmp raw buffer
-        if ((custom_subscription->tmp_raw_buffer.read - custom_subscription->tmp_raw_buffer.mem_head) < needed_space)
+        if ((custom_subscription->tmp_raw_buffer.mem_head <= custom_subscription->tmp_raw_buffer.read) &&
+            (size_t)(custom_subscription->tmp_raw_buffer.read - custom_subscription->tmp_raw_buffer.mem_head) <
+                needed_space)
         {
             // not enough space to store the data
             RMW_SET_ERROR_MSG("Incomming data lost due to not enough storage memory");
@@ -82,10 +88,11 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
 
         // Move tail pointer to the bigining and relocate tail
         custom_subscription->tmp_raw_buffer.mem_tail = custom_subscription->tmp_raw_buffer.write;
-        custom_subscription->tmp_raw_buffer.write   = custom_subscription->tmp_raw_buffer.mem_head;
+        custom_subscription->tmp_raw_buffer.write    = custom_subscription->tmp_raw_buffer.mem_head;
     }
 
-    // Save microbuffer for a future processing (Endianness + custom_subscription->tmp_raw_buffer.raw_data_size + MicroBufferData)
+    // Save microbuffer for a future processing (Endianness + custom_subscription->tmp_raw_buffer.raw_data_size +
+    // MicroBufferData)
     memcpy(custom_subscription->tmp_raw_buffer.write, &serialization->endianness, sizeof(serialization->endianness));
     custom_subscription->tmp_raw_buffer.write += sizeof(serialization->endianness);
 
@@ -93,7 +100,8 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
            sizeof(custom_subscription->tmp_raw_buffer.raw_data_size));
     custom_subscription->tmp_raw_buffer.write += sizeof(custom_subscription->tmp_raw_buffer.raw_data_size);
 
-    memcpy(custom_subscription->tmp_raw_buffer.write, serialization->iterator, custom_subscription->tmp_raw_buffer.raw_data_size);
+    memcpy(custom_subscription->tmp_raw_buffer.write, serialization->iterator,
+           custom_subscription->tmp_raw_buffer.raw_data_size);
     custom_subscription->tmp_raw_buffer.write += custom_subscription->tmp_raw_buffer.raw_data_size;
 
     return;
@@ -110,8 +118,9 @@ void clear_node(rmw_node_t* node)
 
 rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_id)
 {
+    // static const char* ip       = "127.0.0.1";
     static const char* ip       = "127.0.0.1";
-    static const uint16_t port  = 8881;
+    static const uint16_t port  = 8888; // 8888
     uint32_t key   = rand();
     static const size_t history = 8;
 
@@ -176,15 +185,20 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     {
         mr_close_udp_transport(&node_info->udp);
         rmw_node_delete(node_handle);
+        RMW_SET_ERROR_MSG("failed to create node session on Micro ROS Agent.");
         return NULL;
     }
 
-
-    // Create the Node participant. At this point a Node correspond with a Session with one participant.
-    node_info->participant_id   = mr_object_id(node_info->id_gen++, MR_PARTICIPANT_ID);
-    const char* participant_ref = "default participant";
-    uint16_t participant_req    = mr_write_create_participant_ref(
-        &node_info->session, reliable_output, node_info->participant_id, domain_id, participant_ref, MR_REPLACE);
+    // Create the Node participant. At this point a Node correspond withçt a Session with one participant.
+    node_info->participant_id = mr_object_id(node_info->id_gen++, MR_PARTICIPANT_ID);
+    char participant_xml[300];
+    if (!build_participant_xml(domain_id, name, participant_xml, sizeof(participant_xml)))
+    {
+        RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
+        return NULL;
+    }
+    uint16_t participant_req = mr_write_configure_participant_xml(
+        &node_info->session, reliable_output, node_info->participant_id, domain_id, participant_xml, MR_REPLACE);
     uint8_t status[1];
     uint16_t requests[] = {participant_req};
 

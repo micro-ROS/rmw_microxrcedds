@@ -3,15 +3,14 @@
 
 #include "memory.h"
 
-#include <rmw/types.h>
 #include "rosidl_generator_c/message_type_support_struct.h"
 #include "rosidl_typesupport_micrortps_c/message_type_support.h"
+#include <rmw/types.h>
 
-#include <micrortps/client/client.h>
 #include <microcdr/microcdr.h>
+#include <micrortps/client/client.h>
 
 #include <stddef.h>
-
 
 #define MAX_TRANSPORT_MTU 512
 #define MAX_HISTORY 16
@@ -22,26 +21,36 @@
 #define MAX_SUBSCRIPTIONS_X_NODE 10
 #define RMW_MICRORTPS_SUBSCRIBER_RAW_BUFFER_SIZE 500
 
+#define RMW_NODE_NAME_MAX_NAME_LENGTH 255
+#define RMW_TOPIC_NAME_MAX_NAME_LENGTH 50
+#define RMW_TYPE_NAME_MAX_NAME_LENGTH 250
+
+#ifndef USE_REFS
+#ifndef USE_XML_REP
+#define USE_XML_REP
+#endif
+#endif
+
 typedef struct CustomSubscription
 {
     mrObjectId subscriber_id;
     mrObjectId datareader_id;
     mrObjectId topic_id;
     rmw_gid_t subscription_gid;
-    const char* typesupport_identifier;
-    struct Item mem;
-    mrSession* session;
-    struct CustomNode * owner_node;
     const message_type_support_callbacks_t* type_support;
+    struct CustomNode* owner_node;
+    mrSession* session;
 
-    struct 
+    struct
     {
         uint8_t mem_head[RMW_MICRORTPS_SUBSCRIBER_RAW_BUFFER_SIZE];
-        uint8_t * mem_tail; /// \Note MemTail always points to the last non readable array data
-        uint8_t * write;
-        uint8_t * read;
+        uint8_t* mem_tail; /// \Note MemTail always points to the last non readable array data
+        uint8_t* write;
+        uint8_t* read;
         size_t raw_data_size; /// \Note Used to keep track of the DataSize type
     } tmp_raw_buffer;
+
+    struct Item mem;
 } CustomSubscription;
 
 typedef struct CustomPublisher
@@ -50,8 +59,7 @@ typedef struct CustomPublisher
     mrObjectId datawriter_id;
     mrObjectId topic_id;
     rmw_gid_t publisher_gid;
-    const char* typesupport_identifier;
-    const rosidl_message_type_support_t* type_support;
+    const message_type_support_callbacks_t* type_support;
     mrSession* session;
     struct Item mem;
 } CustomPublisher;
