@@ -141,7 +141,6 @@ rmw_ret_t rmw_destroy_publisher(rmw_node_t* node, rmw_publisher_t* publisher)
     }
     else
     {
-        CustomNode* micro_node          = (CustomNode*)node->data;
         CustomPublisher* publisher_info = (CustomPublisher*)publisher->data;
         int delete_writer =
             mr_write_delete_entity(publisher_info->session, reliable_output, publisher_info->datawriter_id);
