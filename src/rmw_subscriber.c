@@ -63,6 +63,8 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                 memset(subscription_info->subscription_gid.data, 0, RMW_GID_STORAGE_SIZE);
                 memcpy(subscription_info->subscription_gid.data, &subscription_info->subscriber_id, sizeof(mrObjectId));
 
+                uint16_t subscriber_req;
+#ifdef USE_XML_PROFILES
                 char subscriber_name[20];
                 generate_name(&subscription_info->subscriber_id, subscriber_name, sizeof(subscriber_name));
                 char xml_buffer[512];
@@ -71,11 +73,19 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                     RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
                     return NULL;
                 }
-                uint16_t subscriber_req = mr_write_configure_subscriber_xml(
-                    &micro_node->session, reliable_output, subscription_info->subscriber_id, micro_node->participant_id,
-                    xml_buffer, MR_REPLACE);
-
+                subscriber_req = mr_write_configure_subscriber_xml(&micro_node->session, reliable_output,
+                                                                   subscription_info->subscriber_id,
+                                                                   micro_node->participant_id, xml_buffer, MR_REPLACE);
+#else
+                // Publisher by reference does not make sense in current micro RTPS implementation.
+                subscriber_req = mr_write_configure_subscriber_xml(&micro_node->session, reliable_output,
+                                                                   subscription_info->subscriber_id,
+                                                                   micro_node->participant_id, "", MR_REPLACE);
+#endif
                 subscription_info->topic_id = mr_object_id(micro_node->id_gen++, MR_TOPIC_ID);
+
+                uint16_t topic_req;
+#ifdef USE_XML_PROFILES
 
                 if (!build_topic_xml(topic_name, subscription_info->type_support, qos_policies, xml_buffer,
                                      sizeof(xml_buffer)))
@@ -84,11 +94,24 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                     return NULL;
                 }
 
-                uint16_t topic_req =
+                topic_req =
                     mr_write_configure_topic_xml(&micro_node->session, reliable_output, subscription_info->topic_id,
                                                  micro_node->participant_id, xml_buffer, MR_REPLACE);
-
+#else
+                char profile_name[64];
+                if (!build_topic_profile(topic_name, profile_name, sizeof(profile_name)))
+                {
+                    RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
+                    return NULL;
+                }
+                topic_req =
+                    mr_write_create_topic_ref(&micro_node->session, reliable_output, subscription_info->topic_id,
+                                              micro_node->participant_id, profile_name, MR_REPLACE);
+#endif
                 subscription_info->datareader_id = mr_object_id(micro_node->id_gen++, MR_DATAREADER_ID);
+
+                uint16_t datareader_req;
+#ifdef USE_XML_PROFILESs
                 if (!build_datareader_xml(topic_name, subscription_info->type_support, qos_policies, xml_buffer,
                                           sizeof(xml_buffer)))
                 {
@@ -96,14 +119,24 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                     return NULL;
                 }
 
-                uint16_t datareader_req = mr_write_configure_datareader_xml(
+                datareader_req = mr_write_configure_datareader_xml(
                     &micro_node->session, reliable_output, subscription_info->datareader_id,
                     subscription_info->subscriber_id, xml_buffer, MR_REPLACE);
+#else
+                if (!build_datareader_profile(topic_name, profile_name, sizeof(profile_name)))
+                {
+                    RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
+                    return NULL;
+                }
 
+                datareader_req = mr_write_create_datareader_ref(
+                    &micro_node->session, reliable_output, subscription_info->datareader_id,
+                    subscription_info->subscriber_id, profile_name, MR_REPLACE);
+#endif
                 rmw_subscriber->data = subscription_info;
-                uint8_t status[3];
-                uint16_t requests[] = {subscriber_req, datareader_req, topic_req};
-                if (!mr_run_session_until_status(&micro_node->session, 1000, requests, status, 3))
+                uint8_t status[2];
+                uint16_t requests[] = {subscriber_req, topic_req};
+                if (!mr_run_session_until_status(&micro_node->session, 1000, requests, status, 2))
                 {
                     RMW_SET_ERROR_MSG("Issues creating micro RTPS entities");
                 }

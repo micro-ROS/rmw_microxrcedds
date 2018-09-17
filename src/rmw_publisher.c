@@ -58,6 +58,8 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 memset(publisher_info->publisher_gid.data, 0, RMW_GID_STORAGE_SIZE);
                 memcpy(publisher_info->publisher_gid.data, &publisher_info->publisher_id, sizeof(mrObjectId));
 
+                uint16_t publisher_req;
+#ifdef USE_XML_PROFILES
                 char publisher_name[20];
                 generate_name(&publisher_info->publisher_id, publisher_name, sizeof(publisher_name));
                 char xml_buffer[400];
@@ -66,13 +68,19 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
                     return NULL;
                 }
-
-                uint16_t publisher_req = mr_write_configure_publisher_xml(
-                    publisher_info->session, reliable_output, publisher_info->publisher_id, micro_node->participant_id,
-                    xml_buffer, MR_REPLACE);
-
+                publisher_req = mr_write_configure_publisher_xml(publisher_info->session, reliable_output,
+                                                                 publisher_info->publisher_id,
+                                                                 micro_node->participant_id, xml_buffer, MR_REPLACE);
+#else
+                // Publisher by reference does not make sense in current micro RTPS implementation.
+                publisher_req = mr_write_configure_publisher_xml(publisher_info->session, reliable_output,
+                                                                 publisher_info->publisher_id,
+                                                                 micro_node->participant_id, "", MR_REPLACE);
+#endif
                 publisher_info->topic_id = mr_object_id(micro_node->id_gen++, MR_TOPIC_ID);
 
+                uint16_t topic_req;
+#ifdef USE_XML_PROFILES
                 if (!build_topic_xml(topic_name, publisher_info->type_support, qos_policies, xml_buffer,
                                      sizeof(xml_buffer)))
                 {
@@ -80,12 +88,24 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     return NULL;
                 }
 
-                uint16_t topic_req =
+                topic_req =
                     mr_write_configure_topic_xml(publisher_info->session, reliable_output, publisher_info->topic_id,
                                                  micro_node->participant_id, xml_buffer, MR_REPLACE);
-
+#else
+                char profile_name[20];
+                if (!build_topic_profile(topic_name, profile_name, sizeof(profile_name)))
+                {
+                    RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
+                    return NULL;
+                }
+                topic_req =
+                    mr_write_create_topic_ref(&publisher_info->session, reliable_output, publisher_info->topic_id,
+                                              micro_node->participant_id, profile_name, MR_REPLACE);
+#endif
                 publisher_info->datawriter_id = mr_object_id(micro_node->id_gen++, MR_DATAWRITER_ID);
 
+                uint16_t datawriter_req;
+#ifdef USE_XML_PROFILES
                 if (!build_datawriter_xml(topic_name, publisher_info->type_support, qos_policies, xml_buffer,
                                           sizeof(xml_buffer)))
                 {
@@ -93,10 +113,20 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     return NULL;
                 }
 
-                uint16_t datawriter_req = mr_write_configure_datawriter_xml(
+                datawriter_req = mr_write_configure_datawriter_xml(
                     publisher_info->session, reliable_output, publisher_info->datawriter_id,
                     publisher_info->publisher_id, xml_buffer, MR_REPLACE);
+#else
+                if (!build_datawriter_profile(topic_name, profile_name, sizeof(profile_name)))
+                {
+                    RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
+                    return NULL;
+                }
 
+                datawriter_req = mr_write_create_datawriter_ref(publisher_info->session, reliable_output,
+                                                                publisher_info->datawriter_id,
+                                                                publisher_info->publisher_id, profile_name, MR_REPLACE);
+#endif
                 rmw_publisher->data = publisher_info;
                 uint16_t requests[] = {publisher_req, datawriter_req, topic_req};
                 uint8_t status[sizeof(requests) / 2];
@@ -205,7 +235,6 @@ rmw_ret_t rmw_publish(const rmw_publisher_t* publisher, const void* ros_message)
     }
     else
     {
-
         CustomPublisher* publisher_info                   = (CustomPublisher*)publisher->data;
         const message_type_support_callbacks_t* functions = publisher_info->type_support;
         bool written                                      = true;

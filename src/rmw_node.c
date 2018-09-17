@@ -121,7 +121,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     // static const char* ip       = "127.0.0.1";
     static const char* ip       = "127.0.0.1";
     static const uint16_t port  = 8888; // 8888
-    uint32_t key   = rand();
+    uint32_t key                = rand();
     static const size_t history = 8;
 
     struct Item* memory_node = get_memory(&node_memory);
@@ -191,14 +191,26 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
 
     // Create the Node participant. At this point a Node correspond withçt a Session with one participant.
     node_info->participant_id = mr_object_id(node_info->id_gen++, MR_PARTICIPANT_ID);
+    uint16_t participant_req;
+#ifdef USE_XML_PROFILES
     char participant_xml[300];
     if (!build_participant_xml(domain_id, name, participant_xml, sizeof(participant_xml)))
     {
         RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
         return NULL;
     }
-    uint16_t participant_req = mr_write_configure_participant_xml(
+    participant_req = mr_write_configure_participant_xml(
         &node_info->session, reliable_output, node_info->participant_id, domain_id, participant_xml, MR_REPLACE);
+#else
+    char profile_name[20];
+    if (!build_participant_profile(profile_name, sizeof(profile_name)))
+    {
+        RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
+        return NULL;
+    }
+    participant_req = mr_write_create_participant_ref(&node_info->session, reliable_output, node_info->participant_id,
+                                                      domain_id, profile_name, MR_REPLACE);
+#endif
     uint8_t status[1];
     uint16_t requests[] = {participant_req};
 
