@@ -38,15 +38,22 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     C_STANDARD_REQUIRED YES
     )
 
-target_compile_options(${PROJECT_NAME} PRIVATE
-        -Wall
-        -Wextra
-        -pedantic
-        -Werror-implicit-function-declaration
-        $<$<C_COMPILER_ID:GNU>:$<$<VERSION_GREATER:$<C_COMPILER_VERSION>,8.1>:-Wcast-align=strict>>
-        # -Werror
-        # -pedantic-errors
-)
+if(MSVC OR MSVC_IDE)
+        target_compile_options(${PROJECT_NAME} PRIVATE
+            /Wall
+        )
+elseif(CMAKE_COMPILER_IS_GNUCC)
+        target_compile_options(${PROJECT_NAME} PRIVATE
+            -Wall
+            -Wextra
+            -pedantic
+            -Werror-implicit-function-declaration
+            $<$<C_COMPILER_ID:GNU>:$<$<VERSION_GREATER:$<C_COMPILER_VERSION>,8.1>:-Wcast-align=strict>>
+            -Wvla
+            # -Werror
+            # -pedantic-errors
+        )
+endif()
 
 ament_export_include_directories(${PROJECT_SOURCE_DIR}/include)
 ament_export_libraries(${PROJECT_NAME})
