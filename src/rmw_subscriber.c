@@ -134,9 +134,9 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                     subscription_info->subscriber_id, profile_name, MR_REPLACE);
 #endif
                 rmw_subscriber->data = subscription_info;
-                uint8_t status[2];
-                uint16_t requests[] = {subscriber_req, topic_req};
-                if (!mr_run_session_until_status(&micro_node->session, 1000, requests, status, 2))
+                uint8_t status[3];
+                uint16_t requests[] = {subscriber_req, topic_req, datareader_req};
+                if (!mr_run_session_until_status(&micro_node->session, 1000, requests, status, 3))
                 {
                     RMW_SET_ERROR_MSG("Issues creating micro RTPS entities");
                 }
