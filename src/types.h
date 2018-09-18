@@ -21,15 +21,15 @@
 #define MAX_SUBSCRIPTIONS_X_NODE 10
 #define RMW_MICRORTPS_SUBSCRIBER_RAW_BUFFER_SIZE 500
 
-#define RMW_NODE_NAME_MAX_NAME_LENGTH 255
 #define RMW_TOPIC_NAME_MAX_NAME_LENGTH 50
-#define RMW_TYPE_NAME_MAX_NAME_LENGTH 250
 
 #ifndef USE_REFS
 #ifndef USE_XML_REP
 #define USE_XML_REP
 #endif
 #endif
+
+// typedef struct message_type_support_callbacks_t message_type_support_callbacks_t;
 
 typedef struct CustomSubscription
 {

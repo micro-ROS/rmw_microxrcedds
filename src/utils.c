@@ -2,7 +2,7 @@
 
 #include "rmw/allocators.h"
 
-static const char* const ros_topic_prefix = "rt";
+static const char ros_topic_prefix[] = "rt";
 
 void custompublisher_clear(CustomPublisher* publisher);
 void customsubscription_clear(CustomSubscription* subscription);
@@ -128,12 +128,12 @@ void customnode_clear(CustomNode* node)
 
 int build_participant_xml(size_t domain_id, const char* participant_name, char xml[], size_t buffer_size)
 {
-    static const char* const format =
+    static const char format[] =
         "<profiles><participant "
         "profile_name=\"participant_profile\"><rtps><builtin><leaseDuration><durationbyname>INFINITE</durationbyname></"
         "leaseDuration><domainId>%ld</domainId></builtin><name>%s</name></rtps></participant></profiles>";
     int ret = 0;
-    if (buffer_size >= (strlen(format) - 5 + strlen(participant_name + sizeof(size_t))))
+    if (buffer_size >= (sizeof(format) - 5 + strlen(participant_name) + sizeof(domain_id)))
     {
         ret = sprintf(xml, format, domain_id, participant_name);
     }
@@ -142,9 +142,9 @@ int build_participant_xml(size_t domain_id, const char* participant_name, char x
 
 int build_publisher_xml(const char* publisher_name, char xml[], size_t buffer_size)
 {
-    static const char* const format = "<publisher name=\"%s\">";
-    int ret                         = 0;
-    if (buffer_size >= (strlen(format) - 2 + strlen(publisher_name)))
+    static const char format[] = "<publisher name=\"%s\">";
+    int ret                    = 0;
+    if (buffer_size >= (sizeof(format) - 2 + strlen(publisher_name)))
     {
         ret = sprintf(xml, format, publisher_name);
     }
@@ -153,9 +153,9 @@ int build_publisher_xml(const char* publisher_name, char xml[], size_t buffer_si
 
 int build_subscriber_xml(const char* subscriber_name, char xml[], size_t buffer_size)
 {
-    static const char* const format = "<subscriber name=\"%s\">";
-    int ret                         = 0;
-    if (buffer_size >= (strlen(format) - 2 + strlen(subscriber_name)))
+    static const char format[] = "<subscriber name=\"%s\">";
+    int ret                    = 0;
+    if (buffer_size >= (sizeof(format) - 2 + strlen(subscriber_name)))
     {
         ret = sprintf(xml, format, subscriber_name);
     }
@@ -164,9 +164,9 @@ int build_subscriber_xml(const char* subscriber_name, char xml[], size_t buffer_
 
 int generate_name(const mrObjectId* id, char name[], size_t buffer_size)
 {
-    static const char* const format = "%hu_%hi";
-    int ret                         = 0;
-    if (buffer_size >= (strlen(format) - 6 + sizeof(id->id) + sizeof(id->type)))
+    static const char format[] = "%hu_%hi";
+    int ret                    = 0;
+    if (buffer_size >= (sizeof(format) - 6 + sizeof(id->id) + sizeof(id->type)))
     {
         ret = sprintf(name, format, id->id, id->type);
     }
@@ -176,10 +176,10 @@ int generate_name(const mrObjectId* id, char name[], size_t buffer_size)
 int generate_type_name(const message_type_support_callbacks_t* members, const char* sep, char type_name[],
                        size_t buffer_size)
 {
-    static const char* const format = "%s::%s::dds_::%s_";
-    int ret                         = 0;
+    static const char format[] = "%s::%s::dds_::%s_";
+    int ret                    = 0;
     if (buffer_size >=
-        (strlen(format) - 6 + strlen(members->package_name_) + strlen(sep) + strlen(members->message_name_)))
+        (sizeof(format) - 6 + strlen(members->package_name_) + strlen(sep) + strlen(members->message_name_)))
     {
         ret = sprintf(type_name, format, members->package_name_, sep, members->message_name_);
     }
@@ -189,20 +189,21 @@ int generate_type_name(const message_type_support_callbacks_t* members, const ch
 int build_topic_xml(const char* topic_name, const message_type_support_callbacks_t* members,
                     const rmw_qos_profile_t* qos_policies, char xml[], size_t buffer_size)
 {
-    static const char* const format = "<dds><topic><name>%s</name><dataType>%s</dataType></topic></dds>";
-    int ret                         = 0;
+    static const char format[] = "<dds><topic><name>%s</name><dataType>%s</dataType></topic></dds>";
+    int ret                    = 0;
     static char type_name_buffer[50];
-    if (generate_type_name(members, "msg", type_name_buffer, sizeof(type_name_buffer)))
+    if (RMW_TOPIC_NAME_MAX_NAME_LENGTH >= strlen(topic_name) &&
+        generate_type_name(members, "msg", type_name_buffer, sizeof(type_name_buffer)))
     {
-        char full_topic_name[strlen(topic_name) + strlen(ros_topic_prefix)];
-        full_topic_name[0] = '\0';
+        char full_topic_name[RMW_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_topic_prefix)];
+        full_topic_name[0] = '\0'; // Clear Cstring for strcat function.
         if (!qos_policies->avoid_ros_namespace_conventions)
         {
             strcat(full_topic_name, ros_topic_prefix);
         }
         strcat(full_topic_name, topic_name);
 
-        if (buffer_size >= (strlen(format) - 4 + strlen(full_topic_name) + strlen(type_name_buffer)))
+        if (buffer_size >= (sizeof(format) - 4 + strlen(full_topic_name) + strlen(type_name_buffer)))
         {
             ret = sprintf(xml, format, full_topic_name, type_name_buffer);
         }
@@ -217,7 +218,7 @@ int build_xml(const char* format, const char* topic_name, const message_type_sup
     static char type_name_buffer[50];
     if (generate_type_name(members, "msg", type_name_buffer, sizeof(type_name_buffer)))
     {
-        char full_topic_name[strlen(topic_name) + strlen(ros_topic_prefix)];
+        char full_topic_name[RMW_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_topic_prefix)];
         full_topic_name[0] = '\0';
         if (!qos_policies->avoid_ros_namespace_conventions)
         {
@@ -225,7 +226,7 @@ int build_xml(const char* format, const char* topic_name, const message_type_sup
         }
         strcat(full_topic_name, topic_name);
 
-        if (buffer_size >= (strlen(format) - 4 + strlen(full_topic_name) + strlen(type_name_buffer)))
+        if (buffer_size >= (strlen(format) - 4 + strlen(full_topic_name) + strlen(type_name_buffer) + 1))
         {
             ret = sprintf(xml, format, full_topic_name, type_name_buffer);
         }
@@ -235,7 +236,7 @@ int build_xml(const char* format, const char* topic_name, const message_type_sup
 int build_datawriter_xml(const char* topic_name, const message_type_support_callbacks_t* members,
                          const rmw_qos_profile_t* qos_policies, char xml[], size_t buffer_size)
 {
-    static const char* const format =
+    static const char format[] =
         "<profiles><publisher "
         "profile_name=\"rmw_micrortps_publisher\"><topic><kind>NO_KEY</kind><name>%s</"
         "name><dataType>%s</dataType><historyQos><kind>KEEP_LAST</kind><depth>5</depth></"
@@ -246,7 +247,7 @@ int build_datawriter_xml(const char* topic_name, const message_type_support_call
 int build_datareader_xml(const char* topic_name, const message_type_support_callbacks_t* members,
                          const rmw_qos_profile_t* qos_policies, char xml[], size_t buffer_size)
 {
-    static const char* const format =
+    static const char format[] =
         "<profiles><subscriber "
         "profile_name=\"rmw_micrortps_subscriber\"><topic><kind>NO_KEY</kind><name>%s</"
         "name><dataType>%s</dataType><historyQos><kind>KEEP_LAST</kind><depth>5</depth></"
@@ -256,11 +257,11 @@ int build_datareader_xml(const char* topic_name, const message_type_support_call
 
 bool build_participant_profile(char profile_name[], size_t buffer_size)
 {
-    static const char* const profile = "participant_profile";
-    bool ret                         = false;
-    if (buffer_size >= strlen(profile))
+    static const char profile[] = "participant_profile";
+    bool ret                    = false;
+    if (buffer_size >= sizeof(profile))
     {
-        memcpy(profile_name, profile, strlen(profile));
+        memcpy(profile_name, profile, sizeof(profile));
         ret = true;
     }
     return ret;
@@ -268,33 +269,33 @@ bool build_participant_profile(char profile_name[], size_t buffer_size)
 
 bool build_topic_profile(const char* topic_name, char profile_name[], size_t buffer_size)
 {
-    const char* const format = "%s_topic_profile";
-    bool ret                 = false;
-    if (buffer_size >= (strlen(format) - 2 + strlen(topic_name)))
+    static const char format[] = "%s_topic_profile";
+    bool ret                   = false;
+    if (buffer_size >= (sizeof(format) - 2 + strlen(topic_name)))
     {
-        ret = sprintf(profile_name, format, topic_name) == strlen(format) - 2 + strlen(topic_name);
+        ret = sprintf(profile_name, format, topic_name) == sizeof(format) - 2 + strlen(topic_name);
     }
     return ret;
 }
 
 bool build_datawriter_profile(const char* topic_name, char profile_name[], size_t buffer_size)
 {
-    const char* const format = "%s_publisher_profile";
-    bool ret                 = false;
-    if (buffer_size >= (strlen(format) - 2 + strlen(topic_name)))
+    static const char format[] = "%s_publisher_profile";
+    bool ret                   = false;
+    if (buffer_size >= (sizeof(format) - 2 + strlen(topic_name)))
     {
-        ret = sprintf(profile_name, format, topic_name) == strlen(format) - 2 + strlen(topic_name);
+        ret = sprintf(profile_name, format, topic_name) == sizeof(format) - 2 + strlen(topic_name);
     }
     return ret;
 }
 
 bool build_datareader_profile(const char* topic_name, char profile_name[], size_t buffer_size)
 {
-    const char* const format = "Int32Topic_subscriber_profile";
-    bool ret                 = false;
-    if (buffer_size >= (strlen(format) - 2 + strlen(topic_name)))
+    static const char format[] = "%s_subscriber_profile";
+    bool ret                   = false;
+    if (buffer_size >= (sizeof(format) - 2 + strlen(topic_name)))
     {
-        ret = sprintf(profile_name, format, topic_name) == strlen(format) - 2 + strlen(topic_name);
+        ret = sprintf(profile_name, format, topic_name) == sizeof(format) - 2 + strlen(topic_name);
     }
     return ret;
 }
