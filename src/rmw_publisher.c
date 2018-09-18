@@ -99,7 +99,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     return NULL;
                 }
                 topic_req =
-                    mr_write_create_topic_ref(&publisher_info->session, reliable_output, publisher_info->topic_id,
+                    mr_write_create_topic_ref(publisher_info->session, reliable_output, publisher_info->topic_id,
                                               micro_node->participant_id, profile_name, MR_REPLACE);
 #endif
                 publisher_info->datawriter_id = mr_object_id(micro_node->id_gen++, MR_DATAWRITER_ID);
