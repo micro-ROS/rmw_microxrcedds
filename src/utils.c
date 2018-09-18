@@ -68,7 +68,7 @@ void custompublisher_clear(CustomPublisher* publisher)
     }
 }
 
-void publishers_clear(CustomPublisher publishers[static MAX_PUBLISHERS_X_NODE])
+void publishers_clear(CustomPublisher publishers[MAX_PUBLISHERS_X_NODE])
 {
     for (size_t i = 0; i < MAX_PUBLISHERS_X_NODE; i++)
     {
@@ -107,7 +107,7 @@ void customsubscription_clear(CustomSubscription* subscription)
     }
 }
 
-void subscriptions_clear(CustomSubscription subscriptions[static MAX_SUBSCRIPTIONS_X_NODE])
+void subscriptions_clear(CustomSubscription subscriptions[MAX_SUBSCRIPTIONS_X_NODE])
 {
     for (size_t i = 0; i < MAX_SUBSCRIPTIONS_X_NODE; i++)
     {

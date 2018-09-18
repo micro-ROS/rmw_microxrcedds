@@ -31,7 +31,7 @@ void init_subscriber_memory(struct MemPool* memory, CustomSubscription subscribe
     }
 }
 
-void init_nodes_memory(struct MemPool* memory, CustomNode nodes[static MAX_NODES], size_t size)
+void init_nodes_memory(struct MemPool* memory, CustomNode nodes[MAX_NODES], size_t size)
 {
     if (size > 0)
     {

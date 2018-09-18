@@ -92,6 +92,6 @@ uint8_t input_reliable_stream_buffer[MAX_BUFFER_SIZE];
 uint8_t output_best_effort_stream_buffer[MAX_BUFFER_SIZE];
 uint8_t output_reliable_stream_buffer[MAX_BUFFER_SIZE];
 
-void init_nodes_memory(struct MemPool* memory, CustomNode nodes[static MAX_NODES], size_t size);
+void init_nodes_memory(struct MemPool* memory, CustomNode nodes[MAX_NODES], size_t size);
 
 #endif // !RMW_MICRORTPS_TYPES_H_
