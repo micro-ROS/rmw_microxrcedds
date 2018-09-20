@@ -92,7 +92,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     mr_write_configure_topic_xml(publisher_info->session, reliable_output, publisher_info->topic_id,
                                                  micro_node->participant_id, xml_buffer, MR_REPLACE);
 #else
-                char profile_name[20];
+                char profile_name[64];
                 if (!build_topic_profile(topic_name, profile_name, sizeof(profile_name)))
                 {
                     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");

@@ -269,9 +269,10 @@ bool build_participant_profile(char profile_name[], size_t buffer_size)
 
 bool build_topic_profile(const char* topic_name, char profile_name[], size_t buffer_size)
 {
-    static const char format[] = "%s_topic_profile";
-    bool ret                   = false;
-    if (buffer_size >= (sizeof(format) - 2 + strlen(topic_name)))
+    const char* const format = "%s_t";
+    topic_name++;
+    bool ret                 = false;
+    if (buffer_size >= (strlen(format) - 2 + strlen(topic_name)))
     {
         ret = sprintf(profile_name, format, topic_name) == sizeof(format) - 2 + strlen(topic_name);
     }
@@ -280,9 +281,10 @@ bool build_topic_profile(const char* topic_name, char profile_name[], size_t buf
 
 bool build_datawriter_profile(const char* topic_name, char profile_name[], size_t buffer_size)
 {
-    static const char format[] = "%s_publisher_profile";
-    bool ret                   = false;
-    if (buffer_size >= (sizeof(format) - 2 + strlen(topic_name)))
+    const char* const format = "%s_p";
+    topic_name++;
+    bool ret                 = false;
+    if (buffer_size >= (strlen(format) - 2 + strlen(topic_name)))
     {
         ret = sprintf(profile_name, format, topic_name) == sizeof(format) - 2 + strlen(topic_name);
     }
@@ -291,9 +293,10 @@ bool build_datawriter_profile(const char* topic_name, char profile_name[], size_
 
 bool build_datareader_profile(const char* topic_name, char profile_name[], size_t buffer_size)
 {
-    static const char format[] = "%s_subscriber_profile";
-    bool ret                   = false;
-    if (buffer_size >= (sizeof(format) - 2 + strlen(topic_name)))
+    const char* const format = "%s_s";
+    topic_name++;
+    bool ret                 = false;
+    if (buffer_size >= (strlen(format) - 2 + strlen(topic_name)))
     {
         ret = sprintf(profile_name, format, topic_name) == sizeof(format) - 2 + strlen(topic_name);
     }
