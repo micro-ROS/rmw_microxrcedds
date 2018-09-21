@@ -255,12 +255,12 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
     }
 
     // Extract serialiced message using typesupport
-    bool OK = custom_subscription->type_support->cdr_deserialize(&serialization, ros_message);
+    bool deserialize_rv = custom_subscription->type_support->cdr_deserialize(&serialization, ros_message);
     if (taken != NULL)
     {
-        *taken = OK;
+        *taken = deserialize_rv;
     }
-    if (!OK)
+    if (!deserialize_rv)
     {
         RMW_SET_ERROR_MSG("Typesupport desserialize error.");
         return RMW_RET_ERROR;
