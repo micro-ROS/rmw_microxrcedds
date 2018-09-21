@@ -3,6 +3,8 @@
 
 #include "rmw/names_and_types.h"
 #include "rmw/rmw.h"
+#include "rmw/get_topic_names_and_types.h"
+#include "rmw/get_service_names_and_types.h"
 
 const char* rmw_get_implementation_identifier(void);
 
