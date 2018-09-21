@@ -57,6 +57,12 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
         subscription_item = subscription_item->next;
     }
 
+
+    // not waiting for response any more
+    custom_subscription->waiting_for_response = false;
+    node->on_subcription = true;
+
+
     // get buffer size
     custom_subscription->tmp_raw_buffer.raw_data_size = micro_buffer_remaining(serialization);
     if (custom_subscription->tmp_raw_buffer.raw_data_size == 0)
@@ -144,13 +150,8 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     mr_set_topic_callback(&node_info->session, on_topic, node_info);
     mr_set_status_callback(&node_info->session, on_status, NULL);
 
-    best_input      = mr_create_input_best_effort_stream(&node_info->session);
-    reliable_input  = mr_create_input_reliable_stream(&node_info->session, input_reliable_stream_buffer,
-                                                     node_info->udp.comm.mtu * history, history);
-    best_output     = mr_create_output_best_effort_stream(&node_info->session, output_best_effort_stream_buffer,
-                                                      node_info->udp.comm.mtu);
-    reliable_output = mr_create_output_reliable_stream(&node_info->session, output_reliable_stream_buffer,
-                                                       node_info->udp.comm.mtu * history, history);
+    node_info->reliable_input  = mr_create_input_reliable_stream(&node_info->session, node_info->input_reliable_stream_buffer, node_info->udp.comm.mtu * history, history);
+    node_info->reliable_output = mr_create_output_reliable_stream(&node_info->session, node_info->output_reliable_stream_buffer, node_info->udp.comm.mtu * history, history);
 
     rmw_node_t* node_handle = NULL;
     node_handle             = rmw_node_allocate();
@@ -208,7 +209,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
         RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
         return NULL;
     }
-    participant_req = mr_write_create_participant_ref(&node_info->session, reliable_output, node_info->participant_id,
+    participant_req = mr_write_create_participant_ref(&node_info->session, node_info->reliable_output, node_info->participant_id,
                                                       domain_id, profile_name, MR_REPLACE);
 #endif
     uint8_t status[1];

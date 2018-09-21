@@ -43,6 +43,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
             subscription_info->session                                    = &micro_node->session;
             subscription_info->owner_node                                 = micro_node;
 
+            subscription_info->waiting_for_response = false;
             subscription_info->tmp_raw_buffer.write = subscription_info->tmp_raw_buffer.mem_head;
             subscription_info->tmp_raw_buffer.read  = subscription_info->tmp_raw_buffer.mem_head;
             subscription_info->tmp_raw_buffer.mem_tail =
@@ -73,12 +74,12 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                     RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
                     return NULL;
                 }
-                subscriber_req = mr_write_configure_subscriber_xml(&micro_node->session, reliable_output,
+                subscriber_req = mr_write_configure_subscriber_xml(&micro_node->session, micro_node->reliable_output,
                                                                    subscription_info->subscriber_id,
                                                                    micro_node->participant_id, xml_buffer, MR_REPLACE);
 #else
                 // Publisher by reference does not make sense in current micro RTPS implementation.
-                subscriber_req = mr_write_configure_subscriber_xml(&micro_node->session, reliable_output,
+                subscriber_req = mr_write_configure_subscriber_xml(&micro_node->session, micro_node->reliable_output,
                                                                    subscription_info->subscriber_id,
                                                                    micro_node->participant_id, "", MR_REPLACE);
 #endif
@@ -95,7 +96,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                 }
 
                 topic_req =
-                    mr_write_configure_topic_xml(&micro_node->session, reliable_output, subscription_info->topic_id,
+                    mr_write_configure_topic_xml(&micro_node->session, micro_node->reliable_output, subscription_info->topic_id,
                                                  micro_node->participant_id, xml_buffer, MR_REPLACE);
 #else
                 char profile_name[64];
@@ -105,7 +106,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                     return NULL;
                 }
                 topic_req =
-                    mr_write_create_topic_ref(&micro_node->session, reliable_output, subscription_info->topic_id,
+                    mr_write_create_topic_ref(&micro_node->session, micro_node->reliable_output, subscription_info->topic_id,
                                               micro_node->participant_id, profile_name, MR_REPLACE);
 #endif
                 subscription_info->datareader_id = mr_object_id(micro_node->id_gen++, MR_DATAREADER_ID);
@@ -120,7 +121,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                 }
 
                 datareader_req = mr_write_configure_datareader_xml(
-                    &micro_node->session, reliable_output, subscription_info->datareader_id,
+                    &micro_node->session, micro_node->reliable_output, subscription_info->datareader_id,
                     subscription_info->subscriber_id, xml_buffer, MR_REPLACE);
 #else
                 if (!build_datareader_profile(topic_name, profile_name, sizeof(profile_name)))
@@ -130,7 +131,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                 }
 
                 datareader_req = mr_write_create_datareader_ref(
-                    &micro_node->session, reliable_output, subscription_info->datareader_id,
+                    &micro_node->session, micro_node->reliable_output, subscription_info->datareader_id,
                     subscription_info->subscriber_id, profile_name, MR_REPLACE);
 #endif
                 rmw_subscriber->data = subscription_info;
@@ -194,10 +195,10 @@ rmw_ret_t rmw_destroy_subscription(rmw_node_t* node, rmw_subscription_t* subscri
         CustomNode* micro_node               = (CustomNode*)node->data;
         CustomSubscription* subscripion_info = (CustomSubscription*)subscription->data;
         int delete_datareader =
-            mr_write_delete_entity(&micro_node->session, reliable_output, subscripion_info->datareader_id);
-        int delete_topic = mr_write_delete_entity(&micro_node->session, reliable_output, subscripion_info->topic_id);
+            mr_write_delete_entity(&micro_node->session, micro_node->reliable_output, subscripion_info->datareader_id);
+        int delete_topic = mr_write_delete_entity(&micro_node->session, micro_node->reliable_output, subscripion_info->topic_id);
         int delete_subscriber =
-            mr_write_delete_entity(&micro_node->session, reliable_output, subscripion_info->subscriber_id);
+            mr_write_delete_entity(&micro_node->session, micro_node->reliable_output, subscripion_info->subscriber_id);
 
         uint8_t status[3];
         uint16_t requests[] = {delete_datareader, delete_topic, delete_subscriber};

@@ -17,8 +17,6 @@
 #include <limits.h>
 #include <time.h>
 
-// Declare internal memory structs
-// RMW_MICRORTPS_DECLARE_INTENAL_MEMORY(Internal_wait_set_t, INTERNAL_WAIT_SET)
 
 const char* rmw_get_implementation_identifier()
 {
@@ -394,14 +392,17 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
         // Extract first session pointer
         for (size_t i = 0; i < subscriptions->subscriber_count; ++i)
         {
-            if (subscriptions->subscribers[0] != NULL)
+            if (subscriptions->subscribers[i] != NULL)
             {
-                CustomSubscription* custom_subscription = (CustomSubscription*)subscriptions->subscribers[0];
+                CustomSubscription* custom_subscription = (CustomSubscription*)subscriptions->subscribers[i];
                 custom_node                             = custom_subscription->owner_node;
 
-                // Request all data
-                custom_node->read_subscriptions_requests[subscriber_requests_count++] = mr_write_request_data(
-                    &custom_node->session, reliable_output, custom_subscription->datareader_id, reliable_input, NULL);
+                
+                if (custom_subscription->waiting_for_response == false)
+                {
+                    custom_subscription->waiting_for_response = true;
+                    mr_write_request_data(&custom_node->session, custom_node->reliable_output, custom_subscription->datareader_id, custom_node->reliable_input, NULL);
+                }
             }
         }
     }
@@ -493,8 +494,20 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     }
 
     // read until status or timeout
-    mr_run_session_until_status(&custom_node->session, timeout, custom_node->read_subscriptions_requests,
-                                custom_node->read_subscriptions_status, subscriber_requests_count);
+    bool OK;
+    custom_node->on_subcription = false;
+    while (custom_node->on_subcription == false)
+    {
+        OK = mr_run_session_until_timeout(&custom_node->session, timeout);
+        if (timeout != MR_TIMEOUT_INF)
+        {
+            if (!OK)
+            {
+                break;
+            }
+        }
+    }
+        
 
     // Clean non-received
     bool is_timeout = true;

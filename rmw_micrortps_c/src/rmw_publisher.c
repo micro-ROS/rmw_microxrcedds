@@ -41,6 +41,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
             // TODO micro_rtps_id is duplicated in publisher_id and in publisher_gid.data
             CustomPublisher* publisher_info = (CustomPublisher*)memory_node->data;
             publisher_info->publisher_id    = mr_object_id(micro_node->id_gen++, MR_PUBLISHER_ID);
+            publisher_info->owner_node = micro_node;
             publisher_info->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
             publisher_info->session                                 = &micro_node->session;
             publisher_info->type_support =
@@ -68,12 +69,12 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
                     return NULL;
                 }
-                publisher_req = mr_write_configure_publisher_xml(publisher_info->session, reliable_output,
+                publisher_req = mr_write_configure_publisher_xml(publisher_info->session, micro_node->reliable_output,
                                                                  publisher_info->publisher_id,
                                                                  micro_node->participant_id, xml_buffer, MR_REPLACE);
 #else
                 // Publisher by reference does not make sense in current micro RTPS implementation.
-                publisher_req = mr_write_configure_publisher_xml(publisher_info->session, reliable_output,
+                publisher_req = mr_write_configure_publisher_xml(publisher_info->session, micro_node->reliable_output,
                                                                  publisher_info->publisher_id,
                                                                  micro_node->participant_id, "", MR_REPLACE);
 #endif
@@ -89,7 +90,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 }
 
                 topic_req =
-                    mr_write_configure_topic_xml(publisher_info->session, reliable_output, publisher_info->topic_id,
+                    mr_write_configure_topic_xml(publisher_info->session, micro_node->micro_node->reliable_output, publisher_info->topic_id,
                                                  micro_node->participant_id, xml_buffer, MR_REPLACE);
 #else
                 char profile_name[64];
@@ -99,7 +100,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     return NULL;
                 }
                 topic_req =
-                    mr_write_create_topic_ref(publisher_info->session, reliable_output, publisher_info->topic_id,
+                    mr_write_create_topic_ref(publisher_info->session, micro_node->reliable_output, publisher_info->topic_id,
                                               micro_node->participant_id, profile_name, MR_REPLACE);
 #endif
                 publisher_info->datawriter_id = mr_object_id(micro_node->id_gen++, MR_DATAWRITER_ID);
@@ -114,7 +115,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 }
 
                 datawriter_req = mr_write_configure_datawriter_xml(
-                    publisher_info->session, reliable_output, publisher_info->datawriter_id,
+                    publisher_info->session, micro_node->micro_node, publisher_info->datawriter_id,
                     publisher_info->publisher_id, xml_buffer, MR_REPLACE);
 #else
                 if (!build_datawriter_profile(topic_name, profile_name, sizeof(profile_name)))
@@ -123,7 +124,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     return NULL;
                 }
 
-                datawriter_req = mr_write_create_datawriter_ref(publisher_info->session, reliable_output,
+                datawriter_req = mr_write_create_datawriter_ref(publisher_info->session, micro_node->reliable_output,
                                                                 publisher_info->datawriter_id,
                                                                 publisher_info->publisher_id, profile_name, MR_REPLACE);
 #endif
@@ -186,11 +187,12 @@ rmw_ret_t rmw_destroy_publisher(rmw_node_t* node, rmw_publisher_t* publisher)
     else
     {
         CustomPublisher* publisher_info = (CustomPublisher*)publisher->data;
+
         int delete_writer =
-            mr_write_delete_entity(publisher_info->session, reliable_output, publisher_info->datawriter_id);
-        int delete_topic = mr_write_delete_entity(publisher_info->session, reliable_output, publisher_info->topic_id);
+            mr_write_delete_entity(publisher_info->session, publisher_info->owner_node->reliable_output, publisher_info->datawriter_id);
+        int delete_topic = mr_write_delete_entity(publisher_info->session, publisher_info->owner_node->reliable_output, publisher_info->topic_id);
         int delete_publisher =
-            mr_write_delete_entity(publisher_info->session, reliable_output, publisher_info->publisher_id);
+            mr_write_delete_entity(publisher_info->session, publisher_info->owner_node->reliable_output, publisher_info->publisher_id);
 
         uint8_t status[3];
         uint16_t requests[] = {delete_writer, delete_topic, delete_publisher};
@@ -244,7 +246,7 @@ rmw_ret_t rmw_publish(const rmw_publisher_t* publisher, const void* ros_message)
         payload_length                                    = (uint16_t)(payload_length + 4); // request_id + object_id
 
         MicroBuffer mb;
-        if (prepare_stream_to_write(&publisher_info->session->streams, reliable_output,
+        if (prepare_stream_to_write(&publisher_info->session->streams, publisher_info->owner_node->reliable_output,
                                     (uint16_t)(payload_length + topic_length + SUBHEADER_SIZE), &mb))
         {
             written &= write_submessage_header(&mb, SUBMESSAGE_ID_WRITE_DATA, (uint16_t)(payload_length + topic_length),

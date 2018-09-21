@@ -59,6 +59,9 @@ typedef struct CustomSubscription
         uint8_t* read;
         size_t raw_data_size; /// \Note Used to keep track of the DataSize type
     } tmp_raw_buffer;
+    
+    bool waiting_for_response;
+
 
     struct Item mem;
 } CustomSubscription;
@@ -72,6 +75,10 @@ typedef struct CustomPublisher
     const message_type_support_callbacks_t* type_support;
     mrSession* session;
     struct Item mem;
+
+    struct CustomNode* owner_node;
+
+
 } CustomPublisher;
 
 typedef struct CustomNode
@@ -86,21 +93,26 @@ typedef struct CustomNode
     CustomPublisher publisher_info[MAX_PUBLISHERS_X_NODE];
     CustomSubscription subscription_info[MAX_SUBSCRIPTIONS_X_NODE];
 
-    uint8_t read_subscriptions_status[MAX_SUBSCRIPTIONS_X_NODE];
-    uint16_t read_subscriptions_requests[MAX_SUBSCRIPTIONS_X_NODE];
+    bool on_subcription;
+
+    mrStreamId reliable_input;
+    mrStreamId reliable_output;
+
+    uint8_t input_reliable_stream_buffer[MAX_BUFFER_SIZE];
+    uint8_t output_reliable_stream_buffer[MAX_BUFFER_SIZE];
 
     uint16_t id_gen;
 
 } CustomNode;
 
-mrStreamId best_input;
-mrStreamId reliable_input;
-mrStreamId best_output;
-mrStreamId reliable_output;
+//mrStreamId best_input;
+//mrStreamId reliable_input;
+//mrStreamId best_output;
+//mrStreamId reliable_output;
 
-uint8_t input_reliable_stream_buffer[MAX_BUFFER_SIZE];
-uint8_t output_best_effort_stream_buffer[MAX_BUFFER_SIZE];
-uint8_t output_reliable_stream_buffer[MAX_BUFFER_SIZE];
+//uint8_t input_reliable_stream_buffer[MAX_BUFFER_SIZE];
+//uint8_t output_best_effort_stream_buffer[MAX_BUFFER_SIZE];
+//uint8_t output_reliable_stream_buffer[MAX_BUFFER_SIZE];
 
 void init_nodes_memory(struct MemPool* memory, CustomNode nodes[MAX_NODES], size_t size);
 
