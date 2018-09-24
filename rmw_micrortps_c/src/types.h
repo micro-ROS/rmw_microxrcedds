@@ -101,6 +101,8 @@ typedef struct CustomNode
     uint8_t input_reliable_stream_buffer[MAX_BUFFER_SIZE];
     uint8_t output_reliable_stream_buffer[MAX_BUFFER_SIZE];
 
+    uint8_t deserialize_temp_buffer[300];
+
     uint16_t id_gen;
 
 } CustomNode;
