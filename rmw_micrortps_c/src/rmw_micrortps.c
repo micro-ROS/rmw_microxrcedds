@@ -386,7 +386,6 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
                    const rmw_time_t* wait_timeout)
 {
     EPROS_PRINT_TRACE()
-
     // Wait set is not used
     (void)wait_set;
 
@@ -475,7 +474,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
         {
             timeout = wait_timeout->sec * 1000;
 
-            uint64_t timeout_ms = wait_timeout->nsec / 1000;
+            uint64_t timeout_ms = wait_timeout->nsec / 1000000;
             if ((UINT64_MAX - timeout) <= timeout_ms)
             {
                 // Overflow
