@@ -41,7 +41,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
             // TODO micro_rtps_id is duplicated in publisher_id and in publisher_gid.data
             CustomPublisher* publisher_info = (CustomPublisher*)memory_node->data;
             publisher_info->publisher_id    = mr_object_id(micro_node->id_gen++, MR_PUBLISHER_ID);
-            publisher_info->owner_node = micro_node;
+            publisher_info->owner_node      = micro_node;
             publisher_info->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
             publisher_info->session                                 = &micro_node->session;
             publisher_info->type_support =
@@ -60,7 +60,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 memcpy(publisher_info->publisher_gid.data, &publisher_info->publisher_id, sizeof(mrObjectId));
 
                 uint16_t publisher_req;
-#ifdef USE_XML_PROFILES
+#ifdef MICRO_RTPS_USE_XML
                 char publisher_name[20];
                 generate_name(&publisher_info->publisher_id, publisher_name, sizeof(publisher_name));
                 char xml_buffer[400];
@@ -72,7 +72,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 publisher_req = mr_write_configure_publisher_xml(publisher_info->session, micro_node->reliable_output,
                                                                  publisher_info->publisher_id,
                                                                  micro_node->participant_id, xml_buffer, MR_REPLACE);
-#else
+#elif defined(MICRO_RTPS_USE_REFS)
                 // Publisher by reference does not make sense in current micro RTPS implementation.
                 publisher_req = mr_write_configure_publisher_xml(publisher_info->session, micro_node->reliable_output,
                                                                  publisher_info->publisher_id,
@@ -81,7 +81,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 publisher_info->topic_id = mr_object_id(micro_node->id_gen++, MR_TOPIC_ID);
 
                 uint16_t topic_req;
-#ifdef USE_XML_PROFILES
+#ifdef MICRO_RTPS_USE_XML
                 if (!build_topic_xml(topic_name, publisher_info->type_support, qos_policies, xml_buffer,
                                      sizeof(xml_buffer)))
                 {
@@ -89,24 +89,24 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     return NULL;
                 }
 
-                topic_req =
-                    mr_write_configure_topic_xml(publisher_info->session, micro_node->micro_node->reliable_output, publisher_info->topic_id,
-                                                 micro_node->participant_id, xml_buffer, MR_REPLACE);
-#else
+                topic_req = mr_write_configure_topic_xml(publisher_info->session, micro_node->reliable_output,
+                                                         publisher_info->topic_id, micro_node->participant_id,
+                                                         xml_buffer, MR_REPLACE);
+#elif defined(MICRO_RTPS_USE_REFS)
                 char profile_name[64];
                 if (!build_topic_profile(topic_name, profile_name, sizeof(profile_name)))
                 {
                     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
                     return NULL;
                 }
-                topic_req =
-                    mr_write_create_topic_ref(publisher_info->session, micro_node->reliable_output, publisher_info->topic_id,
-                                              micro_node->participant_id, profile_name, MR_REPLACE);
+                topic_req = mr_write_create_topic_ref(publisher_info->session, micro_node->reliable_output,
+                                                      publisher_info->topic_id, micro_node->participant_id,
+                                                      profile_name, MR_REPLACE);
 #endif
                 publisher_info->datawriter_id = mr_object_id(micro_node->id_gen++, MR_DATAWRITER_ID);
 
                 uint16_t datawriter_req;
-#ifdef USE_XML_PROFILES
+#ifdef MICRO_RTPS_USE_XML
                 if (!build_datawriter_xml(topic_name, publisher_info->type_support, qos_policies, xml_buffer,
                                           sizeof(xml_buffer)))
                 {
@@ -115,9 +115,9 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 }
 
                 datawriter_req = mr_write_configure_datawriter_xml(
-                    publisher_info->session, micro_node->micro_node, publisher_info->datawriter_id,
+                    publisher_info->session, micro_node->reliable_output, publisher_info->datawriter_id,
                     publisher_info->publisher_id, xml_buffer, MR_REPLACE);
-#else
+#elif defined(MICRO_RTPS_USE_REFS)
                 if (!build_datawriter_profile(topic_name, profile_name, sizeof(profile_name)))
                 {
                     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
@@ -188,11 +188,12 @@ rmw_ret_t rmw_destroy_publisher(rmw_node_t* node, rmw_publisher_t* publisher)
     {
         CustomPublisher* publisher_info = (CustomPublisher*)publisher->data;
 
-        int delete_writer =
-            mr_write_delete_entity(publisher_info->session, publisher_info->owner_node->reliable_output, publisher_info->datawriter_id);
-        int delete_topic = mr_write_delete_entity(publisher_info->session, publisher_info->owner_node->reliable_output, publisher_info->topic_id);
-        int delete_publisher =
-            mr_write_delete_entity(publisher_info->session, publisher_info->owner_node->reliable_output, publisher_info->publisher_id);
+        int delete_writer = mr_write_delete_entity(publisher_info->session, publisher_info->owner_node->reliable_output,
+                                                   publisher_info->datawriter_id);
+        int delete_topic  = mr_write_delete_entity(publisher_info->session, publisher_info->owner_node->reliable_output,
+                                                  publisher_info->topic_id);
+        int delete_publisher = mr_write_delete_entity(
+            publisher_info->session, publisher_info->owner_node->reliable_output, publisher_info->publisher_id);
 
         uint8_t status[3];
         uint16_t requests[] = {delete_writer, delete_topic, delete_publisher};

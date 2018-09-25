@@ -32,7 +32,44 @@ find_package(MicroRTPS REQUIRED MODULE)
 find_package(rmw REQUIRED)
 find_package(rosidl_generator_c REQUIRED)
 find_package(rosidl_typesupport_micrortps_c REQUIRED)
-    
+   
+
+if(EXISTS ${PROJECT_SOURCE_DIR}/rmw_micrortps.config)
+    configure_file(${PROJECT_SOURCE_DIR}/rmw_micrortps.config ${PROJECT_SOURCE_DIR}/CMakeCache.txt COPYONLY)
+    load_cache(${PROJECT_SOURCE_DIR})
+    file(REMOVE ${PROJECT_SOURCE_DIR}/CMakeCache.txt)
+else()
+    message(FATAL_ERROR "No rmw_micrortps.config found.")
+endif()
+
+# Transport handle define macros.
+set(MICRO_RTPS_SERIAL OFF)
+set(MICRO_RTPS_UDP OFF)
+if(${CONFIG_MICRO_RTPS_TRANSPORT} STREQUAL "serial")
+    set(MICRO_RTPS_SERIAL ON)
+elseif(${CONFIG_MICRO_RTPS_TRANSPORT} STREQUAL "udp")
+    set(MICRO_RTPS_UDP ON)
+else()
+    message(FATAL_ERROR "rmw_micrortps.config transport not supported. Use \"serial\" or \"udp\"")
+endif()
+
+# Create entities type define macros.
+set(MICRO_RTPS_USE_REFS OFF)
+set(MICRO_RTPS_USE_XML OFF)
+if(${CONFIG_MICRO_RTPS_CREATION_MODE} STREQUAL "refs")
+    set(MICRO_RTPS_USE_REFS ON)
+elseif(${CONFIG_MICRO_RTPS_CREATION_MODE} STREQUAL "xml")
+    set(MICRO_RTPS_USE_XML ON)
+else()
+    message(FATAL_ERROR "rmw_micrortps.config creation mode not supported. Use \"refs\" or \"xmls\"")
+endif()
+
+# Create source files with the define
+configure_file(${PROJECT_SOURCE_DIR}/src/config.h.in
+    ${PROJECT_SOURCE_DIR}/src/config.h
+)
+
+
 file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.c)
 add_library(${PROJECT_NAME} ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME}

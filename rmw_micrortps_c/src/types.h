@@ -3,6 +3,8 @@
 
 #include "memory.h"
 
+#include "config.h"
+
 #include "rosidl_generator_c/message_type_support_struct.h"
 #include "rosidl_typesupport_micrortps_c/message_type_support.h"
 #include <rmw/types.h>
@@ -11,37 +13,6 @@
 #include <micrortps/client/client.h>
 
 #include <stddef.h>
-
-#define MICRO_RTPS_SERIAL
-
-#define MAX_TRANSPORT_MTU 512
-#define MAX_HISTORY 16
-#define MAX_BUFFER_SIZE MAX_TRANSPORT_MTU* MAX_HISTORY
-
-#define MAX_NODES 1
-#define MAX_PUBLISHERS_X_NODE 4
-#define MAX_SUBSCRIPTIONS_X_NODE 4
-#define RMW_MICRORTPS_SUBSCRIBER_RAW_BUFFER_SIZE MAX_TRANSPORT_MTU
-
-#define RMW_TOPIC_NAME_MAX_NAME_LENGTH 50
-
-#ifndef USE_REFS
-#ifndef USE_XML_REP
-#define USE_XML_REP
-#endif
-#endif
-
-// typedef struct message_type_support_callbacks_t message_type_support_callbacks_t;
-
-#define RMW_NODE_NAME_MAX_NAME_LENGTH 255
-#define RMW_TOPIC_NAME_MAX_NAME_LENGTH 50
-#define RMW_TYPE_NAME_MAX_NAME_LENGTH 250
-
-#ifndef USE_REFS
-#ifndef USE_XML_REP
-#define USE_XML_REP
-#endif
-#endif
 
 typedef struct CustomSubscription
 {
@@ -61,9 +32,8 @@ typedef struct CustomSubscription
         uint8_t* read;
         size_t raw_data_size; /// \Note Used to keep track of the DataSize type
     } tmp_raw_buffer;
-    
-    bool waiting_for_response;
 
+    bool waiting_for_response;
 
     struct Item mem;
 } CustomSubscription;
@@ -80,14 +50,13 @@ typedef struct CustomPublisher
 
     struct CustomNode* owner_node;
 
-
 } CustomPublisher;
 
 typedef struct CustomNode
 {
 #ifdef MICRO_RTPS_SERIAL
     mrSerialTransport transport;
-#else
+#elif defined(MICRO_RTPS_UDP)
     mrUDPTransport transport;
 #endif
     mrSession session;
@@ -107,20 +76,11 @@ typedef struct CustomNode
     uint8_t input_reliable_stream_buffer[MAX_BUFFER_SIZE];
     uint8_t output_reliable_stream_buffer[MAX_BUFFER_SIZE];
 
-    uint8_t deserialize_temp_buffer[300];
+    uint8_t deserialize_temp_buffer[MAX_TRANSPORT_MTU];
 
     uint16_t id_gen;
 
 } CustomNode;
-
-//mrStreamId best_input;
-//mrStreamId reliable_input;
-//mrStreamId best_output;
-//mrStreamId reliable_output;
-
-//uint8_t input_reliable_stream_buffer[MAX_BUFFER_SIZE];
-//uint8_t output_best_effort_stream_buffer[MAX_BUFFER_SIZE];
-//uint8_t output_reliable_stream_buffer[MAX_BUFFER_SIZE];
 
 void init_nodes_memory(struct MemPool* memory, CustomNode nodes[MAX_NODES], size_t size);
 
