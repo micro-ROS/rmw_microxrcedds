@@ -66,7 +66,7 @@ endif()
 
 # Create source files with the define
 configure_file(${PROJECT_SOURCE_DIR}/src/config.h.in
-    ${PROJECT_SOURCE_DIR}/src/config.h
+    ${PROJECT_BINARY_DIR}/config/config.h
 )
 
 
@@ -86,7 +86,12 @@ ament_target_dependencies(${PROJECT_NAME}
 
 configure_rmw_library(${PROJECT_NAME})
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    PRIVATE
+        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
+)
 set_target_properties(${PROJECT_NAME} PROPERTIES
     C_STANDARD 99
     C_STANDARD_REQUIRED YES
