@@ -12,9 +12,11 @@
 
 #include <stddef.h>
 
-#define MAX_TRANSPORT_MTU 128
-#define MAX_HISTORY 4
-#define MAX_BUFFER_SIZE MAX_TRANSPORT_MTU * MAX_HISTORY
+#define MICRO_RTPS_SERIAL
+
+#define MAX_TRANSPORT_MTU 512
+#define MAX_HISTORY 16
+#define MAX_BUFFER_SIZE MAX_TRANSPORT_MTU* MAX_HISTORY
 
 #define MAX_NODES 1
 #define MAX_PUBLISHERS_X_NODE 4
@@ -83,7 +85,11 @@ typedef struct CustomPublisher
 
 typedef struct CustomNode
 {
-    mrUDPTransport udp;
+#ifdef MICRO_RTPS_SERIAL
+    mrSerialTransport transport;
+#else
+    mrUDPTransport transport;
+#endif
     mrSession session;
     mrObjectId participant_id;
     struct MemPool publisher_mem;
