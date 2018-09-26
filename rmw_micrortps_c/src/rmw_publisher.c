@@ -131,7 +131,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 rmw_publisher->data = publisher_info;
                 uint16_t requests[] = {publisher_req, datawriter_req, topic_req};
                 uint8_t status[sizeof(requests) / 2];
-                if (!mr_run_session_until_status(publisher_info->session, 1000, requests, status, 3))
+                if (!mr_run_session_until_all_status(publisher_info->session, 1000, requests, status, 3))
                 {
                     RMW_SET_ERROR_MSG("Issues creating micro RTPS entities");
                 }
@@ -197,7 +197,7 @@ rmw_ret_t rmw_destroy_publisher(rmw_node_t* node, rmw_publisher_t* publisher)
 
         uint8_t status[3];
         uint16_t requests[] = {delete_writer, delete_topic, delete_publisher};
-        if (!mr_run_session_until_status(publisher_info->session, 1000, requests, status, 3))
+        if (!mr_run_session_until_all_status(publisher_info->session, 1000, requests, status, 3))
         {
             RMW_SET_ERROR_MSG("unable to remove publisher from the server");
             result_ret = RMW_RET_ERROR;

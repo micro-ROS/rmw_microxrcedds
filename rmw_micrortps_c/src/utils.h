@@ -5,6 +5,7 @@
 
 #include <rmw/rmw.h>
 
+// TODO decide wat to do with this macro.
 #define EPROS_PRINT_TRACE() ; // printf("func %s, in file %s:%d\n", __func__, __FILE__, __LINE__);
 
 void rmw_delete(void* rmw_allocated_ptr);
@@ -32,7 +33,5 @@ bool build_participant_profile(char profile_name[], size_t buffer_size);
 bool build_topic_profile(const char* topic_name, char profile_name[], size_t buffer_size);
 bool build_datawriter_profile(const char* topic_name, char profile_name[], size_t buffer_size);
 bool build_datareader_profile(const char* topic_name, char profile_name[], size_t buffer_size);
-
-
 
 #endif // !UTILS_H

@@ -499,14 +499,14 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     }
 
     // read until status or timeout
-    bool OK;
+    bool session_rv;
     custom_node->on_subcription = false;
     while (custom_node->on_subcription == false)
     {
-        OK = mr_run_session_until_timeout(&custom_node->session, timeout);
+        session_rv = mr_run_session_until_timeout(&custom_node->session, timeout);
         if (timeout != MR_TIMEOUT_INF)
         {
-            if (!OK)
+            if (!session_rv)
             {
                 break;
             }

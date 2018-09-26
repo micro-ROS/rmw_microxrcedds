@@ -237,7 +237,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     uint8_t status[1];
     uint16_t requests[] = {participant_req};
 
-    if (!mr_run_session_until_status(&node_info->session, 1000, requests, status, 1))
+    if (!mr_run_session_until_all_status(&node_info->session, 1000, requests, status, 1))
     {
         mr_delete_session(&node_info->session);
         CLOSE_TRANSPORT(&node_info->transport);
