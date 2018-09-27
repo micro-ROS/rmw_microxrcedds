@@ -35,7 +35,7 @@ void on_status(mrSession* session, mrObjectId object_id, uint16_t request_id, ui
 }
 
 void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrStreamId stream_id,
-              struct MicroBuffer* serialization, void* args)
+              struct mcBuffer* serialization, void* args)
 {
     (void)session;
     (void)request_id;
@@ -72,7 +72,7 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
     node->on_subcription                      = true;
 
     // get buffer size
-    custom_subscription->tmp_raw_buffer.raw_data_size = micro_buffer_remaining(serialization);
+    custom_subscription->tmp_raw_buffer.raw_data_size = mc_buffer_remaining(serialization);
     if (custom_subscription->tmp_raw_buffer.raw_data_size == 0)
     {
         return;
@@ -105,8 +105,8 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
         custom_subscription->tmp_raw_buffer.write    = custom_subscription->tmp_raw_buffer.mem_head;
     }
 
-    // Save microbuffer for a future processing (Endianness + custom_subscription->tmp_raw_buffer.raw_data_size +
-    // MicroBufferData)
+    // Save mcBuffer for a future processing (Endianness + custom_subscription->tmp_raw_buffer.raw_data_size +
+    // mcBufferData)
     memcpy(custom_subscription->tmp_raw_buffer.write, &serialization->endianness, sizeof(serialization->endianness));
     custom_subscription->tmp_raw_buffer.write += sizeof(serialization->endianness);
 

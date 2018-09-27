@@ -246,7 +246,7 @@ rmw_ret_t rmw_publish(const rmw_publisher_t* publisher, const void* ros_message)
         payload_length                                    = (uint16_t)(payload_length + 4); // request_id + object_id
         payload_length                                    = (uint16_t)(payload_length + 4); // request_id + object_id
 
-        MicroBuffer mb;
+        mcBuffer mb;
         if (prepare_stream_to_write(&publisher_info->session->streams, publisher_info->owner_node->reliable_output,
                                     (uint16_t)(payload_length + topic_length + SUBHEADER_SIZE), &mb))
         {
@@ -257,10 +257,10 @@ rmw_ret_t rmw_publish(const rmw_publisher_t* publisher, const void* ros_message)
             init_base_object_request(&publisher_info->session->info, publisher_info->datawriter_id, &payload.base);
             written &= serialize_WRITE_DATA_Payload_Data(&mb, &payload);
             written &=
-                serialize_uint32_t(&mb, topic_length); // REMOVE: when topics have not a previous size in the agent.
+                mc_serialize_uint32_t(&mb, topic_length); // REMOVE: when topics have not a previous size in the agent.
 
-            MicroBuffer mb_topic;
-            init_micro_buffer(&mb_topic, mb.iterator, topic_length);
+            mcBuffer mb_topic;
+            mc_init_buffer(&mb_topic, mb.iterator, topic_length);
             written &= functions->cdr_serialize(ros_message, &mb_topic);
 
             written &= mr_run_session_until_confirm_delivery(publisher_info->session, 1000);

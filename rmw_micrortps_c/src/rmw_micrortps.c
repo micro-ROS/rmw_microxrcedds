@@ -199,7 +199,7 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
     CustomSubscription* custom_subscription = (CustomSubscription*)subscription->data;
 
     // Check reading zone
-    Endianness endianness;
+    mcEndianness endianness;
     if (custom_subscription->tmp_raw_buffer.read == custom_subscription->tmp_raw_buffer.write)
     {
         RMW_SET_ERROR_MSG("Nothing to be read from temporal raw buffer");
@@ -237,8 +237,8 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
         return RMW_RET_ERROR;
     }
 
-    struct MicroBuffer serialization;
-    init_micro_buffer(&serialization, custom_subscription->tmp_raw_buffer.read,
+    struct mcBuffer serialization;
+    mc_init_buffer(&serialization, custom_subscription->tmp_raw_buffer.read,
                       custom_subscription->tmp_raw_buffer.raw_data_size);
     serialization.endianness = endianness;
 
