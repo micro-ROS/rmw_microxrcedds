@@ -44,8 +44,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
             publisher_info->owner_node      = micro_node;
             publisher_info->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
             publisher_info->session                                 = &micro_node->session;
-            publisher_info->type_support =
-                get_message_typesupport_handle(type_support, rosidl_typesupport_micrortps_c__identifier)->data;
+            publisher_info->type_support = type_support;
             if (!publisher_info->type_support)
             {
                 RMW_SET_ERROR_MSG("type support not from this implementation");

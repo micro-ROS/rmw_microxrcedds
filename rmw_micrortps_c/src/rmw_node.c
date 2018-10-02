@@ -9,6 +9,7 @@
 
 #ifdef MICRO_RTPS_SERIAL
 #include <fcntl.h> // O_RDWR, O_NOCTTY, O_NONBLOCK
+#include <termios.h>
 #endif
 
 #ifdef MICRO_RTPS_SERIAL
@@ -133,7 +134,6 @@ void clear_node(rmw_node_t* node)
 rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_id)
 {
     uint32_t key                = rand();
-    static const size_t history = 8;
 
     struct Item* memory_node = get_memory(&node_memory);
     if (!memory_node)
@@ -145,13 +145,61 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     CustomNode* node_info = (CustomNode*)memory_node->data;
 
 #ifdef MICRO_RTPS_SERIAL
-    int fd = open(SERIAL_DEVICE, O_RDWR | O_NOCTTY | O_NONBLOCK);
-    if (!mr_init_serial_transport_fd(&node_info->transport, fd, 0, 1))
+    int fd = open(SERIAL_DEVICE, O_RDWR | O_NOCTTY);
+    if (0 < fd)
     {
-        RMW_SET_ERROR_MSG("Can not create an serial connection");
-        return NULL;
+        struct termios tty_config;
+        memset(&tty_config, 0, sizeof(tty_config));
+        if (0 == tcgetattr(fd, &tty_config))
+        {
+            /* Setting CONTROL OPTIONS. */
+            tty_config.c_cflag |= CREAD;    // Enable read.
+            tty_config.c_cflag |= CLOCAL;   // Set local mode.
+            tty_config.c_cflag &= ~PARENB;  // Disable parity.
+            tty_config.c_cflag &= ~CSTOPB;  // Set one stop bit.
+            tty_config.c_cflag &= ~CSIZE;   // Mask the character size bits.
+            tty_config.c_cflag |= CS8;      // Set 8 data bits.
+            tty_config.c_cflag &= ~CRTSCTS; // Disable hardware flow control.
+
+            /* Setting LOCAL OPTIONS. */
+            tty_config.c_lflag &= ~ICANON;  // Set non-canonical input.
+            tty_config.c_lflag &= ~ECHO;    // Disable echoing of input characters.
+            tty_config.c_lflag &= ~ECHOE;   // Disable echoing the erase character.
+            tty_config.c_lflag &= ~ISIG;    // Disable SIGINTR, SIGSUSP, SIGDSUSP and SIGQUIT signals.
+
+            /* Setting INPUT OPTIONS. */
+            tty_config.c_iflag &= ~IXON;    // Disable output software flow control.
+            tty_config.c_iflag &= ~IXOFF;   // Disable input software flow control.
+            tty_config.c_iflag &= ~INPCK;   // Disable parity check.
+            tty_config.c_iflag &= ~ISTRIP;  // Disable strip parity bits.
+            tty_config.c_iflag &= ~IGNBRK;  // No ignore break condition.
+            tty_config.c_iflag &= ~IGNCR;   // No ignore carrier return.
+            tty_config.c_iflag &= ~INLCR;   // No map NL to CR.
+            tty_config.c_iflag &= ~ICRNL;   // No map CR to NL.
+
+            /* Setting OUTPUT OPTIONS. */
+            tty_config.c_oflag &= ~OPOST;   // Set raw output.
+
+            /* Setting OUTPUT CHARACTERS. */
+            tty_config.c_cc[VMIN] = 34;
+            tty_config.c_cc[VTIME] = 10;
+
+            /* Setting BAUD RATE. */
+            cfsetispeed(&tty_config, B115200);
+            cfsetospeed(&tty_config, B115200);
+
+            if (0 == tcsetattr(fd, TCSANOW, &tty_config))
+            {
+                if(!mr_init_serial_transport_fd(&node_info->transport, fd, 0, 1))
+                {
+                    RMW_SET_ERROR_MSG("Can not create an serial connection");
+                    return NULL;
+                }
+            }
+        }
     }
     printf("Serial mode => dev: %s\n", SERIAL_DEVICE);
+
 #elif defined(MICRO_RTPS_UDP)
     // TODO(Borja) Think how we are going to select transport to use
     if (!mr_init_udp_transport(&node_info->transport, UDP_IP, UDP_PORT))
@@ -169,10 +217,10 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     mr_set_status_callback(&node_info->session, on_status, NULL);
 
     node_info->reliable_input = mr_create_input_reliable_stream(
-        &node_info->session, node_info->input_reliable_stream_buffer, node_info->transport.comm.mtu * history, history);
+        &node_info->session, node_info->input_reliable_stream_buffer, node_info->transport.comm.mtu * MAX_HISTORY, MAX_HISTORY);
     node_info->reliable_output =
         mr_create_output_reliable_stream(&node_info->session, node_info->output_reliable_stream_buffer,
-                                         node_info->transport.comm.mtu * history, history);
+                                         node_info->transport.comm.mtu * MAX_HISTORY, MAX_HISTORY);
 
     rmw_node_t* node_handle = NULL;
     node_handle             = rmw_node_allocate();

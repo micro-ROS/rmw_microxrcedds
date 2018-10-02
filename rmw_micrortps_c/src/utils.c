@@ -274,7 +274,7 @@ bool build_topic_profile(const char* topic_name, char profile_name[], size_t buf
     bool ret                 = false;
     if (buffer_size >= (strlen(format) - 2 + strlen(topic_name)))
     {
-        ret = sprintf(profile_name, format, topic_name) == sizeof(format) - 2 + strlen(topic_name);
+        ret = sprintf(profile_name, format, topic_name) == sizeof(format) + strlen(topic_name) - 3;
     }
     return ret;
 }
@@ -286,7 +286,7 @@ bool build_datawriter_profile(const char* topic_name, char profile_name[], size_
     bool ret                 = false;
     if (buffer_size >= (strlen(format) - 2 + strlen(topic_name)))
     {
-        ret = sprintf(profile_name, format, topic_name) == sizeof(format) - 2 + strlen(topic_name);
+        ret = sprintf(profile_name, format, topic_name) == sizeof(format) + strlen(topic_name) - 3;
     }
     return ret;
 }
@@ -298,7 +298,7 @@ bool build_datareader_profile(const char* topic_name, char profile_name[], size_
     bool ret                 = false;
     if (buffer_size >= (strlen(format) - 2 + strlen(topic_name)))
     {
-        ret = sprintf(profile_name, format, topic_name) == sizeof(format) - 2 + strlen(topic_name);
+        ret = sprintf(profile_name, format, topic_name) == sizeof(format) + strlen(topic_name) - 3;
     }
     return ret;
 }
