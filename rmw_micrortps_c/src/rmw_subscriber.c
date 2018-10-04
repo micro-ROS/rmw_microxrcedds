@@ -44,10 +44,6 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
             subscription_info->owner_node                                 = micro_node;
 
             subscription_info->waiting_for_response = false;
-            subscription_info->tmp_raw_buffer.write = subscription_info->tmp_raw_buffer.mem_head;
-            subscription_info->tmp_raw_buffer.read  = subscription_info->tmp_raw_buffer.mem_head;
-            subscription_info->tmp_raw_buffer.mem_tail =
-                &subscription_info->tmp_raw_buffer.mem_head[sizeof(subscription_info->tmp_raw_buffer.mem_head)];
 
             subscription_info->type_support_callbacks =
                 get_message_typesupport_handle(type_support, rosidl_typesupport_micrortps_c__identifier)->data;

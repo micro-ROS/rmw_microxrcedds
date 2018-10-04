@@ -24,14 +24,7 @@ typedef struct CustomSubscription
     struct CustomNode* owner_node;
     mrSession* session;
 
-    struct
-    {
-        uint8_t mem_head[RMW_MICRORTPS_SUBSCRIBER_RAW_BUFFER_SIZE];
-        uint8_t* mem_tail; /// \Note MemTail always points to the last non readable array data
-        uint8_t* write;
-        uint8_t* read;
-        size_t raw_data_size; /// \Note Used to keep track of the DataSize type
-    } tmp_raw_buffer;
+    struct mcBuffer micro_buffer;
 
     bool waiting_for_response;
     uint16_t suncription_request;

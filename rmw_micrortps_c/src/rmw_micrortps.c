@@ -198,68 +198,13 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
     // Extract subscriber info
     CustomSubscription* custom_subscription = (CustomSubscription*)subscription->data;
 
-    // Check reading zone
-    mcEndianness endianness;
-    if (custom_subscription->tmp_raw_buffer.read == custom_subscription->tmp_raw_buffer.write)
-    {
-        RMW_SET_ERROR_MSG("Nothing to be read from temporal raw buffer");
-        return RMW_RET_ERROR;
-    }
-    if ((custom_subscription->tmp_raw_buffer.read + sizeof(endianness) +
-         sizeof(custom_subscription->tmp_raw_buffer.raw_data_size)) > custom_subscription->tmp_raw_buffer.write)
-    {
-        custom_subscription->tmp_raw_buffer.read  = custom_subscription->tmp_raw_buffer.mem_head;
-        custom_subscription->tmp_raw_buffer.write = custom_subscription->tmp_raw_buffer.mem_head;
-        custom_subscription->tmp_raw_buffer.mem_tail =
-            &custom_subscription->tmp_raw_buffer.mem_head[sizeof(custom_subscription->tmp_raw_buffer.mem_head)];
-
-        RMW_SET_ERROR_MSG("Error in raw buffer. Temporal raw buffer will be restarted");
-        return RMW_RET_ERROR;
-    }
-
-    // Extract raw message from temporal buffer
-    memcpy(&endianness, custom_subscription->tmp_raw_buffer.read, sizeof(endianness));
-    custom_subscription->tmp_raw_buffer.read += sizeof(endianness);
-
-    memcpy(&custom_subscription->tmp_raw_buffer.raw_data_size, custom_subscription->tmp_raw_buffer.read,
-           sizeof(custom_subscription->tmp_raw_buffer.raw_data_size));
-    custom_subscription->tmp_raw_buffer.read += sizeof(custom_subscription->tmp_raw_buffer.raw_data_size);
-
-    if ((custom_subscription->tmp_raw_buffer.read + custom_subscription->tmp_raw_buffer.raw_data_size) >
-        custom_subscription->tmp_raw_buffer.write)
-    {
-        custom_subscription->tmp_raw_buffer.read  = custom_subscription->tmp_raw_buffer.mem_head;
-        custom_subscription->tmp_raw_buffer.write = custom_subscription->tmp_raw_buffer.mem_head;
-        custom_subscription->tmp_raw_buffer.mem_tail =
-            &custom_subscription->tmp_raw_buffer.mem_head[sizeof(custom_subscription->tmp_raw_buffer.mem_head)];
-
-        RMW_SET_ERROR_MSG("Error in raw buffer. Temporal raw buffer will be restarted");
-        return RMW_RET_ERROR;
-    }
-
-    struct mcBuffer serialization;
-    mc_init_buffer(&serialization, custom_subscription->tmp_raw_buffer.read,
-                      custom_subscription->tmp_raw_buffer.raw_data_size);
-    serialization.endianness = endianness;
-
-    custom_subscription->tmp_raw_buffer.read += custom_subscription->tmp_raw_buffer.raw_data_size;
-
-    // Check if there are more data
-    if (custom_subscription->tmp_raw_buffer.read == custom_subscription->tmp_raw_buffer.write)
-    {
-        custom_subscription->tmp_raw_buffer.read  = custom_subscription->tmp_raw_buffer.mem_head;
-        custom_subscription->tmp_raw_buffer.write = custom_subscription->tmp_raw_buffer.mem_head;
-        custom_subscription->tmp_raw_buffer.mem_tail =
-            &custom_subscription->tmp_raw_buffer.mem_head[sizeof(custom_subscription->tmp_raw_buffer.mem_head)];
-    }
-
-
+    
     // Restart desserialized buffer
     ResetBuffer(custom_subscription->owner_node->miscellaneous_temp_buffer, sizeof(custom_subscription->owner_node->miscellaneous_temp_buffer));
 
 
     // Extract serialiced message using typesupport
-    bool deserialize_rv = custom_subscription->type_support_callbacks->cdr_deserialize(&serialization, ros_message);
+    bool deserialize_rv = custom_subscription->type_support_callbacks->cdr_deserialize(&custom_subscription->micro_buffer, ros_message);
     if (taken != NULL)
     {
         *taken = deserialize_rv;
@@ -514,23 +459,6 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     }
 
 
-    /*
-    bool session_rv;
-    custom_node->on_subcription = false;
-    while (custom_node->on_subcription == false)
-    {
-        session_rv = mr_run_session_until_timeout(&custom_node->session, timeout);
-        if (timeout != MR_TIMEOUT_INF)
-        {
-            if (!session_rv)
-            {
-                break;
-            }
-        }
-    }
-    */
-        
-
     // Clean non-received
     bool is_timeout = true;
     if (subscriptions != NULL)
@@ -539,7 +467,8 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
         {
             // Check if there are any data
             CustomSubscription* custom_subscription = (CustomSubscription*)(subscriptions->subscribers[i]);
-            if (custom_subscription->tmp_raw_buffer.write == custom_subscription->tmp_raw_buffer.read)
+            //if (custom_subscription->tmp_raw_buffer.write == custom_subscription->tmp_raw_buffer.read)
+            if (custom_subscription->waiting_for_response)
             {
                 subscriptions->subscribers[i] = NULL;
             }
