@@ -389,6 +389,10 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     // Wait set is not used
     (void)wait_set;
 
+    // for subcription requests and response
+    uint16_t subcription_request[MAX_SUBSCRIPTIONS_X_NODE];
+    uint8_t subcription_status_request[MAX_SUBSCRIPTIONS_X_NODE];
+
     // Go throw all subscriptions
     CustomNode* custom_node          = NULL;
     size_t subscriber_requests_count = 0;
@@ -406,8 +410,13 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
                 if (custom_subscription->waiting_for_response == false)
                 {
                     custom_subscription->waiting_for_response = true;
-                    mr_write_request_data(&custom_node->session, custom_node->reliable_output, custom_subscription->datareader_id, custom_node->reliable_input, NULL);
+                    custom_subscription->suncription_request = mr_write_request_data(&custom_node->session, custom_node->reliable_output, custom_subscription->datareader_id, custom_node->reliable_input, NULL);
+                    
                 }
+
+
+                // Reset the request id
+                subcription_request[i] = custom_subscription->suncription_request;
             }
         }
     }
@@ -499,6 +508,13 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     }
 
     // read until status or timeout
+    if (subscriptions->subscriber_count > 0)
+    {
+        mr_run_session_until_one_status(&custom_node->session, timeout, subcription_request, subcription_status_request, subscriptions->subscriber_count);
+    }
+
+
+    /*
     bool session_rv;
     custom_node->on_subcription = false;
     while (custom_node->on_subcription == false)
@@ -512,6 +528,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
             }
         }
     }
+    */
         
 
     // Clean non-received

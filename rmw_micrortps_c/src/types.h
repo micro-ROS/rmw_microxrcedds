@@ -34,6 +34,7 @@ typedef struct CustomSubscription
     } tmp_raw_buffer;
 
     bool waiting_for_response;
+    uint16_t suncription_request;
 
     struct Item mem;
 } CustomSubscription;
