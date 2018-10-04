@@ -255,11 +255,11 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
 
 
     // Restart desserialized buffer
-    ResetBuffer(custom_subscription->owner_node->deserialize_temp_buffer, sizeof(custom_subscription->owner_node->deserialize_temp_buffer));
+    ResetBuffer(custom_subscription->owner_node->miscellaneous_temp_buffer, sizeof(custom_subscription->owner_node->miscellaneous_temp_buffer));
 
 
     // Extract serialiced message using typesupport
-    bool deserialize_rv = custom_subscription->type_support->cdr_deserialize(&serialization, ros_message);
+    bool deserialize_rv = custom_subscription->type_support_callbacks->cdr_deserialize(&serialization, ros_message);
     if (taken != NULL)
     {
         *taken = deserialize_rv;

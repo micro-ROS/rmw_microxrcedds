@@ -49,9 +49,9 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
             subscription_info->tmp_raw_buffer.mem_tail =
                 &subscription_info->tmp_raw_buffer.mem_head[sizeof(subscription_info->tmp_raw_buffer.mem_head)];
 
-            subscription_info->type_support =
+            subscription_info->type_support_callbacks =
                 get_message_typesupport_handle(type_support, rosidl_typesupport_micrortps_c__identifier)->data;
-            if (!subscription_info->type_support)
+            if (!subscription_info->type_support_callbacks)
             {
                 RMW_SET_ERROR_MSG("type support not from this implementation");
             }
@@ -88,7 +88,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                 uint16_t topic_req;
 #ifdef MICRO_RTPS_USE_XML
 
-                if (!build_topic_xml(topic_name, subscription_info->type_support, qos_policies, xml_buffer,
+                if (!build_topic_xml(topic_name, subscription_info->type_support_callbacks, qos_policies, xml_buffer,
                                      sizeof(xml_buffer)))
                 {
                     RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
@@ -113,7 +113,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
 
                 uint16_t datareader_req;
 #ifdef MICRO_RTPS_USE_XML
-                if (!build_datareader_xml(topic_name, subscription_info->type_support, qos_policies, xml_buffer,
+                if (!build_datareader_xml(topic_name, subscription_info->type_support_callbacks, qos_policies, xml_buffer,
                                           sizeof(xml_buffer)))
                 {
                     RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");

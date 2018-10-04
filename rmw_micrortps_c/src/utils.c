@@ -64,7 +64,7 @@ void custompublisher_clear(CustomPublisher* publisher)
         memset(&publisher->topic_id, 0, sizeof(mrObjectId));
         publisher->publisher_gid.implementation_identifier = NULL;
         memset(&publisher->publisher_gid.data, 0, RMW_GID_STORAGE_SIZE);
-        publisher->type_support = NULL;
+        publisher->type_support_callbacks = NULL;
     }
 }
 
@@ -103,7 +103,7 @@ void customsubscription_clear(CustomSubscription* subscription)
         memset(&subscription->topic_id, 0, sizeof(mrObjectId));
         subscription->subscription_gid.implementation_identifier = NULL;
         memset(&subscription->subscription_gid.data, 0, RMW_GID_STORAGE_SIZE);
-        subscription->type_support = NULL;
+        subscription->type_support_callbacks = NULL;
     }
 }
 
@@ -274,7 +274,7 @@ bool build_topic_profile(const char* topic_name, char profile_name[], size_t buf
     bool ret                 = false;
     if (buffer_size >= (strlen(format) - 2 + strlen(topic_name)))
     {
-        ret = sprintf(profile_name, format, topic_name) == sizeof(format) + strlen(topic_name) - 3;
+        ret = sprintf(profile_name, format, topic_name) == strlen(format) - 2 + strlen(topic_name);
     }
     return ret;
 }
@@ -286,7 +286,7 @@ bool build_datawriter_profile(const char* topic_name, char profile_name[], size_
     bool ret                 = false;
     if (buffer_size >= (strlen(format) - 2 + strlen(topic_name)))
     {
-        ret = sprintf(profile_name, format, topic_name) == sizeof(format) + strlen(topic_name) - 3;
+        ret = sprintf(profile_name, format, topic_name) == strlen(format) - 2 + strlen(topic_name);
     }
     return ret;
 }
@@ -298,7 +298,7 @@ bool build_datareader_profile(const char* topic_name, char profile_name[], size_
     bool ret                 = false;
     if (buffer_size >= (strlen(format) - 2 + strlen(topic_name)))
     {
-        ret = sprintf(profile_name, format, topic_name) == sizeof(format) + strlen(topic_name) - 3;
+        ret = sprintf(profile_name, format, topic_name) == strlen(format) -2 + strlen(topic_name);
     }
     return ret;
 }

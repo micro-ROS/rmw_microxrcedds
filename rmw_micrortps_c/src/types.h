@@ -20,7 +20,7 @@ typedef struct CustomSubscription
     mrObjectId datareader_id;
     mrObjectId topic_id;
     rmw_gid_t subscription_gid;
-    const message_type_support_callbacks_t* type_support;
+    const message_type_support_callbacks_t* type_support_callbacks;
     struct CustomNode* owner_node;
     mrSession* session;
 
@@ -44,7 +44,7 @@ typedef struct CustomPublisher
     mrObjectId datawriter_id;
     mrObjectId topic_id;
     rmw_gid_t publisher_gid;
-    const message_type_support_callbacks_t* type_support;
+    const message_type_support_callbacks_t* type_support_callbacks;
     mrSession* session;
     struct Item mem;
 
@@ -76,7 +76,7 @@ typedef struct CustomNode
     uint8_t input_reliable_stream_buffer[MAX_BUFFER_SIZE];
     uint8_t output_reliable_stream_buffer[MAX_BUFFER_SIZE];
 
-    uint8_t deserialize_temp_buffer[MAX_TRANSPORT_MTU];
+    uint8_t miscellaneous_temp_buffer[MAX_TRANSPORT_MTU];
 
     uint16_t id_gen;
 

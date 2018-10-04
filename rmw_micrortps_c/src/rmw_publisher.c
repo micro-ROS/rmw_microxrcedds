@@ -44,8 +44,8 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
             publisher_info->owner_node      = micro_node;
             publisher_info->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
             publisher_info->session                                 = &micro_node->session;
-            publisher_info->type_support = type_support;
-            if (!publisher_info->type_support)
+            publisher_info->type_support_callbacks = type_support->data;
+            if (!publisher_info->type_support_callbacks)
             {
                 RMW_SET_ERROR_MSG("type support not from this implementation");
             }
@@ -81,7 +81,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
 
                 uint16_t topic_req;
 #ifdef MICRO_RTPS_USE_XML
-                if (!build_topic_xml(topic_name, publisher_info->type_support, qos_policies, xml_buffer,
+                if (!build_topic_xml(topic_name, publisher_info->type_support_callbacks, qos_policies, xml_buffer,
                                      sizeof(xml_buffer)))
                 {
                     RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
@@ -106,7 +106,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
 
                 uint16_t datawriter_req;
 #ifdef MICRO_RTPS_USE_XML
-                if (!build_datawriter_xml(topic_name, publisher_info->type_support, qos_policies, xml_buffer,
+                if (!build_datawriter_xml(topic_name, publisher_info->type_support_callbacks, qos_policies, xml_buffer,
                                           sizeof(xml_buffer)))
                 {
                     RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
@@ -238,7 +238,7 @@ rmw_ret_t rmw_publish(const rmw_publisher_t* publisher, const void* ros_message)
     else
     {
         CustomPublisher* publisher_info                   = (CustomPublisher*)publisher->data;
-        const message_type_support_callbacks_t* functions = publisher_info->type_support;
+        const message_type_support_callbacks_t* functions = publisher_info->type_support_callbacks;
         bool written                                      = true;
         uint32_t topic_length                             = functions->get_serialized_size(ros_message);
         uint32_t payload_length                           = 0;
