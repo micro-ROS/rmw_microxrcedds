@@ -18,7 +18,7 @@ cmake_policy(SET CMP0057 NEW)
 
 project(rmw_microxrcedds
     VERSION 0.1.0
-    LANGUAGES C
+    #LANGUAGES C
     )
 
 find_package(ament_cmake_ros REQUIRED)
@@ -126,6 +126,16 @@ register_rmw_implementation(
     "c:rosidl_typesupport_c:rosidl_typesupport_microxrcedds_c"
     "cpp:rosidl_typesupport_cpp:rosidl_typesupport_introspection_cpp"
 )
+
+
+if(BUILD_TESTING)   
+    find_package(ament_lint_auto REQUIRED)
+    ament_lint_auto_find_test_dependencies()
+
+
+    add_subdirectory(test)
+endif()
+
 
 ament_package(
     CONFIG_EXTRAS_POST "rmw_microxrcedds-extras.cmake"
