@@ -11,7 +11,6 @@
 #include "rmw/allocators.h"
 #include "rmw/error_handling.h"
 #include "rosidl_typesupport_micrortps_c/identifier.h"
-#include "rosidl_typesupport_micrortps_c/deserialize_buffer_utility.h"
 
 #include <micrortps/client/client.h>
 
@@ -198,13 +197,9 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
     // Extract subscriber info
     CustomSubscription* custom_subscription = (CustomSubscription*)subscription->data;
 
-    
-    // Restart desserialized buffer
-    ResetBuffer(custom_subscription->owner_node->miscellaneous_temp_buffer, sizeof(custom_subscription->owner_node->miscellaneous_temp_buffer));
-
 
     // Extract serialiced message using typesupport
-    bool deserialize_rv = custom_subscription->type_support_callbacks->cdr_deserialize(&custom_subscription->micro_buffer, ros_message);
+    bool deserialize_rv = custom_subscription->type_support_callbacks->cdr_deserialize(&custom_subscription->micro_buffer, ros_message, custom_subscription->owner_node->miscellaneous_temp_buffer, sizeof(custom_subscription->owner_node->miscellaneous_temp_buffer));
     if (taken != NULL)
     {
         *taken = deserialize_rv;
@@ -334,7 +329,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     // Wait set is not used
     (void)wait_set;
 
-    // for subcription requests and response
+    // for Subscription requests and response
     uint16_t subcription_request[MAX_SUBSCRIPTIONS_X_NODE];
     uint8_t subcription_status_request[MAX_SUBSCRIPTIONS_X_NODE];
 
@@ -355,13 +350,13 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
                 if (custom_subscription->waiting_for_response == false)
                 {
                     custom_subscription->waiting_for_response = true;
-                    custom_subscription->suncription_request = mr_write_request_data(&custom_node->session, custom_node->reliable_output, custom_subscription->datareader_id, custom_node->reliable_input, NULL);
+                    custom_subscription->subcription_request = mr_write_request_data(&custom_node->session, custom_node->reliable_output, custom_subscription->datareader_id, custom_node->reliable_input, NULL);
                     
                 }
 
 
                 // Reset the request id
-                subcription_request[i] = custom_subscription->suncription_request;
+                subcription_request[i] = custom_subscription->subcription_request;
             }
         }
     }
