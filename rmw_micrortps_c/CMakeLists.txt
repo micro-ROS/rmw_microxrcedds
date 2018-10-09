@@ -24,10 +24,10 @@ project(rmw_micrortps
 find_package(ament_cmake_ros REQUIRED)
 find_package(rcutils REQUIRED)
 
-find_package(micrortps_cmake_module REQUIRED)
+find_package(microxrcedds_cmake_module REQUIRED)
 find_package(microcdr REQUIRED CONFIG)
-find_package(micrortps_client REQUIRED CONFIG)
-find_package(MicroRTPS REQUIRED MODULE)
+find_package(microxrcedds_client REQUIRED CONFIG)
+find_package(MicroXRCEDDS REQUIRED MODULE)
 
 find_package(rmw REQUIRED)
 find_package(rosidl_generator_c REQUIRED)
@@ -74,7 +74,7 @@ file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.c)
 add_library(${PROJECT_NAME} ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME}
     microcdr
-    micrortps_client
+    microxrcedds_client
     )
     
 ament_target_dependencies(${PROJECT_NAME}

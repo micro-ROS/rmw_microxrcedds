@@ -13,9 +13,9 @@
 #endif
 
 #ifdef MICRO_RTPS_SERIAL
-#define CLOSE_TRANSPORT(transport) mr_close_serial_transport(transport)
+#define CLOSE_TRANSPORT(transport) uxr_close_serial_transport(transport)
 #elif defined(MICRO_RTPS_UDP)
-#define CLOSE_TRANSPORT(transport) mr_close_udp_transport(transport)
+#define CLOSE_TRANSPORT(transport) uxr_close_udp_transport(transport)
 #endif
 
 static struct MemPool node_memory;
@@ -26,7 +26,7 @@ void init_rmw_node()
     init_nodes_memory(&node_memory, custom_nodes, MAX_NODES);
 }
 
-void on_status(mrSession* session, mrObjectId object_id, uint16_t request_id, uint8_t status, void* args)
+void on_status(uxrSession* session, uxrObjectId object_id, uint16_t request_id, uint8_t status, void* args)
 {
     (void)session;
     (void)object_id;
@@ -35,8 +35,8 @@ void on_status(mrSession* session, mrObjectId object_id, uint16_t request_id, ui
     (void)args;
 }
 
-void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrStreamId stream_id,
-              struct mcBuffer* serialization, void* args)
+void on_topic(uxrSession* session, uxrObjectId object_id, uint16_t request_id, uxrStreamId stream_id,
+              struct ucdrBuffer* serialization, void* args)
 {
     (void)session;
     (void)request_id;
@@ -83,7 +83,7 @@ void clear_node(rmw_node_t* node)
 {
     CustomNode* micro_node = (CustomNode*)node->data;
     // TODO make sure that session deletion deletes participant and related entities.
-    mr_delete_session(&micro_node->session);
+    uxr_delete_session(&micro_node->session);
     CLOSE_TRANSPORT(&micro_node->transport);
     rmw_node_delete(node);
 }
@@ -147,7 +147,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
 
             if (0 == tcsetattr(fd, TCSANOW, &tty_config))
             {
-                if(!mr_init_serial_transport_fd(&node_info->transport, fd, 0, 1))
+                if(!uxr_init_serial_transport_fd(&node_info->transport, fd, 0, 1))
                 {
                     RMW_SET_ERROR_MSG("Can not create an serial connection");
                     return NULL;
@@ -159,7 +159,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
 
 #elif defined(MICRO_RTPS_UDP)
     // TODO(Borja) Think how we are going to select transport to use
-    if (!mr_init_udp_transport(&node_info->transport, UDP_IP, UDP_PORT))
+    if (!uxr_init_udp_transport(&node_info->transport, UDP_IP, UDP_PORT))
     {
         RMW_SET_ERROR_MSG("Can not create an udp connection");
         return NULL;
@@ -167,16 +167,16 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     printf("UDP mode => ip: %s - port: %hu\n", UDP_IP, UDP_PORT);
 #endif
 
-    mr_init_session(&node_info->session, &node_info->transport.comm, key);
+    uxr_init_session(&node_info->session, &node_info->transport.comm, key);
 
-    mr_init_session(&node_info->session, &node_info->transport.comm, key);
-    mr_set_topic_callback(&node_info->session, on_topic, node_info);
-    mr_set_status_callback(&node_info->session, on_status, NULL);
+    uxr_init_session(&node_info->session, &node_info->transport.comm, key);
+    uxr_set_topic_callback(&node_info->session, on_topic, node_info);
+    uxr_set_status_callback(&node_info->session, on_status, NULL);
 
-    node_info->reliable_input = mr_create_input_reliable_stream(
+    node_info->reliable_input = uxr_create_input_reliable_stream(
         &node_info->session, node_info->input_reliable_stream_buffer, node_info->transport.comm.mtu * MAX_HISTORY, MAX_HISTORY);
     node_info->reliable_output =
-        mr_create_output_reliable_stream(&node_info->session, node_info->output_reliable_stream_buffer,
+        uxr_create_output_reliable_stream(&node_info->session, node_info->output_reliable_stream_buffer,
                                          node_info->transport.comm.mtu * MAX_HISTORY, MAX_HISTORY);
 
     rmw_node_t* node_handle = NULL;
@@ -208,7 +208,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     }
     memcpy((char*)node_handle->namespace_, namespace_, strlen(namespace_) + 1);
 
-    if (!mr_create_session(&node_info->session))
+    if (!uxr_create_session(&node_info->session))
     {
         CLOSE_TRANSPORT(&node_info->transport);
         rmw_node_delete(node_handle);
@@ -217,7 +217,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     }
 
     // Create the Node participant. At this point a Node correspond withçt a Session with one participant.
-    node_info->participant_id = mr_object_id(node_info->id_gen++, MR_PARTICIPANT_ID);
+    node_info->participant_id = uxr_object_id(node_info->id_gen++, UXR_PARTICIPANT_ID);
     uint16_t participant_req;
 #ifdef MICRO_RTPS_USE_XML
     char participant_xml[300];
@@ -227,8 +227,8 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
         return NULL;
     }
     participant_req =
-        mr_write_configure_participant_xml(&node_info->session, node_info->reliable_output, node_info->participant_id,
-                                           domain_id, participant_xml, MR_REPLACE);
+        uxr_write_configure_participant_xml(&node_info->session, node_info->reliable_output, node_info->participant_id,
+                                           domain_id, participant_xml, UXR_REPLACE);
 #elif defined(MICRO_RTPS_USE_REFS)
     char profile_name[20];
     if (!build_participant_profile(profile_name, sizeof(profile_name)))
@@ -236,15 +236,15 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
         RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
         return NULL;
     }
-    participant_req = mr_write_create_participant_ref(&node_info->session, node_info->reliable_output,
-                                                      node_info->participant_id, domain_id, profile_name, MR_REPLACE);
+    participant_req = uxr_write_create_participant_ref(&node_info->session, node_info->reliable_output,
+                                                      node_info->participant_id, domain_id, profile_name, UXR_REPLACE);
 #endif
     uint8_t status[1];
     uint16_t requests[] = {participant_req};
 
-    if (!mr_run_session_until_all_status(&node_info->session, 1000, requests, status, 1))
+    if (!uxr_run_session_until_all_status(&node_info->session, 1000, requests, status, 1))
     {
-        mr_delete_session(&node_info->session);
+        uxr_delete_session(&node_info->session);
         CLOSE_TRANSPORT(&node_info->transport);
         rmw_node_delete(node_handle);
         RMW_SET_ERROR_MSG("Issues creating micro RTPS entities");

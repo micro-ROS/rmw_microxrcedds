@@ -12,7 +12,7 @@
 #include "rmw/error_handling.h"
 #include "rosidl_typesupport_micrortps_c/identifier.h"
 
-#include <micrortps/client/client.h>
+#include <uxr/client/client.h>
 
 #include <limits.h>
 #include <time.h>
@@ -350,7 +350,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
                 if (custom_subscription->waiting_for_response == false)
                 {
                     custom_subscription->waiting_for_response = true;
-                    custom_subscription->subscription_request = mr_write_request_data(&custom_node->session, custom_node->reliable_output, custom_subscription->datareader_id, custom_node->reliable_input, NULL);
+                    custom_subscription->subscription_request = uxr_write_request_data(&custom_node->session, custom_node->reliable_output, custom_subscription->datareader_id, custom_node->reliable_input, NULL);
                     
                 }
 
@@ -444,13 +444,13 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     }
     else
     {
-        timeout = MR_TIMEOUT_INF;
+        timeout = UXR_TIMEOUT_INF;
     }
 
     // read until status or timeout
     if (subscriptions->subscriber_count > 0)
     {
-        mr_run_session_until_one_status(&custom_node->session, timeout, subscription_request, subscription_status_request, subscriptions->subscriber_count);
+        uxr_run_session_until_one_status(&custom_node->session, timeout, subscription_request, subscription_status_request, subscriptions->subscriber_count);
     }
 
 

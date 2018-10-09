@@ -8,21 +8,21 @@
   <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake_ros</buildtool_depend>
-  <buildtool_depend>micrortps_cmake_module</buildtool_depend>
+  <buildtool_depend>microxrcedds_cmake_module</buildtool_depend>
 
   <buildtool_export_depend>ament_cmake</buildtool_export_depend>
   
   <build_depend>microcdr</build_depend>
-  <build_depend>micrortps_client</build_depend>
-  <build_depend>micrortps_cmake_module</build_depend>
+  <build_depend>microxrcedds_client</build_depend>
+  <build_depend>microxrcedds_cmake_module</build_depend>
   <build_depend>rcutils</build_depend>
   <build_depend>rmw</build_depend>
   <build_depend>rosidl_generator_c</build_depend>
   <build_depend>rosidl_typesupport_micrortps_c</build_depend>
 
   <build_export_depend>microcdr</build_export_depend>
-  <build_export_depend>micrortps_client</build_export_depend>
-  <build_export_depend>micrortps_cmake_module</build_export_depend>
+  <build_export_depend>microxrcedds_client</build_export_depend>
+  <build_export_depend>microxrcedds_cmake_module</build_export_depend>
   <build_export_depend>rcutils</build_export_depend>
   <build_export_depend>rmw</build_export_depend>
   <build_export_depend>rosidl_generator_c</build_export_depend>

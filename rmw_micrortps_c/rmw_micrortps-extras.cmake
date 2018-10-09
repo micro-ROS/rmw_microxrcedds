@@ -14,11 +14,11 @@
 
 # copied from rmw_micrortps/rmw_micrortps-extras.cmake
 
-find_package(micrortps_cmake_module REQUIRED)
+find_package(microxrcedds_cmake_module REQUIRED)
 find_package(microcdr REQUIRED CONFIG)
-find_package(micrortps_client REQUIRED CONFIG)
-find_package(MicroRTPS REQUIRED MODULE)
+find_package(microxrcedds_client REQUIRED CONFIG)
+find_package(MicroXRCEDDS REQUIRED MODULE)
 
-list(APPEND rmw_micrortps_INCLUDE_DIRS ${MicroRTPS_INCLUDE_DIR})
+list(APPEND rmw_micrortps_INCLUDE_DIRS ${MicroXRCEDDS_INCLUDE_DIR})
 # specific order: dependents before dependencies
-list(APPEND rmw_micrortps_LIBRARIES micrortps_client microcdr)
+list(APPEND rmw_micrortps_LIBRARIES microxrcedds_client microcdr)

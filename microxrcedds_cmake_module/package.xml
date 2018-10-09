@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
-  <name>micrortps_cmake_module</name>
+  <name>microxrcedds_cmake_module</name>
   <version>0.5.1</version>
   <description>Provide CMake module to find eProsima MicroRTPS.</description>
   <maintainer email="dthomas@osrfoundation.org">Dirk Thomas</maintainer>

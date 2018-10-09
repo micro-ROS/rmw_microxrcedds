@@ -12,21 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.5)
-
-project(micrortps_cmake_module)
-
-find_package(ament_cmake REQUIRED)
-
-if(BUILD_TESTING)
-    find_package(ament_lint_auto REQUIRED)
-    ament_lint_auto_find_test_dependencies()
-endif()
-
-ament_package(
-    CONFIG_EXTRAS "micrortps_cmake_module-extras.cmake"
-    )
-
-install(DIRECTORY cmake
-    DESTINATION share/${PROJECT_NAME}
-    )
+list(INSERT CMAKE_MODULE_PATH 0 "${microxrcedds_cmake_module_DIR}/Modules")

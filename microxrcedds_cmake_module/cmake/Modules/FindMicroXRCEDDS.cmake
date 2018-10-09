@@ -18,29 +18,29 @@
 #
 # Output variables:
 #
-# - MicroRTPS_FOUND: flag indicating if the package was found
-# - MicroRTPS_INCLUDE_DIR: Paths to the header files
-#
+# - MicroXRCEDDS_FOUND: flag indicating if the package was found
+# - MicroXRCEDDS_INCLUDE_DIR: Paths to the header files
+# 
 # Example usage:
 #
-#   find_package(micrortps_cmake_module REQUIRED)
-#   find_package(MicroRTPS MODULE)
-#   # use MicroRTPS_* variables
+#   find_package(microxrcedds_cmake_module REQUIRED)
+#   find_package(MicroXRCEDDS MODULE)
+#   # use MicroXRCEDDS_* variables
 #
 ###############################################################################
 
 # lint_cmake: -convention/filename, -package/stdargs
 
-set(MicroRTPS_FOUND FALSE)
+set(MicroXRCEDDS_FOUND FALSE)
 
-find_path(MicroRTPS_INCLUDE_DIR
-  NAMES micrortps/)
+find_path(${MicroXRCEDDS_INCLUDE_DIR}
+  NAMES microxrcedds/)
 
 find_package(microcdr REQUIRED CONFIG)
-find_package(micrortps_client REQUIRED CONFIG)
+find_package(microxrcedds_client REQUIRED CONFIG)
 
 string(REGEX MATCH "^[0-9]+\\.[0-9]+" microcdr_MAJOR_MINOR_VERSION "${microcdr_VERSION}")
-string(REGEX MATCH "^[0-9]+\\.[0-9]+" micrortps_client_MAJOR_MINOR_VERSION "${micrortps_client_VERSION}")
+string(REGEX MATCH "^[0-9]+\\.[0-9]+" microxrcedds_client_MAJOR_MINOR_VERSION "${microxrcedds_client_VERSION}")
 
 find_library(MicroCDR_LIBRARY_RELEASE
   NAMES microcdr-${microcdr_MAJOR_MINOR_VERSION} microcdr)
@@ -66,10 +66,10 @@ else()
 endif()
 
 find_library(MicroRTPSClient_LIBRARY_RELEASE
-  NAMES micrortps_client-${micrortps_MAJOR_MINOR_VERSION} micrortps_client)
+  NAMES microxrcedds_client-${micrortps_MAJOR_MINOR_VERSION} microxrcedds_client)
 
 find_library(MicroRTPSClient_LIBRARY_DEBUG
-  NAMES micrortps_clientd-${micrortps_client_MAJOR_MINOR_VERSION})
+  NAMES microxrcedds_clientd-${microxrcedds_client_MAJOR_MINOR_VERSION})
 
 if(MicroRTPSClient_LIBRARY_RELEASE AND MicroRTPSClient_LIBRARY_DEBUG)
     set(MicroRTPSClient_LIBRARIES

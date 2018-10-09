@@ -59,9 +59,9 @@ void custompublisher_clear(CustomPublisher* publisher)
 {
     if (publisher)
     {
-        memset(&publisher->publisher_id, 0, sizeof(mrObjectId));
-        memset(&publisher->datawriter_id, 0, sizeof(mrObjectId));
-        memset(&publisher->topic_id, 0, sizeof(mrObjectId));
+        memset(&publisher->publisher_id, 0, sizeof(uxrObjectId));
+        memset(&publisher->datawriter_id, 0, sizeof(uxrObjectId));
+        memset(&publisher->topic_id, 0, sizeof(uxrObjectId));
         publisher->publisher_gid.implementation_identifier = NULL;
         memset(&publisher->publisher_gid.data, 0, RMW_GID_STORAGE_SIZE);
         publisher->type_support_callbacks = NULL;
@@ -98,9 +98,9 @@ void customsubscription_clear(CustomSubscription* subscription)
 {
     if (subscription)
     {
-        memset(&subscription->subscriber_id, 0, sizeof(mrObjectId));
-        memset(&subscription->datareader_id, 0, sizeof(mrObjectId));
-        memset(&subscription->topic_id, 0, sizeof(mrObjectId));
+        memset(&subscription->subscriber_id, 0, sizeof(uxrObjectId));
+        memset(&subscription->datareader_id, 0, sizeof(uxrObjectId));
+        memset(&subscription->topic_id, 0, sizeof(uxrObjectId));
         subscription->subscription_gid.implementation_identifier = NULL;
         memset(&subscription->subscription_gid.data, 0, RMW_GID_STORAGE_SIZE);
         subscription->type_support_callbacks = NULL;
@@ -162,7 +162,7 @@ int build_subscriber_xml(const char* subscriber_name, char xml[], size_t buffer_
     return ret;
 }
 
-int generate_name(const mrObjectId* id, char name[], size_t buffer_size)
+int generate_name(const uxrObjectId* id, char name[], size_t buffer_size)
 {
     static const char format[] = "%hu_%hi";
     int ret                    = 0;

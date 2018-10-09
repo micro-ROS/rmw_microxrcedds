@@ -2,7 +2,7 @@
 #ifndef RMW_MICRORTPS_CONFIG_H
 #define RMW_MICRORTPS_CONFIG_H
 
-#include <micrortps/client/config.h>
+#include <uxr/client/config.h>
 
 #cmakedefine MICRO_RTPS_UDP
 #cmakedefine MICRO_RTPS_SERIAL
@@ -12,10 +12,10 @@
 #ifdef MICRO_RTPS_UDP
     #define UDP_IP "@CONFIG_IP@"
     #define UDP_PORT @CONFIG_PORT@
-    #define MAX_TRANSPORT_MTU MR_CONFIG_UDP_TRANSPORT_MTU
+    #define MAX_TRANSPORT_MTU UXR_CONFIG_UDP_TRANSPORT_MTU
 #elif defined(MICRO_RTPS_SERIAL)
     #define SERIAL_DEVICE @CONFIG_DEVICE@
-    #define MAX_TRANSPORT_MTU MR_CONFIG_SERIAL_TRANSPORT_MTU
+    #define MAX_TRANSPORT_MTU UXR_CONFIG_SERIAL_TRANSPORT_MTU
 #endif
 
 #define MAX_HISTORY @CONFIG_MAX_HISTORY@
