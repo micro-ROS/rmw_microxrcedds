@@ -16,7 +16,7 @@ cmake_minimum_required(VERSION 3.5)
 set(CMAKE_CXX_CLANG_TIDY clang-tidy -checks=*)
 cmake_policy(SET CMP0057 NEW)
 
-project(rmw_micrortps
+project(rmw_microxrcedds
     VERSION 0.1.0
     LANGUAGES C
     )
@@ -29,37 +29,37 @@ find_package(MicroXRCEDDS REQUIRED MODULE)
 
 find_package(rmw REQUIRED)
 find_package(rosidl_generator_c REQUIRED)
-find_package(rosidl_typesupport_micrortps_c REQUIRED)
+find_package(rosidl_typesupport_microxrcedds_c REQUIRED)
    
 
-if(EXISTS ${PROJECT_SOURCE_DIR}/rmw_micrortps.config)
-    configure_file(${PROJECT_SOURCE_DIR}/rmw_micrortps.config ${PROJECT_SOURCE_DIR}/CMakeCache.txt COPYONLY)
+if(EXISTS ${PROJECT_SOURCE_DIR}/rmw_microxrcedds.config)
+    configure_file(${PROJECT_SOURCE_DIR}/rmw_microxrcedds.config ${PROJECT_SOURCE_DIR}/CMakeCache.txt COPYONLY)
     load_cache(${PROJECT_SOURCE_DIR})
     file(REMOVE ${PROJECT_SOURCE_DIR}/CMakeCache.txt)
 else()
-    message(FATAL_ERROR "No rmw_micrortps.config found.")
+    message(FATAL_ERROR "No rmw_microxrcedds.config found.")
 endif()
 
 # Transport handle define macros.
-set(MICRO_RTPS_SERIAL OFF)
-set(MICRO_RTPS_UDP OFF)
-if(${CONFIG_MICRO_RTPS_TRANSPORT} STREQUAL "serial")
-    set(MICRO_RTPS_SERIAL ON)
-elseif(${CONFIG_MICRO_RTPS_TRANSPORT} STREQUAL "udp")
-    set(MICRO_RTPS_UDP ON)
+set(MICRO_XRCEDDS_SERIAL OFF)
+set(MICRO_XRCEDDS_UDP OFF)
+if(${CONFIG_MICRO_XRCEDDS_TRANSPORT} STREQUAL "serial")
+    set(MICRO_XRCEDDS_SERIAL ON)
+elseif(${CONFIG_MICRO_XRCEDDS_TRANSPORT} STREQUAL "udp")
+    set(MICRO_XRCEDDS_UDP ON)
 else()
-    message(FATAL_ERROR "rmw_micrortps.config transport not supported. Use \"serial\" or \"udp\"")
+    message(FATAL_ERROR "rmw_microxrcedds.config transport not supported. Use \"serial\" or \"udp\"")
 endif()
 
 # Create entities type define macros.
-set(MICRO_RTPS_USE_REFS OFF)
-set(MICRO_RTPS_USE_XML OFF)
-if(${CONFIG_MICRO_RTPS_CREATION_MODE} STREQUAL "refs")
-    set(MICRO_RTPS_USE_REFS ON)
-elseif(${CONFIG_MICRO_RTPS_CREATION_MODE} STREQUAL "xml")
-    set(MICRO_RTPS_USE_XML ON)
+set(MICRO_XRCEDDS_USE_REFS OFF)
+set(MICRO_XRCEDDS_USE_XML OFF)
+if(${CONFIG_MICRO_XRCEDDS_CREATION_MODE} STREQUAL "refs")
+    set(MICRO_XRCEDDS_USE_REFS ON)
+elseif(${CONFIG_MICRO_XRCEDDS_CREATION_MODE} STREQUAL "xml")
+    set(MICRO_XRCEDDS_USE_XML ON)
 else()
-    message(FATAL_ERROR "rmw_micrortps.config creation mode not supported. Use \"refs\" or \"xmls\"")
+    message(FATAL_ERROR "rmw_microxrcedds.config creation mode not supported. Use \"refs\" or \"xmls\"")
 endif()
 
 # Create source files with the define
@@ -77,7 +77,7 @@ target_link_libraries(${PROJECT_NAME}
     
 ament_target_dependencies(${PROJECT_NAME}
     "rcutils"
-    "rosidl_typesupport_micrortps_c"
+    "rosidl_typesupport_microxrcedds_c"
     "rmw"
     "rosidl_generator_c"
 )
@@ -116,19 +116,19 @@ ament_export_include_directories(${PROJECT_SOURCE_DIR}/include)
 ament_export_libraries(${PROJECT_NAME})
 
 ament_export_dependencies(
-    rosidl_typesupport_micrortps_c
+    rosidl_typesupport_microxrcedds_c
     rosidl_generator_c
     rcutils
     rmw
     )
 
 register_rmw_implementation(
-    "c:rosidl_typesupport_c:rosidl_typesupport_micrortps_c"
+    "c:rosidl_typesupport_c:rosidl_typesupport_microxrcedds_c"
     "cpp:rosidl_typesupport_cpp:rosidl_typesupport_introspection_cpp"
 )
 
 ament_package(
-    CONFIG_EXTRAS_POST "rmw_micrortps-extras.cmake"
+    CONFIG_EXTRAS_POST "rmw_microxrcedds-extras.cmake"
     )
 
 install(

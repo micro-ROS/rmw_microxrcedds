@@ -3,7 +3,7 @@
 <package format="2">
   <name>microxrcedds_cmake_module</name>
   <version>0.5.1</version>
-  <description>Provide CMake module to find eProsima MicroRTPS.</description>
+  <description>Provide CMake module to find eProsima Micro XRCE-DDS.</description>
   <maintainer email="dthomas@osrfoundation.org">Dirk Thomas</maintainer>
   <license>Apache License 2.0</license>
   <author>Ricardo González</author>

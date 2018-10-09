@@ -1,6 +1,6 @@
 #include "rmw_publisher.h"
 
-#include "rmw_micrortps.h"
+#include "rmw_microxrcedds.h"
 #include "rmw_node.h"
 #include "types.h"
 #include "utils.h"
@@ -8,8 +8,8 @@
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
-#include <rosidl_typesupport_micrortps_c/identifier.h>
-#include <rosidl_typesupport_micrortps_c/message_type_support.h>
+#include <rosidl_typesupport_microxrcedds_c/identifier.h>
+#include <rosidl_typesupport_microxrcedds_c/message_type_support.h>
 
 
 rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_type_support_t* type_support,
@@ -36,7 +36,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
         }
         else
         {
-            // TODO micro_rtps_id is duplicated in publisher_id and in publisher_gid.data
+            // TODO micro_xrcedds_id is duplicated in publisher_id and in publisher_gid.data
             CustomPublisher* publisher_info = (CustomPublisher*)memory_node->data;
             publisher_info->publisher_id    = uxr_object_id(micro_node->id_gen++, UXR_PUBLISHER_ID);
             publisher_info->owner_node      = micro_node;
@@ -57,7 +57,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 memcpy(publisher_info->publisher_gid.data, &publisher_info->publisher_id, sizeof(uxrObjectId));
 
                 uint16_t publisher_req;
-#ifdef MICRO_RTPS_USE_XML
+#ifdef MICRO_XRCEDDS_USE_XML
                 char publisher_name[20];
                 generate_name(&publisher_info->publisher_id, publisher_name, sizeof(publisher_name));
                 char xml_buffer[400];
@@ -69,8 +69,8 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 publisher_req = uxr_write_configure_publisher_xml(publisher_info->session, micro_node->reliable_output,
                                                                  publisher_info->publisher_id,
                                                                  micro_node->participant_id, xml_buffer, UXR_REPLACE);
-#elif defined(MICRO_RTPS_USE_REFS)
-                // Publisher by reference does not make sense in current micro RTPS implementation.
+#elif defined(MICRO_XRCEDDS_USE_REFS)
+                // Publisher by reference does not make sense in current micro XRCE-DDS implementation.
                 publisher_req = uxr_write_configure_publisher_xml(publisher_info->session, micro_node->reliable_output,
                                                                  publisher_info->publisher_id,
                                                                  micro_node->participant_id, "", UXR_REPLACE);
@@ -78,7 +78,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 publisher_info->topic_id = uxr_object_id(micro_node->id_gen++, UXR_TOPIC_ID);
 
                 uint16_t topic_req;
-#ifdef MICRO_RTPS_USE_XML
+#ifdef MICRO_XRCEDDS_USE_XML
                 if (!build_topic_xml(topic_name, publisher_info->type_support_callbacks, qos_policies, xml_buffer,
                                      sizeof(xml_buffer)))
                 {
@@ -89,7 +89,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 topic_req = uxr_write_configure_topic_xml(publisher_info->session, micro_node->reliable_output,
                                                          publisher_info->topic_id, micro_node->participant_id,
                                                          xml_buffer, UXR_REPLACE);
-#elif defined(MICRO_RTPS_USE_REFS)
+#elif defined(MICRO_XRCEDDS_USE_REFS)
                 char profile_name[64];
                 if (!build_topic_profile(topic_name, profile_name, sizeof(profile_name)))
                 {
@@ -103,7 +103,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 publisher_info->datawriter_id = uxr_object_id(micro_node->id_gen++, UXR_DATAWRITER_ID);
 
                 uint16_t datawriter_req;
-#ifdef MICRO_RTPS_USE_XML
+#ifdef MICRO_XRCEDDS_USE_XML
                 if (!build_datawriter_xml(topic_name, publisher_info->type_support_callbacks, qos_policies, xml_buffer,
                                           sizeof(xml_buffer)))
                 {
@@ -114,7 +114,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 datawriter_req = uxr_write_configure_datawriter_xml(
                     publisher_info->session, micro_node->reliable_output, publisher_info->datawriter_id,
                     publisher_info->publisher_id, xml_buffer, UXR_REPLACE);
-#elif defined(MICRO_RTPS_USE_REFS)
+#elif defined(MICRO_XRCEDDS_USE_REFS)
                 if (!build_datawriter_profile(topic_name, profile_name, sizeof(profile_name)))
                 {
                     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
@@ -130,7 +130,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 uint8_t status[sizeof(requests) / 2];
                 if (!uxr_run_session_until_all_status(publisher_info->session, 1000, requests, status, 3))
                 {
-                    RMW_SET_ERROR_MSG("Issues creating micro RTPS entities");
+                    RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
                 }
                 else
                 {

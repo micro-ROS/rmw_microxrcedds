@@ -7,14 +7,14 @@
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 
-#ifdef MICRO_RTPS_SERIAL
+#ifdef MICRO_XRCEDDS_SERIAL
 #include <fcntl.h> // O_RDWR, O_NOCTTY, O_NONBLOCK
 #include <termios.h>
 #endif
 
-#ifdef MICRO_RTPS_SERIAL
+#ifdef MICRO_XRCEDDS_SERIAL
 #define CLOSE_TRANSPORT(transport) uxr_close_serial_transport(transport)
-#elif defined(MICRO_RTPS_UDP)
+#elif defined(MICRO_XRCEDDS_UDP)
 #define CLOSE_TRANSPORT(transport) uxr_close_udp_transport(transport)
 #endif
 
@@ -101,7 +101,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
 
     CustomNode* node_info = (CustomNode*)memory_node->data;
 
-#ifdef MICRO_RTPS_SERIAL
+#ifdef MICRO_XRCEDDS_SERIAL
     int fd = open(SERIAL_DEVICE, O_RDWR | O_NOCTTY);
     if (0 < fd)
     {
@@ -157,7 +157,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     }
     printf("Serial mode => dev: %s\n", SERIAL_DEVICE);
 
-#elif defined(MICRO_RTPS_UDP)
+#elif defined(MICRO_XRCEDDS_UDP)
     // TODO(Borja) Think how we are going to select transport to use
     if (!uxr_init_udp_transport(&node_info->transport, UDP_IP, UDP_PORT))
     {
@@ -219,7 +219,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     // Create the Node participant. At this point a Node correspond withçt a Session with one participant.
     node_info->participant_id = uxr_object_id(node_info->id_gen++, UXR_PARTICIPANT_ID);
     uint16_t participant_req;
-#ifdef MICRO_RTPS_USE_XML
+#ifdef MICRO_XRCEDDS_USE_XML
     char participant_xml[300];
     if (!build_participant_xml(domain_id, name, participant_xml, sizeof(participant_xml)))
     {
@@ -229,7 +229,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     participant_req =
         uxr_write_configure_participant_xml(&node_info->session, node_info->reliable_output, node_info->participant_id,
                                            domain_id, participant_xml, UXR_REPLACE);
-#elif defined(MICRO_RTPS_USE_REFS)
+#elif defined(MICRO_XRCEDDS_USE_REFS)
     char profile_name[20];
     if (!build_participant_profile(profile_name, sizeof(profile_name)))
     {
@@ -247,7 +247,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
         uxr_delete_session(&node_info->session);
         CLOSE_TRANSPORT(&node_info->transport);
         rmw_node_delete(node_handle);
-        RMW_SET_ERROR_MSG("Issues creating micro RTPS entities");
+        RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
         return NULL;
     }
 

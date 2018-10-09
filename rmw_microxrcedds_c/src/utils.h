@@ -1,5 +1,5 @@
-#ifndef RMW_MICRORTPS_UTILS_H_
-#define RMW_MICRORTPS_UTILS_H_
+#ifndef RMW_MICROXRCEDDS_UTILS_H_
+#define RMW_MICROXRCEDDS_UTILS_H_
 
 #include "types.h"
 

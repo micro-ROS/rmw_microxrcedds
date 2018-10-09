@@ -1,4 +1,4 @@
-#include "rmw_micrortps.h"
+#include "rmw_microxrcedds.h"
 
 #include "identifier.h"
 
@@ -10,7 +10,7 @@
 
 #include "rmw/allocators.h"
 #include "rmw/error_handling.h"
-#include "rosidl_typesupport_micrortps_c/identifier.h"
+#include "rosidl_typesupport_microxrcedds_c/identifier.h"
 
 #include <uxr/client/client.h>
 
@@ -21,7 +21,7 @@
 const char* rmw_get_implementation_identifier()
 {
     EPROS_PRINT_TRACE()
-    return eprosima_micrortps_identifier;
+    return eprosima_microxrcedds_identifier;
 }
 
 rmw_ret_t rmw_init()
@@ -69,7 +69,7 @@ const rmw_guard_condition_t* rmw_node_get_graph_guard_condition(const rmw_node_t
     EPROS_PRINT_TRACE()
     rmw_guard_condition_t* ret     = (rmw_guard_condition_t*)rmw_allocate(sizeof(rmw_guard_condition_t));
     ret->data                      = NULL;
-    ret->implementation_identifier = eprosima_micrortps_identifier;
+    ret->implementation_identifier = eprosima_microxrcedds_identifier;
     return ret;
 }
 
@@ -146,7 +146,7 @@ rmw_subscription_t* rmw_create_subscription(const rmw_node_t* node, const rosidl
     {
         RMW_SET_ERROR_MSG("node handle not from this implementation");
     }
-    else if (strcmp(type_support->typesupport_identifier, rosidl_typesupport_micrortps_c__identifier) != 0)
+    else if (strcmp(type_support->typesupport_identifier, rosidl_typesupport_microxrcedds_c__identifier) != 0)
     {
         RMW_SET_ERROR_MSG("TypeSupport handle not from this implementation");
     }

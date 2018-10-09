@@ -1,5 +1,5 @@
-#ifndef RMW_MICRORTPS_H_
-#define RMW_MICRORTPS_H_
+#ifndef RMW_MICROXRCEDDS_H_
+#define RMW_MICROXRCEDDS_H_
 
 #include "rmw/names_and_types.h"
 #include "rmw/rmw.h"
@@ -106,4 +106,4 @@ rmw_ret_t rmw_get_topic_names_and_types(const rmw_node_t* node, rcutils_allocato
 rmw_ret_t rmw_get_service_names_and_types(const rmw_node_t* node, rcutils_allocator_t* allocator,
                                           rmw_names_and_types_t* service_names_and_types);
 
-#endif // RMW_MICRORTPS_H_
+#endif // RMW_MICROXRCEDDS_H_

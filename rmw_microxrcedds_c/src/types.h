@@ -1,12 +1,12 @@
-#ifndef RMW_MICRORTPS_TYPES_H_
-#define RMW_MICRORTPS_TYPES_H_
+#ifndef RMW_MICROXRCEDDS_TYPES_H_
+#define RMW_MICROXRCEDDS_TYPES_H_
 
 #include "memory.h"
 
 #include "config.h"
 
 #include "rosidl_generator_c/message_type_support_struct.h"
-#include "rosidl_typesupport_micrortps_c/message_type_support.h"
+#include "rosidl_typesupport_microxrcedds_c/message_type_support.h"
 #include <rmw/types.h>
 
 #include <ucdr/microcdr.h>
@@ -48,9 +48,9 @@ typedef struct CustomPublisher
 
 typedef struct CustomNode
 {
-#ifdef MICRO_RTPS_SERIAL
+#ifdef MICRO_XRCEDDS_SERIAL
     uxrSerialTransport transport;
-#elif defined(MICRO_RTPS_UDP)
+#elif defined(MICRO_XRCEDDS_UDP)
     uxrUDPTransport transport;
 #endif
     uxrSession session;
@@ -78,4 +78,4 @@ typedef struct CustomNode
 
 void init_nodes_memory(struct MemPool* memory, CustomNode nodes[MAX_NODES], size_t size);
 
-#endif // !RMW_MICRORTPS_TYPES_H_
+#endif // !RMW_MICROXRCEDDS_TYPES_H_

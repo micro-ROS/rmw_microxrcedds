@@ -1,12 +1,12 @@
 #include "rmw_subscriber.h"
 
-#include "rmw_micrortps.h"
+#include "rmw_microxrcedds.h"
 #include "types.h"
 #include "utils.h"
 
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
-#include <rosidl_typesupport_micrortps_c/identifier.h>
+#include <rosidl_typesupport_microxrcedds_c/identifier.h>
 
 rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_message_type_support_t* type_support,
                                       const char* topic_name, const rmw_qos_profile_t* qos_policies,
@@ -36,7 +36,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
         }
         else
         {
-            // TODO micro_rtps_id is duplicated in subscriber_id and in subscription_gid.data
+            // TODO micro_xrcedds_id is duplicated in subscriber_id and in subscription_gid.data
             CustomSubscription* subscription_info = (CustomSubscription*)memory_node->data;
             subscription_info->subscriber_id      = uxr_object_id(micro_node->id_gen++, UXR_SUBSCRIBER_ID);
             subscription_info->subscription_gid.implementation_identifier = rmw_get_implementation_identifier();
@@ -46,7 +46,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
             subscription_info->waiting_for_response = false;
 
             subscription_info->type_support_callbacks =
-                get_message_typesupport_handle(type_support, rosidl_typesupport_micrortps_c__identifier)->data;
+                get_message_typesupport_handle(type_support, rosidl_typesupport_microxrcedds_c__identifier)->data;
             if (!subscription_info->type_support_callbacks)
             {
                 RMW_SET_ERROR_MSG("type support not from this implementation");
@@ -61,7 +61,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                 memcpy(subscription_info->subscription_gid.data, &subscription_info->subscriber_id, sizeof(uxrObjectId));
 
                 uint16_t subscriber_req;
-#ifdef MICRO_RTPS_USE_XML
+#ifdef MICRO_XRCEDDS_USE_XML
                 char subscriber_name[20];
                 generate_name(&subscription_info->subscriber_id, subscriber_name, sizeof(subscriber_name));
                 char xml_buffer[512];
@@ -73,8 +73,8 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                 subscriber_req = uxr_write_configure_subscriber_xml(&micro_node->session, micro_node->reliable_output,
                                                                    subscription_info->subscriber_id,
                                                                    micro_node->participant_id, xml_buffer, UXR_REPLACE);
-#elif defined(MICRO_RTPS_USE_REFS)
-                // Publisher by reference does not make sense in current micro RTPS implementation.
+#elif defined(MICRO_XRCEDDS_USE_REFS)
+                // Publisher by reference does not make sense in current micro XRCE-DDS implementation.
                 subscriber_req = uxr_write_configure_subscriber_xml(&micro_node->session, micro_node->reliable_output,
                                                                    subscription_info->subscriber_id,
                                                                    micro_node->participant_id, "", UXR_REPLACE);
@@ -82,7 +82,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                 subscription_info->topic_id = uxr_object_id(micro_node->id_gen++, UXR_TOPIC_ID);
 
                 uint16_t topic_req;
-#ifdef MICRO_RTPS_USE_XML
+#ifdef MICRO_XRCEDDS_USE_XML
 
                 if (!build_topic_xml(topic_name, subscription_info->type_support_callbacks, qos_policies, xml_buffer,
                                      sizeof(xml_buffer)))
@@ -94,7 +94,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                 topic_req = uxr_write_configure_topic_xml(&micro_node->session, micro_node->reliable_output,
                                                          subscription_info->topic_id, micro_node->participant_id,
                                                          xml_buffer, UXR_REPLACE);
-#elif defined(MICRO_RTPS_USE_REFS)
+#elif defined(MICRO_XRCEDDS_USE_REFS)
                 char profile_name[64];
                 if (!build_topic_profile(topic_name, profile_name, sizeof(profile_name)))
                 {
@@ -108,7 +108,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                 subscription_info->datareader_id = uxr_object_id(micro_node->id_gen++, UXR_DATAREADER_ID);
 
                 uint16_t datareader_req;
-#ifdef MICRO_RTPS_USE_XML
+#ifdef MICRO_XRCEDDS_USE_XML
                 if (!build_datareader_xml(topic_name, subscription_info->type_support_callbacks, qos_policies, xml_buffer,
                                           sizeof(xml_buffer)))
                 {
@@ -119,7 +119,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                 datareader_req = uxr_write_configure_datareader_xml(
                     &micro_node->session, micro_node->reliable_output, subscription_info->datareader_id,
                     subscription_info->subscriber_id, xml_buffer, UXR_REPLACE);
-#elif defined(MICRO_RTPS_USE_REFS)
+#elif defined(MICRO_XRCEDDS_USE_REFS)
                 if (!build_datareader_profile(topic_name, profile_name, sizeof(profile_name)))
                 {
                     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
@@ -135,7 +135,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                 uint16_t requests[] = {subscriber_req, topic_req, datareader_req};
                 if (!uxr_run_session_until_all_status(&micro_node->session, 1000, requests, status, 3))
                 {
-                    RMW_SET_ERROR_MSG("Issues creating micro RTPS entities");
+                    RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
                 }
                 else
                 {

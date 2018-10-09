@@ -130,8 +130,8 @@ int build_participant_xml(size_t domain_id, const char* participant_name, char x
 {
     static const char format[] =
         "<profiles><participant "
-        "profile_name=\"participant_profile\"><rtps><builtin><leaseDuration><durationbyname>INFINITE</durationbyname></"
-        "leaseDuration><domainId>%ld</domainId></builtin><name>%s</name></rtps></participant></profiles>";
+        "profile_name=\"participant_profile\"><xrcedds><builtin><leaseDuration><durationbyname>INFINITE</durationbyname></"
+        "leaseDuration><domainId>%ld</domainId></builtin><name>%s</name></xrcedds></participant></profiles>";
     int ret = 0;
     if (buffer_size >= (sizeof(format) - 5 + strlen(participant_name) + sizeof(domain_id)))
     {
@@ -238,7 +238,7 @@ int build_datawriter_xml(const char* topic_name, const message_type_support_call
 {
     static const char format[] =
         "<profiles><publisher "
-        "profile_name=\"rmw_micrortps_publisher\"><topic><kind>NO_KEY</kind><name>%s</"
+        "profile_name=\"rmw_microxrcedds_publisher\"><topic><kind>NO_KEY</kind><name>%s</"
         "name><dataType>%s</dataType><historyQos><kind>KEEP_LAST</kind><depth>5</depth></"
         "historyQos><durability><kind>TRANSIENT_LOCAL</kind></durability></topic></publisher></profiles>";
     return build_xml(format, topic_name, members, qos_policies, xml, buffer_size);
@@ -249,7 +249,7 @@ int build_datareader_xml(const char* topic_name, const message_type_support_call
 {
     static const char format[] =
         "<profiles><subscriber "
-        "profile_name=\"rmw_micrortps_subscriber\"><topic><kind>NO_KEY</kind><name>%s</"
+        "profile_name=\"rmw_microxrcedds_subscriber\"><topic><kind>NO_KEY</kind><name>%s</"
         "name><dataType>%s</dataType><historyQos><kind>KEEP_LAST</kind><depth>5</depth></"
         "historyQos><durability><kind>TRANSIENT_LOCAL</kind></durability></topic></subscriber></profiles>";
     return build_xml(format, topic_name, members, qos_policies, xml, buffer_size);

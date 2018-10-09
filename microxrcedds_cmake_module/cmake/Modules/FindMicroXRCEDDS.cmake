@@ -14,7 +14,7 @@
 
 ###############################################################################
 #
-# CMake module for finding eProsima MicroRTPS.
+# CMake module for finding eProsima MICROXRCEDDS.
 #
 # Output variables:
 #
@@ -65,36 +65,36 @@ else()
   set(MicroCDR_LIBRARIES "")
 endif()
 
-find_library(MicroRTPSClient_LIBRARY_RELEASE
-  NAMES microxrcedds_client-${micrortps_MAJOR_MINOR_VERSION} microxrcedds_client)
+find_library(MICROXRCEDDSClient_LIBRARY_RELEASE
+  NAMES microxrcedds_client-${microxrcedds_MAJOR_MINOR_VERSION} microxrcedds_client)
 
-find_library(MicroRTPSClient_LIBRARY_DEBUG
+find_library(MICROXRCEDDSClient_LIBRARY_DEBUG
   NAMES microxrcedds_clientd-${microxrcedds_client_MAJOR_MINOR_VERSION})
 
-if(MicroRTPSClient_LIBRARY_RELEASE AND MicroRTPSClient_LIBRARY_DEBUG)
-    set(MicroRTPSClient_LIBRARIES
-        optimized ${MicroRTPSClient_LIBRARY_RELEASE}
-        debug ${MicroRTPSClient_LIBRARY_DEBUG}
+if(MICROXRCEDDSClient_LIBRARY_RELEASE AND MICROXRCEDDSClient_LIBRARY_DEBUG)
+    set(MICROXRCEDDSClient_LIBRARIES
+        optimized ${MICROXRCEDDSClient_LIBRARY_RELEASE}
+        debug ${MICROXRCEDDSClient_LIBRARY_DEBUG}
         ${MicroCDR_LIBRARIES}
       )
-elseif(MicroRTPSClient_LIBRARY_RELEASE)
-    set(MicroRTPSClient_LIBRARIES
-        ${MicroRTPSClient_LIBRARY_RELEASE}
+elseif(MICROXRCEDDSClient_LIBRARY_RELEASE)
+    set(MICROXRCEDDSClient_LIBRARIES
+        ${MICROXRCEDDSClient_LIBRARY_RELEASE}
         ${MicroCDR_LIBRARIES}
       )
-elseif(MicroRTPSClient_LIBRARY_DEBUG)
-    set(MicroRTPSClient_LIBRARIES
-        ${MicroRTPSClient_LIBRARY_DEBUG}
+elseif(MICROXRCEDDSClient_LIBRARY_DEBUG)
+    set(MICROXRCEDDSClient_LIBRARIES
+        ${MICROXRCEDDSClient_LIBRARY_DEBUG}
         ${MicroCDR_LIBRARIES}
       )
 else()
-    set(MicroRTPSClient_LIBRARIES "")
+    set(MICROXRCEDDSClient_LIBRARIES "")
 endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(MicroRTPSClient
-        FOUND_VAR MicroRTPSClient_FOUND
+find_package_handle_standard_args(MICROXRCEDDSClient
+        FOUND_VAR MICROXRCEDDSClient_FOUND
   REQUIRED_VARS
-        MicroRTPSClient_INCLUDE_DIR
-        MicroRTPSClient_LIBRARIES
+        MICROXRCEDDSClient_INCLUDE_DIR
+        MICROXRCEDDSClient_LIBRARIES
 )

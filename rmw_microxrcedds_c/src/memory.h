@@ -1,5 +1,5 @@
-#ifndef RMW_MICRORTPS_MEMORY_H_
-#define RMW_MICRORTPS_MEMORY_H_
+#ifndef RMW_MICROXRCEDDS_MEMORY_H_
+#define RMW_MICROXRCEDDS_MEMORY_H_
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -26,4 +26,4 @@ struct Item* get_memory(struct MemPool* mem);
 void put_memory(struct MemPool* mem, struct Item* item);
 void free_mem_pool(struct MemPool* mem);
 
-#endif // !RMW_MICRORTPS_MEMORY_H_
+#endif // !RMW_MICROXRCEDDS_MEMORY_H_

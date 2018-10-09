@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>rmw_micrortps</name>
+  <name>rmw_microxrcedds</name>
   <version>0.0.1</version>
-  <description>Implement the microROS interface using eProsima MicroRTPS.</description>
+  <description>Implement the microROS interface using eProsima Micro XRCE-DDS.</description>
   <maintainer email="borjaouterelo@eprosima.com">Borja Outerelo</maintainer>
   <license>Apache License 2.0</license>
 
@@ -16,13 +16,13 @@
   <build_depend>rcutils</build_depend>
   <build_depend>rmw</build_depend>
   <build_depend>rosidl_generator_c</build_depend>
-  <build_depend>rosidl_typesupport_micrortps_c</build_depend>
+  <build_depend>rosidl_typesupport_microxrcedds_c</build_depend>
 
   <build_export_depend>microxrcedds_cmake_module</build_export_depend>
   <build_export_depend>rcutils</build_export_depend>
   <build_export_depend>rmw</build_export_depend>
   <build_export_depend>rosidl_generator_c</build_export_depend>
-  <build_export_depend>rosidl_typesupport_micrortps_c</build_export_depend>
+  <build_export_depend>rosidl_typesupport_microxrcedds_c</build_export_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
