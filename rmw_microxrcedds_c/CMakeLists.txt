@@ -25,8 +25,9 @@ find_package(MicroXRCEDDS REQUIRED MODULE)
 
 find_package(rmw REQUIRED)
 find_package(rosidl_generator_c REQUIRED)
+find_package(rosidl_generator_cpp REQUIRED)
 find_package(rosidl_typesupport_microxrcedds_c REQUIRED)
-
+find_package(rosidl_typesupport_microxrcedds_cpp REQUIRED)
 
 set(PACKAGE_VERSION "0.1.0")
 if(BUILD_TESTING)
@@ -40,6 +41,7 @@ else()
     )
 endif()
 
+   
 
 if(EXISTS ${PROJECT_SOURCE_DIR}/rmw_microxrcedds.config)
     configure_file(${PROJECT_SOURCE_DIR}/rmw_microxrcedds.config ${PROJECT_SOURCE_DIR}/CMakeCache.txt COPYONLY)
@@ -86,11 +88,14 @@ target_link_libraries(${PROJECT_NAME}
                       microxrcedds_client
 )
 
-ament_target_dependencies(${PROJECT_NAME}
-                          "rcutils"
-                          "rosidl_typesupport_microxrcedds_c"
-                          "rmw"
-                          "rosidl_generator_c"
+ament_target_dependencies(
+    ${PROJECT_NAME}
+    "rcutils"
+    "rosidl_typesupport_microxrcedds_c"
+    "rosidl_typesupport_microxrcedds_cpp"
+    "rmw"
+    "rosidl_generator_c"
+    "rosidl_generator_cpp"
 )
 
 configure_rmw_library(${PROJECT_NAME})
@@ -127,15 +132,18 @@ endif()
 ament_export_include_directories(${PROJECT_SOURCE_DIR}/include)
 ament_export_libraries(${PROJECT_NAME})
 
-ament_export_dependencies(rosidl_typesupport_microxrcedds_c
-                          rosidl_generator_c
-                          rcutils
-                          rmw
+ament_export_dependencies(
+    rosidl_typesupport_microxrcedds_c
+    rosidl_typesupport_microxrcedds_cpp
+    rosidl_generator_c
+    rosidl_generator_cpp
+    rcutils
+    rmw
 )
 
 register_rmw_implementation(
     "c:rosidl_typesupport_c:rosidl_typesupport_microxrcedds_c"
-    "cpp:rosidl_typesupport_cpp:rosidl_typesupport_introspection_cpp"
+    "cpp:rosidl_typesupport_cpp:rosidl_typesupport_microxrcedds_cpp"
 )
 
 
