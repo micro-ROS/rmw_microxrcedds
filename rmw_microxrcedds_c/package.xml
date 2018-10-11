@@ -16,13 +16,17 @@
   <build_depend>rcutils</build_depend>
   <build_depend>rmw</build_depend>
   <build_depend>rosidl_generator_c</build_depend>
+  <build_depend>rosidl_generator_cpp</build_depend>
   <build_depend>rosidl_typesupport_microxrcedds_c</build_depend>
+  <build_depend>rosidl_typesupport_microxrcedds_cpp</build_depend>
 
   <build_export_depend>microxrcedds_cmake_module</build_export_depend>
   <build_export_depend>rcutils</build_export_depend>
   <build_export_depend>rmw</build_export_depend>
   <build_export_depend>rosidl_generator_c</build_export_depend>
+  <build_export_depend>rosidl_generator_cpp</build_export_depend>
   <build_export_depend>rosidl_typesupport_microxrcedds_c</build_export_depend>
+  <build_export_depend>rosidl_typesupport_microxrcedds_cpp</build_export_depend>
 
   <depend>ament_cmake_target_dependencies</depend>
 
