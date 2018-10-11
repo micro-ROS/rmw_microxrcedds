@@ -27,7 +27,7 @@ typedef struct CustomSubscription
     struct mcBuffer micro_buffer;
 
     bool waiting_for_response;
-    uint16_t subcription_request;
+    uint16_t subscription_request;
 
     struct Item mem;
 } CustomSubscription;
