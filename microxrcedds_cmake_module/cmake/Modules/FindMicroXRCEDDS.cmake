@@ -65,36 +65,36 @@ else()
   set(MicroCDR_LIBRARIES "")
 endif()
 
-find_library(MICROXRCEDDSClient_LIBRARY_RELEASE
-  NAMES microxrcedds_client-${microxrcedds_MAJOR_MINOR_VERSION} microxrcedds_client)
+find_library(MicroXRCEDDSClient_LIBRARY_RELEASE
+  NAMES microxrcedds_client-${microxrcedds_client_MAJOR_MINOR_VERSION})
 
-find_library(MICROXRCEDDSClient_LIBRARY_DEBUG
+find_library(MicroXRCEDDSClient_LIBRARY_DEBUG
   NAMES microxrcedds_clientd-${microxrcedds_client_MAJOR_MINOR_VERSION})
 
-if(MICROXRCEDDSClient_LIBRARY_RELEASE AND MICROXRCEDDSClient_LIBRARY_DEBUG)
-    set(MICROXRCEDDSClient_LIBRARIES
-        optimized ${MICROXRCEDDSClient_LIBRARY_RELEASE}
-        debug ${MICROXRCEDDSClient_LIBRARY_DEBUG}
+if(MicroXRCEDDSClient_LIBRARY_RELEASE AND MicroXRCEDDSClient_LIBRARY_DEBUG)
+    set(MicroXRCEDDSClient_LIBRARIES
+        optimized ${MicroXRCEDDSClient_LIBRARY_RELEASE}
+        debug ${MicroXRCEDDSClient_LIBRARY_DEBUG}
         ${MicroCDR_LIBRARIES}
       )
-elseif(MICROXRCEDDSClient_LIBRARY_RELEASE)
-    set(MICROXRCEDDSClient_LIBRARIES
-        ${MICROXRCEDDSClient_LIBRARY_RELEASE}
+elseif(MicroXRCEDDSClient_LIBRARY_RELEASE)
+    set(MicroXRCEDDSClient_LIBRARIES
+        ${MicroXRCEDDSClient_LIBRARY_RELEASE}
         ${MicroCDR_LIBRARIES}
       )
-elseif(MICROXRCEDDSClient_LIBRARY_DEBUG)
-    set(MICROXRCEDDSClient_LIBRARIES
-        ${MICROXRCEDDSClient_LIBRARY_DEBUG}
+elseif(MicroXRCEDDSClient_LIBRARY_DEBUG)
+    set(MicroXRCEDDSClient_LIBRARIES
+        ${MicroXRCEDDSClient_LIBRARY_DEBUG}
         ${MicroCDR_LIBRARIES}
       )
 else()
-    set(MICROXRCEDDSClient_LIBRARIES "")
+    set(MicroXRCEDDSClient_LIBRARIES "")
 endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(MICROXRCEDDSClient
-        FOUND_VAR MICROXRCEDDSClient_FOUND
+find_package_handle_standard_args(MicroXRCEDDSClient
+        FOUND_VAR MicroXRCEDDSClient_FOUND
   REQUIRED_VARS
-        MICROXRCEDDSClient_INCLUDE_DIR
-        MICROXRCEDDSClient_LIBRARIES
+        MicroXRCEDDSClient_INCLUDE_DIR
+        MicroXRCEDDSClient_LIBRARIES
 )
