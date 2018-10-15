@@ -33,9 +33,6 @@
 
 set(MicroXRCEDDS_FOUND FALSE)
 
-find_path(${MicroXRCEDDS_INCLUDE_DIR}
-  NAMES microxrcedds/)
-
 find_package(microcdr REQUIRED CONFIG)
 find_package(microxrcedds_client REQUIRED CONFIG)
 
@@ -43,7 +40,7 @@ string(REGEX MATCH "^[0-9]+\\.[0-9]+" microcdr_MAJOR_MINOR_VERSION "${microcdr_V
 string(REGEX MATCH "^[0-9]+\\.[0-9]+" microxrcedds_client_MAJOR_MINOR_VERSION "${microxrcedds_client_VERSION}")
 
 find_library(MicroCDR_LIBRARY_RELEASE
-  NAMES microcdr-${microcdr_MAJOR_MINOR_VERSION} microcdr)
+  NAMES microcdr-${microcdr_MAJOR_MINOR_VERSION})
 
 find_library(MicroCDR_LIBRARY_DEBUG
   NAMES microcdrd-${microcdr_MAJOR_MINOR_VERSION})
