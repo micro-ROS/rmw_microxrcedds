@@ -15,8 +15,6 @@
 # copied from rmw_micrortps/rmw_micrortps-extras.cmake
 
 find_package(microxrcedds_cmake_module REQUIRED)
-find_package(microcdr REQUIRED CONFIG)
-find_package(microxrcedds_client REQUIRED CONFIG)
 find_package(MicroXRCEDDS REQUIRED MODULE)
 
 list(APPEND rmw_micrortps_INCLUDE_DIRS ${MicroXRCEDDS_INCLUDE_DIR})

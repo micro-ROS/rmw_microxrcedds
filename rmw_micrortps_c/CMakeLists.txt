@@ -25,8 +25,6 @@ find_package(ament_cmake_ros REQUIRED)
 find_package(rcutils REQUIRED)
 
 find_package(microxrcedds_cmake_module REQUIRED)
-find_package(microcdr REQUIRED CONFIG)
-find_package(microxrcedds_client REQUIRED CONFIG)
 find_package(MicroXRCEDDS REQUIRED MODULE)
 
 find_package(rmw REQUIRED)
