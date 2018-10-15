@@ -331,7 +331,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
 
     // for Subscription requests and response
     uint16_t subscription_request[MAX_SUBSCRIPTIONS_X_NODE];
-    uint8_t subcription_status_request[MAX_SUBSCRIPTIONS_X_NODE];
+    uint8_t subscription_status_request[MAX_SUBSCRIPTIONS_X_NODE];
 
     // Go throw all subscriptions
     CustomNode* custom_node          = NULL;
@@ -450,7 +450,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     // read until status or timeout
     if (subscriptions->subscriber_count > 0)
     {
-        mr_run_session_until_one_status(&custom_node->session, timeout, subscription_request, subcription_status_request, subscriptions->subscriber_count);
+        mr_run_session_until_one_status(&custom_node->session, timeout, subscription_request, subscription_status_request, subscriptions->subscriber_count);
     }
 
 

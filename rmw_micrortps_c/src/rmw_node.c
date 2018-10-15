@@ -45,7 +45,7 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
     // Get node pointer
     CustomNode* node = (CustomNode*)args;
 
-    // Search subcription
+    // Search subscription
     struct Item* subscription_item          = node->subscription_mem.allocateditems;
     CustomSubscription* custom_subscription = NULL;
     while (true)
@@ -64,13 +64,13 @@ void on_topic(mrSession* session, mrObjectId object_id, uint16_t request_id, mrS
             break;
         }
 
-        // Next subcription of the stack
+        // Next subscription of the stack
         subscription_item = subscription_item->next;
     }
 
     // not waiting for response any more
     custom_subscription->waiting_for_response = false;
-    node->on_subcription                      = true;
+    node->on_subscription                      = true;
 
 
     // Copy microbuffer data

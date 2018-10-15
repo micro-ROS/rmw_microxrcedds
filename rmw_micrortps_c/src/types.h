@@ -62,7 +62,7 @@ typedef struct CustomNode
     CustomPublisher publisher_info[MAX_PUBLISHERS_X_NODE];
     CustomSubscription subscription_info[MAX_SUBSCRIPTIONS_X_NODE];
 
-    bool on_subcription;
+    bool on_subscription;
 
     mrStreamId reliable_input;
     mrStreamId reliable_output;
