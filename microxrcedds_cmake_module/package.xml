@@ -10,11 +10,14 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <build_depend>microcdr</build_depend>
+  <build_depend>microxrcedds_client</build_depend>
+
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
-  <depend>microcdr</depend>
-  <depend>microxrcedds_client</depend>
+  <build_export_depend>microcdr</build_export_depend>
+  <build_export_depend>microxrcedds_client</build_export_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
