@@ -130,8 +130,8 @@ int build_participant_xml(size_t domain_id, const char* participant_name, char x
 {
     static const char format[] =
         "<profiles><participant "
-        "profile_name=\"participant_profile\"><xrcedds><builtin><leaseDuration><durationbyname>INFINITE</durationbyname></"
-        "leaseDuration><domainId>%ld</domainId></builtin><name>%s</name></xrcedds></participant></profiles>";
+        "profile_name=\"participant_profile\"><rtps><builtin><leaseDuration><durationbyname>INFINITE</durationbyname></"
+        "leaseDuration><domainId>%ld</domainId></builtin><name>%s</name></rtps></participant></profiles>";
     int ret = 0;
     if (buffer_size >= (sizeof(format) - 5 + strlen(participant_name) + sizeof(domain_id)))
     {
