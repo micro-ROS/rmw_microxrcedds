@@ -17,18 +17,6 @@ set(CMAKE_CXX_CLANG_TIDY clang-tidy -checks=*)
 cmake_policy(SET CMP0057 NEW)
 
 
-set(PACKAGE_VERSION "0.1.0")
-if(BUILD_TESTING) 
-    project(rmw_microxrcedds
-        VERSION ${PACKAGE_VERSION}
-        )
-else()
-    project(rmw_microxrcedds
-    VERSION ${PACKAGE_VERSION}
-    LANGUAGES C
-    )
-endif()
-
 find_package(ament_cmake_ros REQUIRED)
 find_package(rcutils REQUIRED)
 
@@ -38,7 +26,22 @@ find_package(MicroXRCEDDS REQUIRED MODULE)
 find_package(rmw REQUIRED)
 find_package(rosidl_generator_c REQUIRED)
 find_package(rosidl_typesupport_microxrcedds_c REQUIRED)
-   
+  
+
+set(PACKAGE_VERSION "0.1.0")
+if(BUILD_TESTING) 
+    project(rmw_microxrcedds
+    VERSION ${PACKAGE_VERSION}
+    )
+    message("testing on")
+else()
+    project(rmw_microxrcedds
+    VERSION ${PACKAGE_VERSION}
+    LANGUAGES C
+    )
+    message("testing off")
+endif()
+
 
 if(EXISTS ${PROJECT_SOURCE_DIR}/rmw_microxrcedds.config)
     configure_file(${PROJECT_SOURCE_DIR}/rmw_microxrcedds.config ${PROJECT_SOURCE_DIR}/CMakeCache.txt COPYONLY)
