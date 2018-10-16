@@ -16,10 +16,18 @@ cmake_minimum_required(VERSION 3.5)
 set(CMAKE_CXX_CLANG_TIDY clang-tidy -checks=*)
 cmake_policy(SET CMP0057 NEW)
 
-project(rmw_microxrcedds
-    VERSION 0.1.0
-    #LANGUAGES C
+
+set(PACKAGE_VERSION "0.1.0")
+if(BUILD_TESTING) 
+    project(rmw_microxrcedds
+        VERSION ${PACKAGE_VERSION}
+        )
+else()
+    project(rmw_microxrcedds
+    VERSION ${PACKAGE_VERSION}
+    LANGUAGES C
     )
+endif()
 
 find_package(ament_cmake_ros REQUIRED)
 find_package(rcutils REQUIRED)
@@ -131,7 +139,6 @@ register_rmw_implementation(
 if(BUILD_TESTING)   
     find_package(ament_lint_auto REQUIRED)
     ament_lint_auto_find_test_dependencies()
-
 
     add_subdirectory(test)
 endif()
