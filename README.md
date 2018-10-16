@@ -1,5 +1,7 @@
 # Overview
 
+<a href="http://www.eprosima.com"><img src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSd0PDlVz1U_7MgdTe0FRIWD0Jc9_YH-gGi0ZpLkr-qgCI6ZEoJZ5GBqQ" align="left" hspace="8" vspace="2" width="80" height="80" ></a>
+
 This layer is the ROS Middleware Abstraction Interface.
 The package provides an RMW implementation using the latest code from eProsima's middleware for constrained devices.
 This library defines the interface used by upper layers in ROS stack and implemented using some middleware in the lower layers.
