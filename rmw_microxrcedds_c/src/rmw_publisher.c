@@ -66,12 +66,12 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
                     return NULL;
                 }
-                publisher_req = uxr_write_configure_publisher_xml(publisher_info->session, micro_node->reliable_output,
+                publisher_req = uxr_buffer_configure_publisher_xml(publisher_info->session, micro_node->reliable_output,
                                                                  publisher_info->publisher_id,
                                                                  micro_node->participant_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
                 // Publisher by reference does not make sense in current micro XRCE-DDS implementation.
-                publisher_req = uxr_write_configure_publisher_xml(publisher_info->session, micro_node->reliable_output,
+                publisher_req = uxr_buffer_configure_publisher_xml(publisher_info->session, micro_node->reliable_output,
                                                                  publisher_info->publisher_id,
                                                                  micro_node->participant_id, "", UXR_REPLACE);
 #endif
@@ -86,7 +86,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     return NULL;
                 }
 
-                topic_req = uxr_write_configure_topic_xml(publisher_info->session, micro_node->reliable_output,
+                topic_req = uxr_buffer_configure_topic_xml(publisher_info->session, micro_node->reliable_output,
                                                          publisher_info->topic_id, micro_node->participant_id,
                                                          xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
@@ -96,7 +96,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
                     return NULL;
                 }
-                topic_req = uxr_write_create_topic_ref(publisher_info->session, micro_node->reliable_output,
+                topic_req = uxr_buffer_create_topic_ref(publisher_info->session, micro_node->reliable_output,
                                                       publisher_info->topic_id, micro_node->participant_id,
                                                       profile_name, UXR_REPLACE);
 #endif
@@ -111,7 +111,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     return NULL;
                 }
 
-                datawriter_req = uxr_write_configure_datawriter_xml(
+                datawriter_req = uxr_buffer_configure_datawriter_xml(
                     publisher_info->session, micro_node->reliable_output, publisher_info->datawriter_id,
                     publisher_info->publisher_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
@@ -121,7 +121,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     return NULL;
                 }
 
-                datawriter_req = uxr_write_create_datawriter_ref(publisher_info->session, micro_node->reliable_output,
+                datawriter_req = uxr_buffer_create_datawriter_ref(publisher_info->session, micro_node->reliable_output,
                                                                 publisher_info->datawriter_id,
                                                                 publisher_info->publisher_id, profile_name, UXR_REPLACE);
 #endif
@@ -185,11 +185,11 @@ rmw_ret_t rmw_destroy_publisher(rmw_node_t* node, rmw_publisher_t* publisher)
     {
         CustomPublisher* publisher_info = (CustomPublisher*)publisher->data;
 
-        int delete_writer = uxr_write_delete_entity(publisher_info->session, publisher_info->owner_node->reliable_output,
+        int delete_writer = uxr_buffer_delete_entity(publisher_info->session, publisher_info->owner_node->reliable_output,
                                                    publisher_info->datawriter_id);
-        int delete_topic  = uxr_write_delete_entity(publisher_info->session, publisher_info->owner_node->reliable_output,
+        int delete_topic  = uxr_buffer_delete_entity(publisher_info->session, publisher_info->owner_node->reliable_output,
                                                   publisher_info->topic_id);
-        int delete_publisher = uxr_write_delete_entity(
+        int delete_publisher = uxr_buffer_delete_entity(
             publisher_info->session, publisher_info->owner_node->reliable_output, publisher_info->publisher_id);
 
         uint8_t status[3];

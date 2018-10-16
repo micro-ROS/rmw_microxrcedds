@@ -350,7 +350,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
                 if (custom_subscription->waiting_for_response == false)
                 {
                     custom_subscription->waiting_for_response = true;
-                    custom_subscription->subscription_request = uxr_write_request_data(&custom_node->session, custom_node->reliable_output, custom_subscription->datareader_id, custom_node->reliable_input, NULL);
+                    custom_subscription->subscription_request = uxr_buffer_request_data(&custom_node->session, custom_node->reliable_output, custom_subscription->datareader_id, custom_node->reliable_input, NULL);
                     
                 }
 

@@ -70,12 +70,12 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                     RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
                     return NULL;
                 }
-                subscriber_req = uxr_write_configure_subscriber_xml(&micro_node->session, micro_node->reliable_output,
+                subscriber_req = uxr_buffer_configure_subscriber_xml(&micro_node->session, micro_node->reliable_output,
                                                                    subscription_info->subscriber_id,
                                                                    micro_node->participant_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
                 // Publisher by reference does not make sense in current micro XRCE-DDS implementation.
-                subscriber_req = uxr_write_configure_subscriber_xml(&micro_node->session, micro_node->reliable_output,
+                subscriber_req = uxr_buffer_configure_subscriber_xml(&micro_node->session, micro_node->reliable_output,
                                                                    subscription_info->subscriber_id,
                                                                    micro_node->participant_id, "", UXR_REPLACE);
 #endif
@@ -91,7 +91,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                     return NULL;
                 }
 
-                topic_req = uxr_write_configure_topic_xml(&micro_node->session, micro_node->reliable_output,
+                topic_req = uxr_buffer_configure_topic_xml(&micro_node->session, micro_node->reliable_output,
                                                          subscription_info->topic_id, micro_node->participant_id,
                                                          xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
@@ -101,7 +101,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
                     return NULL;
                 }
-                topic_req = uxr_write_create_topic_ref(&micro_node->session, micro_node->reliable_output,
+                topic_req = uxr_buffer_create_topic_ref(&micro_node->session, micro_node->reliable_output,
                                                       subscription_info->topic_id, micro_node->participant_id,
                                                       profile_name, UXR_REPLACE);
 #endif
@@ -116,7 +116,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                     return NULL;
                 }
 
-                datareader_req = uxr_write_configure_datareader_xml(
+                datareader_req = uxr_buffer_configure_datareader_xml(
                     &micro_node->session, micro_node->reliable_output, subscription_info->datareader_id,
                     subscription_info->subscriber_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
@@ -126,7 +126,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                     return NULL;
                 }
 
-                datareader_req = uxr_write_create_datareader_ref(
+                datareader_req = uxr_buffer_create_datareader_ref(
                     &micro_node->session, micro_node->reliable_output, subscription_info->datareader_id,
                     subscription_info->subscriber_id, profile_name, UXR_REPLACE);
 #endif
@@ -191,11 +191,11 @@ rmw_ret_t rmw_destroy_subscription(rmw_node_t* node, rmw_subscription_t* subscri
         CustomNode* micro_node               = (CustomNode*)node->data;
         CustomSubscription* subscripion_info = (CustomSubscription*)subscription->data;
         int delete_datareader =
-            uxr_write_delete_entity(&micro_node->session, micro_node->reliable_output, subscripion_info->datareader_id);
+            uxr_buffer_delete_entity(&micro_node->session, micro_node->reliable_output, subscripion_info->datareader_id);
         int delete_topic =
-            uxr_write_delete_entity(&micro_node->session, micro_node->reliable_output, subscripion_info->topic_id);
+            uxr_buffer_delete_entity(&micro_node->session, micro_node->reliable_output, subscripion_info->topic_id);
         int delete_subscriber =
-            uxr_write_delete_entity(&micro_node->session, micro_node->reliable_output, subscripion_info->subscriber_id);
+            uxr_buffer_delete_entity(&micro_node->session, micro_node->reliable_output, subscripion_info->subscriber_id);
 
         uint8_t status[3];
         uint16_t requests[] = {delete_datareader, delete_topic, delete_subscriber};
