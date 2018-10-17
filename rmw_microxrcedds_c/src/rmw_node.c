@@ -169,7 +169,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
             }
         }
     }
-    printf("Serial mode => dev: %s\n", SERIAL_DEVICE);
+    fprintf(stderr, "Serial mode => dev: %s\n", SERIAL_DEVICE);
 
 #elif defined(MICRO_XRCEDDS_UDP)
     if (!uxr_init_udp_transport(&node_info->transport, &node_info->udp_platform, UDP_IP, UDP_PORT))
@@ -177,7 +177,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
         RMW_SET_ERROR_MSG("Can not create an udp connection");
         return NULL;
     }
-    printf("UDP mode => ip: %s - port: %hu\n", UDP_IP, UDP_PORT);
+    fprintf(stderr, "UDP mode => ip: %s - port: %hu\n", UDP_IP, UDP_PORT);
 #endif
 
     uxr_init_session(&node_info->session, &node_info->transport.comm, key);

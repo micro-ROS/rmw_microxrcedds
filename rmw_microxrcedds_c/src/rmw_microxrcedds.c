@@ -158,7 +158,7 @@ rmw_subscription_t* rmw_create_subscription(const rmw_node_t* node, const rosidl
     {
         RMW_SET_ERROR_MSG("node handle not from this implementation");
     }
-    else if (strcmp(type_support->typesupport_identifier, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE) != 0)
+    else if (strcmp(type_support->typesupport_identifier, rosidl_typesupport_microxrcedds_c__identifier) != 0)
     {
         RMW_SET_ERROR_MSG("TypeSupport handle not from this implementation");
     }

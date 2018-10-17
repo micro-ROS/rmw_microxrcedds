@@ -16,16 +16,9 @@
 
 #ifdef _WIN32
 #include <uxr/agent/transport/UDPServerWindows.hpp>
-#include <uxr/agent/transport/TCPServerWindows.hpp>
 #else
-#include <uxr/agent/transport/SerialServerLinux.hpp>
 #include <uxr/agent/transport/UDPServerLinux.hpp>
-#include <uxr/agent/transport/TCPServerLinux.hpp>
-#include <termios.h>
-#include <fcntl.h>
 #endif //_WIN32
-#include <iostream>
-
 
 #include "config.h"
 
@@ -40,11 +33,35 @@ class TestNode : public ::testing::Test
 protected:
   static void SetUpTestCase()
   {
+    GTEST_DECLARE_bool_(break_on_failure);
+
+    #ifdef _WIN32
+
+    #else
+    freopen("/dev/null", "w", stderr);
+    #endif
+    
+  }
+
+
+  void SetUp()
+  {
     rmw_ret_t ret = rmw_init();
     EXPECT_EQ(ret,RMW_RET_OK);
-
-    GTEST_DECLARE_bool_(break_on_failure);
+    
+    server = new eprosima::uxr::UDPServer((uint16_t)atoi("8888"));
+    EXPECT_EQ(server->run(), true);
   }
+
+
+  void TearDown()
+  {
+    // Stop agent
+    server->stop();
+  }
+
+  eprosima::uxr::Server* server;
+
 };
 
 /*
@@ -60,6 +77,7 @@ TEST_F(TestNode, construction_and_destruction)
     rmw_ret_t ret = rmw_destroy_node(node);
     EXPECT_EQ(ret,RMW_RET_OK);
   }
+  
 
   // Unsuccess creation
   {

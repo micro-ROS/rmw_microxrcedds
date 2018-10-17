@@ -63,7 +63,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                 RMW_SET_ERROR_MSG("Typesupport data is null");
                 return NULL;
             }
-            else if (strcmp(type_support->typesupport_identifier, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE) != 0)
+            else if (strcmp(type_support->typesupport_identifier, rosidl_typesupport_microxrcedds_c__identifier) != 0)
             {
                 RMW_SET_ERROR_MSG("type support not from this implementation");
                 return NULL;
