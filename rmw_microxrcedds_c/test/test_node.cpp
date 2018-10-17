@@ -14,6 +14,20 @@
 
 #include <gtest/gtest.h>
 
+#ifdef _WIN32
+#include <uxr/agent/transport/UDPServerWindows.hpp>
+#include <uxr/agent/transport/TCPServerWindows.hpp>
+#else
+#include <uxr/agent/transport/SerialServerLinux.hpp>
+#include <uxr/agent/transport/UDPServerLinux.hpp>
+#include <uxr/agent/transport/TCPServerLinux.hpp>
+#include <termios.h>
+#include <fcntl.h>
+#endif //_WIN32
+#include <iostream>
+
+
+#include "config.h"
 
 #include "rmw/error_handling.h"
 #include "rmw/node_security_options.h"
@@ -21,15 +35,15 @@
 #include "rmw/validate_namespace.h"
 #include "rmw/validate_node_name.h"
 
-#define EXPECT_NULL(ptr) EXPECT_EQ((void *)ptr, (void *)NULL)
-#define EXPECT_NON_NULL(ptr) EXPECT_NE((void *)ptr, (void *)NULL)
-
 class TestNode : public ::testing::Test
 {
 protected:
   static void SetUpTestCase()
   {
-    rmw_init();
+    rmw_ret_t ret = rmw_init();
+    EXPECT_EQ(ret,RMW_RET_OK);
+
+    GTEST_DECLARE_bool_(break_on_failure);
   }
 };
 
@@ -38,29 +52,80 @@ protected:
  */
 TEST_F(TestNode, construction_and_destruction) 
 {
-  rmw_node_security_options_t security_options;
-
+  // Success creation
   {
-    
+    rmw_node_security_options_t security_options;
     rmw_node_t * node = rmw_create_node("my_node", "/ns", 0, &security_options);
-    EXPECT_NON_NULL(node);
-    rmw_destroy_node(node);
+    EXPECT_NE((void*)node, (void*)NULL);
+    rmw_ret_t ret = rmw_destroy_node(node);
+    EXPECT_EQ(ret,RMW_RET_OK);
   }
 
+  // Unsuccess creation
   {
+    rmw_node_security_options_t security_options;
     rmw_node_t * node = rmw_create_node("", "/ns", 0, &security_options);
-    EXPECT_NULL(node);
+    EXPECT_EQ((void*)node, (void*)NULL);
   }
 
-
+  // Unsuccess creation
   {
+    rmw_node_security_options_t security_options;
     rmw_node_t * node = rmw_create_node("my_node", "", 0, &security_options);
-    EXPECT_NULL(node);
+    EXPECT_EQ((void*)node, (void*)NULL);
   }
 
+  // Unsuccess creation
   {
+    rmw_node_security_options_t security_options;
     rmw_node_t * node = rmw_create_node("my_node", "/ns", 0, NULL);
-    EXPECT_NULL(node);
+    EXPECT_EQ((void*)node, (void*)NULL);
   }
 
 }
+
+/*
+   Testing node memory poll
+ */
+TEST_F(TestNode, memory_poll_test) 
+{
+  rmw_node_security_options_t dummy_security_options;
+  std::vector<rmw_node_t *> nodes;
+  rmw_ret_t ret;
+  rmw_node_t * node;
+
+  // Get all available nodes
+  for (size_t i=0; i < MAX_NODES; i++)
+  {
+    node = rmw_create_node("my_node", "/ns", 0, &dummy_security_options);
+    EXPECT_NE((void*)node, (void*)NULL);
+    nodes.push_back(node);
+  }
+
+
+  // Try to get one
+  node = rmw_create_node("my_node", "/ns", 0, &dummy_security_options);
+  EXPECT_EQ((void*)node, (void*)NULL);
+
+
+  // Relese one
+  ret = rmw_destroy_node(nodes.back());
+  EXPECT_EQ(ret,RMW_RET_OK);
+  nodes.pop_back();
+
+
+  // Get one
+  node = rmw_create_node("my_node", "/ns", 0, &dummy_security_options);
+  EXPECT_NE((void*)node, (void*)NULL);
+  nodes.push_back(node);
+
+
+  // Release all
+  for (size_t i=0; i < nodes.size(); i++)
+  {
+    ret = rmw_destroy_node(nodes.at(i));
+    EXPECT_EQ(ret,RMW_RET_OK);
+  }
+  nodes.clear();
+}
+

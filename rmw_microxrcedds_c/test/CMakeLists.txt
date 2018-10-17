@@ -1,18 +1,47 @@
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+
 find_package(ament_cmake_gtest REQUIRED)
+find_package(MicroXRCEDDS_Agent REQUIRED MODULE)
 
 
-ament_add_gtest(test_node test_node.cpp)
-if(TARGET test_node)
-  target_link_libraries(test_node ${PROJECT_NAME})
+
+set(TEST_NAME "test_node")
+set(TEST_FILES "test_node.cpp")
+ament_add_gtest(
+  ${TEST_NAME} 
+  ${TEST_FILES}
+  )
+if(TARGET ${TEST_NAME})
+  target_link_libraries(${TEST_NAME} ${PROJECT_NAME})
+  target_link_libraries(${TEST_NAME} microxrcedds_agent)
+  target_include_directories(
+    ${TEST_NAME}
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    PRIVATE
+        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
+  )
 endif()
 
 
-#ament_add_gtest(test_publisher test_publisher.cpp)
-#if(TARGET test_publisher)
-#  target_link_libraries(test_publisher ${PROJECT_NAME})
-#endif()
 
-#ament_add_gtest(test_subscription test_subscription.cpp)
-#if(TARGET test_subscription)
-#  target_link_libraries(test_subscription ${PROJECT_NAME})
-#endif()
+set(TEST_NAME "test_publisher")
+set(TEST_FILES "test_publisher.cpp")
+ament_add_gtest(
+  ${TEST_NAME} 
+  ${TEST_FILES}
+  )
+if(TARGET ${TEST_NAME})
+  target_link_libraries(${TEST_NAME} ${PROJECT_NAME})
+  target_link_libraries(${TEST_NAME} microxrcedds_agent)
+  target_include_directories(
+    ${TEST_NAME}
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    PRIVATE
+        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
+  )
+endif()

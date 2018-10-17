@@ -33,13 +33,11 @@ if(BUILD_TESTING)
     project(rmw_microxrcedds
     VERSION ${PACKAGE_VERSION}
     )
-    message("testing on")
 else()
     project(rmw_microxrcedds
     VERSION ${PACKAGE_VERSION}
     LANGUAGES C
     )
-    message("testing off")
 endif()
 
 
