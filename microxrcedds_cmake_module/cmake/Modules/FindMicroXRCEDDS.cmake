@@ -36,6 +36,8 @@ set(MicroXRCEDDS_FOUND FALSE)
 find_package(microcdr REQUIRED CONFIG)
 find_package(microxrcedds_client REQUIRED CONFIG)
 
+find_path(MicroXRCEDDSClient_INCLUDE_DIR NAMES uxr)
+
 string(REGEX MATCH "^[0-9]+\\.[0-9]+" microcdr_MAJOR_MINOR_VERSION "${microcdr_VERSION}")
 string(REGEX MATCH "^[0-9]+\\.[0-9]+" microxrcedds_client_MAJOR_MINOR_VERSION "${microxrcedds_client_VERSION}")
 
@@ -63,10 +65,10 @@ else()
 endif()
 
 find_library(MicroXRCEDDSClient_LIBRARY_RELEASE
-  NAMES microxrcedds_client-${microxrcedds_client_MAJOR_MINOR_VERSION})
+  NAMES microxrcedds_client-${microxrcedds_client_MAJOR_MINOR_VERSION} microxrcedds_client)
 
 find_library(MicroXRCEDDSClient_LIBRARY_DEBUG
-  NAMES microxrcedds_clientd-${microxrcedds_client_MAJOR_MINOR_VERSION})
+  NAMES microxrcedds_clientd-${microxrcedds_client_MAJOR_MINOR_VERSION} microxrcedds_clientd)
 
 if(MicroXRCEDDSClient_LIBRARY_RELEASE AND MicroXRCEDDSClient_LIBRARY_DEBUG)
     set(MicroXRCEDDSClient_LIBRARIES
