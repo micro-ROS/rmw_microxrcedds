@@ -38,6 +38,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
     if (!rmw_publisher->topic_name)
     {
         RMW_SET_ERROR_MSG("failed to allocate memory");
+        return NULL;
     }
     else
     {
@@ -56,14 +57,21 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
             publisher_info->owner_node      = micro_node;
             publisher_info->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
             publisher_info->session                                 = &micro_node->session;
-            publisher_info->type_support_callbacks = type_support->data;
-            if (!publisher_info->type_support_callbacks)
+            publisher_info->type_support_callbacks = (const message_type_support_callbacks_t*)type_support->data;
+            if (publisher_info->type_support_callbacks == NULL)
+            {
+                RMW_SET_ERROR_MSG("Typesupport data is null");
+                return NULL;
+            }
+            else if (strcmp(type_support->typesupport_identifier, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE) != 0)
             {
                 RMW_SET_ERROR_MSG("type support not from this implementation");
+                return NULL;
             }
             else if (sizeof(uxrObjectId) > RMW_GID_STORAGE_SIZE)
             {
-                RMW_SET_ERROR_MSG("Not enough memory for impl ids")
+                RMW_SET_ERROR_MSG("Not enough memory for impl ids");
+                return NULL;
             }
             else
             {
