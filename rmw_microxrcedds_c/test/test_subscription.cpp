@@ -18,7 +18,7 @@
 #include <uxr/agent/transport/UDPServerWindows.hpp>
 #else
 #include <uxr/agent/transport/UDPServerLinux.hpp>
-#endif //_WIN32
+#endif  // _WIN32
 
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>
 #include <rosidl_typesupport_microxrcedds_c/message_type_support.h>
@@ -78,14 +78,12 @@ protected:
 
   rmw_node_t * node;
   eprosima::uxr::Server * server;
-
 };
 
 /*
    Testing subscription construction and destruction.
  */
 TEST_F(TestSubscription, construction_and_destruction) {
-
   // Test
   {
     message_type_support_callbacks_t dummy_callbacks;
@@ -114,14 +112,14 @@ TEST_F(TestSubscription, construction_and_destruction) {
     dummy_qos_policies.avoid_ros_namespace_conventions = false;
     dummy_qos_policies.depth = 0;
     dummy_qos_policies.durability = RMW_QOS_POLICY_DURABILITY_SYSTEM_DEFAULT;
-    //dummy_qos_policies.durability = RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
-    //dummy_qos_policies.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
+    // dummy_qos_policies.durability = RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
+    // dummy_qos_policies.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
     dummy_qos_policies.history = RMW_QOS_POLICY_HISTORY_SYSTEM_DEFAULT;
-    //dummy_qos_policies.history = RMW_QOS_POLICY_HISTORY_KEEP_LAST;
-    //dummy_qos_policies.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
+    // dummy_qos_policies.history = RMW_QOS_POLICY_HISTORY_KEEP_LAST;
+    // dummy_qos_policies.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
     dummy_qos_policies.reliability = RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT;
-    //dummy_qos_policies.reliability = RMW_QOS_POLICY_RELIABILITY_RELIABLE;
-    //dummy_qos_policies.reliability = RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
+    // dummy_qos_policies.reliability = RMW_QOS_POLICY_RELIABILITY_RELIABLE;
+    // dummy_qos_policies.reliability = RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
 
     bool ignore_local_publications = true;
 

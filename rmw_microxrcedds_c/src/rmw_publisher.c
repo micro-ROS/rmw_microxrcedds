@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "./rmw_microxrcedds.h"  // NOLINT
+
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
@@ -20,7 +22,6 @@
 #include <rosidl_typesupport_microxrcedds_c/message_type_support.h>
 
 #include "./rmw_publisher.h"
-#include "./rmw_microxrcedds.h"
 #include "./rmw_node.h"
 #include "./types.h"
 #include "./utils.h"
@@ -63,7 +64,7 @@ rmw_publisher_t * create_publisher(
       if (publisher_info->type_support_callbacks == NULL) {
         RMW_SET_ERROR_MSG("Typesupport data is null");
         return NULL;
-      } else if (strcmp(type_support->typesupport_identifier,
+      } else if (strcmp(type_support->typesupport_identifier,  // NOLINT
         rosidl_typesupport_microxrcedds_c__identifier) != 0)
       {
         RMW_SET_ERROR_MSG("type support not from this implementation");
@@ -218,9 +219,7 @@ rmw_ret_t rmw_destroy_publisher(rmw_node_t * node, rmw_publisher_t * publisher)
   if (!node) {
     RMW_SET_ERROR_MSG("node handle is null");
     result_ret = RMW_RET_ERROR;
-  } else if (strcmp(node->implementation_identifier,
-    rmw_get_implementation_identifier()) != 0)
-  {
+  } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
     result_ret = RMW_RET_ERROR;
   } else if (!node->data) {
@@ -229,7 +228,7 @@ rmw_ret_t rmw_destroy_publisher(rmw_node_t * node, rmw_publisher_t * publisher)
   } else if (!publisher) {
     RMW_SET_ERROR_MSG("publisher handle is null");
     result_ret = RMW_RET_ERROR;
-  } else if (strcmp(publisher->implementation_identifier,
+  } else if (strcmp(publisher->implementation_identifier,  // NOLINT
     rmw_get_implementation_identifier()) != 0)
   {
     RMW_SET_ERROR_MSG("publisher handle not from this implementation");

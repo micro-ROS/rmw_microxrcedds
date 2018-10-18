@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+#include "./rmw_node.h"  // NOLINT
+
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
@@ -20,8 +23,6 @@
 #include <fcntl.h>  // O_RDWR, O_NOCTTY, O_NONBLOCK
 #include <termios.h>
 #endif
-
-#include "./rmw_node.h"
 
 #include "./types.h"
 #include "./utils.h"
@@ -101,7 +102,6 @@ void on_topic(
   memcpy(&custom_subscription->micro_buffer,
     serialization,
     sizeof(custom_subscription->micro_buffer));
-
 }
 
 void clear_node(rmw_node_t * node)

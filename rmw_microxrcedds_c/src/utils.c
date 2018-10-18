@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rmw/allocators.h>
+#include "./utils.h"  // NOLINT
 
-#include "./utils.h"
+#include <rmw/allocators.h>
 
 static const char ros_topic_prefix[] = "rt";
 

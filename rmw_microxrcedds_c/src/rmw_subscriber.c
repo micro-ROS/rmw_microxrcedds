@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "./rmw_microxrcedds.h"  // NOLINT
 
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
@@ -20,7 +21,6 @@
 
 #include "./rmw_subscriber.h"
 
-#include "./rmw_microxrcedds.h"
 #include "./types.h"
 #include "./utils.h"
 
@@ -205,9 +205,7 @@ rmw_ret_t rmw_destroy_subscription(rmw_node_t * node, rmw_subscription_t * subsc
   if (!node) {
     RMW_SET_ERROR_MSG("node handle is null");
     result_ret = RMW_RET_ERROR;
-  } else if (strcmp(node->implementation_identifier,
-    rmw_get_implementation_identifier()) != 0)
-  {
+  } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
     result_ret = RMW_RET_ERROR;
   } else if (!node->data) {
@@ -216,7 +214,7 @@ rmw_ret_t rmw_destroy_subscription(rmw_node_t * node, rmw_subscription_t * subsc
   } else if (!subscription) {
     RMW_SET_ERROR_MSG("subscription handle is null");
     result_ret = RMW_RET_ERROR;
-  } else if (strcmp(subscription->implementation_identifier,
+  } else if (strcmp(subscription->implementation_identifier,  // NOLINT
     rmw_get_implementation_identifier()) != 0)
   {
     RMW_SET_ERROR_MSG("subscription handle not from this implementation");

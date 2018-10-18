@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "./rmw_microxrcedds.h"  // NOLINT
+
 #include <limits.h>
 
 #include <rmw/allocators.h>
@@ -20,8 +22,6 @@
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>
 
 #include <uxr/client/client.h>
-
-#include "./rmw_microxrcedds.h"
 
 #include "./identifier.h"
 
@@ -91,7 +91,7 @@ rmw_publisher_t * rmw_create_publisher(
     RMW_SET_ERROR_MSG("node handle is null");
   } else if (!type_support) {
     RMW_SET_ERROR_MSG("type support is null");
-  } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+  } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {  // NOLINT
     RMW_SET_ERROR_MSG("node handle not from this implementation");
   } else if (!topic_name || strlen(topic_name) == 0) {
     RMW_SET_ERROR_MSG("publisher topic is null or empty string");
@@ -144,7 +144,7 @@ rmw_subscription_t * rmw_create_subscription(
     RMW_SET_ERROR_MSG("type support is null");
   } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
-  } else if (strcmp(type_support->typesupport_identifier,
+  } else if (strcmp(type_support->typesupport_identifier,  // NOLINT
     rosidl_typesupport_microxrcedds_c__identifier) != 0)
   {
     RMW_SET_ERROR_MSG("TypeSupport handle not from this implementation");
