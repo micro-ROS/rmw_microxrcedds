@@ -15,6 +15,6 @@
 #ifndef IDENTIFIER_H_
 #define IDENTIFIER_H_
 
-extern const char* const eprosima_microxrcedds_identifier;
+extern const char * const eprosima_microxrcedds_identifier;
 
 #endif  // IDENTIFIER_H_

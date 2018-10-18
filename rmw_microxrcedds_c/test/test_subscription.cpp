@@ -43,9 +43,10 @@ protected:
     freopen("/dev/null", "w", stderr);
     #endif
 
-    
+
     // Temp until link error with typesupport is fixed.
-    rosidl_typesupport_microxrcedds_c__identifier = ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE;
+    rosidl_typesupport_microxrcedds_c__identifier =
+      ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE;
   }
 
 
@@ -57,14 +58,14 @@ protected:
   void SetUp()
   {
     rmw_ret_t ret = rmw_init();
-    EXPECT_EQ(ret,RMW_RET_OK);
-    
+    EXPECT_EQ(ret, RMW_RET_OK);
+
     server = new eprosima::uxr::UDPServer((uint16_t)atoi("8888"));
     EXPECT_EQ(server->run(), true);
 
     rmw_node_security_options_t security_options;
     node = rmw_create_node("my_node", "/ns", 0, &security_options);
-    EXPECT_NE((void*)node, (void*)NULL);
+    EXPECT_NE((void *)node, (void *)NULL);
   }
 
 
@@ -76,50 +77,60 @@ protected:
 
 
   rmw_node_t * node;
-  eprosima::uxr::Server* server;
-  
+  eprosima::uxr::Server * server;
+
 };
 
 /*
    Testing subscription construction and destruction.
  */
 TEST_F(TestSubscription, construction_and_destruction) {
-    
-    // Test 
-    {
-        message_type_support_callbacks_t dummy_callbacks;
-        dummy_callbacks.message_name_ = "dummy";
-        dummy_callbacks.package_name_ = "dummy";
-        dummy_callbacks.cdr_serialize = [](const void * untyped_ros_message, ucdrBuffer * cdr){return true;};
-        dummy_callbacks.cdr_deserialize = [](ucdrBuffer * cdr, void * untyped_ros_message, uint8_t* raw_mem_ptr, size_t raw_mem_size){return true;};
-        dummy_callbacks.get_serialized_size = [](const void*){return (uint32_t)0;};
-        dummy_callbacks.max_serialized_size = [](bool full_bounded){return (size_t)0;};
+
+  // Test
+  {
+    message_type_support_callbacks_t dummy_callbacks;
+    dummy_callbacks.message_name_ = "dummy";
+    dummy_callbacks.package_name_ = "dummy";
+    dummy_callbacks.cdr_serialize = [](const void * untyped_ros_message, ucdrBuffer * cdr) {
+        return true;
+      };
+    dummy_callbacks.cdr_deserialize =
+      [](ucdrBuffer * cdr, void * untyped_ros_message, uint8_t * raw_mem_ptr, size_t raw_mem_size) {
+        return true;
+      };
+    dummy_callbacks.get_serialized_size = [](const void *) {return (uint32_t)0;};
+    dummy_callbacks.max_serialized_size = [](bool full_bounded) {return (size_t)0;};
 
 
-        rosidl_message_type_support_t dummy_type_support;
-        dummy_type_support.typesupport_identifier = rosidl_typesupport_microxrcedds_c__identifier;
-        dummy_type_support.data = &dummy_callbacks;
-        dummy_type_support.func = [](const rosidl_message_type_support_t * type_support, const char * id){return type_support;};
+    rosidl_message_type_support_t dummy_type_support;
+    dummy_type_support.typesupport_identifier = rosidl_typesupport_microxrcedds_c__identifier;
+    dummy_type_support.data = &dummy_callbacks;
+    dummy_type_support.func =
+      [](const rosidl_message_type_support_t * type_support, const char * id) {
+        return type_support;
+      };
 
-        rmw_qos_profile_t dummy_qos_policies;
-        dummy_qos_policies.avoid_ros_namespace_conventions = false;
-        dummy_qos_policies.depth = 0;
-        dummy_qos_policies.durability = RMW_QOS_POLICY_DURABILITY_SYSTEM_DEFAULT;
-        //dummy_qos_policies.durability = RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
-        //dummy_qos_policies.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
-        dummy_qos_policies.history = RMW_QOS_POLICY_HISTORY_SYSTEM_DEFAULT;
-        //dummy_qos_policies.history = RMW_QOS_POLICY_HISTORY_KEEP_LAST;
-        //dummy_qos_policies.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
-        dummy_qos_policies.reliability = RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT;
-        //dummy_qos_policies.reliability = RMW_QOS_POLICY_RELIABILITY_RELIABLE;
-        //dummy_qos_policies.reliability = RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
+    rmw_qos_profile_t dummy_qos_policies;
+    dummy_qos_policies.avoid_ros_namespace_conventions = false;
+    dummy_qos_policies.depth = 0;
+    dummy_qos_policies.durability = RMW_QOS_POLICY_DURABILITY_SYSTEM_DEFAULT;
+    //dummy_qos_policies.durability = RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
+    //dummy_qos_policies.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
+    dummy_qos_policies.history = RMW_QOS_POLICY_HISTORY_SYSTEM_DEFAULT;
+    //dummy_qos_policies.history = RMW_QOS_POLICY_HISTORY_KEEP_LAST;
+    //dummy_qos_policies.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
+    dummy_qos_policies.reliability = RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT;
+    //dummy_qos_policies.reliability = RMW_QOS_POLICY_RELIABILITY_RELIABLE;
+    //dummy_qos_policies.reliability = RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
 
-        bool ignore_local_publications = true;
+    bool ignore_local_publications = true;
 
-        rmw_subscription_t * sub = rmw_create_subscription(this->node, &dummy_type_support, "topic_name", &dummy_qos_policies, ignore_local_publications);
-        EXPECT_NE((void*)sub, (void*)NULL);
+    rmw_subscription_t * sub = rmw_create_subscription(this->node, &dummy_type_support,
+        "topic_name", &dummy_qos_policies,
+        ignore_local_publications);
+    EXPECT_NE((void *)sub, (void *)NULL);
 
-        rmw_ret_t ret = rmw_destroy_subscription(this->node, sub);
-        EXPECT_EQ(ret,RMW_RET_OK);
-    }
+    rmw_ret_t ret = rmw_destroy_subscription(this->node, sub);
+    EXPECT_EQ(ret, RMW_RET_OK);
+  }
 }
