@@ -12,25 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rmw_node.h"
-
-#include "types.h"
-#include "utils.h"
-
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 
 #ifdef MICRO_XRCEDDS_SERIAL
-#include <fcntl.h> // O_RDWR, O_NOCTTY, O_NONBLOCK
+#include <fcntl.h>  // O_RDWR, O_NOCTTY, O_NONBLOCK
 #include <termios.h>
 #endif
+
+#include "./rmw_node.h"
+
+#include "./types.h"
+#include "./utils.h"
+
 
 #ifdef MICRO_XRCEDDS_SERIAL
 #define CLOSE_TRANSPORT(transport) uxr_close_serial_transport(transport)
 #elif defined(MICRO_XRCEDDS_UDP)
 #define CLOSE_TRANSPORT(transport) uxr_close_udp_transport(transport)
 #endif
+
 
 static struct MemPool node_memory;
 static CustomNode custom_nodes[MAX_NODES];
@@ -40,7 +42,11 @@ void init_rmw_node()
     init_nodes_memory(&node_memory, custom_nodes, MAX_NODES);
 }
 
-void on_status(uxrSession* session, uxrObjectId object_id, uint16_t request_id, uint8_t status, void* args)
+void on_status(uxrSession* session,
+               uxrObjectId object_id,
+               uint16_t request_id,
+               uint8_t status,
+               void* args)
 {
     (void)session;
     (void)object_id;
@@ -49,8 +55,12 @@ void on_status(uxrSession* session, uxrObjectId object_id, uint16_t request_id, 
     (void)args;
 }
 
-void on_topic(uxrSession* session, uxrObjectId object_id, uint16_t request_id, uxrStreamId stream_id,
-              struct ucdrBuffer* serialization, void* args)
+void on_topic(uxrSession* session,
+              uxrObjectId object_id,
+              uint16_t request_id,
+              uxrStreamId stream_id,
+              struct ucdrBuffer* serialization,
+              void* args)
 {
     (void)session;
     (void)request_id;
@@ -60,7 +70,7 @@ void on_topic(uxrSession* session, uxrObjectId object_id, uint16_t request_id, u
     CustomNode* node = (CustomNode*)args;
 
     // Search subscription
-    struct Item* subscription_item          = node->subscription_mem.allocateditems;
+    struct Item* subscription_item = node->subscription_mem.allocateditems;
     CustomSubscription* custom_subscription = NULL;
     while (true)
     {
@@ -84,11 +94,13 @@ void on_topic(uxrSession* session, uxrObjectId object_id, uint16_t request_id, u
 
     // not waiting for response any more
     custom_subscription->waiting_for_response = false;
-    node->on_subscription                      = true;
+    node->on_subscription = true;
 
 
     // Copy microbuffer data
-    memcpy(&custom_subscription->micro_buffer, serialization, sizeof(custom_subscription->micro_buffer));
+    memcpy(&custom_subscription->micro_buffer,
+           serialization,
+           sizeof(custom_subscription->micro_buffer));
 
     return;
 }
@@ -96,7 +108,8 @@ void on_topic(uxrSession* session, uxrObjectId object_id, uint16_t request_id, u
 void clear_node(rmw_node_t* node)
 {
     CustomNode* micro_node = (CustomNode*)node->data;
-    // TODO make sure that session deletion deletes participant and related entities.
+    // TODO(Borja) make sure that session deletion
+    //  deletes participant and related entities.
     uxr_delete_session(&micro_node->session);
     CLOSE_TRANSPORT(&micro_node->transport);
     rmw_node_delete(node);
@@ -104,7 +117,7 @@ void clear_node(rmw_node_t* node)
 
 rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_id)
 {
-    uint32_t key                = rand();
+    uint32_t key = rand_r(&key);
 
     struct Item* memory_node = get_memory(&node_memory);
     if (!memory_node)
@@ -124,19 +137,23 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
         if (0 == tcgetattr(fd, &tty_config))
         {
             /* Setting CONTROL OPTIONS. */
-            tty_config.c_cflag |= CREAD;    // Enable read.
-            tty_config.c_cflag |= CLOCAL;   // Set local mode.
-            tty_config.c_cflag &= ~PARENB;  // Disable parity.
-            tty_config.c_cflag &= ~CSTOPB;  // Set one stop bit.
-            tty_config.c_cflag &= ~CSIZE;   // Mask the character size bits.
-            tty_config.c_cflag |= CS8;      // Set 8 data bits.
-            tty_config.c_cflag &= ~CRTSCTS; // Disable hardware flow control.
+            tty_config.c_cflag |= CREAD;     // Enable read.
+            tty_config.c_cflag |= CLOCAL;    // Set local mode.
+            tty_config.c_cflag &= ~PARENB;   // Disable parity.
+            tty_config.c_cflag &= ~CSTOPB;   // Set one stop bit.
+            tty_config.c_cflag &= ~CSIZE;    // Mask the character size bits.
+            tty_config.c_cflag |= CS8;       // Set 8 data bits.
+            tty_config.c_cflag &= ~CRTSCTS;  // Disable hardware flow control.
 
             /* Setting LOCAL OPTIONS. */
             tty_config.c_lflag &= ~ICANON;  // Set non-canonical input.
             tty_config.c_lflag &= ~ECHO;    // Disable echoing of input characters.
             tty_config.c_lflag &= ~ECHOE;   // Disable echoing the erase character.
-            tty_config.c_lflag &= ~ISIG;    // Disable SIGINTR, SIGSUSP, SIGDSUSP and SIGQUIT signals.
+            tty_config.c_lflag &= ~ISIG;    // Disable:
+                                            // SIGINTR,
+                                            // SIGSUSP,
+                                            // SIGDSUSP
+                                            // and SIGQUIT signals.
 
             /* Setting INPUT OPTIONS. */
             tty_config.c_iflag &= ~IXON;    // Disable output software flow control.
@@ -186,11 +203,16 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     uxr_set_topic_callback(&node_info->session, on_topic, node_info);
     uxr_set_status_callback(&node_info->session, on_status, NULL);
 
-    node_info->reliable_input = uxr_create_input_reliable_stream(
-        &node_info->session, node_info->input_reliable_stream_buffer, node_info->transport.comm.mtu * MAX_HISTORY, MAX_HISTORY);
+    node_info->reliable_input =
+        uxr_create_input_reliable_stream(&node_info->session,
+                                         node_info->input_reliable_stream_buffer,
+                                         node_info->transport.comm.mtu * MAX_HISTORY,
+                                         MAX_HISTORY);
     node_info->reliable_output =
-        uxr_create_output_reliable_stream(&node_info->session, node_info->output_reliable_stream_buffer,
-                                         node_info->transport.comm.mtu * MAX_HISTORY, MAX_HISTORY);
+        uxr_create_output_reliable_stream(&node_info->session,
+                                          node_info->output_reliable_stream_buffer,
+                                          node_info->transport.comm.mtu * MAX_HISTORY,
+                                          MAX_HISTORY);
 
     rmw_node_t* node_handle = NULL;
     node_handle             = rmw_node_allocate();
@@ -200,8 +222,8 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
         return NULL;
     }
     node_handle->implementation_identifier = rmw_get_implementation_identifier();
-    node_handle->data                      = node_info;
-    node_handle->name                      = (const char*)(rmw_allocate(sizeof(char) * strlen(name) + 1));
+    node_handle->data = node_info;
+    node_handle->name = (const char*)(rmw_allocate(sizeof(char) * strlen(name) + 1));
     if (!node_handle->name)
     {
         RMW_SET_ERROR_MSG("failed to allocate memory");
@@ -229,7 +251,8 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
         return NULL;
     }
 
-    // Create the Node participant. At this point a Node correspond withçt a Session with one participant.
+    // Create the Node participant.
+    // At this point a Node correspond with a Session with one participant.
     node_info->participant_id = uxr_object_id(node_info->id_gen++, UXR_PARTICIPANT_ID);
     uint16_t participant_req;
 #ifdef MICRO_XRCEDDS_USE_XML
@@ -240,8 +263,10 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
         return NULL;
     }
     participant_req =
-        uxr_buffer_create_participant_xml(&node_info->session, node_info->reliable_output, node_info->participant_id,
-                                           domain_id, participant_xml, UXR_REPLACE);
+        uxr_buffer_create_participant_xml(&node_info->session,
+                                             node_info->reliable_output,
+                                             node_info->participant_id,
+                                            domain_id, participant_xml, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
     char profile_name[20];
     if (!build_participant_profile(profile_name, sizeof(profile_name)))
@@ -249,13 +274,21 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
         RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
         return NULL;
     }
-    participant_req = uxr_buffer_create_participant_ref(&node_info->session, node_info->reliable_output,
-                                                      node_info->participant_id, domain_id, profile_name, UXR_REPLACE);
+    participant_req = uxr_buffer_create_participant_ref(&node_info->session,
+                                                        node_info->reliable_output,
+                                                        node_info->participant_id,
+                                                        domain_id,
+                                                        profile_name,
+                                                        UXR_REPLACE);
 #endif
     uint8_t status[1];
     uint16_t requests[] = {participant_req};
 
-    if (!uxr_run_session_until_all_status(&node_info->session, 1000, requests, status, 1))
+    if (!uxr_run_session_until_all_status(&node_info->session,
+                                          1000,
+                                          requests,
+                                          status,
+                                          1))
     {
         uxr_delete_session(&node_info->session);
         CLOSE_TRANSPORT(&node_info->transport);
@@ -264,7 +297,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
         return NULL;
     }
 
-    // TODO create utils methods to handle publishers array.
+    // TODO(Borja) create utils methods to handle publishers array.
     customnode_clear(node_info);
 
     return node_handle;

@@ -12,21 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMW_MICROXRCEDDS_TYPES_H_
-#define RMW_MICROXRCEDDS_TYPES_H_
+#ifndef TYPES_H_
+#define TYPES_H_
 
-#include "memory.h"
+#include <stddef.h>
 
-#include "config.h"
-
-#include "rosidl_generator_c/message_type_support_struct.h"
-#include "rosidl_typesupport_microxrcedds_c/message_type_support.h"
 #include <rmw/types.h>
 
 #include <ucdr/microcdr.h>
 #include <uxr/client/client.h>
 
-#include <stddef.h>
+#include <rosidl_generator_c/message_type_support_struct.h>
+#include <rosidl_typesupport_microxrcedds_c/message_type_support.h>
+
+#include "./memory.h"
+
+#include "./config.h"
+
+
 
 typedef struct CustomSubscription
 {
@@ -57,7 +60,6 @@ typedef struct CustomPublisher
     struct Item mem;
 
     struct CustomNode* owner_node;
-
 } CustomPublisher;
 
 typedef struct CustomNode
@@ -89,9 +91,8 @@ typedef struct CustomNode
     uint8_t miscellaneous_temp_buffer[MAX_TRANSPORT_MTU];
 
     uint16_t id_gen;
-
 } CustomNode;
 
 void init_nodes_memory(struct MemPool* memory, CustomNode nodes[MAX_NODES], size_t size);
 
-#endif // !RMW_MICROXRCEDDS_TYPES_H_
+#endif  // TYPES_H_

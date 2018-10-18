@@ -26,17 +26,17 @@ find_package(MicroXRCEDDS REQUIRED MODULE)
 find_package(rmw REQUIRED)
 find_package(rosidl_generator_c REQUIRED)
 find_package(rosidl_typesupport_microxrcedds_c REQUIRED)
-  
+
 
 set(PACKAGE_VERSION "0.1.0")
-if(BUILD_TESTING) 
+if(BUILD_TESTING)
     project(rmw_microxrcedds
-    VERSION ${PACKAGE_VERSION}
+            VERSION ${PACKAGE_VERSION}
     )
 else()
     project(rmw_microxrcedds
-    VERSION ${PACKAGE_VERSION}
-    LANGUAGES C
+            VERSION ${PACKAGE_VERSION}
+            LANGUAGES C
     )
 endif()
 
@@ -72,23 +72,25 @@ else()
 endif()
 
 # Create source files with the define
-configure_file(${PROJECT_SOURCE_DIR}/src/config.h.in
-    ${PROJECT_BINARY_DIR}/config/config.h
+configure_file( ${PROJECT_SOURCE_DIR}/src/config.h.in
+                ${PROJECT_BINARY_DIR}/config/config.h
 )
 
 
 file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.c)
-add_library(${PROJECT_NAME} ${SRC_FILES})
+add_library(${PROJECT_NAME}
+            ${SRC_FILES}
+)
 target_link_libraries(${PROJECT_NAME}
-    microcdr
-    microxrcedds_client
-    )
-    
+                      microcdr
+                      microxrcedds_client
+)
+
 ament_target_dependencies(${PROJECT_NAME}
-    "rcutils"
-    "rosidl_typesupport_microxrcedds_c"
-    "rmw"
-    "rosidl_generator_c"
+                          "rcutils"
+                          "rosidl_typesupport_microxrcedds_c"
+                          "rmw"
+                          "rosidl_generator_c"
 )
 
 configure_rmw_library(${PROJECT_NAME})
@@ -99,10 +101,11 @@ target_include_directories(${PROJECT_NAME}
     PRIVATE
         $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
 )
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    C_STANDARD 99
-    C_STANDARD_REQUIRED YES
-    )
+set_target_properties(${PROJECT_NAME}
+                      PROPERTIES
+                      C_STANDARD 99
+                      C_STANDARD_REQUIRED YES
+)
 
 if(MSVC OR MSVC_IDE)
     target_compile_options(${PROJECT_NAME} PRIVATE
@@ -124,12 +127,11 @@ endif()
 ament_export_include_directories(${PROJECT_SOURCE_DIR}/include)
 ament_export_libraries(${PROJECT_NAME})
 
-ament_export_dependencies(
-    rosidl_typesupport_microxrcedds_c
-    rosidl_generator_c
-    rcutils
-    rmw
-    )
+ament_export_dependencies(rosidl_typesupport_microxrcedds_c
+                          rosidl_generator_c
+                          rcutils
+                          rmw
+)
 
 register_rmw_implementation(
     "c:rosidl_typesupport_c:rosidl_typesupport_microxrcedds_c"
@@ -137,7 +139,7 @@ register_rmw_implementation(
 )
 
 
-if(BUILD_TESTING)   
+if(BUILD_TESTING)
     find_package(ament_lint_auto REQUIRED)
     ament_lint_auto_find_test_dependencies()
 
@@ -145,18 +147,16 @@ if(BUILD_TESTING)
 endif()
 
 
-ament_package(
-    CONFIG_EXTRAS_POST "rmw_microxrcedds-extras.cmake"
-    )
+ament_package(CONFIG_EXTRAS_POST
+              "rmw_microxrcedds-extras.cmake"
+)
 
-install(
-    DIRECTORY include/
-    DESTINATION include
-    )
+install(DIRECTORY include/
+        DESTINATION include
+)
 
-install(
-    TARGETS ${PROJECT_NAME}
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    RUNTIME DESTINATION bin
-    )
+install(TARGETS ${PROJECT_NAME}
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+)

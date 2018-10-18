@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rmw_microxrcedds.h"
+#include <limits.h>
 
-#include "identifier.h"
+#include <rmw/allocators.h>
+#include <rmw/error_handling.h>
 
-#include "rmw_node.h"
-#include "rmw_publisher.h"
-#include "rmw_subscriber.h"
-#include "types.h"
-#include "utils.h"
-
-#include "rmw/allocators.h"
-#include "rmw/error_handling.h"
-#include "rosidl_typesupport_microxrcedds_c/identifier.h"
+#include <rosidl_typesupport_microxrcedds_c/identifier.h>
 
 #include <uxr/client/client.h>
 
-#include <limits.h>
-#include <time.h>
+#include "./rmw_microxrcedds.h"
+
+#include "./identifier.h"
+
+#include "./rmw_node.h"
+#include "./rmw_publisher.h"
+#include "./rmw_subscriber.h"
+#include "./types.h"
+#include "./utils.h"
 
 
 const char* rmw_get_implementation_identifier()
@@ -42,17 +42,15 @@ rmw_ret_t rmw_init()
 {
     EPROS_PRINT_TRACE()
 
-    // Intialize random number generator
-    time_t t;
-    srand((unsigned)time(&t));
-
     init_rmw_node();
 
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
 
-rmw_node_t* rmw_create_node(const char* name, const char* namespace, size_t domain_id,
+rmw_node_t* rmw_create_node(const char* name,
+                            const char* namespace,
+                            size_t domain_id,
                             const rmw_node_security_options_t* security_options)
 {
     EPROS_PRINT_TRACE()
@@ -60,17 +58,11 @@ rmw_node_t* rmw_create_node(const char* name, const char* namespace, size_t doma
     if (!name || strlen(name) == 0)
     {
         RMW_SET_ERROR_MSG("name is null");
-    }
-    else if (!namespace || strlen(namespace) == 0)
-    {
+    }else if (!namespace || strlen(namespace) == 0){
         RMW_SET_ERROR_MSG("node handle not from this implementation");
-    }
-    else if (!security_options)
-    {
+    }else if (!security_options){
         RMW_SET_ERROR_MSG("security_options is null");
-    }
-    else
-    {
+    }else{
         rmw_node = create_node(name, namespace, domain_id);
     }
     return rmw_node;
@@ -78,42 +70,34 @@ rmw_node_t* rmw_create_node(const char* name, const char* namespace, size_t doma
 
 const rmw_guard_condition_t* rmw_node_get_graph_guard_condition(const rmw_node_t* node)
 {
-    // TODO
     (void)node;
     EPROS_PRINT_TRACE()
-    rmw_guard_condition_t* ret     = (rmw_guard_condition_t*)rmw_allocate(sizeof(rmw_guard_condition_t));
-    ret->data                      = NULL;
+    rmw_guard_condition_t* ret =
+        (rmw_guard_condition_t*)rmw_allocate(sizeof(rmw_guard_condition_t));
+    ret->data = NULL;
     ret->implementation_identifier = eprosima_microxrcedds_identifier;
     return ret;
 }
 
-rmw_publisher_t* rmw_create_publisher(const rmw_node_t* node, const rosidl_message_type_support_t* type_support,
-                                      const char* topic_name, const rmw_qos_profile_t* qos_policies)
+rmw_publisher_t* rmw_create_publisher(const rmw_node_t* node,
+                                      const rosidl_message_type_support_t* type_support,
+                                      const char* topic_name,
+                                    const rmw_qos_profile_t* qos_policies)
 {
     EPROS_PRINT_TRACE()
     rmw_publisher_t* rmw_publisher = NULL;
     if (!node)
     {
         RMW_SET_ERROR_MSG("node handle is null");
-    }
-    else if (!type_support)
-    {
+    }else if (!type_support){
         RMW_SET_ERROR_MSG("type support is null");
-    }
-    else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0)
-    {
+    }else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0){
         RMW_SET_ERROR_MSG("node handle not from this implementation");
-    }
-    else if (!topic_name || strlen(topic_name) == 0)
-    {
+    }else if (!topic_name || strlen(topic_name) == 0){
         RMW_SET_ERROR_MSG("publisher topic is null or empty string");
-    }
-    else if (!qos_policies)
-    {
+    }else if (!qos_policies){
         RMW_SET_ERROR_MSG("qos_profile is null");
-    }
-    else
-    {
+    }else{
         rmw_publisher = create_publisher(node, type_support, topic_name, qos_policies);
     }
     return rmw_publisher;
@@ -126,7 +110,8 @@ rmw_ret_t rmw_publish_serialized_message(const rmw_publisher_t* publisher,
     return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_serialize(const void* ros_message, const rosidl_message_type_support_t* type_support,
+rmw_ret_t rmw_serialize(const void* ros_message,
+                        const rosidl_message_type_support_t* type_support,
                         rmw_serialized_message_t* serialized_message)
 {
     EPROS_PRINT_TRACE()
@@ -134,14 +119,17 @@ rmw_ret_t rmw_serialize(const void* ros_message, const rosidl_message_type_suppo
 }
 
 rmw_ret_t rmw_deserialize(const rmw_serialized_message_t* serialized_message,
-                          const rosidl_message_type_support_t* type_support, void* ros_message)
+                          const rosidl_message_type_support_t* type_support,
+                          void* ros_message)
 {
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
 
-rmw_subscription_t* rmw_create_subscription(const rmw_node_t* node, const rosidl_message_type_support_t* type_support,
-                                            const char* topic_name, const rmw_qos_profile_t* qos_policies,
+rmw_subscription_t* rmw_create_subscription(const rmw_node_t* node,
+                                            const rosidl_message_type_support_t* type_support,
+                                            const char* topic_name,
+                                            const rmw_qos_profile_t* qos_policies,
                                             bool ignore_local_publications)
 {
     EPROS_PRINT_TRACE()
@@ -149,43 +137,41 @@ rmw_subscription_t* rmw_create_subscription(const rmw_node_t* node, const rosidl
     if (!node)
     {
         RMW_SET_ERROR_MSG("node handle is null");
-    }
-    else if (!type_support)
-    {
+    }else if (!type_support){
         RMW_SET_ERROR_MSG("type support is null");
-    }
-    else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0)
-    {
+    }else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0){
         RMW_SET_ERROR_MSG("node handle not from this implementation");
-    }
-    else if (strcmp(type_support->typesupport_identifier, rosidl_typesupport_microxrcedds_c__identifier) != 0)
-    {
+    }else if (strcmp(type_support->typesupport_identifier,
+                     rosidl_typesupport_microxrcedds_c__identifier) != 0){
         RMW_SET_ERROR_MSG("TypeSupport handle not from this implementation");
-    }
-    else if (!topic_name || strlen(topic_name) == 0)
-    {
+    }else if (!topic_name || strlen(topic_name) == 0){
         RMW_SET_ERROR_MSG("subscription topic is null or empty string");
         return NULL;
-    }
-    else if (!qos_policies)
-    {
+    }else if (!qos_policies){
         RMW_SET_ERROR_MSG("qos_profile is null");
         return NULL;
-    }
-    else
-    {
-        rmw_subscription = create_subscriber(node, type_support, topic_name, qos_policies, ignore_local_publications);
+    }else{
+        rmw_subscription =
+            create_subscriber(node,
+                              type_support,
+                              topic_name,
+                              qos_policies,
+                              ignore_local_publications);
     }
 
     return rmw_subscription;
 }
 
-rmw_ret_t rmw_take(const rmw_subscription_t* subscription, void* ros_message, bool* taken)
+rmw_ret_t rmw_take(const rmw_subscription_t* subscription,
+                   void* ros_message,
+                   bool* taken)
 {
     return rmw_take_with_info(subscription, ros_message, taken, NULL);
 }
 
-rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_message, bool* taken,
+rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription,
+                             void* ros_message,
+                             bool* taken,
                              rmw_message_info_t* message_info)
 {
     EPROS_PRINT_TRACE()
@@ -211,7 +197,12 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
 
 
     // Extract serialiced message using typesupport
-    bool deserialize_rv = custom_subscription->type_support_callbacks->cdr_deserialize(&custom_subscription->micro_buffer, ros_message, custom_subscription->owner_node->miscellaneous_temp_buffer, sizeof(custom_subscription->owner_node->miscellaneous_temp_buffer));
+    bool deserialize_rv =
+        custom_subscription->type_support_callbacks->cdr_deserialize(
+            &custom_subscription->micro_buffer,
+            ros_message,
+            custom_subscription->owner_node->miscellaneous_temp_buffer,
+            sizeof(custom_subscription->owner_node->miscellaneous_temp_buffer));
     if (taken != NULL)
     {
         *taken = deserialize_rv;
@@ -227,22 +218,26 @@ rmw_ret_t rmw_take_with_info(const rmw_subscription_t* subscription, void* ros_m
 }
 
 rmw_ret_t rmw_take_serialized_message(const rmw_subscription_t* subscription,
-                                      rmw_serialized_message_t* serialized_message, bool* taken)
+                                      rmw_serialized_message_t* serialized_message,
+                                      bool* taken)
 {
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
 
 rmw_ret_t rmw_take_serialized_message_with_info(const rmw_subscription_t* subscription,
-                                                rmw_serialized_message_t* serialized_message, bool* taken,
+                                                rmw_serialized_message_t* serialized_message,
+                                                bool* taken,
                                                 rmw_message_info_t* message_info)
 {
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
 
-rmw_client_t* rmw_create_client(const rmw_node_t* node, const rosidl_service_type_support_t* type_support,
-                                const char* service_name, const rmw_qos_profile_t* qos_policies)
+rmw_client_t* rmw_create_client(const rmw_node_t* node,
+                                const rosidl_service_type_support_t* type_support,
+                                const char* service_name,
+                                const rmw_qos_profile_t* qos_policies)
 {
     EPROS_PRINT_TRACE()
     return NULL;
@@ -254,40 +249,51 @@ rmw_ret_t rmw_destroy_client(rmw_node_t* node, rmw_client_t* client)
     return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_send_request(const rmw_client_t* client, const void* ros_request, int64_t* sequence_id)
+rmw_ret_t rmw_send_request(const rmw_client_t* client,
+                           const void* ros_request,
+                           int64_t* sequence_id)
 {
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_take_response(const rmw_client_t* client, rmw_request_id_t* request_header, void* ros_response,
+rmw_ret_t rmw_take_response(const rmw_client_t* client,
+                            rmw_request_id_t* request_header,
+                            void* ros_response,
                             bool* taken)
 {
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
 
-rmw_service_t* rmw_create_service(const rmw_node_t* node, const rosidl_service_type_support_t* type_support,
-                                  const char* service_name, const rmw_qos_profile_t* qos_policies)
+rmw_service_t* rmw_create_service(const rmw_node_t* node,
+                                  const rosidl_service_type_support_t* type_support,
+                                  const char* service_name,
+                                  const rmw_qos_profile_t* qos_policies)
 {
     EPROS_PRINT_TRACE()
     return NULL;
 }
 
-rmw_ret_t rmw_destroy_service(rmw_node_t* node, rmw_service_t* service)
+rmw_ret_t rmw_destroy_service(rmw_node_t* node,
+                              rmw_service_t* service)
 {
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_take_request(const rmw_service_t* service, rmw_request_id_t* request_header, void* ros_request,
+rmw_ret_t rmw_take_request(const rmw_service_t* service,
+                           rmw_request_id_t* request_header,
+                           void* ros_request,
                            bool* taken)
 {
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_send_response(const rmw_service_t* service, rmw_request_id_t* request_header, void* ros_response)
+rmw_ret_t rmw_send_response(const rmw_service_t* service,
+                            rmw_request_id_t* request_header,
+                            void* ros_response)
 {
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
@@ -333,8 +339,11 @@ rmw_ret_t rmw_destroy_wait_set(rmw_wait_set_t* wait_set)
     return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* guard_conditions,
-                   rmw_services_t* services, rmw_clients_t* clients, rmw_wait_set_t* wait_set,
+rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions,
+                   rmw_guard_conditions_t* guard_conditions,
+                   rmw_services_t* services,
+                   rmw_clients_t* clients,
+                   rmw_wait_set_t* wait_set,
                    const rmw_time_t* wait_timeout)
 {
     EPROS_PRINT_TRACE()
@@ -355,15 +364,18 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
         {
             if (subscriptions->subscribers[i] != NULL)
             {
-                CustomSubscription* custom_subscription = (CustomSubscription*)subscriptions->subscribers[i];
-                custom_node                             = custom_subscription->owner_node;
+                CustomSubscription* custom_subscription =
+                    (CustomSubscription*)subscriptions->subscribers[i];
+                custom_node = custom_subscription->owner_node;
 
-                
                 if (custom_subscription->waiting_for_response == false)
                 {
                     custom_subscription->waiting_for_response = true;
-                    custom_subscription->subscription_request = uxr_buffer_request_data(&custom_node->session, custom_node->reliable_output, custom_subscription->datareader_id, custom_node->reliable_input, NULL);
-                    
+                    custom_subscription->subscription_request =
+                        uxr_buffer_request_data(&custom_node->session,
+                                                custom_node->reliable_output,
+                                                custom_subscription->datareader_id,
+                                                custom_node->reliable_input, NULL);
                 }
 
 
@@ -375,8 +387,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
 
     // Go throw all services
     /*
-    else if ((services != NULL) && (services->service_count > 0))
-    {
+    else if ((services != NULL) && (services->service_count > 0)){
         // Extract first session pointer
         //services->services[0];
     }
@@ -384,8 +395,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
 
     // Go throw all clients
     /*
-    else if ((clients != NULL) && (clients->client_count > 0))
-    {
+    else if ((clients != NULL) && (clients->client_count > 0)){
         // Extract first session pointer
         //clients->clients[0];
     }
@@ -430,9 +440,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
             // Overflow
             timeout = INT_MAX;
             RMW_SET_ERROR_MSG("Wait timeout overflow");
-        }
-        else
-        {
+        }else{
             timeout = wait_timeout->sec * 1000;
 
             uint64_t timeout_ms = wait_timeout->nsec / 1000000;
@@ -441,9 +449,7 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
                 // Overflow
                 timeout = INT_MAX;
                 RMW_SET_ERROR_MSG("Wait timeout overflow");
-            }
-            else
-            {
+            }else{
                 timeout += timeout_ms;
                 if (timeout > INT_MAX)
                 {
@@ -453,16 +459,18 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
                 }
             }
         }
-    }
-    else
-    {
+    }else{
         timeout = UXR_TIMEOUT_INF;
     }
 
     // read until status or timeout
     if (subscriptions->subscriber_count > 0)
     {
-        uxr_run_session_until_one_status(&custom_node->session, timeout, subscription_request, subscription_status_request, subscriptions->subscriber_count);
+        uxr_run_session_until_one_status(&custom_node->session,
+                                         timeout,
+                                         subscription_request,
+                                         subscription_status_request,
+                                         subscriptions->subscriber_count);
     }
 
 
@@ -473,14 +481,12 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
         for (size_t i = 0; i < subscriptions->subscriber_count; ++i)
         {
             // Check if there are any data
-            CustomSubscription* custom_subscription = (CustomSubscription*)(subscriptions->subscribers[i]);
-            //if (custom_subscription->tmp_raw_buffer.write == custom_subscription->tmp_raw_buffer.read)
+            CustomSubscription* custom_subscription =
+                (CustomSubscription*)(subscriptions->subscribers[i]);
             if (custom_subscription->waiting_for_response)
             {
                 subscriptions->subscribers[i] = NULL;
-            }
-            else
-            {
+            }else{
                 is_timeout = false;
             }
         }
@@ -511,37 +517,47 @@ rmw_ret_t rmw_wait(rmw_subscriptions_t* subscriptions, rmw_guard_conditions_t* g
     return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_get_node_names(const rmw_node_t* node, rcutils_string_array_t* node_names)
+rmw_ret_t rmw_get_node_names(const rmw_node_t* node,
+                             rcutils_string_array_t* node_names)
 {
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_count_publishers(const rmw_node_t* node, const char* topic_name, size_t* count)
+rmw_ret_t rmw_count_publishers(const rmw_node_t* node,
+                               const char* topic_name,
+                               size_t* count)
 {
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_count_subscribers(const rmw_node_t* node, const char* topic_name, size_t* count)
+rmw_ret_t rmw_count_subscribers(const rmw_node_t* node,
+                                const char* topic_name,
+                                size_t* count)
 {
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_get_gid_for_publisher(const rmw_publisher_t* publisher, rmw_gid_t* gid)
+rmw_ret_t rmw_get_gid_for_publisher(const rmw_publisher_t* publisher,
+                                    rmw_gid_t* gid)
 {
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_compare_gids_equal(const rmw_gid_t* gid1, const rmw_gid_t* gid2, bool* result)
+rmw_ret_t rmw_compare_gids_equal(const rmw_gid_t* gid1,
+                                 const rmw_gid_t* gid2,
+                                 bool* result)
 {
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_service_server_is_available(const rmw_node_t* node, const rmw_client_t* client, bool* is_available)
+rmw_ret_t rmw_service_server_is_available(const rmw_node_t* node,
+                                          const rmw_client_t* client,
+                                          bool* is_available)
 {
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
@@ -553,14 +569,17 @@ rmw_ret_t rmw_set_log_6severity(rmw_log_severity_t severity)
     return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_get_topic_names_and_types(const rmw_node_t* node, rcutils_allocator_t* allocator, bool no_demangle,
+rmw_ret_t rmw_get_topic_names_and_types(const rmw_node_t* node,
+                                        rcutils_allocator_t* allocator,
+                                        bool no_demangle,
                                         rmw_names_and_types_t* topic_names_and_types)
 {
     EPROS_PRINT_TRACE()
     return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_get_service_names_and_types(const rmw_node_t* node, rcutils_allocator_t* allocator,
+rmw_ret_t rmw_get_service_names_and_types(const rmw_node_t* node,
+                                          rcutils_allocator_t* allocator,
                                           rmw_names_and_types_t* service_names_and_types)
 {
     EPROS_PRINT_TRACE()

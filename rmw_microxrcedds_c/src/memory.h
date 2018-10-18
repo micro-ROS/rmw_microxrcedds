@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMW_MICROXRCEDDS_MEMORY_H_
-#define RMW_MICROXRCEDDS_MEMORY_H_
+#ifndef MEMORY_H_
+#define MEMORY_H_
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -40,4 +40,4 @@ struct Item* get_memory(struct MemPool* mem);
 void put_memory(struct MemPool* mem, struct Item* item);
 void free_mem_pool(struct MemPool* mem);
 
-#endif // !RMW_MICROXRCEDDS_MEMORY_H_
+#endif  // MEMORY_H_

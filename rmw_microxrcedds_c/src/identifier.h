@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMW_MICROXRCEDDS_IDENTIFIER_H_
-#define RMW_MICROXRCEDDS_IDENTIFIER_H_
+#ifndef IDENTIFIER_H_
+#define IDENTIFIER_H_
 
-const char* const eprosima_microxrcedds_identifier;
+extern const char* const eprosima_microxrcedds_identifier;
 
-#endif
+#endif  // IDENTIFIER_H_

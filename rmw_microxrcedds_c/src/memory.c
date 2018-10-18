@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "memory.h"
+#include "./memory.h"
 
 void link_next(struct Item* current, struct Item* next, void* data)
 {
