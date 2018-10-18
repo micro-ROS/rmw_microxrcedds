@@ -36,6 +36,7 @@ set(TEST_FILES "test_publisher.cpp")
 ament_add_gtest(
   ${TEST_NAME}
   ${TEST_FILES}
+  TIMEOUT 1
 )
 if(TARGET ${TEST_NAME})
   target_link_libraries(
@@ -59,6 +60,37 @@ set(TEST_FILES "test_subscription.cpp")
 ament_add_gtest(
   ${TEST_NAME}
   ${TEST_FILES}
+  TIMEOUT 1
+)
+if(TARGET ${TEST_NAME})
+  ament_target_dependencies(
+    ${TEST_NAME}
+    ${PROJECT_NAME}
+    microxrcedds_agent
+    rosidl_typesupport_microxrcedds_c
+  )
+  target_link_libraries(
+    ${TEST_NAME}
+    ${PROJECT_NAME}
+    microxrcedds_agent
+  )
+  target_include_directories(
+    ${TEST_NAME}
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    PRIVATE
+        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
+  )
+endif()
+
+
+# Pubish and subcribe
+set(TEST_NAME "test_pubsub")
+set(TEST_FILES "test_pubsub.cpp")
+ament_add_gtest(
+  ${TEST_NAME}
+  ${TEST_FILES}
+  TIMEOUT 1
 )
 if(TARGET ${TEST_NAME})
   ament_target_dependencies(

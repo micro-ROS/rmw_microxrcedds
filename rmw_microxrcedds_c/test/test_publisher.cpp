@@ -16,9 +16,9 @@
 #include <gtest/gtest.h>
 
 #ifdef _WIN32
-#include <uxr/agent/transport/UDPServerWindows.hpp>
+#include <uxr/agent/transport/udp/UDPServerWindows.hpp>
 #else
-#include <uxr/agent/transport/UDPServerLinux.hpp>
+#include <uxr/agent/transport/udp/UDPServerLinux.hpp>
 #endif  // _WIN32
 
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>
