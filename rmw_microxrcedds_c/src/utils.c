@@ -129,13 +129,18 @@ void customnode_clear(CustomNode* node)
 int build_participant_xml(size_t domain_id, const char* participant_name, char xml[], size_t buffer_size)
 {
     static const char format[] =
-        "<profiles><participant "
-        "profile_name=\"participant_profile\"><rtps><builtin><leaseDuration><durationbyname>INFINITE</durationbyname></"
-        "leaseDuration><domainId>%ld</domainId></builtin><name>%s</name></rtps></participant></profiles>";
+        "<dds>"
+        // "<participant profile_name=\"participant_profile\">"
+        "<participant>"
+        "<rtps>"
+        "<name>%s</name>"
+        "</rtps>"
+        "</participant>"
+        "</dds>";
     int ret = 0;
     if (buffer_size >= (sizeof(format) - 5 + strlen(participant_name) + sizeof(domain_id)))
     {
-        ret = sprintf(xml, format, domain_id, participant_name);
+        ret = sprintf(xml, format, participant_name);
     }
     return ret;
 }
@@ -189,7 +194,14 @@ int generate_type_name(const message_type_support_callbacks_t* members, const ch
 int build_topic_xml(const char* topic_name, const message_type_support_callbacks_t* members,
                     const rmw_qos_profile_t* qos_policies, char xml[], size_t buffer_size)
 {
-    static const char format[] = "<dds><topic><name>%s</name><dataType>%s</dataType></topic></dds>";
+    static const char format[] = 
+        "<dds>"
+        "<topic>"
+        "<name>%s</name>"
+        "<dataType>%s</dataType>"
+        "</topic>"
+        "</dds>";
+
     int ret                    = 0;
     static char type_name_buffer[50];
     if (RMW_TOPIC_NAME_MAX_NAME_LENGTH >= strlen(topic_name) &&
@@ -237,10 +249,15 @@ int build_datawriter_xml(const char* topic_name, const message_type_support_call
                          const rmw_qos_profile_t* qos_policies, char xml[], size_t buffer_size)
 {
     static const char format[] =
-        "<profiles><publisher "
-        "profile_name=\"rmw_microxrcedds_publisher\"><topic><kind>NO_KEY</kind><name>%s</"
-        "name><dataType>%s</dataType><historyQos><kind>KEEP_LAST</kind><depth>5</depth></"
-        "historyQos><durability><kind>TRANSIENT_LOCAL</kind></durability></topic></publisher></profiles>";
+        "<dds>"
+        "<data_writer>"
+        "<topic>"
+        "<kind>NO_KEY</kind>"
+        "<name>%s</name>"
+        "<dataType>%s</dataType>"
+        "</topic>"
+        "</data_writer>"
+        "</dds>";
     return build_xml(format, topic_name, members, qos_policies, xml, buffer_size);
 }
 
@@ -248,10 +265,15 @@ int build_datareader_xml(const char* topic_name, const message_type_support_call
                          const rmw_qos_profile_t* qos_policies, char xml[], size_t buffer_size)
 {
     static const char format[] =
-        "<profiles><subscriber "
-        "profile_name=\"rmw_microxrcedds_subscriber\"><topic><kind>NO_KEY</kind><name>%s</"
-        "name><dataType>%s</dataType><historyQos><kind>KEEP_LAST</kind><depth>5</depth></"
-        "historyQos><durability><kind>TRANSIENT_LOCAL</kind></durability></topic></subscriber></profiles>";
+        "<dds>"
+        "<data_reader>"
+        "<topic>"
+        "<kind>NO_KEY</kind>"
+        "<name>%s</name>"
+        "<dataType>%s</dataType>"
+        "</topic>"
+        "</data_reader>"
+        "</dds>";
     return build_xml(format, topic_name, members, qos_policies, xml, buffer_size);
 }
 
