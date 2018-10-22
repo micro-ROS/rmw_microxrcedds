@@ -31,7 +31,7 @@
 
 #define MICROXRCEDDS_PADDING sizeof(uint32_t)
 
-const char * test_parameter  = "Test message XXXX";
+const char * test_parameter = "Test message XXXX";
 
 class TestSubscription : public ::testing::Test
 {
@@ -76,11 +76,11 @@ protected:
 
   eprosima::uxr::Server * server;
   rmw_ret_t ret;
-  
+
 };
 
 /*
-   Testing publish and subcribe to the same topic in diferent nodes 
+   Testing publish and subcribe to the same topic in diferent nodes
  */
 TEST_F(TestSubscription, publish_and_receive) {
   // Test
@@ -88,26 +88,28 @@ TEST_F(TestSubscription, publish_and_receive) {
     message_type_support_callbacks_t dummy_callbacks;
     dummy_callbacks.message_name_ = "dummy";
     dummy_callbacks.package_name_ = "dummy";
-    dummy_callbacks.cdr_serialize = [](const void * untyped_ros_message, ucdrBuffer * cdr)->bool {
+    dummy_callbacks.cdr_serialize = [](const void * untyped_ros_message, ucdrBuffer * cdr) -> bool {
         bool ok;
-        ok = ucdr_serialize_string(cdr, (char*)untyped_ros_message);
+        ok = ucdr_serialize_string(cdr, (char *)untyped_ros_message);
         return ok;
       };
     dummy_callbacks.cdr_deserialize =
-      [](ucdrBuffer * cdr, void * untyped_ros_message, uint8_t * raw_mem_ptr, size_t raw_mem_size)->bool {
+      [](ucdrBuffer * cdr, void * untyped_ros_message, uint8_t * raw_mem_ptr,
+        size_t raw_mem_size) -> bool {
         uint32_t Aux_uint32;
         bool ok;
 
-        ok = ucdr_deserialize_string(cdr, (char*)raw_mem_ptr, raw_mem_size);
-        *((char**)untyped_ros_message) = (char*)raw_mem_ptr;
-   
+        ok = ucdr_deserialize_string(cdr, (char *)raw_mem_ptr, raw_mem_size);
+        *((char **)untyped_ros_message) = (char *)raw_mem_ptr;
+
         return ok;
       };
-    dummy_callbacks.get_serialized_size = [](const void *)->uint32_t {
-      return MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + strlen(test_parameter) + 8;
+    dummy_callbacks.get_serialized_size = [](const void *) -> uint32_t {
+        return MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + strlen(
+          test_parameter) + 8;
       };
-    dummy_callbacks.max_serialized_size = [](bool full_bounded)->size_t {
-      return (size_t)(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + 1);
+    dummy_callbacks.max_serialized_size = [](bool full_bounded) -> size_t {
+        return (size_t)(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + 1);
       };
 
 
@@ -136,7 +138,7 @@ TEST_F(TestSubscription, publish_and_receive) {
 
     rmw_node_security_options_t dummy_security_options;
 
-    
+
     rmw_node_t * node_pub;
     node_pub = rmw_create_node("pub_node", "/ns", 0, &dummy_security_options);
     EXPECT_NE((void *)node_pub, (void *)NULL);
@@ -170,7 +172,7 @@ TEST_F(TestSubscription, publish_and_receive) {
     rmw_wait_set_t * wait_set = NULL;
     rmw_time_t wait_timeout;
 
-    subscriptions.subscribers = (void**)&sub->data;
+    subscriptions.subscribers = (void **)&sub->data;
     subscriptions.subscriber_count = 1;
 
     wait_timeout.sec = 1;
@@ -182,19 +184,19 @@ TEST_F(TestSubscription, publish_and_receive) {
       clients,
       wait_set,
       &wait_timeout
-    );
+      );
     EXPECT_EQ(ret, RMW_RET_OK);
 
-    char* ReadMesg;
+    char * ReadMesg;
     bool taken;
     ret = rmw_take_with_info(
       sub,
       &ReadMesg,
       &taken,
       NULL
-    );
+      );
     EXPECT_EQ(ret, RMW_RET_OK);
     EXPECT_EQ(taken, true);
-    EXPECT_EQ(strcmp(test_parameter, ReadMesg),0);
+    EXPECT_EQ(strcmp(test_parameter, ReadMesg), 0);
   }
 }
