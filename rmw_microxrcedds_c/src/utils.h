@@ -12,15 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMW_MICROXRCEDDS_UTILS_H_
-#define RMW_MICROXRCEDDS_UTILS_H_
-
-#include "types.h"
+#ifndef UTILS_H_
+#define UTILS_H_
 
 #include <rmw/rmw.h>
 
-// TODO decide wat to do with this macro.
-#define EPROS_PRINT_TRACE() ; // printf("func %s, in file %s:%d\n", __func__, __FILE__, __LINE__);
+#include "./types.h"
+
+
+// (Borja) decide wat to do with this macro.
+#define EPROS_PRINT_TRACE() ;  // printf("func %s, in file %s:%d\n", __func__, __FILE__, __LINE__);
 
 void rmw_delete(void * rmw_allocated_ptr);
 void rmw_node_delete(rmw_node_t * node);
@@ -54,4 +55,4 @@ bool build_topic_profile(const char * topic_name, char profile_name[], size_t bu
 bool build_datawriter_profile(const char * topic_name, char profile_name[], size_t buffer_size);
 bool build_datareader_profile(const char * topic_name, char profile_name[], size_t buffer_size);
 
-#endif // !UTILS_H
+#endif  // UTILS_H_

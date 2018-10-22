@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "types.h"
-#include "memory.h"
+#include "./types.h"  // NOLINT
+
+#include "./memory.h"
+
 
 void init_publisher_memory(
   struct MemPool * memory,

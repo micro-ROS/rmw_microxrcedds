@@ -76,7 +76,6 @@ protected:
 
   eprosima::uxr::Server * server;
   rmw_ret_t ret;
-
 };
 
 /*

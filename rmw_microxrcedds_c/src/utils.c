@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "utils.h"
+#include "./utils.h"  // NOLINT
 
 #include "rmw/allocators.h"
 

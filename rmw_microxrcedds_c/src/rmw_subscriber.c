@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rmw_subscriber.h"
-
-#include "rmw_microxrcedds.h"
-#include "types.h"
-#include "utils.h"
+#include "./rmw_subscriber.h"  // NOLINT
 
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>
+
+#include "./rmw_microxrcedds.h"
+#include "./types.h"
+#include "./utils.h"
 
 rmw_subscription_t * create_subscriber(
   const rmw_node_t * node, const rosidl_message_type_support_t * type_support,
@@ -39,14 +39,13 @@ rmw_subscription_t * create_subscriber(
   if (!rmw_subscriber->topic_name) {
     RMW_SET_ERROR_MSG("failed to allocate memory");
   } else {
-
     CustomNode * micro_node = (CustomNode *)node->data;
     struct Item * memory_node = get_memory(&micro_node->subscription_mem);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
       return NULL;
     } else {
-      // TODO micro_xrcedds_id is duplicated in subscriber_id and in subscription_gid.data
+      // TODO(Borja) micro_xrcedds_id is duplicated in subscriber_id and in subscription_gid.data
       CustomSubscription * subscription_info = (CustomSubscription *)memory_node->data;
       subscription_info->subscriber_id = uxr_object_id(micro_node->id_gen++, UXR_SUBSCRIBER_ID);
       subscription_info->subscription_gid.implementation_identifier =
@@ -174,7 +173,7 @@ rmw_ret_t rmw_destroy_subscription(rmw_node_t * node, rmw_subscription_t * subsc
   } else if (!subscription) {
     RMW_SET_ERROR_MSG("subscription handle is null");
     result_ret = RMW_RET_ERROR;
-  } else if (strcmp(subscription->implementation_identifier,
+  } else if (strcmp(subscription->implementation_identifier,  // NOLINT
     rmw_get_implementation_identifier()) != 0)
   {
     RMW_SET_ERROR_MSG("subscription handle not from this implementation");

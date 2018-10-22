@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rmw_publisher.h"
-
-#include "rmw_microxrcedds.h"
-#include "rmw_node.h"
-#include "types.h"
-#include "utils.h"
+#include "./rmw_publisher.h"  // NOLINT
 
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>
 #include <rosidl_typesupport_microxrcedds_c/message_type_support.h>
+
+#include "./rmw_microxrcedds.h"
+#include "./rmw_node.h"
+#include "./types.h"
+#include "./utils.h"
 
 
 rmw_publisher_t * create_publisher(
@@ -45,7 +45,7 @@ rmw_publisher_t * create_publisher(
       RMW_SET_ERROR_MSG("Not available memory node");
       return NULL;
     } else {
-      // TODO micro_xrcedds_id is duplicated in publisher_id and in publisher_gid.data
+      // TODO(Borja) micro_xrcedds_id is duplicated in publisher_id and in publisher_gid.data
       CustomPublisher * publisher_info = (CustomPublisher *)memory_node->data;
       publisher_info->publisher_id = uxr_object_id(micro_node->id_gen++, UXR_PUBLISHER_ID);
       publisher_info->owner_node = micro_node;
@@ -168,7 +168,7 @@ rmw_ret_t rmw_destroy_publisher(rmw_node_t * node, rmw_publisher_t * publisher)
   } else if (!publisher) {
     RMW_SET_ERROR_MSG("publisher handle is null");
     result_ret = RMW_RET_ERROR;
-  } else if (strcmp(publisher->implementation_identifier,
+  } else if (strcmp(publisher->implementation_identifier,  // NOLINT
     rmw_get_implementation_identifier()) != 0)
   {
     RMW_SET_ERROR_MSG("publisher handle not from this implementation");
@@ -226,8 +226,8 @@ rmw_ret_t rmw_publish(const rmw_publisher_t * publisher, const void * ros_messag
     bool written = true;
     uint32_t topic_length = functions->get_serialized_size(ros_message);
     uint32_t payload_length = 0;
-    payload_length = (uint16_t)(payload_length + 4);                                        // request_id + object_id
-    payload_length = (uint16_t)(payload_length + 4);                                        // request_id + object_id
+    payload_length = (uint16_t)(payload_length + 4);  // request_id + object_id
+    payload_length = (uint16_t)(payload_length + 4);  // request_id + object_id
 
     ucdrBuffer mb;
     if (uxr_prepare_output_stream(publisher_info->session,
@@ -244,15 +244,6 @@ rmw_ret_t rmw_publish(const rmw_publisher_t * publisher, const void * ros_messag
       RMW_SET_ERROR_MSG("error publishing message");
       ret = RMW_RET_ERROR;
     }
-
   }
   return ret;
 }
-
-
-//ucdrBuffer mb;
-//uint32_t topic_size = HelloWorld_size_of_topic(&topic, 0);
-//uxr_prepare_output_stream(&session, reliable_out, datawriter_id, &mb, topic_size);
-//HelloWorld_serialize_topic(&mb, &topic);
-
-//connected = uxr_run_session_time(&session, 1000);

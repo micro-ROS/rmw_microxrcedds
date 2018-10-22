@@ -12,19 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rmw_node.h"
+#include "./rmw_node.h"  // NOLINT
 
-#include "types.h"
-#include "utils.h"
+#ifdef MICRO_XRCEDDS_SERIAL
+#include <fcntl.h>  // O_RDWR, O_NOCTTY, O_NONBLOCK
+#include <termios.h>
+#endif
 
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 
-#ifdef MICRO_XRCEDDS_SERIAL
-#include <fcntl.h> // O_RDWR, O_NOCTTY, O_NONBLOCK
-#include <termios.h>
-#endif
+#include "./types.h"
+#include "./utils.h"
+
 
 #ifdef MICRO_XRCEDDS_SERIAL
 #define CLOSE_TRANSPORT(transport) uxr_close_serial_transport(transport)
@@ -91,13 +92,12 @@ void on_topic(
   // Copy microbuffer data
   memcpy(&custom_subscription->micro_buffer, serialization,
     sizeof(custom_subscription->micro_buffer));
-
 }
 
 void clear_node(rmw_node_t * node)
 {
   CustomNode * micro_node = (CustomNode *)node->data;
-  // TODO make sure that session deletion deletes participant and related entities.
+  // TODO(Borja) make sure that session deletion deletes participant and related entities.
   uxr_delete_session(&micro_node->session);
   CLOSE_TRANSPORT(&micro_node->transport);
   rmw_node_delete(node);
@@ -134,7 +134,8 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
       tty_config.c_lflag &= ~ICANON;        // Set non-canonical input.
       tty_config.c_lflag &= ~ECHO;          // Disable echoing of input characters.
       tty_config.c_lflag &= ~ECHOE;         // Disable echoing the erase character.
-      tty_config.c_lflag &= ~ISIG;          // Disable SIGINTR, SIGSUSP, SIGDSUSP and SIGQUIT signals.
+      tty_config.c_lflag &= ~ISIG;          // Disable SIGINTR, SIGSUSP, SIGDSUSP
+                                            // and SIGQUIT signals.
 
       /* Setting INPUT OPTIONS. */
       tty_config.c_iflag &= ~IXON;          // Disable output software flow control.
@@ -223,7 +224,8 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
     return NULL;
   }
 
-  // Create the Node participant. At this point a Node correspond withçt a Session with one participant.
+  // Create the Node participant. At this point a Node correspond with
+  // a Session with one participant.
   node_info->participant_id = uxr_object_id(node_info->id_gen++, UXR_PARTICIPANT_ID);
   uint16_t participant_req;
 #ifdef MICRO_XRCEDDS_USE_XML
@@ -257,7 +259,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
     return NULL;
   }
 
-  // TODO create utils methods to handle publishers array.
+  // TODO(Borja) create utils methods to handle publishers array.
   customnode_clear(node_info);
 
   return node_handle;

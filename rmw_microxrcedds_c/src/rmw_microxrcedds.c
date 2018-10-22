@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rmw_microxrcedds.h"
+#include "./rmw_microxrcedds.h"  // NOLINT
 
-#include "identifier.h"
+#include <limits.h>
+#include <time.h>
 
-#include "rmw_node.h"
-#include "rmw_publisher.h"
-#include "rmw_subscriber.h"
-#include "types.h"
-#include "utils.h"
+#include <uxr/client/client.h>
 
 #include "rmw/allocators.h"
 #include "rmw/error_handling.h"
 #include "rosidl_typesupport_microxrcedds_c/identifier.h"
 
-#include <uxr/client/client.h>
+#include "./identifier.h"
 
-#include <limits.h>
-#include <time.h>
+#include "./rmw_node.h"
+#include "./rmw_publisher.h"
+#include "./rmw_subscriber.h"
+#include "./types.h"
+#include "./utils.h"
 
 
 const char * rmw_get_implementation_identifier()
@@ -72,7 +72,6 @@ rmw_node_t * rmw_create_node(
 
 const rmw_guard_condition_t * rmw_node_get_graph_guard_condition(const rmw_node_t * node)
 {
-  // TODO
   (void)node;
   EPROS_PRINT_TRACE()
   rmw_guard_condition_t *
@@ -143,7 +142,7 @@ rmw_subscription_t * rmw_create_subscription(
     RMW_SET_ERROR_MSG("type support is null");
   } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
-  } else if (strcmp(type_support->typesupport_identifier,
+  } else if (strcmp(type_support->typesupport_identifier,  // NOLINT
     rosidl_typesupport_microxrcedds_c__identifier) != 0)
   {
     RMW_SET_ERROR_MSG("TypeSupport handle not from this implementation");
@@ -354,7 +353,6 @@ rmw_ret_t rmw_wait(
               custom_node->reliable_output, custom_subscription->datareader_id,
               custom_node->reliable_input,
               NULL);
-
         }
 
 
@@ -447,7 +445,6 @@ rmw_ret_t rmw_wait(
       // Check if there are any data
       CustomSubscription * custom_subscription =
         (CustomSubscription *)(subscriptions->subscribers[i]);
-      //if (custom_subscription->tmp_raw_buffer.write == custom_subscription->tmp_raw_buffer.read)
       if (custom_subscription->waiting_for_response) {
         subscriptions->subscribers[i] = NULL;
       } else {

@@ -23,4 +23,4 @@ rmw_subscription_t * create_subscriber(
   const char * topic_name, const rmw_qos_profile_t * qos_policies,
   bool ignore_local_publications);
 
-#endif // !RMW_SUBSCRIBER_H_
+#endif  // RMW_SUBSCRIBER_H_
