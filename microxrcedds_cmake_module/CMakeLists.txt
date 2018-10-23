@@ -19,14 +19,14 @@ project(microxrcedds_cmake_module)
 find_package(ament_cmake REQUIRED)
 
 if(BUILD_TESTING)
-    find_package(ament_lint_auto REQUIRED)
-    ament_lint_auto_find_test_dependencies()
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
 endif()
 
 ament_package(
-    CONFIG_EXTRAS "microxrcedds_cmake_module-extras.cmake"
-    )
+  CONFIG_EXTRAS "microxrcedds_cmake_module-extras.cmake"
+)
 
 install(DIRECTORY cmake
-    DESTINATION share/${PROJECT_NAME}
-    )
+  DESTINATION share/${PROJECT_NAME}
+)

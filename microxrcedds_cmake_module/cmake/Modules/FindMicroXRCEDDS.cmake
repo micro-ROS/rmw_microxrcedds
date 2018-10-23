@@ -20,7 +20,7 @@
 #
 # - MicroXRCEDDS_FOUND: flag indicating if the package was found
 # - MicroXRCEDDS_INCLUDE_DIR: Paths to the header files
-# 
+#
 # Example usage:
 #
 #   find_package(microxrcedds_cmake_module REQUIRED)
@@ -72,20 +72,20 @@ find_library(MicroXRCEDDSClient_LIBRARY_DEBUG
 
 if(MicroXRCEDDSClient_LIBRARY_RELEASE AND MicroXRCEDDSClient_LIBRARY_DEBUG)
     set(MicroXRCEDDSClient_LIBRARIES
-        optimized ${MicroXRCEDDSClient_LIBRARY_RELEASE}
-        debug ${MicroXRCEDDSClient_LIBRARY_DEBUG}
-        ${MicroCDR_LIBRARIES}
-      )
+      optimized ${MicroXRCEDDSClient_LIBRARY_RELEASE}
+      debug ${MicroXRCEDDSClient_LIBRARY_DEBUG}
+      ${MicroCDR_LIBRARIES}
+    )
 elseif(MicroXRCEDDSClient_LIBRARY_RELEASE)
     set(MicroXRCEDDSClient_LIBRARIES
-        ${MicroXRCEDDSClient_LIBRARY_RELEASE}
-        ${MicroCDR_LIBRARIES}
-      )
+      ${MicroXRCEDDSClient_LIBRARY_RELEASE}
+      ${MicroCDR_LIBRARIES}
+    )
 elseif(MicroXRCEDDSClient_LIBRARY_DEBUG)
     set(MicroXRCEDDSClient_LIBRARIES
-        ${MicroXRCEDDSClient_LIBRARY_DEBUG}
-        ${MicroCDR_LIBRARIES}
-      )
+      ${MicroXRCEDDSClient_LIBRARY_DEBUG}
+      ${MicroCDR_LIBRARIES}
+    )
 else()
     set(MicroXRCEDDSClient_LIBRARIES "")
 endif()
