@@ -107,7 +107,11 @@ void clear_node(rmw_node_t * node)
 
 rmw_node_t * create_node(const char * name, const char * namespace_, size_t domain_id)
 {
-  uint32_t key = rand();
+  // TODO(Javier) Need to be changed into a to thread-save code.
+  //  The suggested option rand_r() is not valid for this purpose.
+  //  This change is pending to new feature in Micro XRCE-DDS that will provide an unused ID.
+  //  When removed, the random initalization code in rmw_inint() must be removed.
+  uint32_t key = rand();  // NOLINT
 
   struct Item * memory_node = get_memory(&node_memory);
   if (!memory_node) {
