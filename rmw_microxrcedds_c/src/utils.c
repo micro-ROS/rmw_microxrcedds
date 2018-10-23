@@ -129,6 +129,7 @@ int build_participant_xml(
   size_t domain_id, const char * participant_name, char xml[],
   size_t buffer_size)
 {
+  (void)domain_id;
   static const char format[] =
     "<dds>"
     // "<participant profile_name=\"participant_profile\">"
@@ -138,40 +139,81 @@ int build_participant_xml(
     "</rtps>"
     "</participant>"
     "</dds>";
+  /*
   int ret = 0;
   if (buffer_size >= (sizeof(format) - 5 + strlen(participant_name) + sizeof(domain_id))) {
     ret = sprintf(xml, format, participant_name);
   }
   return ret;
+  */
+ 
+	int ret = snprintf(xml, buffer_size, format, participant_name);
+	if (ret >= (int)buffer_size) {
+		ret = 0;
+	}
+  
+	return ret;
 }
 
 int build_publisher_xml(const char * publisher_name, char xml[], size_t buffer_size)
 {
+  /*
   static const char format[] = "<publisher name=\"%s\">";
   int ret = 0;
   if (buffer_size >= (sizeof(format) - 2 + strlen(publisher_name))) {
     ret = sprintf(xml, format, publisher_name);
   }
   return ret;
+  */
+
+  static const char format[] = "<publisher name=\"%s\">";	
+	int ret = snprintf(xml, buffer_size, format, publisher_name);
+	if (ret >= (int)buffer_size) {
+	    ret = 0;
+	}
+	
+	return ret;
 }
 
 int build_subscriber_xml(const char * subscriber_name, char xml[], size_t buffer_size)
 {
+  /*
   static const char format[] = "<subscriber name=\"%s\">";
   int ret = 0;
   if (buffer_size >= (sizeof(format) - 2 + strlen(subscriber_name))) {
     ret = sprintf(xml, format, subscriber_name);
   }
   return ret;
+  */
+
+  static const char format[] = "<subscriber name=\"%s\">";
+
+  int ret = snprintf(xml, buffer_size, format, subscriber_name);
+  if (ret >= (int)buffer_size) {
+    ret = 0;
+  }
+
+  return ret;
 }
 
 int generate_name(const uxrObjectId * id, char name[], size_t buffer_size)
 {
+  /*
   static const char format[] = "%hu_%hi";
   int ret = 0;
   if (buffer_size >= (sizeof(format) - 6 + sizeof(id->id) + sizeof(id->type))) {
     ret = sprintf(name, format, id->id, id->type);
   }
+  return ret;
+  */
+
+  static const char format[] = "%hu_%hi";
+
+  int ret = snprintf(name, buffer_size, format, id->id, id->type);
+  if (ret >= (int)buffer_size) {
+    ret = 0;
+  }
+
   return ret;
 }
 
@@ -179,6 +221,7 @@ int generate_type_name(
   const message_type_support_callbacks_t * members, const char * sep, char type_name[],
   size_t buffer_size)
 {
+  /*
   static const char format[] = "%s::%s::dds_::%s_";
   int ret = 0;
   if (buffer_size >=
@@ -188,12 +231,25 @@ int generate_type_name(
     ret = sprintf(type_name, format, members->package_name_, sep, members->message_name_);
   }
   return ret;
+  */
+
+  static const char format[] = "%s::%s::dds_::%s_";
+
+  int ret = snprintf(type_name, buffer_size, format,
+    members->package_name_, sep, members->message_name_);
+
+  if (ret >= (int)buffer_size) {
+    ret = 0;
+  }
+
+  return ret;
 }
 
 int build_topic_xml(
   const char * topic_name, const message_type_support_callbacks_t * members,
   const rmw_qos_profile_t * qos_policies, char xml[], size_t buffer_size)
 {
+  
   static const char format[] =
     "<dds>"
     "<topic>"
@@ -204,6 +260,8 @@ int build_topic_xml(
 
   int ret = 0;
   static char type_name_buffer[50];
+  
+  /*
   if (RMW_TOPIC_NAME_MAX_NAME_LENGTH >= strlen(topic_name) &&
     generate_type_name(members, "msg", type_name_buffer, sizeof(type_name_buffer)))
   {
@@ -219,6 +277,36 @@ int build_topic_xml(
     }
   }
   return ret;
+  */
+
+
+	if (RMW_TOPIC_NAME_MAX_NAME_LENGTH >= strlen(topic_name) &&
+	    generate_type_name(members, "msg", type_name_buffer, sizeof(type_name_buffer)))
+	{
+		char full_topic_name[RMW_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_topic_prefix)];
+
+		if (!qos_policies->avoid_ros_namespace_conventions) {
+			if (snprintf(full_topic_name, sizeof(full_topic_name), "%s%s", ros_topic_prefix,
+			             topic_name) >=
+			    (int)sizeof(full_topic_name))
+			{
+				return 0;
+			}
+		} else {
+			if (snprintf(full_topic_name, sizeof(full_topic_name), "%s", topic_name) >=
+			    (int)sizeof(full_topic_name))
+			{
+				return 0;
+			}
+		}
+
+		ret = snprintf(xml, buffer_size, format, full_topic_name, type_name_buffer);
+		if (ret >= (int)buffer_size) {
+			ret = 0;
+		}
+	}
+
+	return ret;
 }
 
 int build_xml(
@@ -227,6 +315,8 @@ int build_xml(
 {
   int ret = 0;
   static char type_name_buffer[50];
+
+  /*
   if (generate_type_name(members, "msg", type_name_buffer, sizeof(type_name_buffer))) {
     char full_topic_name[RMW_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_topic_prefix)];
     full_topic_name[0] = '\0';
@@ -242,6 +332,34 @@ int build_xml(
     }
   }
   return ret;
+  */
+  
+	if (generate_type_name(members, "msg", type_name_buffer, sizeof(type_name_buffer))) {
+		char full_topic_name[RMW_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_topic_prefix)];
+		full_topic_name[0] = '\0';
+
+		if (!qos_policies->avoid_ros_namespace_conventions) {
+			if (snprintf(full_topic_name, sizeof(full_topic_name), "%s%s", ros_topic_prefix,
+			             topic_name) >=
+			    (int)sizeof(full_topic_name))
+			{
+				return 0;
+			}
+		} else {
+			if (snprintf(full_topic_name, sizeof(full_topic_name), "%s", topic_name) >=
+			    (int)sizeof(full_topic_name))
+			{
+				return 0;
+			}
+		}
+
+		ret = snprintf(xml, buffer_size, format, full_topic_name, type_name_buffer);
+		if (ret >= (int)buffer_size) {
+			ret = 0;
+		}
+	}
+	return ret;
+
 }
 int build_datawriter_xml(
   const char * topic_name, const message_type_support_callbacks_t * members,
@@ -292,31 +410,43 @@ bool build_topic_profile(const char * topic_name, char profile_name[], size_t bu
 {
   const char * const format = "%s_t";
   topic_name++;
+  /*
   bool ret = false;
   if (buffer_size >= (strlen(format) - 2 + strlen(topic_name))) {
     ret = sprintf(profile_name, format, topic_name) == strlen(format) - 2 + strlen(topic_name);
   }
   return ret;
+  */
+
+	return snprintf(profile_name, buffer_size, format, topic_name) >= (int)buffer_size;
 }
 
 bool build_datawriter_profile(const char * topic_name, char profile_name[], size_t buffer_size)
 {
   const char * const format = "%s_p";
   topic_name++;
+  /*
   bool ret = false;
   if (buffer_size >= (strlen(format) - 2 + strlen(topic_name))) {
     ret = sprintf(profile_name, format, topic_name) == strlen(format) - 2 + strlen(topic_name);
   }
   return ret;
+  */
+
+	return snprintf(profile_name, buffer_size, format, topic_name) >= (int)buffer_size;
 }
 
 bool build_datareader_profile(const char * topic_name, char profile_name[], size_t buffer_size)
 {
   const char * const format = "%s_s";
   topic_name++;
+  /*
   bool ret = false;
   if (buffer_size >= (strlen(format) - 2 + strlen(topic_name))) {
     ret = sprintf(profile_name, format, topic_name) == strlen(format) - 2 + strlen(topic_name);
   }
   return ret;
+  */
+
+	return snprintf(profile_name, buffer_size, format, topic_name) >= (int)buffer_size;
 }
