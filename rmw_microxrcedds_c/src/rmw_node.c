@@ -101,6 +101,8 @@ void clear_node(rmw_node_t * node)
   uxr_delete_session(&micro_node->session);
   CLOSE_TRANSPORT(&micro_node->transport);
   rmw_node_delete(node);
+
+  put_memory(&node_memory, &micro_node->mem);
 }
 
 rmw_node_t * create_node(const char * name, const char * namespace_, size_t domain_id)

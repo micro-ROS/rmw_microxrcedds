@@ -133,14 +133,14 @@ TEST_F(TestNode, memory_poll_test)
 
   // Get one
   node = rmw_create_node("my_node", "/ns", 0, &dummy_security_options);
-  //  EXPECT_NE((void *)node, (void *)NULL);
+  EXPECT_NE((void *)node, (void *)NULL);
   nodes.push_back(node);
 
 
   // Release all
   for (size_t i = 0; i < nodes.size(); i++) {
     ret = rmw_destroy_node(nodes.at(i));
-    //  EXPECT_EQ(ret, RMW_RET_OK);
+    EXPECT_EQ(ret, RMW_RET_OK);
   }
   nodes.clear();
 }

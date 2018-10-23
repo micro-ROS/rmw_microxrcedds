@@ -201,6 +201,7 @@ rmw_ret_t rmw_destroy_subscription(rmw_node_t * node, rmw_subscription_t * subsc
       result_ret = RMW_RET_ERROR;
     } else {
       rmw_subscription_delete(subscription);
+      put_memory(&micro_node->subscription_mem, &subscripion_info->mem);
       result_ret = RMW_RET_OK;
     }
   }

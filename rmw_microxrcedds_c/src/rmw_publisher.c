@@ -177,8 +177,8 @@ rmw_ret_t rmw_destroy_publisher(rmw_node_t * node, rmw_publisher_t * publisher)
     RMW_SET_ERROR_MSG("publisher imp is null");
     result_ret = RMW_RET_ERROR;
   } else {
+    CustomNode * micro_node = (CustomNode *)node->data;
     CustomPublisher * publisher_info = (CustomPublisher *)publisher->data;
-
     int delete_writer = uxr_buffer_delete_entity(publisher_info->session,
         publisher_info->owner_node->reliable_output,
         publisher_info->datawriter_id);
@@ -196,6 +196,7 @@ rmw_ret_t rmw_destroy_publisher(rmw_node_t * node, rmw_publisher_t * publisher)
       result_ret = RMW_RET_ERROR;
     } else {
       rmw_publisher_delete(publisher);
+      put_memory(&micro_node->publisher_mem, &publisher_info->mem);
       result_ret = RMW_RET_OK;
     }
   }
