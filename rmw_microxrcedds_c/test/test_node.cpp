@@ -14,6 +14,7 @@
 
 #include <gtest/gtest.h>
 #include <vector>
+#include <memory>
 
 #ifdef _WIN32
 #include <uxr/agent/transport/udp/UDPServerWindows.hpp>
@@ -35,26 +36,38 @@ class TestNode : public ::testing::Test
 protected:
   static void SetUpTestCase()
   {
-    GTEST_DECLARE_bool_(break_on_failure);
-
-    #ifdef _WIN32
-
-    #else
+    #ifndef _WIN32
     freopen("/dev/null", "w", stderr);
     #endif
   }
 
-
   void SetUp()
   {
     rmw_ret_t ret = rmw_init();
-    EXPECT_EQ(ret, RMW_RET_OK);
+    ASSERT_EQ(ret, RMW_RET_OK);
 
-    server = new eprosima::uxr::UDPServer((uint16_t)atoi("8888"));
+    server =
+      std::unique_ptr<eprosima::uxr::Server>(new eprosima::uxr::UDPServer((uint16_t)atoi("8888")));
     server->run();
-    // EXPECT_EQ(server->run(), true);
+    // ASSERT_EQ(server->run(), true);
   }
 
+  bool CheckErrorState()
+  {
+    bool ok = true;
+
+    const rcutils_error_state_t * error_state;
+    error_state = rcutils_get_error_state();
+
+    ok &= error_state->file != NULL;
+    ok &= error_state->line_number != 0;
+    ok &= error_state->message != NULL;
+
+    // if (ok) std::cout << error_state->file <<
+    //  ":" << error_state->line_number << " -> " << error_state->message << std::endl;
+
+    return ok;
+  }
 
   void TearDown()
   {
@@ -62,21 +75,20 @@ protected:
     server->stop();
   }
 
-  eprosima::uxr::Server * server;
+  std::unique_ptr<eprosima::uxr::Server> server;
 };
 
 /*
    Testing node construction and destruction.
  */
-TEST_F(TestNode, construction_and_destruction)
-{
+TEST_F(TestNode, construction_and_destruction) {
   // Success creation
   {
     rmw_node_security_options_t security_options;
     rmw_node_t * node = rmw_create_node("my_node", "/ns", 0, &security_options);
-    EXPECT_NE((void *)node, (void *)NULL);
+    ASSERT_NE((void *)node, (void *)NULL);
     rmw_ret_t ret = rmw_destroy_node(node);
-    EXPECT_EQ(ret, RMW_RET_OK);
+    ASSERT_EQ(ret, RMW_RET_OK);
   }
 
 
@@ -84,29 +96,30 @@ TEST_F(TestNode, construction_and_destruction)
   {
     rmw_node_security_options_t security_options;
     rmw_node_t * node = rmw_create_node("", "/ns", 0, &security_options);
-    EXPECT_EQ((void *)node, (void *)NULL);
+    ASSERT_EQ((void *)node, (void *)NULL);
+    ASSERT_EQ(CheckErrorState(), true);
   }
 
   // Unsuccess creation
   {
     rmw_node_security_options_t security_options;
     rmw_node_t * node = rmw_create_node("my_node", "", 0, &security_options);
-    EXPECT_EQ((void *)node, (void *)NULL);
+    ASSERT_EQ((void *)node, (void *)NULL);
   }
 
   // Unsuccess creation
   {
     rmw_node_security_options_t security_options;
     rmw_node_t * node = rmw_create_node("my_node", "/ns", 0, NULL);
-    EXPECT_EQ((void *)node, (void *)NULL);
+    ASSERT_EQ((void *)node, (void *)NULL);
+    ASSERT_EQ(CheckErrorState(), true);
   }
 }
 
 /*
    Testing node memory poll
  */
-TEST_F(TestNode, memory_poll_test)
-{
+TEST_F(TestNode, memory_poll) {
   rmw_node_security_options_t dummy_security_options;
   std::vector<rmw_node_t *> nodes;
   rmw_ret_t ret;
@@ -115,32 +128,29 @@ TEST_F(TestNode, memory_poll_test)
   // Get all available nodes
   for (size_t i = 0; i < MAX_NODES; i++) {
     node = rmw_create_node("my_node", "/ns", 0, &dummy_security_options);
-    EXPECT_NE((void *)node, (void *)NULL);
+    ASSERT_NE((void *)node, (void *)NULL);
     nodes.push_back(node);
   }
 
-
   // Try to get one
   node = rmw_create_node("my_node", "/ns", 0, &dummy_security_options);
-  EXPECT_EQ((void *)node, (void *)NULL);
-
+  ASSERT_EQ((void *)node, (void *)NULL);
+  ASSERT_EQ(CheckErrorState(), true);
 
   // Relese one
   ret = rmw_destroy_node(nodes.back());
-  EXPECT_EQ(ret, RMW_RET_OK);
+  ASSERT_EQ(ret, RMW_RET_OK);
   nodes.pop_back();
-
 
   // Get one
   node = rmw_create_node("my_node", "/ns", 0, &dummy_security_options);
-  EXPECT_NE((void *)node, (void *)NULL);
+  ASSERT_NE((void *)node, (void *)NULL);
   nodes.push_back(node);
-
 
   // Release all
   for (size_t i = 0; i < nodes.size(); i++) {
     ret = rmw_destroy_node(nodes.at(i));
-    EXPECT_EQ(ret, RMW_RET_OK);
+    ASSERT_EQ(ret, RMW_RET_OK);
   }
   nodes.clear();
 }

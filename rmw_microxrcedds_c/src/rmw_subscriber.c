@@ -43,7 +43,6 @@ rmw_subscription_t * create_subscriber(
     struct Item * memory_node = get_memory(&micro_node->subscription_mem);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
-      return NULL;
     } else {
       // TODO(Borja) micro_xrcedds_id is duplicated in subscriber_id and in subscription_gid.data
       CustomSubscription * subscription_info = (CustomSubscription *)memory_node->data;
@@ -61,7 +60,7 @@ rmw_subscription_t * create_subscriber(
       if (!subscription_info->type_support_callbacks) {
         RMW_SET_ERROR_MSG("type support not from this implementation");
       } else if (sizeof(uxrObjectId) > RMW_GID_STORAGE_SIZE) {
-        RMW_SET_ERROR_MSG("Max number of publisher reached")
+        RMW_SET_ERROR_MSG("Max number of publisher reached");
       } else {
         memset(subscription_info->subscription_gid.data, 0, RMW_GID_STORAGE_SIZE);
         memcpy(subscription_info->subscription_gid.data, &subscription_info->subscriber_id,
@@ -74,7 +73,7 @@ rmw_subscription_t * create_subscriber(
         char xml_buffer[512];
         if (!build_subscriber_xml(subscriber_name, xml_buffer, sizeof(xml_buffer))) {
           RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
-          return NULL;
+          put_memory(&micro_node->subscription_mem, &subscription_info->mem);
         }
         subscriber_req = uxr_buffer_create_subscriber_xml(&micro_node->session,
             micro_node->reliable_output,
@@ -97,7 +96,7 @@ rmw_subscription_t * create_subscriber(
           sizeof(xml_buffer)))
         {
           RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
-          return NULL;
+          put_memory(&micro_node->subscription_mem, &subscription_info->mem);
         }
 
         topic_req = uxr_buffer_create_topic_xml(&micro_node->session,
@@ -108,7 +107,7 @@ rmw_subscription_t * create_subscriber(
         char profile_name[64];
         if (!build_topic_profile(topic_name, profile_name, sizeof(profile_name))) {
           RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
-          return NULL;
+          put_memory(&micro_node->subscription_mem, &subscription_info->mem);
         }
         topic_req = uxr_buffer_create_topic_ref(&micro_node->session, micro_node->reliable_output,
             subscription_info->topic_id, micro_node->participant_id,
@@ -123,7 +122,7 @@ rmw_subscription_t * create_subscriber(
           sizeof(xml_buffer)))
         {
           RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
-          return NULL;
+          put_memory(&micro_node->subscription_mem, &subscription_info->mem);
         }
 
         datareader_req = uxr_buffer_create_datareader_xml(
@@ -132,7 +131,7 @@ rmw_subscription_t * create_subscriber(
 #elif defined(MICRO_XRCEDDS_USE_REFS)
         if (!build_datareader_profile(topic_name, profile_name, sizeof(profile_name))) {
           RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
-          return NULL;
+          put_memory(&micro_node->subscription_mem, &subscription_info->mem);
         }
 
         datareader_req = uxr_buffer_create_datareader_ref(
@@ -144,6 +143,7 @@ rmw_subscription_t * create_subscriber(
         uint16_t requests[] = {subscriber_req, topic_req, datareader_req};
         if (!uxr_run_session_until_all_status(&micro_node->session, 1000, requests, status, 3)) {
           RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
+          put_memory(&micro_node->subscription_mem, &subscription_info->mem);
         } else {
           success = true;
         }
@@ -153,6 +153,7 @@ rmw_subscription_t * create_subscriber(
 
   if (!success) {
     rmw_subscription_delete(rmw_subscriber);
+    rmw_subscriber = NULL;
   }
   return rmw_subscriber;
 }
@@ -183,16 +184,16 @@ rmw_ret_t rmw_destroy_subscription(rmw_node_t * node, rmw_subscription_t * subsc
     result_ret = RMW_RET_ERROR;
   } else {
     CustomNode * micro_node = (CustomNode *)node->data;
-    CustomSubscription * subscripion_info = (CustomSubscription *)subscription->data;
+    CustomSubscription * subscription_info = (CustomSubscription *)subscription->data;
     int delete_datareader =
       uxr_buffer_delete_entity(&micro_node->session, micro_node->reliable_output,
-        subscripion_info->datareader_id);
+        subscription_info->datareader_id);
     int delete_topic =
       uxr_buffer_delete_entity(&micro_node->session, micro_node->reliable_output,
-        subscripion_info->topic_id);
+        subscription_info->topic_id);
     int delete_subscriber =
       uxr_buffer_delete_entity(&micro_node->session, micro_node->reliable_output,
-        subscripion_info->subscriber_id);
+        subscription_info->subscriber_id);
 
     uint8_t status[3];
     uint16_t requests[] = {delete_datareader, delete_topic, delete_subscriber};
@@ -201,7 +202,7 @@ rmw_ret_t rmw_destroy_subscription(rmw_node_t * node, rmw_subscription_t * subsc
       result_ret = RMW_RET_ERROR;
     } else {
       rmw_subscription_delete(subscription);
-      put_memory(&micro_node->subscription_mem, &subscripion_info->mem);
+      put_memory(&micro_node->subscription_mem, &subscription_info->mem);
       result_ret = RMW_RET_OK;
     }
   }

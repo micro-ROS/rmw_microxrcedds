@@ -43,7 +43,6 @@ rmw_publisher_t * create_publisher(
     struct Item * memory_node = get_memory(&micro_node->publisher_mem);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
-      return NULL;
     } else {
       // TODO(Borja) micro_xrcedds_id is duplicated in publisher_id and in publisher_gid.data
       CustomPublisher * publisher_info = (CustomPublisher *)memory_node->data;
@@ -54,8 +53,10 @@ rmw_publisher_t * create_publisher(
       publisher_info->type_support_callbacks = type_support->data;
       if (!publisher_info->type_support_callbacks) {
         RMW_SET_ERROR_MSG("type support not from this implementation");
+        put_memory(&micro_node->publisher_mem, &publisher_info->mem);
       } else if (sizeof(uxrObjectId) > RMW_GID_STORAGE_SIZE) {
-        RMW_SET_ERROR_MSG("Not enough memory for impl ids")
+        RMW_SET_ERROR_MSG("Not enough memory for impl ids");
+        put_memory(&micro_node->publisher_mem, &publisher_info->mem);
       } else {
         memset(publisher_info->publisher_gid.data, 0, RMW_GID_STORAGE_SIZE);
         memcpy(publisher_info->publisher_gid.data, &publisher_info->publisher_id,
@@ -68,7 +69,7 @@ rmw_publisher_t * create_publisher(
         char xml_buffer[400];
         if (!build_publisher_xml(publisher_name, xml_buffer, sizeof(xml_buffer))) {
           RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
-          return NULL;
+          put_memory(&micro_node->publisher_mem, &publisher_info->mem);
         }
         publisher_req = uxr_buffer_create_publisher_xml(publisher_info->session,
             micro_node->reliable_output,
@@ -90,7 +91,7 @@ rmw_publisher_t * create_publisher(
           sizeof(xml_buffer)))
         {
           RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
-          return NULL;
+          put_memory(&micro_node->publisher_mem, &publisher_info->mem);
         }
 
         topic_req = uxr_buffer_create_topic_xml(publisher_info->session,
@@ -101,7 +102,7 @@ rmw_publisher_t * create_publisher(
         char profile_name[64];
         if (!build_topic_profile(topic_name, profile_name, sizeof(profile_name))) {
           RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
-          return NULL;
+          put_memory(&micro_node->publisher_mem, &publisher_info->mem);
         }
         topic_req = uxr_buffer_create_topic_ref(publisher_info->session,
             micro_node->reliable_output,
@@ -117,7 +118,7 @@ rmw_publisher_t * create_publisher(
           sizeof(xml_buffer)))
         {
           RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
-          return NULL;
+          put_memory(&micro_node->publisher_mem, &publisher_info->mem);
         }
 
         datawriter_req = uxr_buffer_create_datawriter_xml(
@@ -126,7 +127,7 @@ rmw_publisher_t * create_publisher(
 #elif defined(MICRO_XRCEDDS_USE_REFS)
         if (!build_datawriter_profile(topic_name, profile_name, sizeof(profile_name))) {
           RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
-          return NULL;
+          put_memory(&micro_node->publisher_mem, &publisher_info->mem);
         }
 
         datawriter_req = uxr_buffer_create_datawriter_ref(publisher_info->session,
@@ -139,6 +140,7 @@ rmw_publisher_t * create_publisher(
         uint8_t status[sizeof(requests) / 2];
         if (!uxr_run_session_until_all_status(publisher_info->session, 1000, requests, status, 3)) {
           RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
+          put_memory(&micro_node->publisher_mem, &publisher_info->mem);
         } else {
           success = true;
         }
@@ -148,6 +150,7 @@ rmw_publisher_t * create_publisher(
 
   if (!success) {
     rmw_publisher_delete(rmw_publisher);
+    rmw_publisher = NULL;
   }
   return rmw_publisher;
 }
