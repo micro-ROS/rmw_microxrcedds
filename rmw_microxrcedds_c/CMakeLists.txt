@@ -26,8 +26,8 @@ find_package(MicroXRCEDDS REQUIRED MODULE)
 find_package(rmw REQUIRED)
 find_package(rosidl_generator_c REQUIRED)
 find_package(rosidl_generator_cpp REQUIRED)
-find_package(rosidl_typesupport_microxrcedds_c REQUIRED)
-find_package(rosidl_typesupport_microxrcedds_cpp REQUIRED)
+#find_package(rosidl_typesupport_microxrcedds_c QUIET)
+#find_package(rosidl_typesupport_microxrcedds_cpp QUIET)
 find_package(rosidl_typesupport_microxrcedds_shared REQUIRED)
 
 set(PACKAGE_VERSION "0.1.0")
@@ -92,8 +92,8 @@ target_link_libraries(${PROJECT_NAME}
 ament_target_dependencies(
     ${PROJECT_NAME}
     "rcutils"
-    "rosidl_typesupport_microxrcedds_c"
-    "rosidl_typesupport_microxrcedds_cpp"
+    #"rosidl_typesupport_microxrcedds_c"
+    #"rosidl_typesupport_microxrcedds_cpp"
     "rosidl_typesupport_microxrcedds_shared"
     "rmw"
     "rosidl_generator_c"

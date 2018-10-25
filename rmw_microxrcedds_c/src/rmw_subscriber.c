@@ -16,7 +16,7 @@
 
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
-#include <rosidl_typesupport_microxrcedds_c/identifier.h>
+#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
 
 #include "./rmw_microxrcedds.h"
 #include "./types.h"
@@ -56,7 +56,7 @@ rmw_subscription_t * create_subscriber(
 
       subscription_info->type_support_callbacks =
         get_message_typesupport_handle(type_support,
-          rosidl_typesupport_microxrcedds_c__identifier)->data;
+          ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE)->data;
       if (!subscription_info->type_support_callbacks) {
         RMW_SET_ERROR_MSG("type support not from this implementation");
       } else if (sizeof(uxrObjectId) > RMW_GID_STORAGE_SIZE) {
