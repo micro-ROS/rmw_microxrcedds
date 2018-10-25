@@ -227,7 +227,10 @@ rmw_client_t * rmw_create_client(
   const char * service_name, const rmw_qos_profile_t * qos_policies)
 {
   EPROS_PRINT_TRACE()
-  return NULL;
+  
+  rmw_client_t * rmw_client = (rmw_client_t *)rmw_allocate(
+    sizeof(rmw_client_t));
+  return rmw_client;
 }
 
 rmw_ret_t rmw_destroy_client(rmw_node_t * node, rmw_client_t * client)
@@ -257,12 +260,20 @@ rmw_service_t * rmw_create_service(
   const char * service_name, const rmw_qos_profile_t * qos_policies)
 {
   EPROS_PRINT_TRACE()
-  return NULL;
+
+  rmw_service_t * rmw_service = (rmw_service_t *)rmw_allocate(
+    sizeof(rmw_service_t));
+  return rmw_service;
 }
 
 rmw_ret_t rmw_destroy_service(rmw_node_t * node, rmw_service_t * service)
 {
+  (void) node;
+
   EPROS_PRINT_TRACE()
+
+  rmw_free(service);
+
   return RMW_RET_OK;
 }
 
@@ -285,12 +296,19 @@ rmw_ret_t rmw_send_response(
 rmw_guard_condition_t * rmw_create_guard_condition(void)
 {
   EPROS_PRINT_TRACE()
-  return NULL;
+
+  rmw_guard_condition_t * rmw_guard_condition = (rmw_guard_condition_t *)rmw_allocate(
+    sizeof(rmw_guard_condition_t));
+
+  return rmw_guard_condition;
 }
 
 rmw_ret_t rmw_destroy_guard_condition(rmw_guard_condition_t * guard_condition)
 {
   EPROS_PRINT_TRACE()
+
+  rmw_free(guard_condition);
+
   return RMW_RET_OK;
 }
 
@@ -304,21 +322,18 @@ rmw_wait_set_t * rmw_create_wait_set(size_t max_conditions)
 {
   EPROS_PRINT_TRACE()
 
-  // wait set is not used
-  static rmw_wait_set_t not_used;
+  rmw_wait_set_t * rmw_wait_set = (rmw_wait_set_t *)rmw_allocate(
+    sizeof(rmw_wait_set_t));
 
-  // Return vaule
-  EPROS_PRINT_TRACE()
-  return &not_used;
+  return rmw_wait_set;
 }
 
 rmw_ret_t rmw_destroy_wait_set(rmw_wait_set_t * wait_set)
 {
   EPROS_PRINT_TRACE()
 
-  // Nothing to be done due to rmw_wait_set_t is not used
+  rmw_free(wait_set);
 
-  EPROS_PRINT_TRACE()
   return RMW_RET_OK;
 }
 
