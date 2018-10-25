@@ -18,7 +18,7 @@
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>
-#include <rosidl_typesupport_microxrcedds_c/message_type_support.h>
+#include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
 
 #include "./rmw_microxrcedds.h"
 #include "./rmw_node.h"
