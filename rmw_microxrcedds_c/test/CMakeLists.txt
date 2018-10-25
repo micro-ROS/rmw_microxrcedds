@@ -4,6 +4,7 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 
 find_package(ament_cmake_gtest REQUIRED)
+find_package(microxrcedds_agent_cmake_module REQUIRED)
 find_package(MicroXRCEDDS_Agent REQUIRED MODULE)
 
 
