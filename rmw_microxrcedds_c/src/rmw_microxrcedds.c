@@ -18,10 +18,10 @@
 #include <time.h>
 
 #include <uxr/client/client.h>
+#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
 
 #include "rmw/allocators.h"
 #include "rmw/error_handling.h"
-#include "rosidl_typesupport_microxrcedds_c/identifier.h"
 
 #include "./identifier.h"
 
@@ -143,7 +143,7 @@ rmw_subscription_t * rmw_create_subscription(
   } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
   } else if (strcmp(type_support->typesupport_identifier,  // NOLINT
-    rosidl_typesupport_microxrcedds_c__identifier) != 0)
+    ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE) != 0)
   {
     RMW_SET_ERROR_MSG("TypeSupport handle not from this implementation");
   } else if (!topic_name || strlen(topic_name) == 0) {

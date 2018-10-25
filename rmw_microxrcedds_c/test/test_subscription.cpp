@@ -23,7 +23,6 @@
 #include <uxr/agent/transport/udp/UDPServerLinux.hpp>
 #endif  // _WIN32
 
-#include <rosidl_typesupport_microxrcedds_c/identifier.h>
 #include <rosidl_typesupport_microxrcedds_shared/identifier.h>
 #include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
 
@@ -43,9 +42,6 @@ protected:
     #ifndef _WIN32
     freopen("/dev/null", "w", stderr);
     #endif
-
-    rosidl_typesupport_microxrcedds_c__identifier =
-      ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE;
   }
 
   void SetUp()
@@ -80,7 +76,7 @@ protected:
     dummy_callbacks->get_serialized_size = [](const void *) {return (uint32_t)0;};
     dummy_callbacks->max_serialized_size = [](bool full_bounded) {return (size_t)0;};
 
-    dummy_type_support->typesupport_identifier = rosidl_typesupport_microxrcedds_c__identifier;
+    dummy_type_support->typesupport_identifier = ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE;
     dummy_type_support->data = dummy_callbacks;
     dummy_type_support->func =
       [](const rosidl_message_type_support_t * type_support, const char * id) {
