@@ -147,7 +147,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
 
             if (0 == tcsetattr(fd, TCSANOW, &tty_config))
             {
-                if(!uxr_init_serial_transport_fd(&node_info->transport, fd, 0, 1))
+                if(!uxr_init_serial_transport(&node_info->transport, &node_info->serial_platform, fd, 0, 1))
                 {
                     RMW_SET_ERROR_MSG("Can not create an serial connection");
                     return NULL;
@@ -158,8 +158,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
     printf("Serial mode => dev: %s\n", SERIAL_DEVICE);
 
 #elif defined(MICRO_XRCEDDS_UDP)
-    // TODO(Borja) Think how we are going to select transport to use
-    if (!uxr_init_udp_transport(&node_info->transport, UDP_IP, UDP_PORT))
+    if (!uxr_init_udp_transport(&node_info->transport, &node_info->udp_platform, UDP_IP, UDP_PORT))
     {
         RMW_SET_ERROR_MSG("Can not create an udp connection");
         return NULL;
@@ -227,7 +226,7 @@ rmw_node_t* create_node(const char* name, const char* namespace_, size_t domain_
         return NULL;
     }
     participant_req =
-        uxr_buffer_configure_participant_xml(&node_info->session, node_info->reliable_output, node_info->participant_id,
+        uxr_buffer_create_participant_xml(&node_info->session, node_info->reliable_output, node_info->participant_id,
                                            domain_id, participant_xml, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
     char profile_name[20];

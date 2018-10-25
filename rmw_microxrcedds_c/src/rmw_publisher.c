@@ -66,12 +66,12 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
                     return NULL;
                 }
-                publisher_req = uxr_buffer_configure_publisher_xml(publisher_info->session, micro_node->reliable_output,
+                publisher_req = uxr_buffer_create_publisher_xml(publisher_info->session, micro_node->reliable_output,
                                                                  publisher_info->publisher_id,
                                                                  micro_node->participant_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
                 // Publisher by reference does not make sense in current micro XRCE-DDS implementation.
-                publisher_req = uxr_buffer_configure_publisher_xml(publisher_info->session, micro_node->reliable_output,
+                publisher_req = uxr_buffer_create_publisher_xml(publisher_info->session, micro_node->reliable_output,
                                                                  publisher_info->publisher_id,
                                                                  micro_node->participant_id, "", UXR_REPLACE);
 #endif
@@ -86,7 +86,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     return NULL;
                 }
 
-                topic_req = uxr_buffer_configure_topic_xml(publisher_info->session, micro_node->reliable_output,
+                topic_req = uxr_buffer_create_topic_xml(publisher_info->session, micro_node->reliable_output,
                                                          publisher_info->topic_id, micro_node->participant_id,
                                                          xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
@@ -111,7 +111,7 @@ rmw_publisher_t* create_publisher(const rmw_node_t* node, const rosidl_message_t
                     return NULL;
                 }
 
-                datawriter_req = uxr_buffer_configure_datawriter_xml(
+                datawriter_req = uxr_buffer_create_datawriter_xml(
                     publisher_info->session, micro_node->reliable_output, publisher_info->datawriter_id,
                     publisher_info->publisher_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)

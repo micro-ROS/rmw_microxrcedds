@@ -70,12 +70,12 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                     RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
                     return NULL;
                 }
-                subscriber_req = uxr_buffer_configure_subscriber_xml(&micro_node->session, micro_node->reliable_output,
+                subscriber_req = uxr_buffer_create_subscriber_xml(&micro_node->session, micro_node->reliable_output,
                                                                    subscription_info->subscriber_id,
                                                                    micro_node->participant_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
                 // Publisher by reference does not make sense in current micro XRCE-DDS implementation.
-                subscriber_req = uxr_buffer_configure_subscriber_xml(&micro_node->session, micro_node->reliable_output,
+                subscriber_req = uxr_buffer_create_subscriber_xml(&micro_node->session, micro_node->reliable_output,
                                                                    subscription_info->subscriber_id,
                                                                    micro_node->participant_id, "", UXR_REPLACE);
 #endif
@@ -91,7 +91,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                     return NULL;
                 }
 
-                topic_req = uxr_buffer_configure_topic_xml(&micro_node->session, micro_node->reliable_output,
+                topic_req = uxr_buffer_create_topic_xml(&micro_node->session, micro_node->reliable_output,
                                                          subscription_info->topic_id, micro_node->participant_id,
                                                          xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
@@ -116,7 +116,7 @@ rmw_subscription_t* create_subscriber(const rmw_node_t* node, const rosidl_messa
                     return NULL;
                 }
 
-                datareader_req = uxr_buffer_configure_datareader_xml(
+                datareader_req = uxr_buffer_create_datareader_xml(
                     &micro_node->session, micro_node->reliable_output, subscription_info->datareader_id,
                     subscription_info->subscriber_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
