@@ -28,6 +28,7 @@ find_package(rosidl_generator_c REQUIRED)
 find_package(rosidl_generator_cpp REQUIRED)
 find_package(rosidl_typesupport_microxrcedds_c REQUIRED)
 find_package(rosidl_typesupport_microxrcedds_cpp REQUIRED)
+find_package(rosidl_typesupport_microxrcedds_shared REQUIRED)
 
 set(PACKAGE_VERSION "0.1.0")
 if(BUILD_TESTING)
@@ -93,6 +94,7 @@ ament_target_dependencies(
     "rcutils"
     "rosidl_typesupport_microxrcedds_c"
     "rosidl_typesupport_microxrcedds_cpp"
+    "rosidl_typesupport_microxrcedds_shared"
     "rmw"
     "rosidl_generator_c"
     "rosidl_generator_cpp"

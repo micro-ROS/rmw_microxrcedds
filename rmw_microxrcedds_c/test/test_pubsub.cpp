@@ -23,7 +23,8 @@
 #endif  // _WIN32
 
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>
-#include <rosidl_typesupport_microxrcedds_c/message_type_support.h>
+#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
+#include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
 
 #include "rmw/error_handling.h"
 #include "rmw/node_security_options.h"

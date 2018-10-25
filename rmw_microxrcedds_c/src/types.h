@@ -22,7 +22,7 @@
 #include <uxr/client/client.h>
 
 #include "rosidl_generator_c/message_type_support_struct.h"
-#include "rosidl_typesupport_microxrcedds_c/message_type_support.h"
+#include "rosidl_typesupport_microxrcedds_shared/message_type_support.h"
 
 #include "./memory.h"
 #include "./config.h"
