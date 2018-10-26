@@ -77,7 +77,8 @@ protected:
     dummy_callbacks->get_serialized_size = [](const void *) {return (uint32_t)0;};
     dummy_callbacks->max_serialized_size = [](bool full_bounded) {return (size_t)0;};
 
-    dummy_type_support->typesupport_identifier = ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE;
+    dummy_type_support->typesupport_identifier =
+      ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE;
     dummy_type_support->data = dummy_callbacks;
     dummy_type_support->func =
       [](const rosidl_message_type_support_t * type_support, const char * id) {

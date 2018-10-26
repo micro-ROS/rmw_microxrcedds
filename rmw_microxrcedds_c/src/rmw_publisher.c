@@ -24,7 +24,7 @@
 #include "./rmw_node.h"
 #include "./types.h"
 #include "./utils.h"
-
+#define MICRO_XRCEDDS_USE_XML
 
 rmw_publisher_t * create_publisher(
   const rmw_node_t * node, const rosidl_message_type_support_t * type_support,
@@ -50,8 +50,17 @@ rmw_publisher_t * create_publisher(
       publisher_info->owner_node = micro_node;
       publisher_info->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
       publisher_info->session = &micro_node->session;
-      publisher_info->type_support_callbacks = type_support->data;
-      if (!publisher_info->type_support_callbacks) {
+
+      if ((type_support == get_message_typesupport_handle(type_support,
+        ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE)) ||
+        (type_support == get_message_typesupport_handle(type_support,
+        ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE)))
+      {
+        publisher_info->type_support_callbacks =
+          (const message_type_support_callbacks_t *)type_support->data;
+      }
+
+      if (publisher_info->type_support_callbacks == NULL) {
         RMW_SET_ERROR_MSG("type support not from this implementation");
         put_memory(&micro_node->publisher_mem, &publisher_info->mem);
       } else if (sizeof(uxrObjectId) > RMW_GID_STORAGE_SIZE) {

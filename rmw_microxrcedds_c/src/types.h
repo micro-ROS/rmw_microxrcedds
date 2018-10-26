@@ -27,6 +27,16 @@
 #include "./memory.h"
 #include "./config.h"
 
+typedef struct custom_topic_t
+{
+  struct custom_topic_t * next_custom_topic;
+  struct custom_topic_t * prev_custom_topic;
+
+  bool sync_with_agent;
+  uxrObjectId topic_id;
+  char * topic_name;
+  struct CustomNode * owner_node;
+} custom_topic_t;
 
 typedef struct CustomSubscription
 {
@@ -76,6 +86,7 @@ typedef struct CustomNode
 
   CustomPublisher publisher_info[MAX_PUBLISHERS_X_NODE];
   CustomSubscription subscription_info[MAX_SUBSCRIPTIONS_X_NODE];
+  custom_topic_t * custom_topic_sp;
 
   bool on_subscription;
 
