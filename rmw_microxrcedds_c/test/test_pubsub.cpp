@@ -15,6 +15,7 @@
 #include <gtest/gtest.h>
 
 #include <memory>
+#include <string>
 
 #ifdef _WIN32
 #include <uxr/agent/transport/udp/UDPServerWindows.hpp>
@@ -30,6 +31,8 @@
 #include "rmw/rmw.h"
 #include "rmw/validate_namespace.h"
 #include "rmw/validate_node_name.h"
+
+#include "./test_utils.hpp"
 
 #define MICROXRCEDDS_PADDING sizeof(uint32_t)
 
@@ -66,15 +69,24 @@ protected:
 
   std::unique_ptr<eprosima::uxr::Server> server;
   rmw_ret_t ret;
+
+  const char * topic_type = "topic_type";
+  const char * topic_name = "topic_name";
+  const char * package_name = "package_name";
 };
 
 /*
    Testing publish and subcribe to the same topic in diferent nodes
  */
 TEST_F(TestSubscription, publish_and_receive) {
+  rosidl_message_type_support_t dummy_type_support;
   message_type_support_callbacks_t dummy_callbacks;
-  dummy_callbacks.message_name_ = "dummy";
-  dummy_callbacks.package_name_ = "dummy";
+  ConfigureDummyTypeSupport(
+    topic_type,
+    package_name,
+    &dummy_type_support,
+    &dummy_callbacks);
+
   dummy_callbacks.cdr_serialize = [](const void * untyped_ros_message, ucdrBuffer * cdr) -> bool {
       bool ok;
       ok = ucdr_serialize_string(cdr, reinterpret_cast<const char *>(untyped_ros_message));
@@ -99,27 +111,8 @@ TEST_F(TestSubscription, publish_and_receive) {
       return (size_t)(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + 1);
     };
 
-
-  rosidl_message_type_support_t dummy_type_support;
-  dummy_type_support.typesupport_identifier = ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE;
-  dummy_type_support.data = &dummy_callbacks;
-  dummy_type_support.func =
-    [](const rosidl_message_type_support_t * type_support, const char * id) {
-      return type_support;
-    };
-
   rmw_qos_profile_t dummy_qos_policies;
-  dummy_qos_policies.avoid_ros_namespace_conventions = false;
-  dummy_qos_policies.depth = 0;
-  dummy_qos_policies.durability = RMW_QOS_POLICY_DURABILITY_SYSTEM_DEFAULT;
-  // dummy_qos_policies.durability = RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
-  // dummy_qos_policies.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
-  dummy_qos_policies.history = RMW_QOS_POLICY_HISTORY_SYSTEM_DEFAULT;
-  // dummy_qos_policies.history = RMW_QOS_POLICY_HISTORY_KEEP_LAST;
-  // dummy_qos_policies.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
-  dummy_qos_policies.reliability = RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT;
-  // dummy_qos_policies.reliability = RMW_QOS_POLICY_RELIABILITY_RELIABLE;
-  // dummy_qos_policies.reliability = RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
+  ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
   bool ignore_local_publications = true;
 
@@ -131,7 +124,7 @@ TEST_F(TestSubscription, publish_and_receive) {
   ASSERT_NE((void *)node_pub, (void *)NULL);
 
 
-  rmw_publisher_t * pub = rmw_create_publisher(node_pub, &dummy_type_support, "topic_name",
+  rmw_publisher_t * pub = rmw_create_publisher(node_pub, &dummy_type_support, topic_name,
       &dummy_qos_policies);
   ASSERT_NE((void *)pub, (void *)NULL);
 
@@ -141,7 +134,7 @@ TEST_F(TestSubscription, publish_and_receive) {
 
 
   rmw_subscription_t * sub = rmw_create_subscription(node_sub, &dummy_type_support,
-      "topic_name", &dummy_qos_policies,
+      topic_name, &dummy_qos_policies,
       ignore_local_publications);
   ASSERT_NE((void *)sub, (void *)NULL);
 

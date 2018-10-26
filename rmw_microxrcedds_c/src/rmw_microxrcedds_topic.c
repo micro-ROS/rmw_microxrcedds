@@ -34,15 +34,24 @@ custom_topic_t * create_topic(
     if (strcmp(topic_name, custom_topic_ptr->topic_name) == 0) {
       break;
     }
+
+    custom_topic_ptr = custom_topic_ptr->next_custom_topic;
   }
 
   // Check if allready exists
-  if (custom_topic_ptr == NULL) {
+  if (custom_topic_ptr != NULL) {
+    custom_topic_ptr->usage_account++;
+  } else {
     // generate new memory
     custom_topic_ptr = (custom_topic_t *)rmw_allocate(sizeof(custom_topic_t));
     if (custom_topic_ptr == NULL) {
       RMW_SET_ERROR_MSG("failed to allocate topic interna mem");
     } else {
+      // Init
+      custom_topic_ptr->sync_with_agent = false;
+      custom_topic_ptr->usage_account = 1;
+      custom_topic_ptr->owner_node = custom_node;
+
       // Add to top of the node stack
       custom_topic_ptr->next_custom_topic = custom_node->custom_topic_sp;
       if (custom_node->custom_topic_sp != NULL) {
@@ -59,7 +68,9 @@ custom_topic_t * create_topic(
         custom_topic_ptr = NULL;
       } else {
         // Copy the topic name
-        if (snprintf(custom_topic_ptr->topic_name, topic_size, "%s", topic_name) != topic_size) {
+        if (snprintf(custom_topic_ptr->topic_name, topic_size, "%s", topic_name) !=
+          strlen(topic_name))
+        {
           RMW_SET_ERROR_MSG("error when storing topic name");
           (void)destroy_topic(custom_topic_ptr);
           custom_topic_ptr = NULL;
@@ -121,24 +132,47 @@ bool destroy_topic(custom_topic_t * custom_topic)
   bool ok = false;
 
   if (custom_topic != NULL) {
-    // Remove from the stack
-    if (custom_topic->next_custom_topic != NULL) {
-      custom_topic->next_custom_topic->prev_custom_topic = custom_topic->prev_custom_topic;
-    }
-    if (custom_topic->prev_custom_topic != NULL) {
-      custom_topic->prev_custom_topic->next_custom_topic = custom_topic->next_custom_topic;
+    custom_topic->usage_account--;
+    if (custom_topic->usage_account <= 0) {
+      // Remove from the stack
+      if (custom_topic->next_custom_topic != NULL) {
+        custom_topic->next_custom_topic->prev_custom_topic = custom_topic->prev_custom_topic;
+      }
+      if (custom_topic->prev_custom_topic != NULL) {
+        custom_topic->prev_custom_topic->next_custom_topic = custom_topic->next_custom_topic;
+      } else {
+        custom_topic->owner_node->custom_topic_sp = NULL;
+      }
+
+      // Release memory from the topic name
+      if (custom_topic->topic_name != NULL) {
+        rmw_free(custom_topic->topic_name);
+      }
+
+      // TODO(Javier) Need to find a way to remove the topic on the agent side
+      // if (custom_topic_ptr->sync_with_agent) {}
+
+      // Release mem
+      rmw_free(custom_topic);
     }
 
-    // Release memory from the topic name
-    if (custom_topic->topic_name != NULL) {
-      rmw_free(custom_topic->topic_name);
-    }
 
-    // TODO(Javier) Need to find a way to remove the topic on the agent side
-    // if (custom_topic_ptr->sync_with_agent) {}
-
+    // Set as ok
     ok = true;
   }
 
   return ok;
+}
+
+
+size_t topic_count(struct CustomNode * custom_node)
+{
+  size_t count = 0;
+  custom_topic_t * custom_topic_ptr = custom_node->custom_topic_sp;
+  while (custom_topic_ptr != NULL) {
+    count++;
+    custom_topic_ptr = custom_topic_ptr->next_custom_topic;
+  }
+
+  return count;
 }

@@ -29,7 +29,7 @@
 #include <rmw/validate_node_name.h>
 
 #include "./config.h"
-
+#include "./test_utils.hpp"
 
 class TestNode : public ::testing::Test
 {
@@ -50,23 +50,6 @@ protected:
       std::unique_ptr<eprosima::uxr::Server>(new eprosima::uxr::UDPServer((uint16_t)atoi("8888")));
     server->run();
     // ASSERT_EQ(server->run(), true);
-  }
-
-  bool CheckErrorState()
-  {
-    bool ok = true;
-
-    const rcutils_error_state_t * error_state;
-    error_state = rcutils_get_error_state();
-
-    ok &= error_state->file != NULL;
-    ok &= error_state->line_number != 0;
-    ok &= error_state->message != NULL;
-
-    // if (ok) std::cout << error_state->file <<
-    //  ":" << error_state->line_number << " -> " << error_state->message << std::endl;
-
-    return ok;
   }
 
   void TearDown()

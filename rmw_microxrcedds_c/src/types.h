@@ -33,6 +33,7 @@ typedef struct custom_topic_t
   struct custom_topic_t * prev_custom_topic;
 
   bool sync_with_agent;
+  int32_t usage_account;
   uxrObjectId topic_id;
   char * topic_name;
   struct CustomNode * owner_node;
