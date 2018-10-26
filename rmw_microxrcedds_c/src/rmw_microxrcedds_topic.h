@@ -20,6 +20,10 @@
 
 #include "./types.h"
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
 
 custom_topic_t * create_topic(
   struct CustomNode * custom_node,
@@ -29,5 +33,11 @@ custom_topic_t * create_topic(
 
 
 bool destroy_topic(custom_topic_t * custom_topic);
+
+size_t topic_count(struct CustomNode * custom_node);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  // RMW_MICROXRCEDDS_TOPIC_H_

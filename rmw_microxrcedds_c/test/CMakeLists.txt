@@ -8,24 +8,41 @@ find_package(microxrcedds_agent_cmake_module REQUIRED)
 find_package(MicroXRCEDDS_Agent REQUIRED MODULE)
 
 
+set(TEST_UTILS_FILES_SOURCES "test_utils.cpp")
+set(TEST_UTILS_FILES_HEADERS "test_utils.hpp")
+
 # Node tests
 set(TEST_NAME "test_node")
 set(TEST_FILES "test_node.cpp")
 ament_add_gtest(
   ${TEST_NAME}
   ${TEST_FILES}
+  ${SRC_FILES}
+  ${TEST_UTILS_FILES_SOURCES}
+  TIMEOUT 1
 )
 if(TARGET ${TEST_NAME})
-  target_link_libraries(
+  ament_target_dependencies(
     ${TEST_NAME}
     ${PROJECT_NAME}
     microxrcedds_agent
+    rmw
+    rosidl_typesupport_microxrcedds_shared
   )
+
+  target_link_libraries(
+    ${TEST_NAME}
+    microxrcedds_agent
+    microxrcedds_client
+    microcdr
+  )
+
   target_include_directories(
     ${TEST_NAME}
     PUBLIC
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     PRIVATE
+        ${PROJECT_SOURCE_DIR}/src
         $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
   )
 endif()
@@ -37,19 +54,32 @@ set(TEST_FILES "test_publisher.cpp")
 ament_add_gtest(
   ${TEST_NAME}
   ${TEST_FILES}
+  ${SRC_FILES}
+  ${TEST_UTILS_FILES_SOURCES}
   TIMEOUT 1
 )
 if(TARGET ${TEST_NAME})
-  target_link_libraries(
+  ament_target_dependencies(
     ${TEST_NAME}
     ${PROJECT_NAME}
     microxrcedds_agent
+    rmw
+    rosidl_typesupport_microxrcedds_shared
   )
+
+  target_link_libraries(
+    ${TEST_NAME}
+    microxrcedds_agent
+    microxrcedds_client
+    microcdr
+  )
+
   target_include_directories(
     ${TEST_NAME}
     PUBLIC
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     PRIVATE
+        ${PROJECT_SOURCE_DIR}/src
         $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
   )
 endif()
@@ -61,6 +91,8 @@ set(TEST_FILES "test_subscription.cpp")
 ament_add_gtest(
   ${TEST_NAME}
   ${TEST_FILES}
+  ${SRC_FILES}
+  ${TEST_UTILS_FILES_SOURCES}
   TIMEOUT 1
 )
 if(TARGET ${TEST_NAME})
@@ -68,18 +100,23 @@ if(TARGET ${TEST_NAME})
     ${TEST_NAME}
     ${PROJECT_NAME}
     microxrcedds_agent
-    rosidl_typesupport_microxrcedds_c
+    rmw
+    rosidl_typesupport_microxrcedds_shared
   )
+
   target_link_libraries(
     ${TEST_NAME}
-    ${PROJECT_NAME}
     microxrcedds_agent
+    microxrcedds_client
+    microcdr
   )
+
   target_include_directories(
     ${TEST_NAME}
     PUBLIC
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     PRIVATE
+        ${PROJECT_SOURCE_DIR}/src
         $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
   )
 endif()
@@ -91,6 +128,8 @@ set(TEST_FILES "test_pubsub.cpp")
 ament_add_gtest(
   ${TEST_NAME}
   ${TEST_FILES}
+  ${SRC_FILES}
+  ${TEST_UTILS_FILES_SOURCES}
   TIMEOUT 1
 )
 if(TARGET ${TEST_NAME})
@@ -98,18 +137,60 @@ if(TARGET ${TEST_NAME})
     ${TEST_NAME}
     ${PROJECT_NAME}
     microxrcedds_agent
-    rosidl_typesupport_microxrcedds_c
+    rmw
+    rosidl_typesupport_microxrcedds_shared
   )
+
   target_link_libraries(
     ${TEST_NAME}
-    ${PROJECT_NAME}
     microxrcedds_agent
+    microxrcedds_client
+    microcdr
   )
+
   target_include_directories(
     ${TEST_NAME}
     PUBLIC
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     PRIVATE
+        ${PROJECT_SOURCE_DIR}/src
+        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
+  )
+endif()
+
+
+# topic
+set(TEST_NAME "test_topic")
+set(TEST_FILES "test_topic.cpp")
+ament_add_gtest(
+  ${TEST_NAME}
+  ${TEST_FILES}
+  ${SRC_FILES}
+  ${TEST_UTILS_FILES_SOURCES}
+  TIMEOUT 1
+)
+if(TARGET ${TEST_NAME})
+  ament_target_dependencies(
+    ${TEST_NAME}
+    ${PROJECT_NAME}
+    microxrcedds_agent
+    rmw
+    rosidl_typesupport_microxrcedds_shared
+  )
+
+  target_link_libraries(
+    ${TEST_NAME}
+    microxrcedds_agent
+    microxrcedds_client
+    microcdr
+  )
+
+  target_include_directories(
+    ${TEST_NAME}
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/src
         $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
   )
 endif()

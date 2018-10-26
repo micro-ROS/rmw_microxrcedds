@@ -147,7 +147,6 @@ register_rmw_implementation(
     "cpp:rosidl_typesupport_cpp:rosidl_typesupport_microxrcedds_cpp"
 )
 
-
 if(BUILD_TESTING)
     find_package(ament_lint_auto REQUIRED)
     ament_lint_auto_find_test_dependencies()
@@ -155,17 +154,16 @@ if(BUILD_TESTING)
     add_subdirectory(test)
 endif()
 
-
 ament_package(CONFIG_EXTRAS_POST
-              "rmw_microxrcedds-extras.cmake"
+"rmw_microxrcedds-extras.cmake"
 )
 
 install(DIRECTORY include/
-        DESTINATION include
+DESTINATION include
 )
 
 install(TARGETS ${PROJECT_NAME}
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib
-        RUNTIME DESTINATION bin
+ARCHIVE DESTINATION lib
+LIBRARY DESTINATION lib
+RUNTIME DESTINATION bin
 )

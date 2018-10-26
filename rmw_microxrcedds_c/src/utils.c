@@ -16,7 +16,7 @@
 
 #include "rmw/allocators.h"
 
-static const char ros_topic_prefix[] = "rt";
+static const char ros_topic_prefix[] = "rt/";
 
 void custompublisher_clear(CustomPublisher * publisher);
 void customsubscription_clear(CustomSubscription * subscription);

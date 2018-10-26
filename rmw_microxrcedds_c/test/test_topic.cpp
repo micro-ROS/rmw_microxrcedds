@@ -35,9 +35,12 @@
 #include "rmw/validate_node_name.h"
 
 #include "./config.h"
+#include "./rmw_microxrcedds_topic.h"
+
 #include "./test_utils.hpp"
 
-class TestPublisher : public ::testing::Test
+
+class TestTopic : public ::testing::Test
 {
 protected:
   static void SetUpTestCase()
@@ -70,18 +73,18 @@ protected:
 
   rmw_node_t * node;
   std::unique_ptr<eprosima::uxr::Server> server;
+  const size_t attempts = 10;
 
   const char * topic_type = "topic_type";
   const char * topic_name = "topic_name";
   const char * package_name = "package_name";
-
-  size_t id_gen = 0;
 };
 
+
 /*
-   Testing subscription construction and destruction.
+   Testing topic construction and destruction.
  */
-TEST_F(TestPublisher, construction_and_destruction) {
+TEST_F(TestTopic, construction_and_destruction) {
   rosidl_message_type_support_t dummy_type_support;
   message_type_support_callbacks_t dummy_callbacks;
   ConfigureDummyTypeSupport(
@@ -93,24 +96,24 @@ TEST_F(TestPublisher, construction_and_destruction) {
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
-  bool ignore_local_publications = true;
-
-  rmw_publisher_t * pub = rmw_create_publisher(
-    this->node,
-    &dummy_type_support,
-    topic_name,
+  custom_topic_t * topic = create_topic(
+    reinterpret_cast<struct CustomNode *>(node->data),
+    package_name,
+    &dummy_callbacks,
     &dummy_qos_policies);
-  ASSERT_NE((void *)pub, (void *)NULL);
+  ASSERT_NE((void *)topic, (void *)NULL);
+  ASSERT_EQ(topic_count(reinterpret_cast<struct CustomNode *>(node->data)), 1);
 
-  rmw_ret_t ret = rmw_destroy_publisher(this->node, pub);
-  ASSERT_EQ(ret, RMW_RET_OK);
+  bool ret = destroy_topic(topic);
+  ASSERT_EQ(topic_count(reinterpret_cast<struct CustomNode *>(node->data)), 0);
+  ASSERT_EQ(ret, true);
 }
 
 
 /*
-   Testing node memory poll
+   Testing shared creation of a topic
  */
-TEST_F(TestPublisher, memory_poll) {
+TEST_F(TestTopic, shared_topic_creation) {
   rosidl_message_type_support_t dummy_type_support;
   message_type_support_callbacks_t dummy_callbacks;
   ConfigureDummyTypeSupport(
@@ -122,73 +125,71 @@ TEST_F(TestPublisher, memory_poll) {
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
-  bool ignore_local_publications = true;
-
-  std::vector<rmw_publisher_t *> publishers;
-  rmw_ret_t ret;
-  rmw_publisher_t * publisher;
-
-
-  // Get all available nodes
-  {
-    for (size_t i = 0; i < MAX_PUBLISHERS_X_NODE; i++) {
-      std::string aux_string(topic_type);
-      aux_string.append(std::to_string(id_gen++));
-      dummy_callbacks.message_name_ = aux_string.data();
-      publisher = rmw_create_publisher(
-        this->node,
-        &dummy_type_support,
-        std::string(topic_name).append(std::to_string(id_gen++)).data(),
-        &dummy_qos_policies);
-      ASSERT_NE((void *)publisher, (void *)NULL);
-      publishers.push_back(publisher);
-    }
-  }
-
-
-  // Try to get one
-  {
-    std::string aux_string(topic_type);
-    aux_string.append(std::to_string(id_gen++));
-    dummy_callbacks.message_name_ = aux_string.data();
-    publisher = rmw_create_publisher(
-      this->node,
-      &dummy_type_support,
-      std::string(topic_name).append(std::to_string(id_gen++)).data(),
+  custom_topic_t * created_topic;
+  custom_topic_t * last_created_topic;
+  for (size_t i = 0; i < attempts; i++) {
+    created_topic = create_topic(
+      reinterpret_cast<struct CustomNode *>(node->data),
+      topic_name,
+      &dummy_callbacks,
       &dummy_qos_policies);
-    ASSERT_EQ((void *)publisher, (void *)NULL);
-    ASSERT_EQ(CheckErrorState(), true);
 
-    // Relese one
-    publisher = publishers.back();
-    publishers.pop_back();
-    ret = rmw_destroy_publisher(this->node, publisher);
-    ASSERT_EQ(ret, RMW_RET_OK);
-  }
-
-
-  // Get one
-  {
-    std::string aux_string(topic_type);
-    aux_string.append(std::to_string(id_gen++));
-    dummy_callbacks.message_name_ = aux_string.data();
-    publisher = rmw_create_publisher(
-      this->node,
-      &dummy_type_support,
-      std::string(topic_name).append(std::to_string(id_gen++)).data(),
-      &dummy_qos_policies);
-    ASSERT_NE((void *)publisher, (void *)NULL);
-    publishers.push_back(publisher);
-  }
-
-
-  // Release all
-  {
-    for (size_t i = 0; i < publishers.size(); i++) {
-      publisher = publishers.at(i);
-      ret = rmw_destroy_publisher(this->node, publisher);
-      ASSERT_EQ(ret, RMW_RET_OK);
+    if (i != 0) {
+      ASSERT_EQ((void *)last_created_topic, (void *)created_topic);
+    } else {
+      ASSERT_NE((void *)created_topic, (void *)NULL);
     }
-    publishers.clear();
+    ASSERT_EQ(topic_count(reinterpret_cast<struct CustomNode *>(node->data)), 1);
+
+    last_created_topic = created_topic;
   }
+
+  for (size_t i = 0; i < attempts; i++) {
+    ASSERT_EQ(topic_count(reinterpret_cast<struct CustomNode *>(node->data)), 1);
+    bool ret = destroy_topic(created_topic);
+    ASSERT_EQ(ret, true);
+  }
+  ASSERT_EQ(topic_count(reinterpret_cast<struct CustomNode *>(node->data)), 0);
+}
+
+
+/*
+   Testing creation multiple topics
+ */
+TEST_F(TestTopic, multiple_topic_creation) {
+  rosidl_message_type_support_t dummy_type_support;
+  message_type_support_callbacks_t dummy_callbacks;
+  ConfigureDummyTypeSupport(
+    topic_type,
+    package_name,
+    &dummy_type_support,
+    &dummy_callbacks);
+
+  rmw_qos_profile_t dummy_qos_policies;
+  ConfigureDefaultQOSPolices(&dummy_qos_policies);
+
+  std::vector<custom_topic_t *> created_topics;
+  for (size_t i = 0; i < attempts; i++) {
+    std::string aux_string(topic_type);
+    aux_string.append(std::to_string(i));
+    dummy_callbacks.message_name_ = aux_string.data();
+
+    custom_topic_t * created_topic = create_topic(
+      reinterpret_cast<struct CustomNode *>(node->data),
+      std::string(topic_name).append(std::to_string(i)).data(),
+      &dummy_callbacks,
+      &dummy_qos_policies);
+
+    ASSERT_NE((void *)created_topic, (void *)NULL);
+    ASSERT_EQ(topic_count(reinterpret_cast<struct CustomNode *>(node->data)), i + 1);
+
+    created_topics.push_back(created_topic);
+  }
+
+  for (size_t i = 0; i < created_topics.size(); i++) {
+    ASSERT_EQ(topic_count(reinterpret_cast<struct CustomNode *>(node->data)), attempts - i);
+    bool ret = destroy_topic(created_topics.at(i));
+    ASSERT_EQ(ret, true);
+  }
+  ASSERT_EQ(topic_count(reinterpret_cast<struct CustomNode *>(node->data)), 0);
 }
