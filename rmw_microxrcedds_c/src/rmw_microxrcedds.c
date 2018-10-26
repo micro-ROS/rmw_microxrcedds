@@ -95,10 +95,8 @@ rmw_publisher_t * rmw_create_publisher(
     RMW_SET_ERROR_MSG("node handle not from this implementation");
   } else if (!topic_name || strlen(topic_name) == 0) {
     RMW_SET_ERROR_MSG("publisher topic is null or empty string");
-    return NULL;
   } else if (!qos_policies) {
     RMW_SET_ERROR_MSG("qos_profile is null");
-    return NULL;
   } else {
     rmw_publisher = create_publisher(node, type_support, topic_name, qos_policies);
   }
@@ -142,10 +140,6 @@ rmw_subscription_t * rmw_create_subscription(
     RMW_SET_ERROR_MSG("type support is null");
   } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
-  } else if (strcmp(type_support->typesupport_identifier,  // NOLINT
-    ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE) != 0)
-  {
-    RMW_SET_ERROR_MSG("TypeSupport handle not from this implementation");
   } else if (!topic_name || strlen(topic_name) == 0) {
     RMW_SET_ERROR_MSG("subscription topic is null or empty string");
     return NULL;
@@ -227,7 +221,7 @@ rmw_client_t * rmw_create_client(
   const char * service_name, const rmw_qos_profile_t * qos_policies)
 {
   EPROS_PRINT_TRACE()
-  
+
   rmw_client_t * rmw_client = (rmw_client_t *)rmw_allocate(
     sizeof(rmw_client_t));
   return rmw_client;

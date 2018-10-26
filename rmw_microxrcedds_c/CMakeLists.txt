@@ -42,7 +42,6 @@ else()
     )
 endif()
 
-   
 
 if(EXISTS ${PROJECT_SOURCE_DIR}/rmw_microxrcedds.config)
     configure_file(${PROJECT_SOURCE_DIR}/rmw_microxrcedds.config ${PROJECT_SOURCE_DIR}/CMakeCache.txt COPYONLY)

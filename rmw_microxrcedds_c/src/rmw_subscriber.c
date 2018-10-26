@@ -54,10 +54,16 @@ rmw_subscription_t * create_subscriber(
 
       subscription_info->waiting_for_response = false;
 
-      subscription_info->type_support_callbacks =
-        get_message_typesupport_handle(type_support,
-          ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE)->data;
-      if (!subscription_info->type_support_callbacks) {
+      if ((type_support == get_message_typesupport_handle(type_support,
+        ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE)) ||
+        (type_support == get_message_typesupport_handle(type_support,
+        ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE)))
+      {
+        subscription_info->type_support_callbacks =
+          (const message_type_support_callbacks_t *)type_support->data;
+      }
+
+      if (subscription_info->type_support_callbacks == NULL) {
         RMW_SET_ERROR_MSG("type support not from this implementation");
       } else if (sizeof(uxrObjectId) > RMW_GID_STORAGE_SIZE) {
         RMW_SET_ERROR_MSG("Max number of publisher reached");
