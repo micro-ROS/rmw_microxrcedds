@@ -82,13 +82,14 @@ protected:
    Testing subscription construction and destruction.
  */
 TEST_F(TestPublisher, construction_and_destruction) {
-  rosidl_message_type_support_t dummy_type_support;
-  message_type_support_callbacks_t dummy_callbacks;
+  dummy_type_support_t dummy_type_support;
   ConfigureDummyTypeSupport(
     topic_type,
+    topic_type,
     package_name,
-    &dummy_type_support,
-    &dummy_callbacks);
+    id_gen++,
+    &dummy_type_support);
+
 
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
@@ -97,7 +98,7 @@ TEST_F(TestPublisher, construction_and_destruction) {
 
   rmw_publisher_t * pub = rmw_create_publisher(
     this->node,
-    &dummy_type_support,
+    &dummy_type_support.type_support,
     topic_name,
     &dummy_qos_policies);
   ASSERT_NE((void *)pub, (void *)NULL);
@@ -108,22 +109,15 @@ TEST_F(TestPublisher, construction_and_destruction) {
 
 
 /*
-   Testing node memory poll
+   Testing node memory poll for diferent topic
  */
-TEST_F(TestPublisher, memory_poll) {
-  rosidl_message_type_support_t dummy_type_support;
-  message_type_support_callbacks_t dummy_callbacks;
-  ConfigureDummyTypeSupport(
-    topic_type,
-    package_name,
-    &dummy_type_support,
-    &dummy_callbacks);
-
+TEST_F(TestPublisher, memory_poll_multiple_topic) {
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
   bool ignore_local_publications = true;
 
+  std::vector<dummy_type_support_t> dummy_type_supports;
   std::vector<rmw_publisher_t *> publishers;
   rmw_ret_t ret;
   rmw_publisher_t * publisher;
@@ -132,13 +126,19 @@ TEST_F(TestPublisher, memory_poll) {
   // Get all available nodes
   {
     for (size_t i = 0; i < MAX_PUBLISHERS_X_NODE; i++) {
-      std::string aux_string(topic_type);
-      aux_string.append(std::to_string(id_gen++));
-      dummy_callbacks.message_name_ = aux_string.data();
+      dummy_type_supports.push_back(dummy_type_support_t());
+      ConfigureDummyTypeSupport(
+        topic_type,
+        topic_type,
+        package_name,
+        id_gen++,
+        &dummy_type_supports.back());
+
+
       publisher = rmw_create_publisher(
         this->node,
-        &dummy_type_support,
-        std::string(topic_name).append(std::to_string(id_gen++)).data(),
+        &dummy_type_supports.back().type_support,
+        dummy_type_supports.back().topic_name.data(),
         &dummy_qos_policies);
       ASSERT_NE((void *)publisher, (void *)NULL);
       publishers.push_back(publisher);
@@ -148,13 +148,18 @@ TEST_F(TestPublisher, memory_poll) {
 
   // Try to get one
   {
-    std::string aux_string(topic_type);
-    aux_string.append(std::to_string(id_gen++));
-    dummy_callbacks.message_name_ = aux_string.data();
+    dummy_type_supports.push_back(dummy_type_support_t());
+    ConfigureDummyTypeSupport(
+      topic_type,
+      topic_type,
+      package_name,
+      id_gen++,
+      &dummy_type_supports.back());
+
     publisher = rmw_create_publisher(
       this->node,
-      &dummy_type_support,
-      std::string(topic_name).append(std::to_string(id_gen++)).data(),
+      &dummy_type_supports.back().type_support,
+      dummy_type_supports.back().topic_name.data(),
       &dummy_qos_policies);
     ASSERT_EQ((void *)publisher, (void *)NULL);
     ASSERT_EQ(CheckErrorState(), true);
@@ -169,13 +174,96 @@ TEST_F(TestPublisher, memory_poll) {
 
   // Get one
   {
-    std::string aux_string(topic_type);
-    aux_string.append(std::to_string(id_gen++));
-    dummy_callbacks.message_name_ = aux_string.data();
+    dummy_type_supports.push_back(dummy_type_support_t());
+    ConfigureDummyTypeSupport(
+      topic_type,
+      topic_type,
+      package_name,
+      id_gen++,
+      &dummy_type_supports.back());
+
     publisher = rmw_create_publisher(
       this->node,
-      &dummy_type_support,
-      std::string(topic_name).append(std::to_string(id_gen++)).data(),
+      &dummy_type_supports.back().type_support,
+      dummy_type_supports.back().topic_name.data(),
+      &dummy_qos_policies);
+    ASSERT_NE((void *)publisher, (void *)NULL);
+    publishers.push_back(publisher);
+  }
+
+
+  // Release all
+  {
+    for (size_t i = 0; i < publishers.size(); i++) {
+      publisher = publishers.at(i);
+      ret = rmw_destroy_publisher(this->node, publisher);
+      ASSERT_EQ(ret, RMW_RET_OK);
+    }
+    publishers.clear();
+  }
+}
+
+
+/*
+   Testing node memory poll for same topic
+ */
+TEST_F(TestPublisher, memory_poll_shared_topic) {
+  dummy_type_support_t dummy_type_support;
+  ConfigureDummyTypeSupport(
+    topic_type,
+    topic_type,
+    package_name,
+    id_gen++,
+    &dummy_type_support);
+
+  rmw_qos_profile_t dummy_qos_policies;
+  ConfigureDefaultQOSPolices(&dummy_qos_policies);
+
+  bool ignore_local_publications = true;
+
+  std::vector<rmw_publisher_t *> publishers;
+  rmw_ret_t ret;
+  rmw_publisher_t * publisher;
+
+
+  // Get all available nodes
+  {
+    for (size_t i = 0; i < MAX_PUBLISHERS_X_NODE; i++) {
+      publisher = rmw_create_publisher(
+        this->node,
+        &dummy_type_support.type_support,
+        topic_name,
+        &dummy_qos_policies);
+      ASSERT_NE((void *)publisher, (void *)NULL);
+      publishers.push_back(publisher);
+    }
+  }
+
+
+  // Try to get one
+  {
+    publisher = rmw_create_publisher(
+      this->node,
+      &dummy_type_support.type_support,
+      topic_name,
+      &dummy_qos_policies);
+    ASSERT_EQ((void *)publisher, (void *)NULL);
+    ASSERT_EQ(CheckErrorState(), true);
+
+    // Relese one
+    publisher = publishers.back();
+    publishers.pop_back();
+    ret = rmw_destroy_publisher(this->node, publisher);
+    ASSERT_EQ(ret, RMW_RET_OK);
+  }
+
+
+  // Get one
+  {
+    publisher = rmw_create_publisher(
+      this->node,
+      &dummy_type_support.type_support,
+      topic_name,
       &dummy_qos_policies);
     ASSERT_NE((void *)publisher, (void *)NULL);
     publishers.push_back(publisher);

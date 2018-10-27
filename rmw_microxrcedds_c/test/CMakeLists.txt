@@ -19,7 +19,7 @@ ament_add_gtest(
   ${TEST_FILES}
   ${SRC_FILES}
   ${TEST_UTILS_FILES_SOURCES}
-  TIMEOUT 1
+  TIMEOUT 5
 )
 if(TARGET ${TEST_NAME})
   ament_target_dependencies(
@@ -56,7 +56,7 @@ ament_add_gtest(
   ${TEST_FILES}
   ${SRC_FILES}
   ${TEST_UTILS_FILES_SOURCES}
-  TIMEOUT 1
+  TIMEOUT 5
 )
 if(TARGET ${TEST_NAME})
   ament_target_dependencies(
@@ -93,7 +93,7 @@ ament_add_gtest(
   ${TEST_FILES}
   ${SRC_FILES}
   ${TEST_UTILS_FILES_SOURCES}
-  TIMEOUT 1
+  TIMEOUT 5
 )
 if(TARGET ${TEST_NAME})
   ament_target_dependencies(
@@ -130,7 +130,7 @@ ament_add_gtest(
   ${TEST_FILES}
   ${SRC_FILES}
   ${TEST_UTILS_FILES_SOURCES}
-  TIMEOUT 1
+  TIMEOUT 5
 )
 if(TARGET ${TEST_NAME})
   ament_target_dependencies(
@@ -167,7 +167,7 @@ ament_add_gtest(
   ${TEST_FILES}
   ${SRC_FILES}
   ${TEST_UTILS_FILES_SOURCES}
-  TIMEOUT 1
+  TIMEOUT 5
 )
 if(TARGET ${TEST_NAME})
   ament_target_dependencies(

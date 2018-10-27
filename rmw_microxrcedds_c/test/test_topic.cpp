@@ -74,6 +74,7 @@ protected:
   rmw_node_t * node;
   std::unique_ptr<eprosima::uxr::Server> server;
   const size_t attempts = 10;
+  size_t id_gen = 0;
 
   const char * topic_type = "topic_type";
   const char * topic_name = "topic_name";
@@ -85,13 +86,13 @@ protected:
    Testing topic construction and destruction.
  */
 TEST_F(TestTopic, construction_and_destruction) {
-  rosidl_message_type_support_t dummy_type_support;
-  message_type_support_callbacks_t dummy_callbacks;
+  dummy_type_support_t dummy_type_support;
   ConfigureDummyTypeSupport(
     topic_type,
+    topic_type,
     package_name,
-    &dummy_type_support,
-    &dummy_callbacks);
+    id_gen++,
+    &dummy_type_support);
 
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
@@ -99,7 +100,7 @@ TEST_F(TestTopic, construction_and_destruction) {
   custom_topic_t * topic = create_topic(
     reinterpret_cast<struct CustomNode *>(node->data),
     package_name,
-    &dummy_callbacks,
+    &dummy_type_support.callbacks,
     &dummy_qos_policies);
   ASSERT_NE((void *)topic, (void *)NULL);
   ASSERT_EQ(topic_count(reinterpret_cast<struct CustomNode *>(node->data)), 1);
@@ -114,13 +115,13 @@ TEST_F(TestTopic, construction_and_destruction) {
    Testing shared creation of a topic
  */
 TEST_F(TestTopic, shared_topic_creation) {
-  rosidl_message_type_support_t dummy_type_support;
-  message_type_support_callbacks_t dummy_callbacks;
+  dummy_type_support_t dummy_type_support;
   ConfigureDummyTypeSupport(
     topic_type,
+    topic_type,
     package_name,
-    &dummy_type_support,
-    &dummy_callbacks);
+    id_gen++,
+    &dummy_type_support);
 
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
@@ -131,7 +132,7 @@ TEST_F(TestTopic, shared_topic_creation) {
     created_topic = create_topic(
       reinterpret_cast<struct CustomNode *>(node->data),
       topic_name,
-      &dummy_callbacks,
+      &dummy_type_support.callbacks,
       &dummy_qos_policies);
 
     if (i != 0) {
@@ -157,27 +158,24 @@ TEST_F(TestTopic, shared_topic_creation) {
    Testing creation multiple topics
  */
 TEST_F(TestTopic, multiple_topic_creation) {
-  rosidl_message_type_support_t dummy_type_support;
-  message_type_support_callbacks_t dummy_callbacks;
-  ConfigureDummyTypeSupport(
-    topic_type,
-    package_name,
-    &dummy_type_support,
-    &dummy_callbacks);
-
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
   std::vector<custom_topic_t *> created_topics;
+  std::vector<dummy_type_support_t> dummy_type_supports;
   for (size_t i = 0; i < attempts; i++) {
-    std::string aux_string(topic_type);
-    aux_string.append(std::to_string(i));
-    dummy_callbacks.message_name_ = aux_string.data();
+    dummy_type_supports.push_back(dummy_type_support_t());
+    ConfigureDummyTypeSupport(
+      topic_type,
+      topic_type,
+      package_name,
+      id_gen++,
+      &dummy_type_supports.back());
 
     custom_topic_t * created_topic = create_topic(
       reinterpret_cast<struct CustomNode *>(node->data),
-      std::string(topic_name).append(std::to_string(i)).data(),
-      &dummy_callbacks,
+      dummy_type_supports.back().topic_name.data(),
+      &dummy_type_supports.back().callbacks,
       &dummy_qos_policies);
 
     ASSERT_NE((void *)created_topic, (void *)NULL);

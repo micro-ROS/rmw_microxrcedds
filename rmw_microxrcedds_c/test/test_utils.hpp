@@ -25,11 +25,23 @@
 
 #include <rmw/error_handling.h>
 
+#include <string>
+
+typedef struct
+{
+  rosidl_message_type_support_t type_support;
+  message_type_support_callbacks_t callbacks;
+  std::string topic_name;
+  std::string type_name;
+  std::string package_name;
+} dummy_type_support_t;
+
 void ConfigureDummyTypeSupport(
-  const char * message_name,
+  const char * type_name,
+  const char * topic_name,
   const char * package_name,
-  rosidl_message_type_support_t * dummy_type_support,
-  message_type_support_callbacks_t * dummy_callbacks);
+  size_t id,
+  dummy_type_support_t * dummy_type_support);
 
 
 void ConfigureDefaultQOSPolices(rmw_qos_profile_t * dummy_qos_policies);

@@ -70,6 +70,8 @@ protected:
   std::unique_ptr<eprosima::uxr::Server> server;
   rmw_ret_t ret;
 
+  size_t id_gen = 0;
+
   const char * topic_type = "topic_type";
   const char * topic_name = "topic_name";
   const char * package_name = "package_name";
@@ -79,20 +81,21 @@ protected:
    Testing publish and subcribe to the same topic in diferent nodes
  */
 TEST_F(TestSubscription, publish_and_receive) {
-  rosidl_message_type_support_t dummy_type_support;
-  message_type_support_callbacks_t dummy_callbacks;
+  dummy_type_support_t dummy_type_support;
   ConfigureDummyTypeSupport(
     topic_type,
+    topic_type,
     package_name,
-    &dummy_type_support,
-    &dummy_callbacks);
+    id_gen++,
+    &dummy_type_support);
 
-  dummy_callbacks.cdr_serialize = [](const void * untyped_ros_message, ucdrBuffer * cdr) -> bool {
+  dummy_type_support.callbacks.cdr_serialize =
+    [](const void * untyped_ros_message, ucdrBuffer * cdr) -> bool {
       bool ok;
       ok = ucdr_serialize_string(cdr, reinterpret_cast<const char *>(untyped_ros_message));
       return ok;
     };
-  dummy_callbacks.cdr_deserialize =
+  dummy_type_support.callbacks.cdr_deserialize =
     [](ucdrBuffer * cdr, void * untyped_ros_message, uint8_t * raw_mem_ptr,
       size_t raw_mem_size) -> bool {
       uint32_t Aux_uint32;
@@ -103,11 +106,11 @@ TEST_F(TestSubscription, publish_and_receive) {
 
       return ok;
     };
-  dummy_callbacks.get_serialized_size = [](const void *) -> uint32_t {
+  dummy_type_support.callbacks.get_serialized_size = [](const void *) -> uint32_t {
       return MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + strlen(
         test_parameter) + 8;
     };
-  dummy_callbacks.max_serialized_size = [](bool full_bounded) -> size_t {
+  dummy_type_support.callbacks.max_serialized_size = [](bool full_bounded) -> size_t {
       return (size_t)(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + 1);
     };
 
@@ -124,8 +127,8 @@ TEST_F(TestSubscription, publish_and_receive) {
   ASSERT_NE((void *)node_pub, (void *)NULL);
 
 
-  rmw_publisher_t * pub = rmw_create_publisher(node_pub, &dummy_type_support, topic_name,
-      &dummy_qos_policies);
+  rmw_publisher_t * pub = rmw_create_publisher(node_pub, &dummy_type_support.type_support,
+      topic_name, &dummy_qos_policies);
   ASSERT_NE((void *)pub, (void *)NULL);
 
   rmw_node_t * node_sub;
@@ -133,9 +136,8 @@ TEST_F(TestSubscription, publish_and_receive) {
   ASSERT_NE((void *)node_sub, (void *)NULL);
 
 
-  rmw_subscription_t * sub = rmw_create_subscription(node_sub, &dummy_type_support,
-      topic_name, &dummy_qos_policies,
-      ignore_local_publications);
+  rmw_subscription_t * sub = rmw_create_subscription(node_sub, &dummy_type_support.type_support,
+      topic_name, &dummy_qos_policies, ignore_local_publications);
   ASSERT_NE((void *)sub, (void *)NULL);
 
 

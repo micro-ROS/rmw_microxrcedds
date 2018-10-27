@@ -14,28 +14,37 @@
 
 #include "./test_utils.hpp"
 
+#include <string>
+
 void ConfigureDummyTypeSupport(
-  const char * message_name,
+  const char * type_name,
+  const char * topic_name,
   const char * package_name,
-  rosidl_message_type_support_t * dummy_type_support,
-  message_type_support_callbacks_t * dummy_callbacks)
+  size_t id,
+  dummy_type_support_t * dummy_type_support)
 {
-  dummy_callbacks->message_name_ = message_name;
-  dummy_callbacks->package_name_ = package_name;
-  dummy_callbacks->cdr_serialize = [](const void * untyped_ros_message, ucdrBuffer * cdr) {
+  dummy_type_support->topic_name = std::string(topic_name).append(std::to_string(id)).data();
+  dummy_type_support->type_name = std::string(type_name).append(std::to_string(id)).data();
+  dummy_type_support->package_name = std::string(package_name).append(std::to_string(id)).data();
+
+  dummy_type_support->callbacks.message_name_ = dummy_type_support->type_name.data();
+  dummy_type_support->callbacks.package_name_ = dummy_type_support->package_name.data();
+
+  dummy_type_support->callbacks.cdr_serialize =
+    [](const void * untyped_ros_message, ucdrBuffer * cdr) {
       return true;
     };
-  dummy_callbacks->cdr_deserialize =
+  dummy_type_support->callbacks.cdr_deserialize =
     [](ucdrBuffer * cdr, void * untyped_ros_message, uint8_t * raw_mem_ptr, size_t raw_mem_size) {
       return true;
     };
-  dummy_callbacks->get_serialized_size = [](const void *) {return (uint32_t)0;};
-  dummy_callbacks->max_serialized_size = [](bool full_bounded) {return (size_t)0;};
+  dummy_type_support->callbacks.get_serialized_size = [](const void *) {return (uint32_t)0;};
+  dummy_type_support->callbacks.max_serialized_size = [](bool full_bounded) {return (size_t)0;};
 
-  dummy_type_support->typesupport_identifier =
+  dummy_type_support->type_support.typesupport_identifier =
     ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE;
-  dummy_type_support->data = dummy_callbacks;
-  dummy_type_support->func =
+  dummy_type_support->type_support.data = &dummy_type_support->callbacks;
+  dummy_type_support->type_support.func =
     [](const rosidl_message_type_support_t * type_support, const char * id) {
       return type_support;
     };

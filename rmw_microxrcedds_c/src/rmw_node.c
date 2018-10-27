@@ -185,8 +185,6 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
 #endif
 
   uxr_init_session(&node_info->session, &node_info->transport.comm, key);
-
-  uxr_init_session(&node_info->session, &node_info->transport.comm, key);
   uxr_set_topic_callback(&node_info->session, on_topic, node_info);
   uxr_set_status_callback(&node_info->session, on_status, NULL);
 
