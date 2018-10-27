@@ -16,6 +16,9 @@
 
 #include "rmw/allocators.h"
 
+#include "./types.h"
+#include "./rmw_microxrcedds_topic.h"
+
 static const char ros_topic_prefix[] = "rt/";
 
 void custompublisher_clear(CustomPublisher * publisher);
@@ -56,9 +59,20 @@ void rmw_publisher_delete(rmw_publisher_t * publisher)
     rmw_delete((char *)publisher->topic_name);
   }
   if (publisher->data) {
+    CustomPublisher * custom_publisher =
+      (CustomPublisher *)publisher->data;
+
+    if (custom_publisher->topic != NULL) {
+      destroy_topic(custom_publisher->topic);
+    }
+
+    put_memory(&custom_publisher->owner_node->publisher_mem,
+      &custom_publisher->mem);
+
     custompublisher_clear((CustomPublisher *)publisher->data);
     publisher->data = NULL;
   }
+
   rmw_delete(publisher);
 }
 
@@ -90,6 +104,16 @@ void rmw_subscription_delete(rmw_subscription_t * subscriber)
     rmw_delete((char *)subscriber->topic_name);
   }
   if (subscriber->data) {
+    CustomSubscription * custom_Subscription =
+      (CustomSubscription *)subscriber->data;
+
+    if (custom_Subscription->topic != NULL) {
+      destroy_topic(custom_Subscription->topic);
+    }
+
+    put_memory(&custom_Subscription->owner_node->subscription_mem,
+      &custom_Subscription->mem);
+
     customsubscription_clear((CustomSubscription *)subscriber->data);
     subscriber->data = NULL;
   }

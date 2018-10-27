@@ -32,46 +32,53 @@ typedef struct custom_topic_t
   struct custom_topic_t * next_custom_topic;
   struct custom_topic_t * prev_custom_topic;
 
+  uxrObjectId topic_id;
+  const message_type_support_callbacks_t * message_type_support_callbacks;
+
   bool sync_with_agent;
   int32_t usage_account;
-  uxrObjectId topic_id;
-  char * topic_name;
   struct CustomNode * owner_node;
 } custom_topic_t;
 
 typedef struct CustomSubscription
 {
+  struct Item mem;
   uxrObjectId subscriber_id;
   uxrObjectId datareader_id;
-  uxrObjectId topic_id;
   rmw_gid_t subscription_gid;
   const message_type_support_callbacks_t * type_support_callbacks;
-  struct CustomNode * owner_node;
-  uxrSession * session;
+  uxrSession * session;  // TODO(Javier) duplicated: owner_node->session
 
   struct ucdrBuffer micro_buffer;
 
   bool waiting_for_response;
   uint16_t subscription_request;
 
-  struct Item mem;
+  uxrObjectId topic_id;  // TODO(Javier) Pending to be removed
+  struct custom_topic_t * topic;
+
+  struct CustomNode * owner_node;
 } CustomSubscription;
 
 typedef struct CustomPublisher
 {
+  struct Item mem;
   uxrObjectId publisher_id;
   uxrObjectId datawriter_id;
-  uxrObjectId topic_id;
   rmw_gid_t publisher_gid;
+
   const message_type_support_callbacks_t * type_support_callbacks;
-  uxrSession * session;
-  struct Item mem;
+  uxrSession * session;  // TODO(Javier) duplicated: owner_node->session
+
+  uxrObjectId topic_id;  // TODO(Javier) Pending to be removed
+  struct custom_topic_t * topic;
 
   struct CustomNode * owner_node;
 } CustomPublisher;
 
 typedef struct CustomNode
 {
+  struct Item mem;
 #ifdef MICRO_XRCEDDS_SERIAL
 	uxrSerialTransport transport;
 	uxrSerialPlatform serial_platform;
@@ -83,7 +90,6 @@ typedef struct CustomNode
   uxrObjectId participant_id;
   struct MemPool publisher_mem;
   struct MemPool subscription_mem;
-  struct Item mem;
 
   CustomPublisher publisher_info[MAX_PUBLISHERS_X_NODE];
   CustomSubscription subscription_info[MAX_SUBSCRIPTIONS_X_NODE];

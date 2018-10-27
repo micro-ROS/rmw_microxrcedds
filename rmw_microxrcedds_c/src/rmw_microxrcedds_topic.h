@@ -29,7 +29,7 @@ custom_topic_t * create_topic(
   struct CustomNode * custom_node,
   const char * topic_name,
   const message_type_support_callbacks_t * message_type_support_callbacks,
-  rmw_qos_profile_t * qos_policies);
+  const rmw_qos_profile_t * qos_policies);
 
 
 bool destroy_topic(custom_topic_t * custom_topic);

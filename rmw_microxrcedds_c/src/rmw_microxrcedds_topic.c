@@ -26,12 +26,12 @@ custom_topic_t * create_topic(
   struct CustomNode * custom_node,
   const char * topic_name,
   const message_type_support_callbacks_t * message_type_support_callbacks,
-  rmw_qos_profile_t * qos_policies)
+  const rmw_qos_profile_t * qos_policies)
 {
   // find topic in list
   custom_topic_t * custom_topic_ptr = custom_node->custom_topic_sp;
   while (custom_topic_ptr != NULL) {
-    if (strcmp(topic_name, custom_topic_ptr->topic_name) == 0) {
+    if (message_type_support_callbacks == custom_topic_ptr->message_type_support_callbacks) {
       break;
     }
 
@@ -41,88 +41,85 @@ custom_topic_t * create_topic(
   // Check if allready exists
   if (custom_topic_ptr != NULL) {
     custom_topic_ptr->usage_account++;
-  } else {
-    // generate new memory
-    custom_topic_ptr = (custom_topic_t *)rmw_allocate(sizeof(custom_topic_t));
-    if (custom_topic_ptr == NULL) {
-      RMW_SET_ERROR_MSG("failed to allocate topic interna mem");
-    } else {
-      // Init
-      custom_topic_ptr->sync_with_agent = false;
-      custom_topic_ptr->usage_account = 1;
-      custom_topic_ptr->owner_node = custom_node;
-
-      // Add to top of the node stack
-      custom_topic_ptr->next_custom_topic = custom_node->custom_topic_sp;
-      if (custom_node->custom_topic_sp != NULL) {
-        custom_node->custom_topic_sp->prev_custom_topic = custom_topic_ptr;
-      }
-      custom_node->custom_topic_sp = custom_topic_ptr;
-
-      // Stote topic name
-      int topic_size = sizeof(char) * strlen(topic_name) + 1;
-      custom_topic_ptr->topic_name = (char *)(rmw_allocate(topic_size));
-      if (custom_topic_ptr->topic_name == NULL) {
-        RMW_SET_ERROR_MSG("failed to allocate topic name mem");
-        (void)destroy_topic(custom_topic_ptr);
-        custom_topic_ptr = NULL;
-      } else {
-        // Copy the topic name
-        if (snprintf(custom_topic_ptr->topic_name, topic_size, "%s", topic_name) !=
-          strlen(topic_name))
-        {
-          RMW_SET_ERROR_MSG("error when storing topic name");
-          (void)destroy_topic(custom_topic_ptr);
-          custom_topic_ptr = NULL;
-        } else {
-          // Generate topic id
-          custom_topic_ptr->topic_id = uxr_object_id(custom_node->id_gen++, UXR_TOPIC_ID);
-
-          // Generate request
-          uint16_t topic_req;
-
-#define MICRO_XRCEDDS_USE_REFS
-#ifdef MICRO_XRCEDDS_USE_XML
-          char xml_buffer[400];
-          if (!build_topic_xml(custom_topic_ptr->topic_name,
-            message_type_support_callbacks, qos_policies, xml_buffer, sizeof(xml_buffer)))
-          {
-            RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
-            (void)destroy_topic(custom_topic_ptr);
-            custom_topic_ptr = NULL;
-          } else {
-            topic_req = uxr_buffer_configure_topic_xml(&custom_node->session,
-                custom_node->reliable_output, custom_topic_ptr->topic_id,
-                custom_node->participant_id, xml_buffer, UXR_REPLACE);
-          }
-#elif defined(MICRO_XRCEDDS_USE_REFS)
-          char profile_name[64];
-          if (!build_topic_profile(topic_name, profile_name, sizeof(profile_name))) {
-            RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
-            (void)destroy_topic(custom_topic_ptr);
-            custom_topic_ptr = NULL;
-          } else {
-            topic_req = uxr_buffer_create_topic_ref(&micro_node->session,
-                micro_node->reliable_output, subscription_info->topic_id,
-                micro_node->participant_id, profile_name, UXR_REPLACE);
-          }
-#endif
-          if (custom_topic_ptr != NULL) {
-            // Send the request and wait for response
-            uint8_t status;
-            custom_topic_ptr->sync_with_agent =
-              uxr_run_session_until_all_status(&custom_node->session, 1000, &topic_req,
-                &status, 1);
-            if (!custom_topic_ptr->sync_with_agent) {
-              RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
-              (void)destroy_topic(custom_topic_ptr);
-              custom_topic_ptr = NULL;
-            }
-          }
-        }
-      }
-    }
+    goto create_topic_end;
   }
+
+  // Generate new memory
+  custom_topic_ptr = (custom_topic_t *)rmw_allocate(sizeof(custom_topic_t));
+  if (custom_topic_ptr == NULL) {
+    RMW_SET_ERROR_MSG("failed to allocate topic interna mem");
+    goto create_topic_end;
+  }
+
+
+  // Init
+  custom_topic_ptr->sync_with_agent = false;
+  custom_topic_ptr->usage_account = 1;
+  custom_topic_ptr->owner_node = custom_node;
+
+  // Add to top of the node stack
+  custom_topic_ptr->next_custom_topic = custom_node->custom_topic_sp;
+  if (custom_node->custom_topic_sp != NULL) {
+    custom_node->custom_topic_sp->prev_custom_topic = custom_topic_ptr;
+  }
+  custom_node->custom_topic_sp = custom_topic_ptr;
+
+
+  // Asociate to typesupport
+  custom_topic_ptr->message_type_support_callbacks = message_type_support_callbacks;
+
+
+  // Generate topic id
+  custom_topic_ptr->topic_id = uxr_object_id(custom_node->id_gen++, UXR_TOPIC_ID);
+
+#ifdef MICRO_XRCEDDS_USE_XML
+  char xml_buffer[400];
+#elif defined(MICRO_XRCEDDS_USE_REFS)
+  char profile_name[64];
+#endif
+
+  // Generate request
+  uint16_t topic_req;
+#ifdef MICRO_XRCEDDS_USE_XML
+  if (!build_topic_xml(topic_name, message_type_support_callbacks,
+    qos_policies, xml_buffer, sizeof(xml_buffer)))
+  {
+    RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
+    (void)destroy_topic(custom_topic_ptr);
+    custom_topic_ptr = NULL;
+    goto create_topic_end;
+  }
+
+  topic_req = uxr_buffer_configure_topic_xml(&custom_node->session,
+      custom_node->reliable_output, custom_topic_ptr->topic_id,
+      custom_node->participant_id, xml_buffer, UXR_REPLACE);
+#elif defined(MICRO_XRCEDDS_USE_REFS)
+  if (!build_topic_profile(topic_name, profile_name, sizeof(profile_name))) {
+    RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
+    (void)destroy_topic(custom_topic_ptr);
+    custom_topic_ptr = NULL;
+    goto create_topic_end;
+  }
+
+  topic_req = uxr_buffer_create_topic_ref(&custom_node->session,
+      custom_node->reliable_output, custom_topic_ptr->topic_id,
+      custom_node->participant_id, profile_name, UXR_REPLACE);
+#endif
+
+  // Send the request and wait for response
+  uint8_t status;
+  custom_topic_ptr->sync_with_agent =
+    uxr_run_session_until_all_status(&custom_node->session, 1000, &topic_req,
+      &status, 1);
+  if (!custom_topic_ptr->sync_with_agent) {
+    RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
+    (void)destroy_topic(custom_topic_ptr);
+    custom_topic_ptr = NULL;
+    goto create_topic_end;
+  }
+
+
+create_topic_end:
 
   return custom_topic_ptr;
 }
@@ -144,21 +141,26 @@ bool destroy_topic(custom_topic_t * custom_topic)
         custom_topic->owner_node->custom_topic_sp = NULL;
       }
 
-      // Release memory from the topic name
-      if (custom_topic->topic_name != NULL) {
-        rmw_free(custom_topic->topic_name);
+      if (custom_topic->sync_with_agent) {
+        uint16_t request = uxr_buffer_delete_entity(&custom_topic->owner_node->session,
+            custom_topic->owner_node->reliable_output,
+            custom_topic->topic_id);
+        uint8_t status;
+        if (!uxr_run_session_until_all_status(&custom_topic->owner_node->session, 1000,
+          &request, &status, 1))
+        {
+          RMW_SET_ERROR_MSG("unable to remove publisher from the server");
+        } else {
+          ok = true;
+        }
+      } else {
+        ok = true;
       }
 
-      // TODO(Javier) Need to find a way to remove the topic on the agent side
-      // if (custom_topic_ptr->sync_with_agent) {}
-
-      // Release mem
       rmw_free(custom_topic);
+    } else {
+      ok = true;
     }
-
-
-    // Set as ok
-    ok = true;
   }
 
   return ok;
