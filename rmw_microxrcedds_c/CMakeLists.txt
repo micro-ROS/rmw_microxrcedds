@@ -88,6 +88,10 @@ target_link_libraries(${PROJECT_NAME}
                       microxrcedds_client
 )
 
+if(NOT WIN32)
+    ament_export_libraries(pthread)
+endif()
+
 ament_target_dependencies(
     ${PROJECT_NAME}
     "rcutils"
