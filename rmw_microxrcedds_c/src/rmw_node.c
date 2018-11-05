@@ -165,9 +165,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
       cfsetospeed(&tty_config, B115200);
 
       if (0 == tcsetattr(fd, TCSANOW, &tty_config)) {
-        if (!uxr_init_serial_transport(&node_info->transport, &node_info->serial_platform,
-          fd, 0, 1))
-        {
+        if (!uxr_init_serial_transport(&node_info->transport, &node_info->serial_platform, fd, 0, 1)) {
           RMW_SET_ERROR_MSG("Can not create an serial connection");
           return NULL;
         }
