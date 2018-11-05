@@ -165,7 +165,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
       cfsetospeed(&tty_config, B115200);
 
       if (0 == tcsetattr(fd, TCSANOW, &tty_config)) {
-        if (!uxr_init_serial_transport_fd(&node_info->transport, fd, 0, 1)) {
+        if (!uxr_init_serial_transport(&node_info->transport, &node_info->serial_platform, fd, 0, 1)) {
           RMW_SET_ERROR_MSG("Can not create an serial connection");
           return NULL;
         }
@@ -176,12 +176,11 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
 
 #elif defined(MICRO_XRCEDDS_UDP)
   // TODO(Borja) Think how we are going to select transport to use
-  if (!uxr_init_udp_transport(&node_info->transport, &node_info->udp_platform,
-    UDP_IP, UDP_PORT)) {
+  if (!uxr_init_udp_transport(&node_info->transport, &node_info->udp_platform, UDP_IP, UDP_PORT)) {
     RMW_SET_ERROR_MSG("Can not create an udp connection");
     return NULL;
   }
-  fprintf(stderr, "UDP mode => ip: %s - port: %hu\n", UDP_IP, UDP_PORT);
+  printf("UDP mode => ip: %s - port: %hu\n", UDP_IP, UDP_PORT);
 #endif
 
   uxr_init_session(&node_info->session, &node_info->transport.comm, key);
@@ -233,15 +232,15 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   node_info->participant_id = uxr_object_id(node_info->id_gen++, UXR_PARTICIPANT_ID);
   uint16_t participant_req;
 #ifdef MICRO_XRCEDDS_USE_XML
-    char participant_xml[300];
-    if (!build_participant_xml(domain_id, name, participant_xml, sizeof(participant_xml)))
-    {
-        RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
-        return NULL;
-    }
-    participant_req =
-        uxr_buffer_create_participant_xml(&node_info->session, node_info->reliable_output, node_info->participant_id,
-                                           domain_id, participant_xml, UXR_REPLACE);
+  char participant_xml[300];
+  if (!build_participant_xml(domain_id, name, participant_xml, sizeof(participant_xml))) {
+    RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
+    return NULL;
+  }
+  participant_req =
+    uxr_buffer_create_participant_xml(&node_info->session, node_info->reliable_output,
+      node_info->participant_id,
+      domain_id, participant_xml, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
   char profile_name[20];
   if (!build_participant_profile(profile_name, sizeof(profile_name))) {

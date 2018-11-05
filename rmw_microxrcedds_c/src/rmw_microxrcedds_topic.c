@@ -90,7 +90,7 @@ custom_topic_t * create_topic(
     goto create_topic_end;
   }
 
-  topic_req = uxr_buffer_configure_topic_xml(&custom_node->session,
+  topic_req = uxr_buffer_create_topic_xml(&custom_node->session,
       custom_node->reliable_output, custom_topic_ptr->topic_id,
       custom_node->participant_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)

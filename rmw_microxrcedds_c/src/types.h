@@ -80,11 +80,11 @@ typedef struct CustomNode
 {
   struct Item mem;
 #ifdef MICRO_XRCEDDS_SERIAL
-    uxrSerialTransport transport;
-    uxrSerialPlatform serial_platform;
+	uxrSerialTransport transport;
+	uxrSerialPlatform serial_platform;
 #elif defined(MICRO_XRCEDDS_UDP)
-    uxrUDPTransport transport;
-    uxrUDPPlatform udp_platform;
+	uxrUDPTransport transport;
+	uxrUDPPlatform udp_platform;
 #endif
   uxrSession session;
   uxrObjectId participant_id;
