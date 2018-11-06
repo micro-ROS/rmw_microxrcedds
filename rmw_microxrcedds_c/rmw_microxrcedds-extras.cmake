@@ -18,4 +18,4 @@ find_package(microxrcedds_cmake_module REQUIRED)
 find_package(MicroXRCEDDS REQUIRED MODULE)
 
 # specific order: dependents before dependencies
-list(APPEND rmw_microxrcedds_LIBRARIES microxrcedds_client microcdr)
+list(APPEND rmw_microxrcedds_LIBRARIES microxrcedds_client)

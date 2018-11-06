@@ -24,10 +24,9 @@ find_package(microxrcedds_cmake_module REQUIRED)
 find_package(MicroXRCEDDS REQUIRED MODULE)
 
 find_package(rmw REQUIRED)
-find_package(rosidl_generator_c REQUIRED)
-find_package(rosidl_generator_cpp REQUIRED)
-#find_package(rosidl_typesupport_microxrcedds_c QUIET)
-#find_package(rosidl_typesupport_microxrcedds_cpp QUIET)
+
+find_package(rosidl_typesupport_microxrcedds_c QUIET)
+find_package(rosidl_typesupport_microxrcedds_cpp QUIET)
 find_package(rosidl_typesupport_microxrcedds_shared REQUIRED)
 
 set(PACKAGE_VERSION "0.1.0")
@@ -95,12 +94,8 @@ endif()
 ament_target_dependencies(
     ${PROJECT_NAME}
     "rcutils"
-    #"rosidl_typesupport_microxrcedds_c"
-    #"rosidl_typesupport_microxrcedds_cpp"
     "rosidl_typesupport_microxrcedds_shared"
     "rmw"
-    "rosidl_generator_c"
-    "rosidl_generator_cpp"
 )
 
 configure_rmw_library(${PROJECT_NAME})
@@ -137,19 +132,26 @@ endif()
 ament_export_include_directories(${PROJECT_SOURCE_DIR}/include)
 ament_export_libraries(${PROJECT_NAME})
 
+
 ament_export_dependencies(
-    rosidl_typesupport_microxrcedds_c
-    rosidl_typesupport_microxrcedds_cpp
-    rosidl_generator_c
-    rosidl_generator_cpp
     rcutils
     rmw
 )
 
-register_rmw_implementation(
-    "c:rosidl_typesupport_c:rosidl_typesupport_microxrcedds_c"
-    "cpp:rosidl_typesupport_cpp:rosidl_typesupport_microxrcedds_cpp"
-)
+
+if (rosidl_typesupport_microxrcedds_c_FOUND)
+    ament_export_dependencies(rosidl_typesupport_microxrcedds_c)
+    set(implementations
+    "c:rosidl_typesupport_c:rosidl_typesupport_microxrcedds_c")
+endif()
+if (rosidl_typesupport_microxrcedds_cpp_FOUND)
+    ament_export_dependencies(rosidl_typesupport_microxrcedds_cpp)
+    set(implementations
+    ${implementations}
+    "cpp:rosidl_typesupport_cpp:rosidl_typesupport_microxrcedds_cpp")
+endif()
+register_rmw_implementation(${implementations})
+
 
 if(BUILD_TESTING)
     find_package(ament_lint_auto REQUIRED)
@@ -163,11 +165,11 @@ ament_package(CONFIG_EXTRAS_POST
 )
 
 install(DIRECTORY include/
-DESTINATION include
+    DESTINATION include
 )
 
 install(TARGETS ${PROJECT_NAME}
-ARCHIVE DESTINATION lib
-LIBRARY DESTINATION lib
-RUNTIME DESTINATION bin
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
 )
