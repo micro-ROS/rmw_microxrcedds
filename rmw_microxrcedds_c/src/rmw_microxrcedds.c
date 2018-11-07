@@ -187,6 +187,7 @@ rmw_ret_t rmw_take_with_info(
     &custom_subscription->micro_buffer, ros_message,
     custom_subscription->owner_node->miscellaneous_temp_buffer,
     sizeof(custom_subscription->owner_node->miscellaneous_temp_buffer));
+  custom_subscription->micro_buffer_on_use = false;
   if (taken != NULL) {
     *taken = deserialize_rv;
   }
