@@ -85,7 +85,7 @@ void on_topic(
   }
 
   // Check if temporal micro buffer is on use
-  if (custom_subscription->micro_buffer_on_use) {
+  if (custom_subscription->micro_buffer_in_use) {
     RMW_SET_ERROR_MSG("Internal memory error");
     return;
   }
@@ -98,7 +98,7 @@ void on_topic(
   // Copy microbuffer data
   memcpy(&custom_subscription->micro_buffer, serialization,
     sizeof(custom_subscription->micro_buffer));
-  custom_subscription->micro_buffer_on_use = true;
+  custom_subscription->micro_buffer_in_use = true;
 }
 
 void clear_node(rmw_node_t * node)

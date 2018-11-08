@@ -56,7 +56,7 @@ rmw_subscription_t * create_subscriber(
     rmw_get_implementation_identifier();
   custom_subscription->session = &custom_node->session;
   custom_subscription->waiting_for_response = false;
-  custom_subscription->micro_buffer_on_use = false;
+  custom_subscription->micro_buffer_in_use = false;
 
   if ((type_support == get_message_typesupport_handle(type_support,
     ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE)) ||
