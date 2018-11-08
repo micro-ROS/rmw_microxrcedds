@@ -50,6 +50,7 @@ typedef struct CustomSubscription
   uxrSession * session;  // TODO(Javier) duplicated: owner_node->session
 
   struct ucdrBuffer micro_buffer;
+  bool micro_buffer_in_use;
 
   bool waiting_for_response;
   uint16_t subscription_request;

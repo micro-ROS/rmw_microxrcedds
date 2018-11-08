@@ -84,6 +84,12 @@ void on_topic(
     subscription_item = subscription_item->next;
   }
 
+  // Check if temporal micro buffer is on use
+  if (custom_subscription->micro_buffer_in_use) {
+    RMW_SET_ERROR_MSG("Internal memory error");
+    return;
+  }
+
   // not waiting for response any more
   custom_subscription->waiting_for_response = false;
   node->on_subscription = true;
@@ -92,6 +98,7 @@ void on_topic(
   // Copy microbuffer data
   memcpy(&custom_subscription->micro_buffer, serialization,
     sizeof(custom_subscription->micro_buffer));
+  custom_subscription->micro_buffer_in_use = true;
 }
 
 void clear_node(rmw_node_t * node)
@@ -165,7 +172,9 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
       cfsetospeed(&tty_config, B115200);
 
       if (0 == tcsetattr(fd, TCSANOW, &tty_config)) {
-        if (!uxr_init_serial_transport(&node_info->transport, &node_info->serial_platform, fd, 0, 1)) {
+        if (!uxr_init_serial_transport(&node_info->transport,
+          &node_info->serial_platform, fd, 0, 1))
+        {
           RMW_SET_ERROR_MSG("Can not create an serial connection");
           return NULL;
         }

@@ -139,12 +139,12 @@ ament_export_dependencies(
 )
 
 
-if (rosidl_typesupport_microxrcedds_c_FOUND)
+if(rosidl_typesupport_microxrcedds_c_FOUND)
     ament_export_dependencies(rosidl_typesupport_microxrcedds_c)
     set(implementations
     "c:rosidl_typesupport_c:rosidl_typesupport_microxrcedds_c")
 endif()
-if (rosidl_typesupport_microxrcedds_cpp_FOUND)
+if(rosidl_typesupport_microxrcedds_cpp_FOUND)
     ament_export_dependencies(rosidl_typesupport_microxrcedds_cpp)
     set(implementations
     ${implementations}
