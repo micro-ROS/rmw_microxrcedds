@@ -17,6 +17,9 @@
 #include <memory>
 #include <string>
 
+#include <chrono>
+#include <thread>
+
 #ifdef _WIN32
 #include <uxr/agent/transport/udp/UDPServerWindows.hpp>
 #else
@@ -141,7 +144,7 @@ TEST_F(TestSubscription, publish_and_receive) {
   ASSERT_NE((void *)sub, (void *)NULL);
 
 
-  usleep(5000);
+  std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 
   ret = rmw_publish(pub, test_parameter);
   ASSERT_EQ(ret, RMW_RET_OK);
