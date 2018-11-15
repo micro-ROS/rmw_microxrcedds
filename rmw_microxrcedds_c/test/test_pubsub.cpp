@@ -144,7 +144,7 @@ TEST_F(TestSubscription, publish_and_receive) {
   ASSERT_NE((void *)sub, (void *)NULL);
 
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
   ret = rmw_publish(pub, test_parameter);
   ASSERT_EQ(ret, RMW_RET_OK);
