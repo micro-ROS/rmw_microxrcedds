@@ -19,12 +19,6 @@
 #include <memory>
 #include <string>
 
-#ifdef _WIN32
-#include <uxr/agent/transport/udp/UDPServerWindows.hpp>
-#else
-#include <uxr/agent/transport/udp/UDPServerLinux.hpp>
-#endif  // _WIN32
-
 #include <rosidl_typesupport_microxrcedds_shared/identifier.h>
 #include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
 
@@ -52,24 +46,12 @@ protected:
     rmw_ret_t ret = rmw_init();
     ASSERT_EQ(ret, RMW_RET_OK);
 
-    server =
-      std::unique_ptr<eprosima::uxr::Server>(new eprosima::uxr::UDPServer((uint16_t)atoi("8888")));
-    server->run();
-    // ASSERT_EQ(server->run(), true);
-
     rmw_node_security_options_t security_options;
     node = rmw_create_node("my_node", "/ns", 0, &security_options);
     ASSERT_NE((void *)node, (void *)NULL);
   }
 
-  void TearDown()
-  {
-    // Stop agent
-    server->stop();
-  }
-
   rmw_node_t * node;
-  std::unique_ptr<eprosima::uxr::Server> server;
 
   const char * topic_type = "topic_type";
   const char * topic_name = "topic_name";

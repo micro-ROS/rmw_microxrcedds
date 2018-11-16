@@ -4,9 +4,6 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 
 find_package(ament_cmake_gtest REQUIRED)
-find_package(microxrcedds_agent_cmake_module REQUIRED)
-find_package(MicroXRCEDDS_Agent REQUIRED MODULE)
-
 
 set(TEST_UTILS_FILES_SOURCES "test_utils.cpp")
 set(TEST_UTILS_FILES_HEADERS "test_utils.hpp")
@@ -24,14 +21,12 @@ if(TARGET ${TEST_NAME})
   ament_target_dependencies(
     ${TEST_NAME}
     ${PROJECT_NAME}
-    microxrcedds_agent
     rmw
     rosidl_typesupport_microxrcedds_shared
   )
 
   target_link_libraries(
     ${TEST_NAME}
-    microxrcedds_agent
     microxrcedds_client
     microcdr
   )
@@ -60,14 +55,12 @@ if(TARGET ${TEST_NAME})
   ament_target_dependencies(
     ${TEST_NAME}
     ${PROJECT_NAME}
-    microxrcedds_agent
     rmw
     rosidl_typesupport_microxrcedds_shared
   )
 
   target_link_libraries(
     ${TEST_NAME}
-    microxrcedds_agent
     microxrcedds_client
     microcdr
   )
@@ -96,14 +89,12 @@ if(TARGET ${TEST_NAME})
   ament_target_dependencies(
     ${TEST_NAME}
     ${PROJECT_NAME}
-    microxrcedds_agent
     rmw
     rosidl_typesupport_microxrcedds_shared
   )
 
   target_link_libraries(
     ${TEST_NAME}
-    microxrcedds_agent
     microxrcedds_client
     microcdr
   )
@@ -132,14 +123,12 @@ if(TARGET ${TEST_NAME})
   ament_target_dependencies(
     ${TEST_NAME}
     ${PROJECT_NAME}
-    microxrcedds_agent
     rmw
     rosidl_typesupport_microxrcedds_shared
   )
 
   target_link_libraries(
     ${TEST_NAME}
-    microxrcedds_agent
     microxrcedds_client
     microcdr
   )
@@ -168,14 +157,12 @@ if(TARGET ${TEST_NAME})
   ament_target_dependencies(
     ${TEST_NAME}
     ${PROJECT_NAME}
-    microxrcedds_agent
     rmw
     rosidl_typesupport_microxrcedds_shared
   )
 
   target_link_libraries(
     ${TEST_NAME}
-    microxrcedds_agent
     microxrcedds_client
     microcdr
   )
