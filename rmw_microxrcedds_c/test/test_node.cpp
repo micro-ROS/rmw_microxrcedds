@@ -16,12 +16,6 @@
 #include <vector>
 #include <memory>
 
-#ifdef _WIN32
-#include <uxr/agent/transport/udp/UDPServerWindows.hpp>
-#else
-#include <uxr/agent/transport/udp/UDPServerLinux.hpp>
-#endif  // _WIN32
-
 #include <rmw/error_handling.h>
 #include <rmw/node_security_options.h>
 #include <rmw/rmw.h>
@@ -45,20 +39,7 @@ protected:
   {
     rmw_ret_t ret = rmw_init();
     ASSERT_EQ(ret, RMW_RET_OK);
-
-    server =
-      std::unique_ptr<eprosima::uxr::Server>(new eprosima::uxr::UDPServer((uint16_t)atoi("8888")));
-    server->run();
-    // ASSERT_EQ(server->run(), true);
   }
-
-  void TearDown()
-  {
-    // Stop agent
-    server->stop();
-  }
-
-  std::unique_ptr<eprosima::uxr::Server> server;
 };
 
 /*
