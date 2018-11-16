@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 #include <gtest/gtest.h>
+
+#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
+#include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
 
 #include <vector>
 #include <memory>
 #include <string>
-
-#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
-#include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
 
 #include "rmw/error_handling.h"
 #include "rmw/node_security_options.h"
@@ -29,6 +28,8 @@
 #include "rmw/validate_node_name.h"
 
 #include "./config.h"
+
+
 #include "./test_utils.hpp"
 
 class TestPublisher : public ::testing::Test

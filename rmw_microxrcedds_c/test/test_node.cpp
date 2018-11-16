@@ -13,8 +13,6 @@
 // limitations under the License.
 
 #include <gtest/gtest.h>
-#include <vector>
-#include <memory>
 
 #include <rmw/error_handling.h>
 #include <rmw/node_security_options.h>
@@ -22,7 +20,11 @@
 #include <rmw/validate_namespace.h>
 #include <rmw/validate_node_name.h>
 
+#include <vector>
+#include <memory>
+
 #include "./config.h"
+
 #include "./test_utils.hpp"
 
 class TestNode : public ::testing::Test

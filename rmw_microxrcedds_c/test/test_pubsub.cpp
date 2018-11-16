@@ -14,15 +14,14 @@
 
 #include <gtest/gtest.h>
 
+#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
+#include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
+
 #include <memory>
 #include <string>
 
 #include <chrono>
 #include <thread>
-
-
-#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
-#include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
 
 #include "rmw/error_handling.h"
 #include "rmw/node_security_options.h"
