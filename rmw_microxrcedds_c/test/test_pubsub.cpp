@@ -14,17 +14,14 @@
 
 #include <gtest/gtest.h>
 
+#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
+#include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
+
 #include <memory>
 #include <string>
 
-#ifdef _WIN32
-#include <uxr/agent/transport/udp/UDPServerWindows.hpp>
-#else
-#include <uxr/agent/transport/udp/UDPServerLinux.hpp>
-#endif  // _WIN32
-
-#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
-#include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
+#include <chrono>
+#include <thread>
 
 #include "rmw/error_handling.h"
 #include "rmw/node_security_options.h"
@@ -54,20 +51,8 @@ protected:
   {
     rmw_ret_t ret = rmw_init();
     ASSERT_EQ(ret, RMW_RET_OK);
-
-    server =
-      std::unique_ptr<eprosima::uxr::Server>(new eprosima::uxr::UDPServer((uint16_t)atoi("8888")));
-    server->run();
-    // ASSERT_EQ(server->run(), true);
   }
 
-  void TearDown()
-  {
-    // Stop agent
-    server->stop();
-  }
-
-  std::unique_ptr<eprosima::uxr::Server> server;
   rmw_ret_t ret;
 
   size_t id_gen = 0;
@@ -141,7 +126,7 @@ TEST_F(TestSubscription, publish_and_receive) {
   ASSERT_NE((void *)sub, (void *)NULL);
 
 
-  usleep(5000);
+  std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
   ret = rmw_publish(pub, test_parameter);
   ASSERT_EQ(ret, RMW_RET_OK);
