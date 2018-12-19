@@ -46,11 +46,11 @@ protected:
 
   void SetUp()
   {
-    rmw_ret_t ret = rmw_init();
+    rmw_ret_t ret = rmw_init(NULL, NULL);
     ASSERT_EQ(ret, RMW_RET_OK);
 
     rmw_node_security_options_t security_options;
-    node = rmw_create_node("my_node", "/ns", 0, &security_options);
+    node = rmw_create_node(NULL, "my_node", "/ns", 0, &security_options);
     ASSERT_NE((void *)node, (void *)NULL);
   }
 

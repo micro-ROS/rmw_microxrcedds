@@ -39,7 +39,7 @@ protected:
 
   void SetUp()
   {
-    rmw_ret_t ret = rmw_init();
+    rmw_ret_t ret = rmw_init(NULL,NULL);
     ASSERT_EQ(ret, RMW_RET_OK);
   }
 };
@@ -51,7 +51,7 @@ TEST_F(TestNode, construction_and_destruction) {
   // Success creation
   {
     rmw_node_security_options_t security_options;
-    rmw_node_t * node = rmw_create_node("my_node", "/ns", 0, &security_options);
+    rmw_node_t * node = rmw_create_node(NULL, "my_node", "/ns", 0, &security_options);
     ASSERT_NE((void *)node, (void *)NULL);
     rmw_ret_t ret = rmw_destroy_node(node);
     ASSERT_EQ(ret, RMW_RET_OK);
@@ -61,7 +61,7 @@ TEST_F(TestNode, construction_and_destruction) {
   // Unsuccess creation
   {
     rmw_node_security_options_t security_options;
-    rmw_node_t * node = rmw_create_node("", "/ns", 0, &security_options);
+    rmw_node_t * node = rmw_create_node(NULL, "", "/ns", 0, &security_options);
     ASSERT_EQ((void *)node, (void *)NULL);
     ASSERT_EQ(CheckErrorState(), true);
   }
@@ -69,14 +69,14 @@ TEST_F(TestNode, construction_and_destruction) {
   // Unsuccess creation
   {
     rmw_node_security_options_t security_options;
-    rmw_node_t * node = rmw_create_node("my_node", "", 0, &security_options);
+    rmw_node_t * node = rmw_create_node(NULL, "my_node", "", 0, &security_options);
     ASSERT_EQ((void *)node, (void *)NULL);
   }
 
   // Unsuccess creation
   {
     rmw_node_security_options_t security_options;
-    rmw_node_t * node = rmw_create_node("my_node", "/ns", 0, NULL);
+    rmw_node_t * node = rmw_create_node(NULL, "my_node", "/ns", 0, NULL);
     ASSERT_EQ((void *)node, (void *)NULL);
     ASSERT_EQ(CheckErrorState(), true);
   }
@@ -93,13 +93,13 @@ TEST_F(TestNode, memory_poll) {
 
   // Get all available nodes
   for (size_t i = 0; i < MAX_NODES; i++) {
-    node = rmw_create_node("my_node", "/ns", 0, &dummy_security_options);
+    node = rmw_create_node(NULL, "my_node", "/ns", 0, &dummy_security_options);
     ASSERT_NE((void *)node, (void *)NULL);
     nodes.push_back(node);
   }
 
   // Try to get one
-  node = rmw_create_node("my_node", "/ns", 0, &dummy_security_options);
+  node = rmw_create_node(NULL, "my_node", "/ns", 0, &dummy_security_options);
   ASSERT_EQ((void *)node, (void *)NULL);
   ASSERT_EQ(CheckErrorState(), true);
 
@@ -109,7 +109,7 @@ TEST_F(TestNode, memory_poll) {
   nodes.pop_back();
 
   // Get one
-  node = rmw_create_node("my_node", "/ns", 0, &dummy_security_options);
+  node = rmw_create_node(NULL, "my_node", "/ns", 0, &dummy_security_options);
   ASSERT_NE((void *)node, (void *)NULL);
   nodes.push_back(node);
 

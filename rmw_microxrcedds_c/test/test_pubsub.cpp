@@ -49,7 +49,7 @@ protected:
 
   void SetUp()
   {
-    rmw_ret_t ret = rmw_init();
+    rmw_ret_t ret = rmw_init(NULL, NULL);
     ASSERT_EQ(ret, RMW_RET_OK);
   }
 
@@ -108,7 +108,7 @@ TEST_F(TestSubscription, publish_and_receive) {
 
 
   rmw_node_t * node_pub;
-  node_pub = rmw_create_node("pub_node", "/ns", 0, &dummy_security_options);
+  node_pub = rmw_create_node(NULL, "pub_node", "/ns", 0, &dummy_security_options);
   ASSERT_NE((void *)node_pub, (void *)NULL);
 
 
@@ -117,7 +117,7 @@ TEST_F(TestSubscription, publish_and_receive) {
   ASSERT_NE((void *)pub, (void *)NULL);
 
   rmw_node_t * node_sub;
-  node_sub = rmw_create_node("sub_node", "/ns", 0, &dummy_security_options);
+  node_sub = rmw_create_node(NULL, "sub_node", "/ns", 0, &dummy_security_options);
   ASSERT_NE((void *)node_sub, (void *)NULL);
 
 

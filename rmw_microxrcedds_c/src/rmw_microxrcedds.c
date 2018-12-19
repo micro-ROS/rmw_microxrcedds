@@ -38,7 +38,7 @@ const char * rmw_get_implementation_identifier()
   return eprosima_microxrcedds_identifier;
 }
 
-rmw_ret_t rmw_init()
+rmw_ret_t rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 {
   EPROS_PRINT_TRACE()
 
@@ -52,7 +52,7 @@ rmw_ret_t rmw_init()
   return RMW_RET_OK;
 }
 
-rmw_node_t * rmw_create_node(
+rmw_node_t * rmw_create_node(rmw_context_t * context,
   const char * name, const char * namespace, size_t domain_id,
   const rmw_node_security_options_t * security_options)
 {
@@ -288,7 +288,7 @@ rmw_ret_t rmw_send_response(
   return RMW_RET_OK;
 }
 
-rmw_guard_condition_t * rmw_create_guard_condition(void)
+rmw_guard_condition_t * rmw_create_guard_condition(rmw_context_t * context)
 {
   EPROS_PRINT_TRACE()
 
@@ -483,7 +483,7 @@ rmw_ret_t rmw_wait(
   return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_get_node_names(const rmw_node_t * node, rcutils_string_array_t * node_names)
+rmw_ret_t rmw_get_node_names(const rmw_node_t * node, rcutils_string_array_t * node_names, rcutils_string_array_t * node_namespaces)
 {
   EPROS_PRINT_TRACE()
   return RMW_RET_OK;
