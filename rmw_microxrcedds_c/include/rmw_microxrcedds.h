@@ -17,6 +17,7 @@
 
 #include "rmw/names_and_types.h"
 #include "rmw/rmw.h"
+#include "rmw/get_node_info_and_types.h"
 #include "rmw/get_topic_names_and_types.h"
 #include "rmw/get_service_names_and_types.h"
 
@@ -198,5 +199,54 @@ rmw_ret_t rmw_get_service_names_and_types(
   const rmw_node_t * node,
   rcutils_allocator_t * allocator,
   rmw_names_and_types_t * service_names_and_types);
+
+rmw_ret_t
+rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t allocator);
+
+rmw_ret_t
+rmw_subscription_count_matched_publishers(
+  const rmw_subscription_t * subscription,
+  size_t * publisher_count);
+
+rmw_ret_t
+rmw_get_publisher_names_and_types_by_node(
+  const rmw_node_t * node,
+  rcutils_allocator_t * allocator,
+  const char * node_name,
+  const char * node_namespace,
+  bool demangle,
+  rmw_names_and_types_t * topic_names_and_types);
+
+rmw_ret_t
+rmw_get_subscriber_names_and_types_by_node(
+  const rmw_node_t * node,
+  rcutils_allocator_t * allocator,
+  const char * node_name,
+  const char * node_namespace,
+  bool demangle,
+  rmw_names_and_types_t * topics_names_and_types);
+
+rmw_ret_t
+rmw_shutdown(rmw_context_t * context);
+
+rmw_ret_t
+rmw_init_options_copy(const rmw_init_options_t * src, rmw_init_options_t * dst);
+
+RMW_PUBLIC
+rmw_ret_t
+rmw_get_service_names_and_types_by_node(
+  const rmw_node_t * node,
+  rcutils_allocator_t * allocator,
+  const char * node_name,
+  const char * node_namespace,
+  rmw_names_and_types_t * service_names_and_types);
+
+rmw_ret_t
+rmw_init_options_fini(rmw_init_options_t * init_options);
+
+rmw_ret_t
+rmw_publisher_count_matched_subscriptions(
+  const rmw_publisher_t * publisher,
+  size_t * subscription_count);
 
 #endif  // RMW_MICROXRCEDDS_H_

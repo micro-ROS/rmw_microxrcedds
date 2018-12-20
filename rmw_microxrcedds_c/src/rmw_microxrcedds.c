@@ -52,7 +52,8 @@ rmw_ret_t rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   return RMW_RET_OK;
 }
 
-rmw_node_t * rmw_create_node(rmw_context_t * context,
+rmw_node_t * rmw_create_node(
+  rmw_context_t * context,
   const char * name, const char * namespace, size_t domain_id,
   const rmw_node_security_options_t * security_options)
 {
@@ -483,7 +484,9 @@ rmw_ret_t rmw_wait(
   return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_get_node_names(const rmw_node_t * node, rcutils_string_array_t * node_names, rcutils_string_array_t * node_namespaces)
+rmw_ret_t rmw_get_node_names(
+  const rmw_node_t * node, rcutils_string_array_t * node_names,
+  rcutils_string_array_t * node_namespaces)
 {
   EPROS_PRINT_TRACE()
   return RMW_RET_OK;
@@ -538,6 +541,98 @@ rmw_ret_t rmw_get_topic_names_and_types(
 rmw_ret_t rmw_get_service_names_and_types(
   const rmw_node_t * node, rcutils_allocator_t * allocator,
   rmw_names_and_types_t * service_names_and_types)
+{
+  EPROS_PRINT_TRACE()
+  return RMW_RET_OK;
+}
+
+
+rmw_ret_t
+rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t allocator)
+{
+  EPROS_PRINT_TRACE()
+  return RMW_RET_OK;
+}
+
+
+rmw_ret_t
+rmw_subscription_count_matched_publishers(
+  const rmw_subscription_t * subscription,
+  size_t * publisher_count)
+{
+  EPROS_PRINT_TRACE()
+  return RMW_RET_OK;
+}
+
+
+rmw_ret_t
+rmw_get_publisher_names_and_types_by_node(
+  const rmw_node_t * node,
+  rcutils_allocator_t * allocator,
+  const char * node_name,
+  const char * node_namespace,
+  bool demangle,
+  rmw_names_and_types_t * topic_names_and_types)
+{
+  EPROS_PRINT_TRACE()
+  return RMW_RET_OK;
+}
+
+
+rmw_ret_t
+rmw_get_subscriber_names_and_types_by_node(
+  const rmw_node_t * node,
+  rcutils_allocator_t * allocator,
+  const char * node_name,
+  const char * node_namespace,
+  bool demangle,
+  rmw_names_and_types_t * topics_names_and_types)
+{
+  EPROS_PRINT_TRACE()
+  return RMW_RET_OK;
+}
+
+
+rmw_ret_t
+rmw_shutdown(rmw_context_t * context)
+{
+  EPROS_PRINT_TRACE()
+  return RMW_RET_OK;
+}
+
+
+rmw_ret_t
+rmw_init_options_copy(const rmw_init_options_t * src, rmw_init_options_t * dst)
+{
+  EPROS_PRINT_TRACE()
+  return RMW_RET_OK;
+}
+
+rmw_ret_t
+rmw_get_service_names_and_types_by_node(
+  const rmw_node_t * node,
+  rcutils_allocator_t * allocator,
+  const char * node_name,
+  const char * node_namespace,
+  rmw_names_and_types_t * service_names_and_types)
+{
+  EPROS_PRINT_TRACE()
+  return RMW_RET_OK;
+}
+
+
+rmw_ret_t
+rmw_init_options_fini(rmw_init_options_t * init_options)
+{
+  EPROS_PRINT_TRACE()
+  return RMW_RET_OK;
+}
+
+
+rmw_ret_t
+rmw_publisher_count_matched_subscriptions(
+  const rmw_publisher_t * publisher,
+  size_t * subscription_count)
 {
   EPROS_PRINT_TRACE()
   return RMW_RET_OK;
