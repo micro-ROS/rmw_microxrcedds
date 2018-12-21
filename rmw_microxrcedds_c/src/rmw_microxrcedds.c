@@ -488,31 +488,55 @@ rmw_ret_t rmw_get_node_names(
   const rmw_node_t * node, rcutils_string_array_t * node_names,
   rcutils_string_array_t * node_namespaces)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
 
 rmw_ret_t rmw_count_publishers(const rmw_node_t * node, const char * topic_name, size_t * count)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
 
 rmw_ret_t rmw_count_subscribers(const rmw_node_t * node, const char * topic_name, size_t * count)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
 
 rmw_ret_t rmw_get_gid_for_publisher(const rmw_publisher_t * publisher, rmw_gid_t * gid)
 {
-  EPROS_PRINT_TRACE()
+  // Check
+  RMW_CHECK_ARGUMENT_FOR_NULL(publisher, RMW_RET_INVALID_ARGUMENT);
+  RMW_CHECK_ARGUMENT_FOR_NULL(gid, RMW_RET_INVALID_ARGUMENT);
+  if (publisher->implementation_identifier != rmw_get_implementation_identifier()) {
+    RMW_SET_ERROR_MSG("publisher handle not from this implementation");
+    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
+  }
+
+  // Do
+  CustomPublisher * custom_publisher = (CustomPublisher *)publisher->data;
+  memcpy(gid,&custom_publisher->publisher_gid, sizeof(rmw_gid_t));
+
   return RMW_RET_OK;
 }
 
 rmw_ret_t rmw_compare_gids_equal(const rmw_gid_t * gid1, const rmw_gid_t * gid2, bool * result)
 {
-  EPROS_PRINT_TRACE()
+  // Check
+  RMW_CHECK_ARGUMENT_FOR_NULL(gid1, RMW_RET_INVALID_ARGUMENT);
+  RMW_CHECK_ARGUMENT_FOR_NULL(gid2, RMW_RET_INVALID_ARGUMENT);
+  if (gid1->implementation_identifier != rmw_get_implementation_identifier()) {
+    RMW_SET_ERROR_MSG("publisher handle not from this implementation");
+    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
+  } else if (gid2->implementation_identifier != rmw_get_implementation_identifier()) {
+    RMW_SET_ERROR_MSG("publisher handle not from this implementation");
+    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
+  }
+  
+  *result =
+    memcmp(gid1->data, gid2->data, sizeof(rmw_gid_t)) == 0;
+
   return RMW_RET_OK;
 }
 
@@ -520,50 +544,56 @@ rmw_ret_t rmw_service_server_is_available(
   const rmw_node_t * node, const rmw_client_t * client,
   bool * is_available)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
 
 rmw_ret_t rmw_set_log_6severity(rmw_log_severity_t severity)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
 
 rmw_ret_t rmw_get_topic_names_and_types(
   const rmw_node_t * node, rcutils_allocator_t * allocator, bool no_demangle,
   rmw_names_and_types_t * topic_names_and_types)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
 
 rmw_ret_t rmw_get_service_names_and_types(
   const rmw_node_t * node, rcutils_allocator_t * allocator,
   rmw_names_and_types_t * service_names_and_types)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
-
 
 rmw_ret_t
 rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t allocator)
 {
-  EPROS_PRINT_TRACE()
+  RMW_CHECK_ARGUMENT_FOR_NULL(init_options, RMW_RET_INVALID_ARGUMENT);
+  RCUTILS_CHECK_ALLOCATOR(&allocator, return RMW_RET_INVALID_ARGUMENT);
+  if (NULL != init_options->implementation_identifier) {
+    RMW_SET_ERROR_MSG("expected zero-initialized init_options");
+    return RMW_RET_INVALID_ARGUMENT;
+  }
+  init_options->instance_id = 0;
+  init_options->implementation_identifier = rmw_get_implementation_identifier();
+  init_options->allocator = allocator;
+  init_options->impl = NULL;
   return RMW_RET_OK;
 }
-
 
 rmw_ret_t
 rmw_subscription_count_matched_publishers(
   const rmw_subscription_t * subscription,
   size_t * publisher_count)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
-
 
 rmw_ret_t
 rmw_get_publisher_names_and_types_by_node(
@@ -574,10 +604,9 @@ rmw_get_publisher_names_and_types_by_node(
   bool demangle,
   rmw_names_and_types_t * topic_names_and_types)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
-
 
 rmw_ret_t
 rmw_get_subscriber_names_and_types_by_node(
@@ -588,23 +617,40 @@ rmw_get_subscriber_names_and_types_by_node(
   bool demangle,
   rmw_names_and_types_t * topics_names_and_types)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
-
 
 rmw_ret_t
 rmw_shutdown(rmw_context_t * context)
 {
-  EPROS_PRINT_TRACE()
+  // Check
+  RCUTILS_CHECK_ARGUMENT_FOR_NULL(context, RMW_RET_INVALID_ARGUMENT);
+  if (strcmp(context->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
+  }
+
+  // Do
+  *context = rmw_get_zero_initialized_context();
   return RMW_RET_OK;
 }
-
 
 rmw_ret_t
 rmw_init_options_copy(const rmw_init_options_t * src, rmw_init_options_t * dst)
 {
-  EPROS_PRINT_TRACE()
+  // Check
+  RMW_CHECK_ARGUMENT_FOR_NULL(src, RMW_RET_INVALID_ARGUMENT);
+  RMW_CHECK_ARGUMENT_FOR_NULL(dst, RMW_RET_INVALID_ARGUMENT);
+  if (strcmp(src->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+    RMW_SET_ERROR_MSG("Wrong implementation");
+    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
+  } else if (NULL != dst->implementation_identifier) {
+    RMW_SET_ERROR_MSG("expected zero-initialized dst");
+    return RMW_RET_INVALID_ARGUMENT;
+  }
+
+  // Do
+  *dst = *src;
   return RMW_RET_OK;
 }
 
@@ -616,24 +662,31 @@ rmw_get_service_names_and_types_by_node(
   const char * node_namespace,
   rmw_names_and_types_t * service_names_and_types)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
-
 
 rmw_ret_t
 rmw_init_options_fini(rmw_init_options_t * init_options)
 {
-  EPROS_PRINT_TRACE()
+  // Check
+  RMW_CHECK_ARGUMENT_FOR_NULL(init_options, RMW_RET_INVALID_ARGUMENT);
+  RCUTILS_CHECK_ALLOCATOR(&(init_options->allocator), return RMW_RET_INVALID_ARGUMENT);
+  if (strcmp(init_options->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+    RMW_SET_ERROR_MSG("Wrong implementation");
+    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
+  } 
+  
+  // Do
+  *init_options = rmw_get_zero_initialized_init_options();
   return RMW_RET_OK;
 }
-
 
 rmw_ret_t
 rmw_publisher_count_matched_subscriptions(
   const rmw_publisher_t * publisher,
   size_t * subscription_count)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
