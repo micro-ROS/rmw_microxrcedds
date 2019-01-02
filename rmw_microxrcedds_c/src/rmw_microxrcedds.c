@@ -516,7 +516,7 @@ rmw_ret_t rmw_get_gid_for_publisher(const rmw_publisher_t * publisher, rmw_gid_t
 
   // Do
   CustomPublisher * custom_publisher = (CustomPublisher *)publisher->data;
-  memcpy(gid,&custom_publisher->publisher_gid, sizeof(rmw_gid_t));
+  memcpy(gid, &custom_publisher->publisher_gid, sizeof(rmw_gid_t));
 
   return RMW_RET_OK;
 }
@@ -533,7 +533,7 @@ rmw_ret_t rmw_compare_gids_equal(const rmw_gid_t * gid1, const rmw_gid_t * gid2,
     RMW_SET_ERROR_MSG("publisher handle not from this implementation");
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
   }
-  
+
   *result =
     memcmp(gid1->data, gid2->data, sizeof(rmw_gid_t)) == 0;
 
@@ -675,8 +675,8 @@ rmw_init_options_fini(rmw_init_options_t * init_options)
   if (strcmp(init_options->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
     RMW_SET_ERROR_MSG("Wrong implementation");
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
-  } 
-  
+  }
+
   // Do
   *init_options = rmw_get_zero_initialized_init_options();
   return RMW_RET_OK;

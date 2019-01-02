@@ -39,7 +39,7 @@ protected:
 
   void SetUp()
   {
-    rmw_ret_t ret = rmw_init(NULL,NULL);
+    rmw_ret_t ret = rmw_init(NULL, NULL);
     ASSERT_EQ(ret, RMW_RET_OK);
   }
 };
