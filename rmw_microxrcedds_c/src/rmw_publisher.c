@@ -27,7 +27,7 @@
 #include "./rmw_microxrcedds_topic.h"
 
 rmw_publisher_t * create_publisher(
-  const rmw_node_t * node, const rosidl_message_type_support_t * type_support,
+  const rmw_node_t * node, const rosidl_message_type_support_t * type_supports,
   const char * topic_name, const rmw_qos_profile_t * qos_policies)
 {
   bool success = false;
@@ -54,16 +54,23 @@ rmw_publisher_t * create_publisher(
   custom_publisher->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
   custom_publisher->session = &custom_node->session;
 
-  if ((type_support == get_message_typesupport_handle(type_support,
-    ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE)) ||
-    (type_support == get_message_typesupport_handle(type_support,
-    ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE)))
-  {
-    custom_publisher->type_support_callbacks =
-      (const message_type_support_callbacks_t *)type_support->data;
+
+  const rosidl_message_type_support_t * type_support = get_message_typesupport_handle(
+    type_supports, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
+  if (!type_support) {
+    type_support = get_message_typesupport_handle(
+      type_supports, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
+    if (!type_support) {
+      RMW_SET_ERROR_MSG("type support not from this implementation");
+      goto create_publisher_end;
+    }
   }
+
+  custom_publisher->type_support_callbacks =
+      (const message_type_support_callbacks_t *)type_support->data;
+
   if (custom_publisher->type_support_callbacks == NULL) {
-    RMW_SET_ERROR_MSG("type support not from this implementation");
+    RMW_SET_ERROR_MSG("type support data is NULL");
     goto create_publisher_end;
   } else if (sizeof(uxrObjectId) > RMW_GID_STORAGE_SIZE) {
     RMW_SET_ERROR_MSG("Not enough memory for impl ids");
