@@ -67,7 +67,7 @@ rmw_publisher_t * create_publisher(
   }
 
   custom_publisher->type_support_callbacks =
-      (const message_type_support_callbacks_t *)type_support->data;
+    (const message_type_support_callbacks_t *)type_support->data;
 
   if (custom_publisher->type_support_callbacks == NULL) {
     RMW_SET_ERROR_MSG("type support data is NULL");
