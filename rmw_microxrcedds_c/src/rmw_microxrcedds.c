@@ -23,7 +23,7 @@
 #include "rmw/allocators.h"
 #include "rmw/error_handling.h"
 
-#include "./identifier.h"
+#include "./identifiers.h"
 
 #include "./rmw_node.h"
 #include "./rmw_publisher.h"
@@ -36,6 +36,11 @@ const char * rmw_get_implementation_identifier()
 {
   EPROS_PRINT_TRACE()
   return eprosima_microxrcedds_identifier;
+}
+
+const char * rmw_get_serialization_format()
+{
+  return eprosima_microxrcedds_serialization_format;
 }
 
 rmw_ret_t rmw_init(const rmw_init_options_t * options, rmw_context_t * context)

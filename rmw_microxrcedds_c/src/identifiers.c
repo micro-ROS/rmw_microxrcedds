@@ -15,3 +15,4 @@
 #include "./identifier.h"  // NOLINT
 
 const char * const eprosima_microxrcedds_identifier = "rmw_microxrcedds";
+const char * const eprosima_microxrcedds_serialization_format = "cdr";

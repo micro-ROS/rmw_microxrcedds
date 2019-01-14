@@ -16,5 +16,6 @@
 #define IDENTIFIER_H_
 
 const char * const eprosima_microxrcedds_identifier;
+const char * const eprosima_microxrcedds_serialization_format;
 
 #endif  // IDENTIFIER_H_
