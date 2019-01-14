@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef IDENTIFIER_H_
-#define IDENTIFIER_H_
+#ifndef IDENTIFIERS_H_
+#define IDENTIFIERS_H_
 
 const char * const eprosima_microxrcedds_identifier;
+const char * const eprosima_microxrcedds_serialization_format;
 
-#endif  // IDENTIFIER_H_
+#endif  // IDENTIFIERS_H_
