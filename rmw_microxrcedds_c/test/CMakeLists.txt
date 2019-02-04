@@ -176,3 +176,33 @@ if(TARGET ${TEST_NAME})
         $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
   )
 endif()
+
+# RMW
+set(TEST_NAME "test_rmw")
+set(TEST_FILES "test_rmw.cpp")
+ament_add_gtest(${TEST_NAME}
+  ${TEST_FILES}
+)
+if(TARGET ${TEST_NAME})
+  ament_target_dependencies(
+    ${TEST_NAME}
+    ${PROJECT_NAME}
+    rmw
+  )
+
+  target_link_libraries(
+    ${TEST_NAME}
+    ${PROJECT_NAME}
+    microxrcedds_client
+    microcdr
+  )
+
+  target_include_directories(
+    ${TEST_NAME}
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/src
+        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
+  )
+endif()

@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "./rmw_microxrcedds.h"  // NOLINT
+#include "rmw_microxrcedds_c/rmw_microxrcedds.h"  // NOLINT
 
 #include <limits.h>
-#include <time.h>
 
 #include <uxr/client/client.h>
 #include <rosidl_typesupport_microxrcedds_shared/identifier.h>
@@ -41,20 +40,6 @@ const char * rmw_get_implementation_identifier()
 const char * rmw_get_serialization_format()
 {
   return eprosima_microxrcedds_serialization_format;
-}
-
-rmw_ret_t rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
-{
-  EPROS_PRINT_TRACE()
-
-  // Intialize random number generator
-  time_t t;
-  srand((unsigned)time(&t));
-
-  init_rmw_node();
-
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
 }
 
 rmw_node_t * rmw_create_node(
@@ -576,22 +561,6 @@ rmw_ret_t rmw_get_service_names_and_types(
 }
 
 rmw_ret_t
-rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t allocator)
-{
-  RMW_CHECK_ARGUMENT_FOR_NULL(init_options, RMW_RET_INVALID_ARGUMENT);
-  RCUTILS_CHECK_ALLOCATOR(&allocator, return RMW_RET_INVALID_ARGUMENT);
-  if (NULL != init_options->implementation_identifier) {
-    RMW_SET_ERROR_MSG("expected zero-initialized init_options");
-    return RMW_RET_INVALID_ARGUMENT;
-  }
-  init_options->instance_id = 0;
-  init_options->implementation_identifier = rmw_get_implementation_identifier();
-  init_options->allocator = allocator;
-  init_options->impl = NULL;
-  return RMW_RET_OK;
-}
-
-rmw_ret_t
 rmw_subscription_count_matched_publishers(
   const rmw_subscription_t * subscription,
   size_t * publisher_count)
@@ -627,39 +596,6 @@ rmw_get_subscriber_names_and_types_by_node(
 }
 
 rmw_ret_t
-rmw_shutdown(rmw_context_t * context)
-{
-  // Check
-  RCUTILS_CHECK_ARGUMENT_FOR_NULL(context, RMW_RET_INVALID_ARGUMENT);
-  if (strcmp(context->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
-    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
-  }
-
-  // Do
-  *context = rmw_get_zero_initialized_context();
-  return RMW_RET_OK;
-}
-
-rmw_ret_t
-rmw_init_options_copy(const rmw_init_options_t * src, rmw_init_options_t * dst)
-{
-  // Check
-  RMW_CHECK_ARGUMENT_FOR_NULL(src, RMW_RET_INVALID_ARGUMENT);
-  RMW_CHECK_ARGUMENT_FOR_NULL(dst, RMW_RET_INVALID_ARGUMENT);
-  if (strcmp(src->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
-    RMW_SET_ERROR_MSG("Wrong implementation");
-    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
-  } else if (NULL != dst->implementation_identifier) {
-    RMW_SET_ERROR_MSG("expected zero-initialized dst");
-    return RMW_RET_INVALID_ARGUMENT;
-  }
-
-  // Do
-  *dst = *src;
-  return RMW_RET_OK;
-}
-
-rmw_ret_t
 rmw_get_service_names_and_types_by_node(
   const rmw_node_t * node,
   rcutils_allocator_t * allocator,
@@ -669,22 +605,6 @@ rmw_get_service_names_and_types_by_node(
 {
   RMW_SET_ERROR_MSG("function not implemeted");
   return RMW_RET_ERROR;
-}
-
-rmw_ret_t
-rmw_init_options_fini(rmw_init_options_t * init_options)
-{
-  // Check
-  RMW_CHECK_ARGUMENT_FOR_NULL(init_options, RMW_RET_INVALID_ARGUMENT);
-  RCUTILS_CHECK_ALLOCATOR(&(init_options->allocator), return RMW_RET_INVALID_ARGUMENT);
-  if (strcmp(init_options->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
-    RMW_SET_ERROR_MSG("Wrong implementation");
-    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
-  }
-
-  // Do
-  *init_options = rmw_get_zero_initialized_init_options();
-  return RMW_RET_OK;
 }
 
 rmw_ret_t

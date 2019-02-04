@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
-
 #include <rmw/error_handling.h>
 #include <rmw/node_security_options.h>
 #include <rmw/rmw.h>
@@ -24,24 +22,12 @@
 #include <memory>
 
 #include "./config.h"
+#include "./rmw_base_test.hpp"
 
 #include "./test_utils.hpp"
 
-class TestNode : public ::testing::Test
+class TestNode : public RMWBaseTest
 {
-protected:
-  static void SetUpTestCase()
-  {
-    #ifndef _WIN32
-    freopen("/dev/null", "w", stderr);
-    #endif
-  }
-
-  void SetUp()
-  {
-    rmw_ret_t ret = rmw_init(NULL, NULL);
-    ASSERT_EQ(ret, RMW_RET_OK);
-  }
 };
 
 /*
@@ -51,34 +37,38 @@ TEST_F(TestNode, construction_and_destruction) {
   // Success creation
   {
     rmw_node_security_options_t security_options;
-    rmw_node_t * node = rmw_create_node(NULL, "my_node", "/ns", 0, &security_options);
+    rmw_node_t * node = rmw_create_node(&test_context, "my_node", "/ns", 0, &security_options);
     ASSERT_NE((void *)node, (void *)NULL);
     rmw_ret_t ret = rmw_destroy_node(node);
     ASSERT_EQ(ret, RMW_RET_OK);
+    ASSERT_EQ(CheckErrorState(), false);
   }
 
 
   // Unsuccess creation
   {
     rmw_node_security_options_t security_options;
-    rmw_node_t * node = rmw_create_node(NULL, "", "/ns", 0, &security_options);
+    rmw_node_t * node = rmw_create_node(&test_context, "", "/ns", 0, &security_options);
     ASSERT_EQ((void *)node, (void *)NULL);
     ASSERT_EQ(CheckErrorState(), true);
+    rcutils_reset_error();
   }
 
   // Unsuccess creation
   {
     rmw_node_security_options_t security_options;
-    rmw_node_t * node = rmw_create_node(NULL, "my_node", "", 0, &security_options);
+    rmw_node_t * node = rmw_create_node(&test_context, "my_node", "", 0, &security_options);
     ASSERT_EQ((void *)node, (void *)NULL);
+    rcutils_reset_error();
   }
 
   // Unsuccess creation
   {
     rmw_node_security_options_t security_options;
-    rmw_node_t * node = rmw_create_node(NULL, "my_node", "/ns", 0, NULL);
+    rmw_node_t * node = rmw_create_node(&test_context, "my_node", "/ns", 0, NULL);
     ASSERT_EQ((void *)node, (void *)NULL);
     ASSERT_EQ(CheckErrorState(), true);
+    rcutils_reset_error();
   }
 }
 
@@ -93,15 +83,16 @@ TEST_F(TestNode, memory_poll) {
 
   // Get all available nodes
   for (size_t i = 0; i < MAX_NODES; i++) {
-    node = rmw_create_node(NULL, "my_node", "/ns", 0, &dummy_security_options);
+    node = rmw_create_node(&test_context, "my_node", "/ns", 0, &dummy_security_options);
     ASSERT_NE((void *)node, (void *)NULL);
     nodes.push_back(node);
   }
 
   // Try to get one
-  node = rmw_create_node(NULL, "my_node", "/ns", 0, &dummy_security_options);
+  node = rmw_create_node(&test_context, "my_node", "/ns", 0, &dummy_security_options);
   ASSERT_EQ((void *)node, (void *)NULL);
   ASSERT_EQ(CheckErrorState(), true);
+  rcutils_reset_error();
 
   // Relese one
   ret = rmw_destroy_node(nodes.back());
@@ -109,7 +100,7 @@ TEST_F(TestNode, memory_poll) {
   nodes.pop_back();
 
   // Get one
-  node = rmw_create_node(NULL, "my_node", "/ns", 0, &dummy_security_options);
+  node = rmw_create_node(&test_context, "my_node", "/ns", 0, &dummy_security_options);
   ASSERT_NE((void *)node, (void *)NULL);
   nodes.push_back(node);
 

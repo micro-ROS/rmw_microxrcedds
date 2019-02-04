@@ -20,7 +20,7 @@
 #include <rosidl_typesupport_microxrcedds_shared/identifier.h>
 #include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
 
-#include "./rmw_microxrcedds.h"
+#include "rmw_microxrcedds_c/rmw_microxrcedds.h"
 #include "./rmw_node.h"
 #include "./types.h"
 #include "./utils.h"

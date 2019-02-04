@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
-
 #include <rosidl_typesupport_microxrcedds_shared/identifier.h>
 #include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
 
@@ -28,28 +26,26 @@
 #include "rmw/validate_node_name.h"
 
 #include "./config.h"
-
+#include "./rmw_base_test.hpp"
 
 #include "./test_utils.hpp"
 
-class TestPublisher : public ::testing::Test
+class TestPublisher : public RMWBaseTest
 {
 protected:
-  static void SetUpTestCase()
+  void SetUp() override
   {
-    #ifndef _WIN32
-    freopen("/dev/null", "w", stderr);
-    #endif
-  }
-
-  void SetUp()
-  {
-    rmw_ret_t ret = rmw_init(NULL, NULL);
-    ASSERT_EQ(ret, RMW_RET_OK);
+    RMWBaseTest::SetUp();
 
     rmw_node_security_options_t security_options;
-    node = rmw_create_node(NULL, "my_node", "/ns", 0, &security_options);
+    node = rmw_create_node(&test_context, "my_node", "/ns", 0, &security_options);
     ASSERT_NE((void *)node, (void *)NULL);
+  }
+
+  void TearDown() override
+  {
+    ASSERT_EQ(rmw_destroy_node(node), RMW_RET_OK);
+    RMWBaseTest::TearDown();
   }
 
   rmw_node_t * node;

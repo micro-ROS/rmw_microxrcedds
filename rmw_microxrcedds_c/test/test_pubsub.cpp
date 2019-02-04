@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
-
 #include <rosidl_typesupport_microxrcedds_shared/identifier.h>
 #include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
 
@@ -29,32 +27,16 @@
 #include "rmw/validate_namespace.h"
 #include "rmw/validate_node_name.h"
 
+#include "./rmw_base_test.hpp"
 #include "./test_utils.hpp"
 
 #define MICROXRCEDDS_PADDING sizeof(uint32_t)
 
 const char * test_parameter = "Test message XXXX";
 
-class TestSubscription : public ::testing::Test
+class TestSubscription : public RMWBaseTest
 {
 protected:
-  static void SetUpTestCase()
-  {
-    GTEST_DECLARE_bool_(break_on_failure);
-
-    #ifndef _WIN32
-    freopen("/dev/null", "w", stderr);
-    #endif
-  }
-
-  void SetUp()
-  {
-    rmw_ret_t ret = rmw_init(NULL, NULL);
-    ASSERT_EQ(ret, RMW_RET_OK);
-  }
-
-  rmw_ret_t ret;
-
   size_t id_gen = 0;
 
   const char * topic_type = "topic_type";
@@ -76,20 +58,18 @@ TEST_F(TestSubscription, publish_and_receive) {
 
   dummy_type_support.callbacks.cdr_serialize =
     [](const void * untyped_ros_message, ucdrBuffer * cdr) -> bool {
-      bool ok;
-      ok = ucdr_serialize_string(cdr, reinterpret_cast<const char *>(untyped_ros_message));
-      return ok;
+      bool ret;
+      ret = ucdr_serialize_string(cdr, reinterpret_cast<const char *>(untyped_ros_message));
+      return ret;
     };
   dummy_type_support.callbacks.cdr_deserialize =
     [](ucdrBuffer * cdr, void * untyped_ros_message, uint8_t * raw_mem_ptr,
       size_t raw_mem_size) -> bool {
       uint32_t Aux_uint32;
-      bool ok;
-
-      ok = ucdr_deserialize_string(cdr, reinterpret_cast<char *>(raw_mem_ptr), raw_mem_size);
+      bool ret;
+      ret = ucdr_deserialize_string(cdr, reinterpret_cast<char *>(raw_mem_ptr), raw_mem_size);
       *(reinterpret_cast<char **>(untyped_ros_message)) = reinterpret_cast<char *>(raw_mem_ptr);
-
-      return ok;
+      return ret;
     };
   dummy_type_support.callbacks.get_serialized_size = [](const void *) -> uint32_t {
       return MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + strlen(
@@ -128,9 +108,7 @@ TEST_F(TestSubscription, publish_and_receive) {
 
   std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
-  ret = rmw_publish(pub, test_parameter);
-  ASSERT_EQ(ret, RMW_RET_OK);
-
+  ASSERT_EQ(rmw_publish(pub, test_parameter), RMW_RET_OK);
 
   rmw_subscriptions_t subscriptions;
   rmw_guard_conditions_t * guard_conditions = NULL;
@@ -144,25 +122,24 @@ TEST_F(TestSubscription, publish_and_receive) {
 
   wait_timeout.sec = 1;
 
-  ret = rmw_wait(
-    &subscriptions,
-    guard_conditions,
-    services,
-    clients,
-    wait_set,
-    &wait_timeout
-    );
-  ASSERT_EQ(ret, RMW_RET_OK);
+  ASSERT_EQ(rmw_wait(
+      &subscriptions,
+      guard_conditions,
+      services,
+      clients,
+      wait_set,
+      &wait_timeout
+    ),
+    RMW_RET_OK);
 
   char * ReadMesg;
   bool taken;
-  ret = rmw_take_with_info(
-    sub,
-    &ReadMesg,
-    &taken,
-    NULL
-    );
-  ASSERT_EQ(ret, RMW_RET_OK);
+  ASSERT_EQ(rmw_take_with_info(
+      sub,
+      &ReadMesg,
+      &taken,
+      NULL
+    ), RMW_RET_OK);
   ASSERT_EQ(taken, true);
   ASSERT_EQ(strcmp(test_parameter, ReadMesg), 0);
 }
