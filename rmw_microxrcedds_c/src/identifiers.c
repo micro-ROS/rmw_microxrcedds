@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "./identifier.h"  // NOLINT
+#include "./identifiers.h"  // NOLINT
 
 const char * const eprosima_microxrcedds_identifier = "rmw_microxrcedds";
+const char * const eprosima_microxrcedds_serialization_format = "cdr";

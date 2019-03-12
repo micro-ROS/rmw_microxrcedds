@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "./rmw_microxrcedds.h"  // NOLINT
+#include "rmw_microxrcedds_c/rmw_microxrcedds.h"  // NOLINT
 
 #include <limits.h>
-#include <time.h>
 
 #include <uxr/client/client.h>
 #include <rosidl_typesupport_microxrcedds_shared/identifier.h>
@@ -23,7 +22,7 @@
 #include "rmw/allocators.h"
 #include "rmw/error_handling.h"
 
-#include "./identifier.h"
+#include "./identifiers.h"
 
 #include "./rmw_node.h"
 #include "./rmw_publisher.h"
@@ -38,21 +37,13 @@ const char * rmw_get_implementation_identifier()
   return eprosima_microxrcedds_identifier;
 }
 
-rmw_ret_t rmw_init()
+const char * rmw_get_serialization_format()
 {
-  EPROS_PRINT_TRACE()
-
-  // Intialize random number generator
-  time_t t;
-  srand((unsigned)time(&t));
-
-  init_rmw_node();
-
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  return eprosima_microxrcedds_serialization_format;
 }
 
 rmw_node_t * rmw_create_node(
+  rmw_context_t * context,
   const char * name, const char * namespace, size_t domain_id,
   const rmw_node_security_options_t * security_options)
 {
@@ -288,7 +279,7 @@ rmw_ret_t rmw_send_response(
   return RMW_RET_OK;
 }
 
-rmw_guard_condition_t * rmw_create_guard_condition(void)
+rmw_guard_condition_t * rmw_create_guard_condition(rmw_context_t * context)
 {
   EPROS_PRINT_TRACE()
 
@@ -483,33 +474,59 @@ rmw_ret_t rmw_wait(
   return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_get_node_names(const rmw_node_t * node, rcutils_string_array_t * node_names)
+rmw_ret_t rmw_get_node_names(
+  const rmw_node_t * node, rcutils_string_array_t * node_names,
+  rcutils_string_array_t * node_namespaces)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
 
 rmw_ret_t rmw_count_publishers(const rmw_node_t * node, const char * topic_name, size_t * count)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
 
 rmw_ret_t rmw_count_subscribers(const rmw_node_t * node, const char * topic_name, size_t * count)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
 
 rmw_ret_t rmw_get_gid_for_publisher(const rmw_publisher_t * publisher, rmw_gid_t * gid)
 {
-  EPROS_PRINT_TRACE()
+  // Check
+  RMW_CHECK_ARGUMENT_FOR_NULL(publisher, RMW_RET_INVALID_ARGUMENT);
+  RMW_CHECK_ARGUMENT_FOR_NULL(gid, RMW_RET_INVALID_ARGUMENT);
+  if (publisher->implementation_identifier != rmw_get_implementation_identifier()) {
+    RMW_SET_ERROR_MSG("publisher handle not from this implementation");
+    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
+  }
+
+  // Do
+  CustomPublisher * custom_publisher = (CustomPublisher *)publisher->data;
+  memcpy(gid, &custom_publisher->publisher_gid, sizeof(rmw_gid_t));
+
   return RMW_RET_OK;
 }
 
 rmw_ret_t rmw_compare_gids_equal(const rmw_gid_t * gid1, const rmw_gid_t * gid2, bool * result)
 {
-  EPROS_PRINT_TRACE()
+  // Check
+  RMW_CHECK_ARGUMENT_FOR_NULL(gid1, RMW_RET_INVALID_ARGUMENT);
+  RMW_CHECK_ARGUMENT_FOR_NULL(gid2, RMW_RET_INVALID_ARGUMENT);
+  if (gid1->implementation_identifier != rmw_get_implementation_identifier()) {
+    RMW_SET_ERROR_MSG("publisher handle not from this implementation");
+    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
+  } else if (gid2->implementation_identifier != rmw_get_implementation_identifier()) {
+    RMW_SET_ERROR_MSG("publisher handle not from this implementation");
+    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
+  }
+
+  *result =
+    memcmp(gid1->data, gid2->data, sizeof(rmw_gid_t)) == 0;
+
   return RMW_RET_OK;
 }
 
@@ -517,28 +534,84 @@ rmw_ret_t rmw_service_server_is_available(
   const rmw_node_t * node, const rmw_client_t * client,
   bool * is_available)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
 
 rmw_ret_t rmw_set_log_6severity(rmw_log_severity_t severity)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
 
 rmw_ret_t rmw_get_topic_names_and_types(
   const rmw_node_t * node, rcutils_allocator_t * allocator, bool no_demangle,
   rmw_names_and_types_t * topic_names_and_types)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
 
 rmw_ret_t rmw_get_service_names_and_types(
   const rmw_node_t * node, rcutils_allocator_t * allocator,
   rmw_names_and_types_t * service_names_and_types)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}
+
+rmw_ret_t
+rmw_subscription_count_matched_publishers(
+  const rmw_subscription_t * subscription,
+  size_t * publisher_count)
+{
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}
+
+rmw_ret_t
+rmw_get_publisher_names_and_types_by_node(
+  const rmw_node_t * node,
+  rcutils_allocator_t * allocator,
+  const char * node_name,
+  const char * node_namespace,
+  bool demangle,
+  rmw_names_and_types_t * topic_names_and_types)
+{
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}
+
+rmw_ret_t
+rmw_get_subscriber_names_and_types_by_node(
+  const rmw_node_t * node,
+  rcutils_allocator_t * allocator,
+  const char * node_name,
+  const char * node_namespace,
+  bool demangle,
+  rmw_names_and_types_t * topics_names_and_types)
+{
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}
+
+rmw_ret_t
+rmw_get_service_names_and_types_by_node(
+  const rmw_node_t * node,
+  rcutils_allocator_t * allocator,
+  const char * node_name,
+  const char * node_namespace,
+  rmw_names_and_types_t * service_names_and_types)
+{
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}
+
+rmw_ret_t
+rmw_publisher_count_matched_subscriptions(
+  const rmw_publisher_t * publisher,
+  size_t * subscription_count)
+{
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }

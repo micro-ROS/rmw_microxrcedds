@@ -12,22 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMW_MICROXRCEDDS_H_
-#define RMW_MICROXRCEDDS_H_
+#ifndef RMW_MICROXRCEDDS_C__RMW_MICROXRCEDDS_H_
+#define RMW_MICROXRCEDDS_C__RMW_MICROXRCEDDS_H_
 
+#include "rmw/get_node_info_and_types.h"
+#include "rmw/get_service_names_and_types.h"
+#include "rmw/get_topic_names_and_types.h"
 #include "rmw/names_and_types.h"
 #include "rmw/rmw.h"
-#include "rmw/get_topic_names_and_types.h"
-#include "rmw/get_service_names_and_types.h"
 
 const char * rmw_get_implementation_identifier(void);
 
-// How do we pass transport to use?.
-rmw_ret_t rmw_init(void);
-
 rmw_node_t * rmw_create_node(
+  rmw_context_t * context,
   const char * name,
-  const char * namespace,
+  const char * node_namespace,
   size_t domain_id,
   const rmw_node_security_options_t * security_options);
 
@@ -138,7 +137,7 @@ rmw_ret_t rmw_send_response(
   rmw_request_id_t * request_header,
   void * ros_response);
 
-rmw_guard_condition_t * rmw_create_guard_condition(void);
+rmw_guard_condition_t * rmw_create_guard_condition(rmw_context_t * context);
 
 rmw_ret_t rmw_destroy_guard_condition(rmw_guard_condition_t * guard_condition);
 
@@ -158,7 +157,8 @@ rmw_ret_t rmw_wait(
 
 rmw_ret_t rmw_get_node_names(
   const rmw_node_t * node,
-  rcutils_string_array_t * node_names);
+  rcutils_string_array_t * node_names,
+  rcutils_string_array_t * node_namespaces);
 
 rmw_ret_t rmw_count_publishers(
   const rmw_node_t * node,
@@ -197,4 +197,41 @@ rmw_ret_t rmw_get_service_names_and_types(
   rcutils_allocator_t * allocator,
   rmw_names_and_types_t * service_names_and_types);
 
-#endif  // RMW_MICROXRCEDDS_H_
+rmw_ret_t
+rmw_subscription_count_matched_publishers(
+  const rmw_subscription_t * subscription,
+  size_t * publisher_count);
+
+rmw_ret_t
+rmw_get_publisher_names_and_types_by_node(
+  const rmw_node_t * node,
+  rcutils_allocator_t * allocator,
+  const char * node_name,
+  const char * node_namespace,
+  bool demangle,
+  rmw_names_and_types_t * topic_names_and_types);
+
+rmw_ret_t
+rmw_get_subscriber_names_and_types_by_node(
+  const rmw_node_t * node,
+  rcutils_allocator_t * allocator,
+  const char * node_name,
+  const char * node_namespace,
+  bool demangle,
+  rmw_names_and_types_t * topics_names_and_types);
+
+RMW_PUBLIC
+rmw_ret_t
+rmw_get_service_names_and_types_by_node(
+  const rmw_node_t * node,
+  rcutils_allocator_t * allocator,
+  const char * node_name,
+  const char * node_namespace,
+  rmw_names_and_types_t * service_names_and_types);
+
+rmw_ret_t
+rmw_publisher_count_matched_subscriptions(
+  const rmw_publisher_t * publisher,
+  size_t * subscription_count);
+
+#endif  // RMW_MICROXRCEDDS_C__RMW_MICROXRCEDDS_H_
