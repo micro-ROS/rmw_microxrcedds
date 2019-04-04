@@ -1,0 +1,84 @@
+image:
+    microros/linux
+    
+stages:
+  - prepare
+  - build
+  - test
+
+
+.getrepo_template: &getrepo_template
+  stage: prepare
+  script:
+    - (if [ "$CI_COMMIT_REF_NAME" == "master" ]; then curl -L "https://raw.githubusercontent.com/microROS/micro-ROS-doc/master/client_minimum.repos" -o client.repos ; else curl -L "https://raw.githubusercontent.com/microROS/micro-ROS-doc/develop/Installation/repos/client_minimum.repos" -o client.repos; fi);
+    - mkdir ./repos
+    - vcs import ./repos < client.repos
+  variables:
+    GIT_STRATEGY: none
+ 
+getrepo:
+  <<: *getrepo_template
+  artifacts:
+    paths:
+      - repos/
+
+getrepo_local:
+  <<: *getrepo_template
+  only:
+    - external 
+  artifacts:
+  cache: &job_artifact
+    key: repos
+    paths:
+      - repos/
+
+.build_template: &build_template
+  stage: build
+  script:
+    - cd repos/uros/rmw_microxrcedds
+    - git checkout $CI_COMMIT_REF_NAME
+    - cd ../../
+    - colcon build
+  variables:
+    GIT_STRATEGY: none
+
+build:
+  <<: *build_template
+  dependencies:
+    - getrepo
+  artifacts:
+    paths:
+      - repos/
+ 
+build_local:
+  <<: *build_template
+  only:
+    - external
+  dependencies:
+    - getrepo_local
+  cache: *job_artifact
+  cache: &job_artifact
+    key: repos
+    paths:
+      - repos/
+
+.test_template: &test_template
+  stage: test
+  script:
+    - cd repos
+    - colcon test --packages-select rclc
+  variables:
+    GIT_STRATEGY: none
+
+test:
+  <<: *test_template
+  dependencies:
+    - build 
+
+test_local:
+  <<: *test_template
+  cache: *job_artifact
+  only:
+    - external 
+  dependencies:
+    - build_local
