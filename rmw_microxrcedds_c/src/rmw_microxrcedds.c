@@ -465,23 +465,6 @@ rmw_ret_t rmw_get_node_names(
   return RMW_RET_ERROR;
 }
 
-rmw_ret_t rmw_get_gid_for_publisher(const rmw_publisher_t * publisher, rmw_gid_t * gid)
-{
-  // Check
-  RMW_CHECK_ARGUMENT_FOR_NULL(publisher, RMW_RET_INVALID_ARGUMENT);
-  RMW_CHECK_ARGUMENT_FOR_NULL(gid, RMW_RET_INVALID_ARGUMENT);
-  if (publisher->implementation_identifier != rmw_get_implementation_identifier()) {
-    RMW_SET_ERROR_MSG("publisher handle not from this implementation");
-    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
-  }
-
-  // Do
-  CustomPublisher * custom_publisher = (CustomPublisher *)publisher->data;
-  memcpy(gid, &custom_publisher->publisher_gid, sizeof(rmw_gid_t));
-
-  return RMW_RET_OK;
-}
-
 rmw_ret_t rmw_service_server_is_available(
   const rmw_node_t * node, const rmw_client_t * client,
   bool * is_available)
