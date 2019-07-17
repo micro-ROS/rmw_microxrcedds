@@ -251,25 +251,6 @@ rmw_ret_t rmw_send_response(
   return RMW_RET_OK;
 }
 
-rmw_guard_condition_t * rmw_create_guard_condition(rmw_context_t * context)
-{
-  EPROS_PRINT_TRACE()
-
-  rmw_guard_condition_t * rmw_guard_condition = (rmw_guard_condition_t *)rmw_allocate(
-    sizeof(rmw_guard_condition_t));
-
-  return rmw_guard_condition;
-}
-
-rmw_ret_t rmw_destroy_guard_condition(rmw_guard_condition_t * guard_condition)
-{
-  EPROS_PRINT_TRACE()
-
-  rmw_free(guard_condition);
-
-  return RMW_RET_OK;
-}
-
 rmw_ret_t rmw_trigger_guard_condition(const rmw_guard_condition_t * guard_condition)
 {
   EPROS_PRINT_TRACE()
