@@ -208,23 +208,6 @@ rmw_ret_t rmw_take_serialized_message_with_info(
   return RMW_RET_OK;
 }
 
-rmw_client_t * rmw_create_client(
-  const rmw_node_t * node, const rosidl_service_type_support_t * type_support,
-  const char * service_name, const rmw_qos_profile_t * qos_policies)
-{
-  EPROS_PRINT_TRACE()
-
-  rmw_client_t * rmw_client = (rmw_client_t *)rmw_allocate(
-    sizeof(rmw_client_t));
-  return rmw_client;
-}
-
-rmw_ret_t rmw_destroy_client(rmw_node_t * node, rmw_client_t * client)
-{
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
-}
-
 rmw_ret_t rmw_send_request(
   const rmw_client_t * client, const void * ros_request,
   int64_t * sequence_id)
