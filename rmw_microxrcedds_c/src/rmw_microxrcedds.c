@@ -54,33 +54,6 @@ rmw_ret_t rmw_deserialize(
   return RMW_RET_OK;
 }
 
-rmw_subscription_t * rmw_create_subscription(
-  const rmw_node_t * node, const rosidl_message_type_support_t * type_support,
-  const char * topic_name, const rmw_qos_profile_t * qos_policies,
-  bool ignore_local_publications)
-{
-  EPROS_PRINT_TRACE()
-  rmw_subscription_t * rmw_subscription = NULL;
-  if (!node) {
-    RMW_SET_ERROR_MSG("node handle is null");
-  } else if (!type_support) {
-    RMW_SET_ERROR_MSG("type support is null");
-  } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
-    RMW_SET_ERROR_MSG("node handle not from this implementation");
-  } else if (!topic_name || strlen(topic_name) == 0) {
-    RMW_SET_ERROR_MSG("subscription topic is null or empty string");
-    return NULL;
-  } else if (!qos_policies) {
-    RMW_SET_ERROR_MSG("qos_profile is null");
-    return NULL;
-  } else {
-    rmw_subscription = create_subscriber(node, type_support, topic_name, qos_policies,
-        ignore_local_publications);
-  }
-
-  return rmw_subscription;
-}
-
 rmw_ret_t rmw_take(const rmw_subscription_t * subscription, void * ros_message, bool * taken)
 {
   return rmw_take_with_info(subscription, ros_message, taken, NULL);
@@ -398,12 +371,4 @@ rmw_ret_t rmw_get_service_names_and_types(
   return RMW_RET_ERROR;
 }
 
-rmw_ret_t
-rmw_subscription_count_matched_publishers(
-  const rmw_subscription_t * subscription,
-  size_t * publisher_count)
-{
-  RMW_SET_ERROR_MSG("function not implemeted");
-  return RMW_RET_ERROR;
-}
 
