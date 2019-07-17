@@ -438,44 +438,6 @@ rmw_subscription_count_matched_publishers(
 }
 
 rmw_ret_t
-rmw_get_publisher_names_and_types_by_node(
-  const rmw_node_t * node,
-  rcutils_allocator_t * allocator,
-  const char * node_name,
-  const char * node_namespace,
-  bool demangle,
-  rmw_names_and_types_t * topic_names_and_types)
-{
-  RMW_SET_ERROR_MSG("function not implemeted");
-  return RMW_RET_ERROR;
-}
-
-rmw_ret_t
-rmw_get_subscriber_names_and_types_by_node(
-  const rmw_node_t * node,
-  rcutils_allocator_t * allocator,
-  const char * node_name,
-  const char * node_namespace,
-  bool demangle,
-  rmw_names_and_types_t * topics_names_and_types)
-{
-  RMW_SET_ERROR_MSG("function not implemeted");
-  return RMW_RET_ERROR;
-}
-
-rmw_ret_t
-rmw_get_service_names_and_types_by_node(
-  const rmw_node_t * node,
-  rcutils_allocator_t * allocator,
-  const char * node_name,
-  const char * node_namespace,
-  rmw_names_and_types_t * service_names_and_types)
-{
-  RMW_SET_ERROR_MSG("function not implemeted");
-  return RMW_RET_ERROR;
-}
-
-rmw_ret_t
 rmw_publisher_count_matched_subscriptions(
   const rmw_publisher_t * publisher,
   size_t * subscription_count)
