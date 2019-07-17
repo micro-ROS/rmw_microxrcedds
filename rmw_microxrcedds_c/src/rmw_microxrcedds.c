@@ -396,14 +396,6 @@ rmw_ret_t rmw_wait(
   return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_get_node_names(
-  const rmw_node_t * node, rcutils_string_array_t * node_names,
-  rcutils_string_array_t * node_namespaces)
-{
-  RMW_SET_ERROR_MSG("function not implemeted");
-  return RMW_RET_ERROR;
-}
-
 rmw_ret_t rmw_service_server_is_available(
   const rmw_node_t * node, const rmw_client_t * client,
   bool * is_available)
