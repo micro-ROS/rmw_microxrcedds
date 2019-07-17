@@ -31,11 +31,6 @@
 #include "./utils.h"
 
 
-const char * rmw_get_serialization_format()
-{
-  return eprosima_microxrcedds_serialization_format;
-}
-
 rmw_node_t * rmw_create_node(
   rmw_context_t * context,
   const char * name, const char * namespace, size_t domain_id,
