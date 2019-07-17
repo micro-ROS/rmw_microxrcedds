@@ -38,22 +38,6 @@ rmw_ret_t rmw_publish_serialized_message(
   return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_serialize(
-  const void * ros_message, const rosidl_message_type_support_t * type_support,
-  rmw_serialized_message_t * serialized_message)
-{
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
-}
-
-rmw_ret_t rmw_deserialize(
-  const rmw_serialized_message_t * serialized_message,
-  const rosidl_message_type_support_t * type_support, void * ros_message)
-{
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
-}
-
 rmw_ret_t rmw_take(const rmw_subscription_t * subscription, void * ros_message, bool * taken)
 {
   return rmw_take_with_info(subscription, ros_message, taken, NULL);
