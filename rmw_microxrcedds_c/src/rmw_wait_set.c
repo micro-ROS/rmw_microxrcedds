@@ -1,4 +1,4 @@
-// Copyright 2018 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2019 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,20 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rmw_microxrcedds_c/rmw_microxrcedds.h"  // NOLINT
+#include "utils.h"
 
-#include <limits.h>
+#include <rmw/rmw.h>
+#include <rmw/error_handling.h>
+#include <rmw/allocators.h>
 
-#include <uxr/client/client.h>
-#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
+rmw_wait_set_t *
+rmw_create_wait_set(size_t max_conditions)
+{
+  EPROS_PRINT_TRACE()
 
-#include "rmw/allocators.h"
-#include "rmw/error_handling.h"
+  rmw_wait_set_t * rmw_wait_set = (rmw_wait_set_t *)rmw_allocate(
+    sizeof(rmw_wait_set_t));
 
-#include "./identifiers.h"
+  return rmw_wait_set;
+}
 
-#include "./rmw_node.h"
-#include "./rmw_publisher.h"
-#include "./rmw_subscriber.h"
-#include "./types.h"
-#include "./utils.h"
+rmw_ret_t
+rmw_destroy_wait_set(rmw_wait_set_t * wait_set)
+{
+  EPROS_PRINT_TRACE()
+
+  rmw_free(wait_set);
+
+  return RMW_RET_OK;
+}
