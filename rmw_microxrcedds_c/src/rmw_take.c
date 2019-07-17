@@ -23,7 +23,7 @@ rmw_take(
   void * ros_message,
   bool * taken)
 {
-  return rmw_take_with_info(subscription, ros_message, taken, NULL);
+  return rmw_take_with_info(subscription, ros_message, taken, NULL, NULL);
 }
 
 rmw_ret_t
@@ -31,11 +31,13 @@ rmw_take_with_info(
   const rmw_subscription_t * subscription,
   void * ros_message,
   bool * taken,
-  rmw_message_info_t * message_info)
+  rmw_message_info_t * message_info,
+  rmw_subscription_allocation_t * allocation)
 {
   EPROS_PRINT_TRACE()
   // Not used variables
-    (void) message_info;
+  (void) message_info;
+  (void) allocation;
 
   // Preconfigure taken
   if (taken != NULL) {
