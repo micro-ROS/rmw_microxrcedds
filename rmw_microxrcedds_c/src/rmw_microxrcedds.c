@@ -117,14 +117,6 @@ rmw_ret_t rmw_take_serialized_message_with_info(
   return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_take_response(
-  const rmw_client_t * client, rmw_request_id_t * request_header, void * ros_response,
-  bool * taken)
-{
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
-}
-
 rmw_service_t * rmw_create_service(
   const rmw_node_t * node, const rosidl_service_type_support_t * type_support,
   const char * service_name, const rmw_qos_profile_t * qos_policies)
@@ -144,14 +136,6 @@ rmw_ret_t rmw_destroy_service(rmw_node_t * node, rmw_service_t * service)
 
   rmw_free(service);
 
-  return RMW_RET_OK;
-}
-
-rmw_ret_t rmw_send_response(
-  const rmw_service_t * service, rmw_request_id_t * request_header,
-  void * ros_response)
-{
-  EPROS_PRINT_TRACE()
   return RMW_RET_OK;
 }
 
