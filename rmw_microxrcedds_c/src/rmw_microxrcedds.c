@@ -465,18 +465,6 @@ rmw_ret_t rmw_get_node_names(
   return RMW_RET_ERROR;
 }
 
-rmw_ret_t rmw_count_publishers(const rmw_node_t * node, const char * topic_name, size_t * count)
-{
-  RMW_SET_ERROR_MSG("function not implemeted");
-  return RMW_RET_ERROR;
-}
-
-rmw_ret_t rmw_count_subscribers(const rmw_node_t * node, const char * topic_name, size_t * count)
-{
-  RMW_SET_ERROR_MSG("function not implemeted");
-  return RMW_RET_ERROR;
-}
-
 rmw_ret_t rmw_get_gid_for_publisher(const rmw_publisher_t * publisher, rmw_gid_t * gid)
 {
   // Check

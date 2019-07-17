@@ -12,29 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "utils.h"
-
 #include <rmw/rmw.h>
-#include <rmw/allocators.h>
+#include <rmw/error_handling.h>
 
-rmw_client_t *
-rmw_create_client(
+rmw_ret_t
+rmw_count_publishers(
   const rmw_node_t * node,
-  const rosidl_service_type_support_t * type_support,
-  const char * service_name,
-  const rmw_qos_profile_t * qos_policies)
+  const char * topic_name,
+  size_t * count)
 {
-  EPROS_PRINT_TRACE()
-  rmw_client_t * rmw_client = (rmw_client_t *)rmw_allocate(
-    sizeof(rmw_client_t));
-  return rmw_client;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
 
 rmw_ret_t
-rmw_destroy_client(
-  rmw_node_t * node,
-  rmw_client_t * client)
+rmw_count_subscribers(
+  const rmw_node_t * node,
+  const char * topic_name,
+  size_t * count)
 {
-  EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }
