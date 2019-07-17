@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "./rmw_node.h"  // NOLINT
+#include "rmw_node.h"  // NOLINT
+#include "types.h"
+#include "utils.h"
+#include "identifiers.h"
 
 #ifdef MICRO_XRCEDDS_SERIAL
 #include <fcntl.h>  // O_RDWR, O_NOCTTY, O_NONBLOCK
@@ -22,9 +25,6 @@
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
-
-#include "./types.h"
-#include "./utils.h"
 
 
 #ifdef MICRO_XRCEDDS_SERIAL
@@ -277,6 +277,29 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   return node_handle;
 }
 
+rmw_node_t *
+rmw_create_node(
+  rmw_context_t * context,
+  const char * name,
+  const char * namespace,
+  size_t domain_id,
+  const rmw_node_security_options_t * security_options)
+{
+  (void) context;
+  EPROS_PRINT_TRACE()
+  rmw_node_t * rmw_node = NULL;
+  if (!name || strlen(name) == 0) {
+    RMW_SET_ERROR_MSG("name is null");
+  } else if (!namespace || strlen(namespace) == 0) {
+    RMW_SET_ERROR_MSG("node handle not from this implementation");
+  } else if (!security_options) {
+    RMW_SET_ERROR_MSG("security_options is null");
+  } else {
+    rmw_node = create_node(name, namespace, domain_id);
+  }
+  return rmw_node;
+}
+
 rmw_ret_t rmw_destroy_node(rmw_node_t * node)
 {
   EPROS_PRINT_TRACE()
@@ -299,3 +322,24 @@ rmw_ret_t rmw_destroy_node(rmw_node_t * node)
   clear_node(node);
   return result_ret;
 }
+
+rmw_ret_t
+rmw_node_assert_liveliness(const rmw_node_t * node)
+{
+  (void) node;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}
+
+const rmw_guard_condition_t *
+rmw_node_get_graph_guard_condition(const rmw_node_t * node)
+{
+  (void)node;
+  EPROS_PRINT_TRACE()
+  rmw_guard_condition_t *
+  ret = (rmw_guard_condition_t *)rmw_allocate(sizeof(rmw_guard_condition_t));
+  ret->data = NULL;
+  ret->implementation_identifier = eprosima_microxrcedds_identifier;
+  return ret;
+}
+
