@@ -30,28 +30,6 @@
 #include "./types.h"
 #include "./utils.h"
 
-rmw_publisher_t * rmw_create_publisher(
-  const rmw_node_t * node, const rosidl_message_type_support_t * type_support,
-  const char * topic_name, const rmw_qos_profile_t * qos_policies)
-{
-  EPROS_PRINT_TRACE()
-  rmw_publisher_t * rmw_publisher = NULL;
-  if (!node) {
-    RMW_SET_ERROR_MSG("node handle is null");
-  } else if (!type_support) {
-    RMW_SET_ERROR_MSG("type support is null");
-  } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
-    RMW_SET_ERROR_MSG("node handle not from this implementation");
-  } else if (!topic_name || strlen(topic_name) == 0) {
-    RMW_SET_ERROR_MSG("publisher topic is null or empty string");
-  } else if (!qos_policies) {
-    RMW_SET_ERROR_MSG("qos_profile is null");
-  } else {
-    rmw_publisher = create_publisher(node, type_support, topic_name, qos_policies);
-  }
-  return rmw_publisher;
-}
-
 rmw_ret_t rmw_publish_serialized_message(
   const rmw_publisher_t * publisher,
   const rmw_serialized_message_t * serialized_message)
@@ -429,11 +407,3 @@ rmw_subscription_count_matched_publishers(
   return RMW_RET_ERROR;
 }
 
-rmw_ret_t
-rmw_publisher_count_matched_subscriptions(
-  const rmw_publisher_t * publisher,
-  size_t * subscription_count)
-{
-  RMW_SET_ERROR_MSG("function not implemeted");
-  return RMW_RET_ERROR;
-}

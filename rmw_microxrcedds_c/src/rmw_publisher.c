@@ -159,7 +159,87 @@ create_publisher_end:
   return rmw_publisher;
 }
 
-rmw_ret_t rmw_destroy_publisher(rmw_node_t * node, rmw_publisher_t * publisher)
+rmw_ret_t
+rmw_init_publisher_allocation(
+  const rosidl_message_type_support_t * type_support,
+  const rosidl_message_bounds_t * message_bounds,
+  rmw_publisher_allocation_t * allocation)
+{
+  (void) type_support;
+  (void) message_bounds;
+  (void) allocation;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}
+
+rmw_ret_t
+rmw_fini_publisher_allocation(
+  rmw_publisher_allocation_t * allocation)
+{
+  (void) allocation;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}
+
+rmw_publisher_t *
+rmw_create_publisher(
+  const rmw_node_t * node,
+  const rosidl_message_type_support_t * type_support,
+  const char * topic_name,
+  const rmw_qos_profile_t * qos_policies)
+{
+  EPROS_PRINT_TRACE()
+  rmw_publisher_t * rmw_publisher = NULL;
+  if (!node) {
+    RMW_SET_ERROR_MSG("node handle is null");
+  } else if (!type_support) {
+    RMW_SET_ERROR_MSG("type support is null");
+  } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+    RMW_SET_ERROR_MSG("node handle not from this implementation");
+  } else if (!topic_name || strlen(topic_name) == 0) {
+    RMW_SET_ERROR_MSG("publisher topic is null or empty string");
+  } else if (!qos_policies) {
+    RMW_SET_ERROR_MSG("qos_profile is null");
+  } else {
+    rmw_publisher = create_publisher(node, type_support, topic_name, qos_policies);
+  }
+  return rmw_publisher;
+}
+
+rmw_ret_t
+rmw_publisher_count_matched_subscriptions(
+  const rmw_publisher_t * publisher,
+  size_t * subscription_count)
+{
+  (void) publisher;
+  (void) subscription_count;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}
+
+rmw_ret_t
+rmw_publisher_assert_liveliness(const rmw_publisher_t * publisher)
+{
+  (void) publisher;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}
+
+rmw_ret_t
+rmw_publisher_get_actual_qos(
+  const rmw_publisher_t * publisher,
+  rmw_qos_profile_t * qos)
+{
+  (void) publisher;
+  (void) qos;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}
+
+rmw_ret_t
+rmw_destroy_publisher(
+  rmw_node_t * node,
+  rmw_publisher_t * publisher)
 {
   EPROS_PRINT_TRACE()
   rmw_ret_t result_ret = RMW_RET_OK;
