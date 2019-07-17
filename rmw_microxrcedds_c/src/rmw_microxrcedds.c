@@ -30,37 +30,6 @@
 #include "./types.h"
 #include "./utils.h"
 
-
-rmw_node_t * rmw_create_node(
-  rmw_context_t * context,
-  const char * name, const char * namespace, size_t domain_id,
-  const rmw_node_security_options_t * security_options)
-{
-  EPROS_PRINT_TRACE()
-  rmw_node_t * rmw_node = NULL;
-  if (!name || strlen(name) == 0) {
-    RMW_SET_ERROR_MSG("name is null");
-  } else if (!namespace || strlen(namespace) == 0) {
-    RMW_SET_ERROR_MSG("node handle not from this implementation");
-  } else if (!security_options) {
-    RMW_SET_ERROR_MSG("security_options is null");
-  } else {
-    rmw_node = create_node(name, namespace, domain_id);
-  }
-  return rmw_node;
-}
-
-const rmw_guard_condition_t * rmw_node_get_graph_guard_condition(const rmw_node_t * node)
-{
-  (void)node;
-  EPROS_PRINT_TRACE()
-  rmw_guard_condition_t *
-  ret = (rmw_guard_condition_t *)rmw_allocate(sizeof(rmw_guard_condition_t));
-  ret->data = NULL;
-  ret->implementation_identifier = eprosima_microxrcedds_identifier;
-  return ret;
-}
-
 rmw_publisher_t * rmw_create_publisher(
   const rmw_node_t * node, const rosidl_message_type_support_t * type_support,
   const char * topic_name, const rmw_qos_profile_t * qos_policies)
