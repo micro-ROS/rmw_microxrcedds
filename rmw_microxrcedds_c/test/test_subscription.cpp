@@ -38,7 +38,7 @@ protected:
 
     rmw_node_security_options_t security_options;
     node = rmw_create_node(&test_context, "my_node", "/ns", 0, &security_options);
-    ASSERT_NE((void *)node, (void *)NULL);
+    ASSERT_NE(node, nullptr);
   }
 
   void TearDown() override
@@ -79,7 +79,7 @@ TEST_F(TestSubscription, construction_and_destruction) {
     topic_name,
     &dummy_qos_policies,
     ignore_local_publications);
-  ASSERT_NE((void *)sub, (void *)NULL);
+  ASSERT_NE(sub, nullptr);
 
   rmw_ret_t ret = rmw_destroy_subscription(this->node, sub);
   ASSERT_EQ(ret, RMW_RET_OK);
@@ -117,7 +117,7 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
         dummy_type_supports.back().topic_name.data(),
         &dummy_qos_policies,
         ignore_local_publications);
-      ASSERT_NE((void *)subscription, (void *)NULL);
+      ASSERT_NE(subscription, nullptr);
       subscriptions.push_back(subscription);
     }
   }
@@ -138,7 +138,7 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
       dummy_type_supports.back().topic_name.data(),
       &dummy_qos_policies,
       ignore_local_publications);
-    ASSERT_EQ((void *)subscription, (void *)NULL);
+    ASSERT_EQ(subscription, nullptr);
     ASSERT_EQ(CheckErrorState(), true);
   }
 
@@ -167,7 +167,7 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
       dummy_type_supports.back().topic_name.data(),
       &dummy_qos_policies,
       ignore_local_publications);
-    ASSERT_NE((void *)subscription, (void *)NULL);
+    ASSERT_NE(subscription, nullptr);
     subscriptions.push_back(subscription);
   }
 
@@ -215,7 +215,7 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
         dummy_type_support.topic_name.data(),
         &dummy_qos_policies,
         ignore_local_publications);
-      ASSERT_NE((void *)subscription, (void *)NULL);
+      ASSERT_NE(subscription, nullptr);
       subscriptions.push_back(subscription);
     }
   }
@@ -229,7 +229,7 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
       dummy_type_support.topic_name.data(),
       &dummy_qos_policies,
       ignore_local_publications);
-    ASSERT_EQ((void *)subscription, (void *)NULL);
+    ASSERT_EQ(subscription, nullptr);
     ASSERT_EQ(CheckErrorState(), true);
   }
 
@@ -251,7 +251,7 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
       dummy_type_support.topic_name.data(),
       &dummy_qos_policies,
       ignore_local_publications);
-    ASSERT_NE((void *)subscription, (void *)NULL);
+    ASSERT_NE(subscription, nullptr);
     subscriptions.push_back(subscription);
   }
 
