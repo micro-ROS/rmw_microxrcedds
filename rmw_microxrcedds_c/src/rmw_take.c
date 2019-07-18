@@ -21,9 +21,10 @@ rmw_ret_t
 rmw_take(
   const rmw_subscription_t * subscription,
   void * ros_message,
-  bool * taken)
+  bool * taken,
+  rmw_subscription_allocation_t * allocation)
 {
-  return rmw_take_with_info(subscription, ros_message, taken, NULL, NULL);
+  return rmw_take_with_info(subscription, ros_message, taken, NULL, allocation);
 }
 
 rmw_ret_t
@@ -75,10 +76,13 @@ rmw_ret_t
 rmw_take_serialized_message(
   const rmw_subscription_t * subscription,
   rmw_serialized_message_t * serialized_message,
-  bool * taken)
+  bool * taken,
+  rmw_subscription_allocation_t * allocation)
 {
   (void) subscription;
   (void) serialized_message;
+  (void) taken;
+  (void) allocation;
   RMW_SET_ERROR_MSG("function not implemeted");
   return RMW_RET_ERROR;
 }
@@ -88,12 +92,14 @@ rmw_take_serialized_message_with_info(
   const rmw_subscription_t * subscription,
   rmw_serialized_message_t * serialized_message,
   bool * taken,
-  rmw_message_info_t * message_info)
+  rmw_message_info_t * message_info,
+  rmw_subscription_allocation_t * allocation)
 {
   (void) subscription;
   (void) serialized_message;
   (void) taken;
   (void) message_info;
+  (void) allocation;
   RMW_SET_ERROR_MSG("function not implemeted");
   return RMW_RET_ERROR;
 }

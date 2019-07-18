@@ -15,6 +15,9 @@
 #include "utils.h"
 
 #include <rmw/rmw.h>
+#include <rmw/error_handling.h>
+
+#include <limits.h>
 
 rmw_ret_t
 rmw_wait(
@@ -22,12 +25,13 @@ rmw_wait(
   rmw_guard_conditions_t * guard_conditions,
   rmw_services_t * services,
   rmw_clients_t * clients,
+  rmw_events_t * events,
   rmw_wait_set_t * wait_set,
   const rmw_time_t * wait_timeout)
 {
+  (void) events;
+  (void) wait_set;
   EPROS_PRINT_TRACE()
-  // Wait set is not used
-    (void) wait_set;
 
   // for Subscription requests and response
   uint16_t subscription_request[MAX_SUBSCRIPTIONS_X_NODE];

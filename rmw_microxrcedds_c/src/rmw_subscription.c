@@ -13,10 +13,13 @@
 // limitations under the License.
 
 #include "utils.h"
+#include "rmw_microxrcedds_topic.h"
+#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
 
 #include <rmw/rmw.h>
 #include <rmw/error_handling.h>
 #include <rmw/types.h>
+#include <rmw/allocators.h>
 
 rmw_ret_t
 rmw_init_subscription_allocation(
@@ -39,7 +42,8 @@ rmw_fini_subscription_allocation(rmw_subscription_allocation_t * allocation)
   return RMW_RET_ERROR;
 }
 
-rmw_subscription_t * rmw_create_subscription(
+rmw_subscription_t *
+rmw_create_subscription(
   const rmw_node_t * node,
   const rosidl_message_type_support_t * type_support,
   const char * topic_name,
@@ -61,10 +65,139 @@ rmw_subscription_t * rmw_create_subscription(
     RMW_SET_ERROR_MSG("qos_profile is null");
     return NULL;
   } else {
-    rmw_subscription = create_subscriber(node, type_support, topic_name, qos_policies,
-        ignore_local_publications);
-  }
 
+    (void)qos_policies;
+    (void)ignore_local_publications;
+
+    rmw_subscription_t * rmw_subscription = (rmw_subscription_t *)rmw_allocate(
+      sizeof(rmw_subscription_t));
+    rmw_subscription->data = NULL;
+    rmw_subscription->implementation_identifier = rmw_get_implementation_identifier();
+    rmw_subscription->topic_name = (const char *)(rmw_allocate(sizeof(char) * strlen(topic_name) + 1));
+    if (!rmw_subscription->topic_name) {
+      RMW_SET_ERROR_MSG("failed to allocate memory");
+      goto fail;
+    }
+
+    CustomNode * custom_node = (CustomNode *)node->data;
+    struct Item * memory_node = get_memory(&custom_node->subscription_mem);
+    if (!memory_node) {
+      RMW_SET_ERROR_MSG("Not available memory node");
+      goto fail;
+    }
+
+    // TODO(Borja) micro_xrcedds_id is duplicated in subscriber_id and in subscription_gid.data
+    CustomSubscription * custom_subscription = (CustomSubscription *)memory_node->data;
+    custom_subscription->owner_node = custom_node;
+    custom_subscription->subscription_gid.implementation_identifier =
+      rmw_get_implementation_identifier();
+    custom_subscription->session = &custom_node->session;
+    custom_subscription->waiting_for_response = false;
+    custom_subscription->micro_buffer_in_use = false;
+
+
+    const rosidl_message_type_support_t * type_support_xrce = get_message_typesupport_handle(
+      type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
+    if (!type_support_xrce) {
+      type_support_xrce = get_message_typesupport_handle(
+        type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
+      if (!type_support_xrce) {
+        RMW_SET_ERROR_MSG("type support not from this implementation");
+        goto fail;
+      }
+    }
+
+    custom_subscription->type_support_callbacks =
+      (const message_type_support_callbacks_t *)type_support_xrce->data;
+
+    if (custom_subscription->type_support_callbacks == NULL) {
+      RMW_SET_ERROR_MSG("type support data is NULL");
+      goto fail;
+    } else if (sizeof(uxrObjectId) > RMW_GID_STORAGE_SIZE) {
+      RMW_SET_ERROR_MSG("Not enough memory for impl ids");
+      goto fail;
+    }
+
+    memset(custom_subscription->subscription_gid.data, 0, RMW_GID_STORAGE_SIZE);
+    memcpy(custom_subscription->subscription_gid.data, &custom_subscription->subscriber_id,
+      sizeof(uxrObjectId));
+
+
+    custom_subscription->topic = create_topic(custom_node, topic_name,
+        custom_subscription->type_support_callbacks, qos_policies);
+    if (custom_subscription->topic == NULL) {
+      goto fail;
+    }
+
+#ifdef MICRO_XRCEDDS_USE_XML
+    char xml_buffer[400];
+#elif defined(MICRO_XRCEDDS_USE_REFS)
+    char profile_name[64];
+#endif
+
+    custom_subscription->subscriber_id = uxr_object_id(custom_node->id_gen++, UXR_SUBSCRIBER_ID);
+    uint16_t subscriber_req;
+#ifdef MICRO_XRCEDDS_USE_XML
+    char subscriber_name[20];
+    generate_name(&custom_subscription->subscriber_id, subscriber_name, sizeof(subscriber_name));
+    if (!build_subscriber_xml(subscriber_name, xml_buffer, sizeof(xml_buffer))) {
+      RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
+      goto fail;
+    }
+    subscriber_req = uxr_buffer_create_subscriber_xml(&custom_node->session,
+        custom_node->reliable_output, custom_subscription->subscriber_id,
+        custom_node->participant_id, xml_buffer, UXR_REPLACE);
+#elif defined(MICRO_XRCEDDS_USE_REFS)
+    // TODO(BORJA)  Publisher by reference does not make sense in
+    //              current micro XRCE-DDS implementation.
+    subscriber_req = uxr_buffer_create_subscriber_xml(&custom_node->session,
+        custom_node->reliable_output, custom_subscription->subscriber_id,
+        custom_node->participant_id, "", UXR_REPLACE);
+#endif
+
+
+    custom_subscription->datareader_id = uxr_object_id(custom_node->id_gen++, UXR_DATAREADER_ID);
+    uint16_t datareader_req;
+#ifdef MICRO_XRCEDDS_USE_XML
+    if (!build_datareader_xml(topic_name, custom_subscription->type_support_callbacks,
+      qos_policies, xml_buffer,
+      sizeof(xml_buffer)))
+    {
+      RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
+      goto fail;
+    }
+
+    datareader_req = uxr_buffer_create_datareader_xml(&custom_node->session,
+        custom_node->reliable_output, custom_subscription->datareader_id,
+        custom_subscription->subscriber_id, xml_buffer, UXR_REPLACE);
+#elif defined(MICRO_XRCEDDS_USE_REFS)
+    if (!build_datareader_profile(topic_name, profile_name, sizeof(profile_name))) {
+      RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
+      goto fail;
+    }
+
+    datareader_req = uxr_buffer_create_datareader_ref(&custom_node->session,
+        custom_node->reliable_output, custom_subscription->datareader_id,
+        custom_subscription->subscriber_id, profile_name, UXR_REPLACE);
+#endif
+
+    rmw_subscription->data = custom_subscription;
+
+    uint16_t requests[] = {subscriber_req, datareader_req};
+    uint8_t status[sizeof(requests) / 2];
+    if (!uxr_run_session_until_all_status(&custom_node->session, 1000, requests,
+      status, sizeof(status)))
+    {
+      RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
+      put_memory(&custom_node->subscription_mem, &custom_subscription->mem);
+    }
+
+  }
+  return rmw_subscription;
+
+fail:
+  rmw_subscription_delete(rmw_subscription);
+  rmw_subscription = NULL;
   return rmw_subscription;
 }
 
