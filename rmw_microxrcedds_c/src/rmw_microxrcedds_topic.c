@@ -22,7 +22,8 @@
 #include "./utils.h"
 
 
-custom_topic_t * create_topic(
+custom_topic_t *
+create_topic(
   struct CustomNode * custom_node,
   const char * topic_name,
   const message_type_support_callbacks_t * message_type_support_callbacks,
@@ -124,7 +125,8 @@ create_topic_end:
   return custom_topic_ptr;
 }
 
-bool destroy_topic(custom_topic_t * custom_topic)
+bool
+destroy_topic(custom_topic_t * custom_topic)
 {
   bool ok = false;
 
@@ -167,7 +169,8 @@ bool destroy_topic(custom_topic_t * custom_topic)
 }
 
 
-size_t topic_count(struct CustomNode * custom_node)
+size_t
+topic_count(struct CustomNode * custom_node)
 {
   size_t count = 0;
   custom_topic_t * custom_topic_ptr = custom_node->custom_topic_sp;
