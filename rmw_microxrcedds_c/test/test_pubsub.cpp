@@ -108,12 +108,13 @@ TEST_F(TestSubscription, publish_and_receive) {
 
   std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
-  ASSERT_EQ(rmw_publish(pub, test_parameter), RMW_RET_OK);
+  ASSERT_EQ(rmw_publish(pub, test_parameter, NULL), RMW_RET_OK);
 
   rmw_subscriptions_t subscriptions;
   rmw_guard_conditions_t * guard_conditions = NULL;
   rmw_services_t * services = NULL;
   rmw_clients_t * clients = NULL;
+  rmw_events_t * events = NULL;
   rmw_wait_set_t * wait_set = NULL;
   rmw_time_t wait_timeout;
 
@@ -127,6 +128,7 @@ TEST_F(TestSubscription, publish_and_receive) {
       guard_conditions,
       services,
       clients,
+      events,
       wait_set,
       &wait_timeout
     ),
@@ -138,6 +140,7 @@ TEST_F(TestSubscription, publish_and_receive) {
       sub,
       &ReadMesg,
       &taken,
+      NULL,
       NULL
     ), RMW_RET_OK);
   ASSERT_EQ(taken, true);

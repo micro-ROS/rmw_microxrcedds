@@ -19,8 +19,10 @@
 #include <rmw/allocators.h>
 
 rmw_wait_set_t *
-rmw_create_wait_set(size_t max_conditions)
+rmw_create_wait_set(rmw_context_t * context, size_t max_conditions)
 {
+  (void) context;
+  (void) max_conditions;
   EPROS_PRINT_TRACE()
 
   rmw_wait_set_t * rmw_wait_set = (rmw_wait_set_t *)rmw_allocate(
