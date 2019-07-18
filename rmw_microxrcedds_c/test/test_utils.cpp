@@ -23,9 +23,9 @@ void ConfigureDummyTypeSupport(
   size_t id,
   dummy_type_support_t * dummy_type_support)
 {
-  dummy_type_support->topic_name = std::string(topic_name).append(std::to_string(id)).data();
-  dummy_type_support->type_name = std::string(type_name).append(std::to_string(id)).data();
-  dummy_type_support->package_name = std::string(package_name).append(std::to_string(id)).data();
+  dummy_type_support->topic_name = std::string(topic_name).append(std::to_string(id));
+  dummy_type_support->type_name = std::string(type_name).append(std::to_string(id));
+  dummy_type_support->package_name = std::string(package_name).append(std::to_string(id));
 
   dummy_type_support->callbacks.message_name_ = dummy_type_support->type_name.data();
   dummy_type_support->callbacks.package_name_ = dummy_type_support->package_name.data();
@@ -38,8 +38,8 @@ void ConfigureDummyTypeSupport(
     [](ucdrBuffer * cdr, void * untyped_ros_message, uint8_t * raw_mem_ptr, size_t raw_mem_size) {
       return true;
     };
-  dummy_type_support->callbacks.get_serialized_size = [](const void *) {return (uint32_t)0;};
-  dummy_type_support->callbacks.max_serialized_size = [](bool full_bounded) {return (size_t)0;};
+  dummy_type_support->callbacks.get_serialized_size = [](const void *) { return uint32_t(0u); };
+  dummy_type_support->callbacks.max_serialized_size = [](bool full_bounded) { return size_t(0u); };
 
   dummy_type_support->type_support.typesupport_identifier =
     ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE;
@@ -81,10 +81,12 @@ bool CheckErrorState()
   const rcutils_error_state_t * error_state;
   error_state = rcutils_get_error_state();
 
-  ok &= error_state->file != NULL;
-  ok &= error_state->line_number != 0;
-  ok &= error_state->message != NULL;
-
+  if (nullptr != error_state)
+  {
+    ok &= *error_state->file != '\0';
+    ok &= error_state->line_number != 0;
+    ok &= *error_state->message != '\0';
+  }
   // if (ok) std::cout << error_state->file
   //  << ":" << error_state->line_number << " -> " << error_state->message << std::endl;
 
