@@ -1,4 +1,4 @@
-# Copyright 2018 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+# Copyright 2019 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -72,11 +72,9 @@ endif()
 
 # Create source files with the define
 configure_file(${PROJECT_SOURCE_DIR}/src/config.h.in
-    ${PROJECT_BINARY_DIR}/config/config.h
+    ${PROJECT_BINARY_DIR}/include/rmw_microxrcedds_c/config.h
     )
 
-
-file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.c)
 set(SRCS
     src/identifiers.c
     src/memory.c
@@ -135,8 +133,7 @@ configure_rmw_library(${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    PRIVATE
-        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
+        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
     )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -184,23 +181,33 @@ register_rmw_implementation(${implementations})
 
 
 if(BUILD_TESTING)
-#    find_package(ament_lint_auto REQUIRED)
-#    ament_lint_auto_find_test_dependencies()
-#
-#    add_subdirectory(test)
+    find_package(ament_lint_auto REQUIRED)
+    ament_lint_auto_find_test_dependencies()
+
+    add_subdirectory(test)
 endif()
 
 ament_package(CONFIG_EXTRAS_POST
     "rmw_microxrcedds-extras.cmake"
     )
 
+# Install config.h file.
+install(
+    FILES
+        ${PROJECT_BINARY_DIR}/include/rmw_microxrcedds_c/config.h
+    DESTINATION
+        include/rmw_microxrcedds_c
+    )
+
+# Install includes.
 install(
     DIRECTORY
-        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/include/
     DESTINATION
         include
     )
 
+# Install library.
 install(
     TARGETS
         ${PROJECT_NAME}

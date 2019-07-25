@@ -21,10 +21,12 @@
 #include <vector>
 #include <memory>
 
-#include "./config.h"
-#include "./rmw_base_test.hpp"
+#include <rmw_microxrcedds_c/config.h>
+//#include <rmw_microxrcedds/config.h>
+//#include "config.h"
+#include "rmw_base_test.hpp"
 
-#include "./test_utils.hpp"
+#include "test_utils.hpp"
 
 class TestNode : public RMWBaseTest
 {
