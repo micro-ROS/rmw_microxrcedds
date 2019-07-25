@@ -29,6 +29,7 @@ rmw_wait(
   rmw_wait_set_t * wait_set,
   const rmw_time_t * wait_timeout)
 {
+  (void) guard_conditions;
   (void) events;
   (void) wait_set;
   EPROS_PRINT_TRACE()
@@ -39,7 +40,6 @@ rmw_wait(
 
   // Go throw all subscriptions
   CustomNode * custom_node = NULL;
-  size_t subscriber_requests_count = 0;
   if ((subscriptions != NULL) && (subscriptions->subscriber_count > 0)) {
     // Extract first session pointer
     for (size_t i = 0; i < subscriptions->subscriber_count; ++i) {
