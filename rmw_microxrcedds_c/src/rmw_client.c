@@ -24,6 +24,10 @@ rmw_create_client(
   const char * service_name,
   const rmw_qos_profile_t * qos_policies)
 {
+  (void) node;
+  (void) type_support;
+  (void) service_name;
+  (void) qos_policies;
   EPROS_PRINT_TRACE()
   rmw_client_t * rmw_client = (rmw_client_t *)rmw_allocate(
     sizeof(rmw_client_t));
@@ -35,6 +39,8 @@ rmw_destroy_client(
   rmw_node_t * node,
   rmw_client_t * client)
 {
+  (void) node;
+  (void) client;
   EPROS_PRINT_TRACE()
   return RMW_RET_OK;
 }

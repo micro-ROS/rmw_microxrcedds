@@ -20,6 +20,7 @@
 rmw_guard_condition_t *
 rmw_create_guard_condition(rmw_context_t * context)
 {
+  (void) context;
   EPROS_PRINT_TRACE()
 
   rmw_guard_condition_t * rmw_guard_condition = (rmw_guard_condition_t *)rmw_allocate(
@@ -28,7 +29,8 @@ rmw_create_guard_condition(rmw_context_t * context)
   return rmw_guard_condition;
 }
 
-rmw_ret_t rmw_destroy_guard_condition(rmw_guard_condition_t * guard_condition)
+rmw_ret_t
+rmw_destroy_guard_condition(rmw_guard_condition_t * guard_condition)
 {
   EPROS_PRINT_TRACE()
 

@@ -39,7 +39,7 @@ void ConfigureDummyTypeSupport(
       return true;
     };
   dummy_type_support->callbacks.get_serialized_size = [](const void *) { return uint32_t(0u); };
-  dummy_type_support->callbacks.max_serialized_size = [](bool full_bounded) { return size_t(0u); };
+  dummy_type_support->callbacks.max_serialized_size = []() { return size_t(0u); };
 
   dummy_type_support->type_support.typesupport_identifier =
     ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE;

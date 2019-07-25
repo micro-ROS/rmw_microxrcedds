@@ -21,6 +21,9 @@ rmw_count_publishers(
   const char * topic_name,
   size_t * count)
 {
+  (void) node;
+  (void) topic_name;
+  (void) count;
   RMW_SET_ERROR_MSG("function not implemeted");
   return RMW_RET_ERROR;
 }
@@ -31,6 +34,9 @@ rmw_count_subscribers(
   const char * topic_name,
   size_t * count)
 {
+  (void) node;
+  (void) topic_name;
+  (void) count;
   RMW_SET_ERROR_MSG("function not implemeted");
   return RMW_RET_ERROR;
 }

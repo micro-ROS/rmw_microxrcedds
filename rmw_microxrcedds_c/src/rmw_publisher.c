@@ -249,7 +249,6 @@ rmw_destroy_publisher(
     RMW_SET_ERROR_MSG("publisher imp is null");
     result_ret = RMW_RET_ERROR;
   } else {
-    CustomNode * custom_node = (CustomNode *)node->data;
     CustomPublisher * custom_publisher = (CustomPublisher *)publisher->data;
     uint16_t delete_writer = uxr_buffer_delete_entity(custom_publisher->session,
         custom_publisher->owner_node->reliable_output,

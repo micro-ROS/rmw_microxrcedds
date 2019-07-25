@@ -75,7 +75,7 @@ TEST_F(TestSubscription, publish_and_receive) {
       return MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + strlen(
         test_parameter) + 8;
     };
-  dummy_type_support.callbacks.max_serialized_size = [](bool full_bounded) -> size_t {
+  dummy_type_support.callbacks.max_serialized_size = []() -> size_t {
       return (size_t)(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + 1);
     };
 
