@@ -24,8 +24,8 @@
 #include "rosidl_generator_c/message_type_support_struct.h"
 #include "rosidl_typesupport_microxrcedds_shared/message_type_support.h"
 
-#include "./memory.h"
-#include "./config.h"
+#include "memory.h"
+#include <rmw_microxrcedds_c/config.h>
 
 typedef struct custom_topic_t
 {

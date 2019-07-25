@@ -237,10 +237,10 @@ int build_topic_xml(
   int ret = 0;
   static char type_name_buffer[50];
 
-  if (RMW_TOPIC_NAME_MAX_NAME_LENGTH >= strlen(topic_name) &&
+  if (RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH >= strlen(topic_name) &&
     generate_type_name(members, "msg", type_name_buffer, sizeof(type_name_buffer)))
   {
-    char full_topic_name[RMW_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_topic_prefix)];
+    char full_topic_name[RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_topic_prefix)];
 
     if (!qos_policies->avoid_ros_namespace_conventions) {
       ret = snprintf(full_topic_name, sizeof(full_topic_name), "%s%s", ros_topic_prefix,
@@ -272,7 +272,7 @@ int build_xml(
   static char type_name_buffer[50];
 
   if (generate_type_name(members, "msg", type_name_buffer, sizeof(type_name_buffer))) {
-    char full_topic_name[RMW_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_topic_prefix)];
+    char full_topic_name[RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_topic_prefix)];
     full_topic_name[0] = '\0';
 
     if (!qos_policies->avoid_ros_namespace_conventions) {

@@ -25,10 +25,9 @@
 #include "rmw/validate_namespace.h"
 #include "rmw/validate_node_name.h"
 
-#include "./config.h"
-#include "./rmw_base_test.hpp"
-
-#include "./test_utils.hpp"
+#include <rmw_microxrcedds_c/config.h>
+#include "rmw_base_test.hpp"
+#include "test_utils.hpp"
 
 class TestPublisher : public RMWBaseTest
 {
