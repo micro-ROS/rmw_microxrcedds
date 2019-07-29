@@ -28,7 +28,8 @@ rmw_serialize(
   return RMW_RET_ERROR;
 }
 
-rmw_ret_t rmw_deserialize(
+rmw_ret_t
+rmw_deserialize(
   const rmw_serialized_message_t * serialized_message,
   const rosidl_message_type_support_t * type_support,
   void * ros_message)
@@ -36,6 +37,19 @@ rmw_ret_t rmw_deserialize(
   (void) serialized_message;
   (void) type_support;
   (void) ros_message;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}
+
+rmw_ret_t
+rmw_get_serialized_message_size(
+  const rosidl_message_type_support_t * type_support,
+  const rosidl_message_bounds_t * message_bounds,
+  size_t * size)
+{
+  (void) type_support;
+  (void) message_bounds;
+  (void) size;
   RMW_SET_ERROR_MSG("function not implemeted");
   return RMW_RET_ERROR;
 }
