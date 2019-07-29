@@ -103,3 +103,16 @@ rmw_take_serialized_message_with_info(
   RMW_SET_ERROR_MSG("function not implemeted");
   return RMW_RET_ERROR;
 }
+
+rmw_ret_t
+rmw_take_event(
+  const rmw_events_t * event_handle,
+  void * event_info,
+  bool * taken)
+{
+  (void) event_handle;
+  (void) event_info;
+  (void) taken;
+  RMW_SET_ERROR_MSG("function not implemented");
+  return RMW_RET_ERROR;
+}
