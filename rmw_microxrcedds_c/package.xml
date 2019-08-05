@@ -27,7 +27,6 @@
   <build_export_depend>microxrcedds_cmake_module</build_export_depend>
   <build_export_depend>rcutils</build_export_depend>
   <build_export_depend>rmw</build_export_depend>
-  <build_export_depend>rosidl_typesupport_microxrcedds_c</build_export_depend>
   <build_export_depend>rosidl_typesupport_microxrcedds_cpp</build_export_depend>
 
   <exec_depend>rcutils</exec_depend>
