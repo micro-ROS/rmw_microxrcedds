@@ -16,6 +16,7 @@
 #include "rmw_microxrcedds_topic.h"
 
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>
+#include <rosidl_typesupport_microxrcedds_cpp/identifier.h>
 
 #include <rmw/rmw.h>
 #include <rmw/error_handling.h>
@@ -99,14 +100,14 @@ rmw_create_subscription(
 
     const rosidl_message_type_support_t * type_support_xrce = get_message_typesupport_handle(
       type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
-//    if (!type_support_xrce) {
-//      type_support_xrce = get_message_typesupport_handle(
-//        type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
+    if (!type_support_xrce) {
+      type_support_xrce = get_message_typesupport_handle(
+        type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
       if (!type_support_xrce) {
         RMW_SET_ERROR_MSG("type support not from this implementation");
         goto fail;
       }
-//    }
+    }
 
     custom_subscription->type_support_callbacks =
       (const message_type_support_callbacks_t *)type_support_xrce->data;

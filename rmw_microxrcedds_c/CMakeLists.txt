@@ -125,6 +125,7 @@ endif()
 ament_target_dependencies(${PROJECT_NAME}
   "rcutils"
   "rosidl_typesupport_microxrcedds_c"
+  "rosidl_typesupport_microxrcedds_cpp"
   "rmw"
   )
 

@@ -20,39 +20,39 @@ find_package(ament_cmake_gtest REQUIRED)
 project(rmw_microxrcedds_tests LANGUAGES CXX)
 
 macro(rmw_test TEST_NAME TEST_SOURCE)
-    ament_add_gtest(${TEST_NAME}
-        ${TEST_SOURCE}
-        test_utils.cpp
-        )
+  ament_add_gtest(${TEST_NAME}
+    ${TEST_SOURCE}
+    test_utils.cpp
+    )
 
-    target_link_libraries(${TEST_NAME}
-        microcdr
-        microxrcedds_client
-        rmw_microxrcedds
-        )
+  target_link_libraries(${TEST_NAME}
+    microcdr
+    microxrcedds_client
+    rmw_microxrcedds
+    )
 
-    include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/../src)
+  include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/../src)
 
-    target_include_directories(${TEST_NAME}
-        PUBLIC
-            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-        PRIVATE
-            ${PROJECT_SOURCE_DIR}/src
-            $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include/>
-        )
+  target_include_directories(${TEST_NAME}
+    PUBLIC
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    PRIVATE
+      ${PROJECT_SOURCE_DIR}/src
+      $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include/>
+    )
 
-    set_target_properties(${TEST_NAME} PROPERTIES
-        CXX_STANDARD
-            14
-        CXX_STANDARD_REQUIRED
-            YES
-        )
+  set_target_properties(${TEST_NAME} PROPERTIES
+    CXX_STANDARD
+      14
+    CXX_STANDARD_REQUIRED
+      YES
+    )
 
-    ament_target_dependencies(${TEST_NAME}
-        rmw_microxrcedds
-        rmw
-        rosidl_typesupport_microxrcedds_shared
-        )
+  ament_target_dependencies(${TEST_NAME}
+    rmw_microxrcedds
+    rmw
+    rosidl_typesupport_microxrcedds_shared
+    )
 endmacro()
 
 rmw_test(test-node        test_node.cpp)
