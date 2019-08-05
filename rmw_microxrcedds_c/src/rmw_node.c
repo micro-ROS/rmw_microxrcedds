@@ -60,45 +60,26 @@ void on_topic(
   (void)request_id;
   (void)stream_id;
 
-  // Get node pointer
   CustomNode * node = (CustomNode *)args;
 
-  // Search subscription
   struct Item * subscription_item = node->subscription_mem.allocateditems;
   CustomSubscription * custom_subscription = NULL;
-  while (true) {
-    // Check if end of stack
-    if (subscription_item == NULL) {
-      return;
-    }
-
-    // Compare id
+  while (subscription_item != NULL) {
     custom_subscription = (CustomSubscription *)subscription_item->data;
     if ((custom_subscription->datareader_id.id == object_id.id) &&
-      (custom_subscription->datareader_id.type == object_id.type))
+      (custom_subscription->datareader_id.type == object_id.type) &&
+      !custom_subscription->micro_buffer_in_use)
     {
+      memcpy(&custom_subscription->micro_buffer, serialization,
+        sizeof(custom_subscription->micro_buffer));
+
+      node->on_subscription = true;
+      custom_subscription->micro_buffer_in_use = true;
+
       break;
     }
-
-    // Next subscription of the stack
     subscription_item = subscription_item->next;
   }
-
-  // Check if temporal micro buffer is on use
-  if (custom_subscription->micro_buffer_in_use) {
-    RMW_SET_ERROR_MSG("Internal memory error");
-    return;
-  }
-
-  // not waiting for response any more
-  custom_subscription->waiting_for_response = false;
-  node->on_subscription = true;
-
-
-  // Copy microbuffer data
-  memcpy(&custom_subscription->micro_buffer, serialization,
-    sizeof(custom_subscription->micro_buffer));
-  custom_subscription->micro_buffer_in_use = true;
 }
 
 void clear_node(rmw_node_t * node)
@@ -189,7 +170,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
     RMW_SET_ERROR_MSG("Can not create an udp connection");
     return NULL;
   }
-  printf("UDP mode => ip: %s - port: %hu\n", UDP_IP, UDP_PORT);
+  printf("UDP mode => ip: %s - port: %hu\n", UDP_IP, (uint16_t)UDP_PORT);
 #endif
 
   uxr_init_session(&node_info->session, &node_info->transport.comm, key);
@@ -248,8 +229,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   }
   participant_req =
     uxr_buffer_create_participant_xml(&node_info->session, node_info->reliable_output,
-      node_info->participant_id,
-      domain_id, participant_xml, UXR_REPLACE);
+      node_info->participant_id, (uint16_t)domain_id, participant_xml, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
   char profile_name[20];
   if (!build_participant_profile(profile_name, sizeof(profile_name))) {

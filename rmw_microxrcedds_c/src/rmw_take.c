@@ -35,34 +35,35 @@ rmw_take_with_info(
   rmw_message_info_t * message_info,
   rmw_subscription_allocation_t * allocation)
 {
-  EPROS_PRINT_TRACE()
-  // Not used variables
   (void) message_info;
   (void) allocation;
 
-  // Preconfigure taken
+  EPROS_PRINT_TRACE()
+
   if (taken != NULL) {
     *taken = false;
   }
 
-  // Check id
   if (strcmp(subscription->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
     RMW_SET_ERROR_MSG("Wrong implementation");
     return RMW_RET_ERROR;
   }
 
-  // Extract subscriber info
   CustomSubscription * custom_subscription = (CustomSubscription *)subscription->data;
 
-  // Extract serialiced message using typesupport
+  if (!custom_subscription->micro_buffer_in_use) {
+    return RMW_RET_OK;
+  }
+
   bool deserialize_rv = custom_subscription->type_support_callbacks->cdr_deserialize(
-    &custom_subscription->micro_buffer, ros_message,
-    custom_subscription->owner_node->miscellaneous_temp_buffer,
-    sizeof(custom_subscription->owner_node->miscellaneous_temp_buffer));
+    &custom_subscription->micro_buffer,
+    ros_message);
   custom_subscription->micro_buffer_in_use = false;
+
   if (taken != NULL) {
     *taken = deserialize_rv;
   }
+
   if (!deserialize_rv) {
     RMW_SET_ERROR_MSG("Typesupport desserialize error.");
     return RMW_RET_ERROR;

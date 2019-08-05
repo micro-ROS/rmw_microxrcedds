@@ -17,8 +17,8 @@
 #include "utils.h"
 #include "rmw_microxrcedds_topic.h"
 
-#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
-#include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
+#include <rosidl_typesupport_microxrcedds_c/identifier.h>
+#include <rosidl_typesupport_microxrcedds_c/message_type_support.h>
 
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
@@ -91,14 +91,14 @@ rmw_create_publisher(
 
     const rosidl_message_type_support_t * type_support_xrce = get_message_typesupport_handle(
       type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
-    if (!type_support_xrce) {
-      type_support_xrce = get_message_typesupport_handle(
-        type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
+//    if (!type_support_xrce) {
+//      type_support_xrce = get_message_typesupport_handle(
+//        type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
       if (!type_support_xrce) {
         RMW_SET_ERROR_MSG("type support not from this implementation");
         goto fail;
       }
-    }
+//    }
 
     custom_publisher->type_support_callbacks =
       (const message_type_support_callbacks_t *)type_support_xrce->data;
@@ -217,8 +217,9 @@ rmw_publisher_get_actual_qos(
 {
   (void) publisher;
   (void) qos;
-  RMW_SET_ERROR_MSG("function not implemeted");
-  return RMW_RET_ERROR;
+//  RMW_SET_ERROR_MSG("function not implemeted");
+//  return RMW_RET_ERROR;
+  return RMW_RET_OK; // TODO (julian): implement function.
 }
 
 rmw_ret_t
