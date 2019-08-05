@@ -29,80 +29,12 @@ rmw_wait(
   rmw_wait_set_t * wait_set,
   const rmw_time_t * wait_timeout)
 {
+  (void) services;
+  (void) clients;
   (void) guard_conditions;
   (void) events;
   (void) wait_set;
   EPROS_PRINT_TRACE()
-
-  // for Subscription requests and response
-  uint16_t subscription_request[MAX_SUBSCRIPTIONS_X_NODE];
-  uint8_t subscription_status_request[MAX_SUBSCRIPTIONS_X_NODE];
-
-  // Go throw all subscriptions
-  CustomNode * custom_node = NULL;
-  if ((subscriptions != NULL) && (subscriptions->subscriber_count > 0)) {
-    // Extract first session pointer
-    for (size_t i = 0; i < subscriptions->subscriber_count; ++i) {
-      if (subscriptions->subscribers[i] != NULL) {
-        CustomSubscription * custom_subscription =
-          (CustomSubscription *)subscriptions->subscribers[i];
-        custom_node = custom_subscription->owner_node;
-
-
-        if (custom_subscription->waiting_for_response == false) {
-          custom_subscription->waiting_for_response = true;
-          custom_subscription->subscription_request = uxr_buffer_request_data(&custom_node->session,
-              custom_node->reliable_output, custom_subscription->datareader_id,
-              custom_node->reliable_input,
-              NULL);
-        }
-
-
-        // Reset the request id
-        subscription_request[i] = custom_subscription->subscription_request;
-      }
-    }
-  }
-
-  // Go throw all services
-  /*
-  else if ((services != NULL) && (services->service_count > 0))
-  {
-      // Extract first session pointer
-      //services->services[0];
-  }
-  */
-
-  // Go throw all clients
-  /*
-  else if ((clients != NULL) && (clients->client_count > 0))
-  {
-      // Extract first session pointer
-      //clients->clients[0];
-  }
-  */
-
-  // Check node pointer
-  if (custom_node == NULL) {
-    if (subscriptions != NULL) {
-      for (size_t i = 0; i < subscriptions->subscriber_count; ++i) {
-        subscriptions->subscribers[i] = NULL;
-      }
-    }
-    if (services != NULL) {
-      for (size_t i = 0; i < services->service_count; ++i) {
-        services->services[i] = NULL;
-      }
-    }
-    if (clients != NULL) {
-      for (size_t i = 0; i < clients->client_count; ++i) {
-        clients->clients[i] = NULL;
-      }
-    }
-
-    EPROS_PRINT_TRACE()
-    return RMW_RET_OK;
-  }
 
   // Check if timeout
   uint64_t timeout;
@@ -114,7 +46,6 @@ rmw_wait(
       RMW_SET_ERROR_MSG("Wait timeout overflow");
     } else {
       timeout = wait_timeout->sec * 1000;
-
       uint64_t timeout_ms = wait_timeout->nsec / 1000000;
       if ((UINT64_MAX - timeout) <= timeout_ms) {
         // Overflow
@@ -130,50 +61,28 @@ rmw_wait(
       }
     }
   } else {
-    timeout = UXR_TIMEOUT_INF;
+    timeout = (uint64_t)UXR_TIMEOUT_INF;
   }
 
-  // read until status or timeout
-  if (subscriptions->subscriber_count > 0) {
-    uxr_run_session_until_one_status(&custom_node->session, timeout, subscription_request,
-      subscription_status_request, subscriptions->subscriber_count);
+  if ((NULL == subscriptions) || (0 == subscriptions->subscriber_count)) {
+//    return RMW_RET_INVALID_ARGUMENT;
+    return RMW_RET_OK; // TODO (julian): review rcl_wait without subscriptions.
   }
 
-
-  // Clean non-received
-  bool is_timeout = true;
-  if (subscriptions != NULL) {
-    for (size_t i = 0; i < subscriptions->subscriber_count; ++i) {
-      // Check if there are any data
-      CustomSubscription * custom_subscription =
-        (CustomSubscription *)(subscriptions->subscribers[i]);
-      if (custom_subscription->waiting_for_response) {
-        subscriptions->subscribers[i] = NULL;
-      } else {
-        is_timeout = false;
-      }
-    }
-  }
-  if (services != NULL) {
-    for (size_t i = 0; i < services->service_count; ++i) {
-      services->services[i] = NULL;
-    }
-  }
-  if (clients != NULL) {
-    for (size_t i = 0; i < clients->client_count; ++i) {
-      clients->clients[i] = NULL;
-    }
+  CustomSubscription * custom_subscription = (CustomSubscription *)subscriptions->subscribers[0];
+  if (NULL == custom_subscription) {
+    return RMW_RET_INVALID_ARGUMENT;
   }
 
-  // Check if timeout
-  if (is_timeout) {
-    EPROS_PRINT_TRACE()
+  CustomNode * custom_node = custom_subscription->owner_node;
+  if (NULL == custom_node) {
+    return RMW_RET_INVALID_ARGUMENT;
+  }
+
+  if (!uxr_run_session_until_timeout(&custom_node->session, (int)timeout)) {
     return RMW_RET_TIMEOUT;
   }
 
   EPROS_PRINT_TRACE()
   return RMW_RET_OK;
 }
-
-
-

@@ -15,7 +15,7 @@
 #include "utils.h"
 #include "rmw_microxrcedds_topic.h"
 
-#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
+#include <rosidl_typesupport_microxrcedds_c/identifier.h>
 
 #include <rmw/rmw.h>
 #include <rmw/error_handling.h>
@@ -70,7 +70,7 @@ rmw_create_subscription(
     (void)qos_policies;
     (void)ignore_local_publications;
 
-    rmw_subscription_t * rmw_subscription = (rmw_subscription_t *)rmw_allocate(
+    rmw_subscription = (rmw_subscription_t *)rmw_allocate(
       sizeof(rmw_subscription_t));
     rmw_subscription->data = NULL;
     rmw_subscription->implementation_identifier = rmw_get_implementation_identifier();
@@ -99,14 +99,14 @@ rmw_create_subscription(
 
     const rosidl_message_type_support_t * type_support_xrce = get_message_typesupport_handle(
       type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
-    if (!type_support_xrce) {
-      type_support_xrce = get_message_typesupport_handle(
-        type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
+//    if (!type_support_xrce) {
+//      type_support_xrce = get_message_typesupport_handle(
+//        type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
       if (!type_support_xrce) {
         RMW_SET_ERROR_MSG("type support not from this implementation");
         goto fail;
       }
-    }
+//    }
 
     custom_subscription->type_support_callbacks =
       (const message_type_support_callbacks_t *)type_support_xrce->data;
@@ -189,10 +189,19 @@ rmw_create_subscription(
     if (!uxr_run_session_until_all_status(&custom_node->session, 1000, requests,
       status, sizeof(status)))
     {
-      RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
+      RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
       put_memory(&custom_node->subscription_mem, &custom_subscription->mem);
+      goto fail;
     }
 
+    uxrDeliveryControl delivery_control;
+    delivery_control.max_samples = UXR_MAX_SAMPLES_UNLIMITED;
+    delivery_control.min_pace_period = 0;
+    delivery_control.max_elapsed_time = UXR_MAX_ELAPSED_TIME_UNLIMITED;
+    delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
+    custom_subscription->subscription_request = uxr_buffer_request_data(&custom_node->session,
+      custom_node->reliable_output, custom_subscription->datareader_id,
+      custom_node->reliable_input, &delivery_control);
   }
   return rmw_subscription;
 
