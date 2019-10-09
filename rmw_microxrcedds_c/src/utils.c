@@ -207,13 +207,22 @@ int generate_name(const uxrObjectId * id, char name[], size_t buffer_size)
 }
 
 int generate_type_name(
-  const message_type_support_callbacks_t * members, const char * sep, char type_name[],
+  const message_type_support_callbacks_t * members, char type_name[],
   size_t buffer_size)
 {
-  static const char format[] = "%s::%s::dds_::%s_";
+  static const char format_ns[] = "%s::dds_::%s_";
+  static const char format[] = "dds_::%s_";
+  int ret = 0;
 
-  int ret = snprintf(type_name, buffer_size, format,
-      members->package_name_, sep, members->message_name_);
+  if (members->message_namespace_)
+  {
+    ret = snprintf(type_name, buffer_size, format_ns,
+      members->message_namespace_, members->message_name_);
+  }
+  else
+  {
+    ret = snprintf(type_name, buffer_size, format, members->message_name_);
+  }
 
   if ((ret < 0) && (ret >= (int)buffer_size)) {
     ret = 0;
@@ -238,7 +247,7 @@ int build_topic_xml(
   static char type_name_buffer[50];
 
   if (RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH >= strlen(topic_name) &&
-    generate_type_name(members, "msg", type_name_buffer, sizeof(type_name_buffer)))
+    generate_type_name(members, type_name_buffer, sizeof(type_name_buffer)))
   {
     char full_topic_name[RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_topic_prefix)];
 
@@ -271,7 +280,7 @@ int build_xml(
   int ret = 0;
   static char type_name_buffer[50];
 
-  if (generate_type_name(members, "msg", type_name_buffer, sizeof(type_name_buffer))) {
+  if (generate_type_name(members, type_name_buffer, sizeof(type_name_buffer))) {
     char full_topic_name[RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_topic_prefix)];
     full_topic_name[0] = '\0';
 

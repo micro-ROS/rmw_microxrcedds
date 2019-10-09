@@ -150,7 +150,7 @@ target_compile_options(${PROJECT_NAME}
     $<$<C_COMPILER_ID:GNU>:-Wextra>
     $<$<C_COMPILER_ID:GNU>:-pedantic>
     $<$<C_COMPILER_ID:GNU>:-Werror-implicit-function-declaration>
-    $<$<C_COMPILER_ID:GNU>:$<$<VERSION_GREATER:$<C_COMPILER_VERSION>,8.1>:-Wcast-align=strict>>
+    $<$<C_COMPILER_ID:GNU>:$<$<VERSION_GREATER:$<C_COMPILER_VERSION>,8.1>:-Wcast-align>>
     $<$<C_COMPILER_ID:GNU>:-Wvla>
     $<$<C_COMPILER_ID:GNU>:-Werror>
     $<$<C_COMPILER_ID:GNU>:-pedantic-errors>
