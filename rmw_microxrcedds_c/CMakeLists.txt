@@ -17,7 +17,7 @@ cmake_policy(SET CMP0057 NEW)
 
 find_program(CLANG_TIDY clang-tidy)
 if(CLANG_TIDY)
-  set(CMAKE_C_CLANG_TIDY clang-tidy -checks=*)
+  set(CMAKE_C_CLANG_TIDY clang-tidy -checks=* -extra-arg=-Wno-unknown-warning-option)
 endif()
 
 find_package(ament_cmake_ros REQUIRED)
@@ -150,7 +150,7 @@ target_compile_options(${PROJECT_NAME}
     $<$<C_COMPILER_ID:GNU>:-Wextra>
     $<$<C_COMPILER_ID:GNU>:-pedantic>
     $<$<C_COMPILER_ID:GNU>:-Werror-implicit-function-declaration>
-    $<$<C_COMPILER_ID:GNU>:$<$<VERSION_GREATER:$<C_COMPILER_VERSION>,8.1>:-Wcast-align>>
+    $<$<C_COMPILER_ID:GNU>:$<$<VERSION_GREATER:$<C_COMPILER_VERSION>,8.1>:-Wcast-align=strict>>
     $<$<C_COMPILER_ID:GNU>:-Wvla>
     $<$<C_COMPILER_ID:GNU>:-Werror>
     $<$<C_COMPILER_ID:GNU>:-pedantic-errors>
