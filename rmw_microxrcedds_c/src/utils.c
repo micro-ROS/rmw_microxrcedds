@@ -215,7 +215,7 @@ size_t generate_type_name(
   static const char* suffix = "_";
   size_t ret = 0;
   size_t full_name_size = strlen(protocol) + strlen(suffix) + strlen(sep) + strlen(members->message_name_) + strlen(suffix) + ((NULL != members->message_namespace_) ? strlen(members->message_namespace_):0) + 1;
-  memset(&type_name[0], 0, buffer_size);
+  type_name[0] = 0;
   if (full_name_size < buffer_size)
   {
       if (NULL != members->message_namespace_)
