@@ -31,8 +31,8 @@ void rmw_subscription_delete(rmw_subscription_t * subscriber);
 void customnode_clear(CustomNode * node);
 
 int generate_name(const uxrObjectId * id, char name[], size_t buffer_size);
-int generate_type_name(
-  const message_type_support_callbacks_t * members, const char * sep, char type_name[],
+size_t generate_type_name(
+  const message_type_support_callbacks_t * members, char type_name[],
   size_t buffer_size);
 
 int build_participant_xml(
