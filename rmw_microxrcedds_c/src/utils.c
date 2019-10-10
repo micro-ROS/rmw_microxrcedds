@@ -206,19 +206,34 @@ int generate_name(const uxrObjectId * id, char name[], size_t buffer_size)
   return ret;
 }
 
-int generate_type_name(
-  const message_type_support_callbacks_t * members, const char * sep, char type_name[],
+size_t generate_type_name(
+  const message_type_support_callbacks_t * members, char type_name[],
   size_t buffer_size)
 {
-  static const char format[] = "%s::%s::dds_::%s_";
-
-  int ret = snprintf(type_name, buffer_size, format,
-      members->package_name_, sep, members->message_name_);
-
-  if ((ret < 0) && (ret >= (int)buffer_size)) {
-    ret = 0;
+  static const char* sep = "::";
+  static const char* protocol = "dds";
+  static const char* suffix = "_";
+  size_t ret = 0;
+  size_t full_name_size = strlen(protocol) + strlen(suffix) + strlen(sep) + strlen(members->message_name_) + strlen(suffix) + ((NULL != members->message_namespace_) ? strlen(members->message_namespace_):0) + 1;
+  type_name[0] = 0;
+  if (full_name_size < buffer_size)
+  {
+      if (NULL != members->message_namespace_)
+      {
+        strcat(type_name, members->message_namespace_);
+        strcat(type_name, sep);
+      }
+      strcat(type_name, protocol);
+      strcat(type_name, suffix);
+      strcat(type_name, sep);
+      strcat(type_name, members->message_name_);
+      strcat(type_name, suffix);
+      ret = full_name_size;
   }
-
+  else
+  {
+      ret = 0;
+  }
   return ret;
 }
 
@@ -238,7 +253,7 @@ int build_topic_xml(
   static char type_name_buffer[50];
 
   if (RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH >= strlen(topic_name) &&
-    generate_type_name(members, "msg", type_name_buffer, sizeof(type_name_buffer)))
+    0 != generate_type_name(members, type_name_buffer, sizeof(type_name_buffer)))
   {
     char full_topic_name[RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_topic_prefix)];
 
@@ -271,7 +286,7 @@ int build_xml(
   int ret = 0;
   static char type_name_buffer[50];
 
-  if (generate_type_name(members, "msg", type_name_buffer, sizeof(type_name_buffer))) {
+  if (0 != generate_type_name(members, type_name_buffer, sizeof(type_name_buffer))) {
     char full_topic_name[RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_topic_prefix)];
     full_topic_name[0] = '\0';
 

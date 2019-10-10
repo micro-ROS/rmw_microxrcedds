@@ -17,7 +17,7 @@ cmake_policy(SET CMP0057 NEW)
 
 find_program(CLANG_TIDY clang-tidy)
 if(CLANG_TIDY)
-  set(CMAKE_C_CLANG_TIDY clang-tidy -checks=*)
+  set(CMAKE_C_CLANG_TIDY clang-tidy -checks=* -extra-arg=-Wno-unknown-warning-option)
 endif()
 
 find_package(ament_cmake_ros REQUIRED)
