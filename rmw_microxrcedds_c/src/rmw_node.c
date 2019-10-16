@@ -77,6 +77,7 @@ void on_topic(
     if ((custom_subscription->datareader_id.id == object_id.id) &&
       (custom_subscription->datareader_id.type == object_id.type))
     {
+      custom_subscription->waiting_for_response = false;
       break;
     }
 
@@ -91,7 +92,6 @@ void on_topic(
   }
 
   // not waiting for response any more
-  custom_subscription->waiting_for_response = false;
   node->on_subscription = true;
 
 
