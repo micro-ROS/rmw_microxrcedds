@@ -95,6 +95,7 @@ create_topic(
       custom_node->reliable_output, custom_topic_ptr->topic_id,
       custom_node->participant_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
+  (void)qos_policies;
   if (!build_topic_profile(topic_name, profile_name, sizeof(profile_name))) {
     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
     (void)destroy_topic(custom_topic_ptr);

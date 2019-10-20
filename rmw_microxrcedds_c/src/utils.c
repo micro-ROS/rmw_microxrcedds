@@ -322,6 +322,9 @@ int build_datawriter_xml(
     "<kind>NO_KEY</kind>"
     "<name>%s</name>"
     "<dataType>%s</dataType>"
+    "<historyQos>"
+    "<kind>KEEP_ALL</kind>"
+    "</historyQos>"
     "</topic>"
     "</data_writer>"
     "</dds>";
@@ -339,6 +342,9 @@ int build_datareader_xml(
     "<kind>NO_KEY</kind>"
     "<name>%s</name>"
     "<dataType>%s</dataType>"
+    "<historyQos>"
+    "<kind>KEEP_ALL</kind>"
+    "</historyQos>"
     "</topic>"
     "</data_reader>"
     "</dds>";

@@ -15,8 +15,8 @@
 #include "types.h"
 #include "utils.h"
 
-#include <rmw/rmw.h>
 #include <rmw/error_handling.h>
+#include <rmw/rmw.h>
 
 rmw_ret_t
 rmw_publish(
@@ -33,8 +33,7 @@ rmw_publish(
   } else if (!ros_message) {
     RMW_SET_ERROR_MSG("ros_message pointer is null");
     ret = RMW_RET_ERROR;
-  }
-  if (strcmp(publisher->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+  } else if (strcmp(publisher->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
     RMW_SET_ERROR_MSG("publisher handle not from this implementation");
     ret = RMW_RET_ERROR;
   } else if (!publisher->data) {
@@ -43,22 +42,19 @@ rmw_publish(
   } else {
     CustomPublisher * custom_publisher = (CustomPublisher *)publisher->data;
     const message_type_support_callbacks_t * functions = custom_publisher->type_support_callbacks;
-    bool written = true;
     uint32_t topic_length = functions->get_serialized_size(ros_message);
-    uint32_t payload_length = 0;
-    payload_length = (uint16_t)(payload_length + 4);  // request_id + object_id
-    payload_length = (uint16_t)(payload_length + 4);  // request_id + object_id
 
     ucdrBuffer mb;
+    bool written = false;
     if (uxr_prepare_output_stream(custom_publisher->session,
       custom_publisher->owner_node->reliable_output, custom_publisher->datawriter_id, &mb,
       topic_length))
     {
       ucdrBuffer mb_topic;
       ucdr_init_buffer(&mb_topic, mb.iterator, topic_length);
-      written &= functions->cdr_serialize(ros_message, &mb_topic);
-
+      written = functions->cdr_serialize(ros_message, &mb_topic);
       written &= uxr_run_session_until_confirm_delivery(custom_publisher->session, 1000);
+      //uxr_flash_output_streams(custom_publisher->session);
     }
     if (!written) {
       RMW_SET_ERROR_MSG("error publishing message");
