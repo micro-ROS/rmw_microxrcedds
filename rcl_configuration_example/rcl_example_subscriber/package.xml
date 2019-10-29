@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>rcl_example_subscriber</name>
+  <version>0.0.1</version>
+  <description>Example of a subscriber using RCL</description>
+  <maintainer email="pgarrido@eprosima.com">Pablo Garrido</maintainer>
+  <license>Apache License 2.0</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  
+  <build_depend>rcl</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>rmw_microxrcedds</build_depend>
+
+  <exec_depend>rcl</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
+
