@@ -17,6 +17,7 @@
 
 #include <time.h>
 
+#include "rmw_microxrcedds_c/rmw_microxrcedds.h"
 #include "rmw_microxrcedds_c/rmw_c_macros.h"
 #include "./rmw_node.h"
 #include "./identifiers.h"
@@ -89,7 +90,15 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
   context->instance_id = options->instance_id;
   context->implementation_identifier = eprosima_microxrcedds_identifier;
-  context->impl = NULL;
+
+  rmw_context_impl_t context_impl;
+  #ifdef MICRO_XRCEDDS_SERIAL
+    memcpy(context_impl.serial_device, options->impl->serial_device, strlen(options->impl->serial_device) + 1);
+  #elif defined(MICRO_XRCEDDS_UDP)
+    memcpy(context_impl.agent_address, options->impl->agent_address, strlen(options->impl->agent_address) + 1);
+    context_impl.agent_port = options->impl->agent_port;
+  #endif
+  context->impl = &context_impl;
 
   // Intialize random number generator
   time_t t;
