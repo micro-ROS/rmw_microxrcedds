@@ -164,7 +164,7 @@ void clear_node(rmw_node_t * node)
   put_memory(&node_memory, &micro_node->mem);
 }
 
-rmw_node_t * create_node(const char * name, const char * namespace_, size_t domain_id)
+rmw_node_t * create_node(const char * name, const char * namespace_, size_t domain_id, rmw_context_t * context)
 {
   // TODO(Javier) Need to be changed into a to thread-save code.
   //  The suggested option rand_r() is not valid for this purpose.
@@ -359,7 +359,7 @@ rmw_create_node(
   } else if (!security_options) {
     RMW_SET_ERROR_MSG("security_options is null");
   } else {
-    rmw_node = create_node(name, namespace, domain_id);
+    rmw_node = create_node(name, namespace, domain_id, context);
   }
   return rmw_node;
 }
