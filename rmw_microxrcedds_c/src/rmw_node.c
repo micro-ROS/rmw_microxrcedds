@@ -181,7 +181,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   CustomNode * node_info = (CustomNode *)memory_node->data;
 
 #ifdef MICRO_XRCEDDS_SERIAL
-  int fd = open(SERIAL_DEVICE, O_RDWR | O_NOCTTY);
+  int fd = open(context->impl->serial_device, O_RDWR | O_NOCTTY);
   if (0 < fd) {
     struct termios tty_config;
     memset(&tty_config, 0, sizeof(tty_config));
@@ -233,15 +233,15 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
       }
     }
   }
-  printf("Serial mode => dev: %s\n", SERIAL_DEVICE);
+  printf("Serial mode => dev: %s\n", context->impl->serial_device);
 
 #elif defined(MICRO_XRCEDDS_UDP)
   // TODO(Borja) Think how we are going to select transport to use
-  if (!uxr_init_udp_transport(&node_info->transport, &node_info->udp_platform, UXR_IPv4, UDP_IP, UDP_PORT)) {
+  if (!uxr_init_udp_transport(&node_info->transport, &node_info->udp_platform, UXR_IPv4, context->impl->agent_address, context->impl->agent_port)) {
     RMW_SET_ERROR_MSG("Can not create an udp connection");
     return NULL;
   }
-  printf("UDP mode => ip: %s - port: %s\n", UDP_IP, UDP_PORT);
+  printf("UDP mode => ip: %s - port: %s\n", context->impl->agent_address, context->impl->agent_port);
 #elif defined(MICRO_XRCEDDS_CUSTOM)
   if (!uxr_init_serial_transport(&node_info->transport, &node_info->serial_platform, 0, 0, 1))
   {
