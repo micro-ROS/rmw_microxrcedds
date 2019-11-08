@@ -14,7 +14,6 @@
 
 cmake_minimum_required(VERSION 3.5)
 
-
 find_package(ament_cmake_gtest REQUIRED)
 
 project(rmw_microxrcedds_tests LANGUAGES CXX)
