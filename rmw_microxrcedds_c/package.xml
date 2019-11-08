@@ -3,34 +3,22 @@
 <package format="3">
   <name>rmw_microxrcedds</name>
   <version>0.0.1</version>
-  <description>Implement the microROS interface using eProsima Micro XRCE-DDS.</description>
+  <description>Implement the micro-ROS interface using eProsima Micro XRCE-DDS.</description>
   <maintainer email="borjaouterelo@eprosima.com">Borja Outerelo</maintainer>
   <license>Apache License 2.0</license>
   <author>Borja Outerelo</author>
 
   <buildtool_depend>ament_cmake_ros</buildtool_depend>
   <buildtool_depend>rosidl_cmake</buildtool_depend>
-
   <buildtool_export_depend>ament_cmake_ros</buildtool_export_depend>
   <buildtool_export_depend>rosidl_cmake</buildtool_export_depend>
 
-  <build_depend>microcdr</build_depend>
-  <build_depend>microxrcedds_client</build_depend>
-  <build_depend>microxrcedds_cmake_module</build_depend>
-  <build_depend>rcutils</build_depend>
-  <build_depend>rmw</build_depend>
-  <build_depend>rosidl_typesupport_microxrcedds_c</build_depend>
-  <build_depend>rosidl_typesupport_microxrcedds_cpp</build_depend>
-
-  <build_export_depend>microcdr</build_export_depend>
-  <build_export_depend>microxrcedds_client</build_export_depend>
-  <build_export_depend>microxrcedds_cmake_module</build_export_depend>
-  <build_export_depend>rcutils</build_export_depend>
-  <build_export_depend>rmw</build_export_depend>
-  <build_export_depend>rosidl_typesupport_microxrcedds_cpp</build_export_depend>
-
-  <exec_depend>rcutils</exec_depend>
-  <exec_depend>rmw</exec_depend>
+  <depend>microcdr</depend>
+  <depend>microxrcedds_client</depend>
+  <depend>rcutils</depend>
+  <depend>rmw</depend>
+  <depend>rosidl_typesupport_microxrcedds_c</depend>
+  <depend>rosidl_typesupport_microxrcedds_cpp</depend>
 
   <test_depend>ament_cmake_gtest</test_depend>
   <test_depend>ament_lint_auto</test_depend>

@@ -15,6 +15,14 @@
 cmake_minimum_required(VERSION 3.5)
 cmake_policy(SET CMP0057 NEW)
 
+set(PACKAGE_VERSION "0.1.0")
+project(rmw_microxrcedds
+  VERSION
+    ${PACKAGE_VERSION}
+  LANGUAGES
+    C
+  )
+
 find_program(CLANG_TIDY clang-tidy)
 if(CLANG_TIDY)
   set(CMAKE_C_CLANG_TIDY clang-tidy -checks=* -extra-arg=-Wno-unknown-warning-option)
@@ -23,20 +31,10 @@ endif()
 find_package(ament_cmake_ros REQUIRED)
 find_package(rcutils REQUIRED)
 
-find_package(microxrcedds_cmake_module REQUIRED)
-find_package(MicroXRCEDDS REQUIRED MODULE)
+find_package(microxrcedds_client REQUIRED)
+find_package(microcdr REQUIRED)
 
 find_package(rmw REQUIRED)
-find_package(rosidl_typesupport_microxrcedds_c REQUIRED)
-find_package(rosidl_typesupport_microxrcedds_cpp REQUIRED)
-
-set(PACKAGE_VERSION "0.1.0")
-project(rmw_microxrcedds
-  VERSION
-    ${PACKAGE_VERSION}
-  LANGUAGES
-    C
-  )
 
 if(EXISTS ${PROJECT_SOURCE_DIR}/rmw_microxrcedds.config)
   configure_file(${PROJECT_SOURCE_DIR}/rmw_microxrcedds.config
@@ -118,14 +116,32 @@ target_link_libraries(${PROJECT_NAME}
   microxrcedds_client
   )
 
-if(NOT WIN32)
-  ament_export_libraries(pthread)
+# Type support lock-up mechanism
+find_package(rosidl_typesupport_microxrcedds_c)
+if(rosidl_typesupport_microxrcedds_c_FOUND)
+  ament_target_dependencies(${PROJECT_NAME}
+    "rosidl_typesupport_microxrcedds_c"
+  )
+  target_compile_definitions(${PROJECT_NAME}
+    PUBLIC
+      HAVE_C_TYPESUPPORT
+  )
+  find_package(rosidl_typesupport_microxrcedds_cpp)
+else()
+  find_package(rosidl_typesupport_microxrcedds_cpp REQUIRED)
+endif()
+if(rosidl_typesupport_microxrcedds_cpp_FOUND)
+  ament_target_dependencies(${PROJECT_NAME}
+    "rosidl_typesupport_microxrcedds_cpp"
+  )
+  target_compile_definitions(${PROJECT_NAME}
+    PUBLIC
+      HAVE_CPP_TYPESUPPORT
+  )
 endif()
 
 ament_target_dependencies(${PROJECT_NAME}
   "rcutils"
-  "rosidl_typesupport_microxrcedds_c"
-  "rosidl_typesupport_microxrcedds_cpp"
   "rmw"
   )
 
@@ -169,28 +185,26 @@ if(rosidl_typesupport_microxrcedds_c_FOUND)
   ament_export_dependencies(rosidl_typesupport_microxrcedds_c)
   set(implementations
     "c:rosidl_typesupport_c:rosidl_typesupport_microxrcedds_c"
-    )
+   )
 endif()
 if(rosidl_typesupport_microxrcedds_cpp_FOUND)
   ament_export_dependencies(rosidl_typesupport_microxrcedds_cpp)
   set(implementations
-    ${implementations}
+    ${implementations} 
     "cpp:rosidl_typesupport_cpp:rosidl_typesupport_microxrcedds_cpp"
-    )
+  )
 endif()
-register_rmw_implementation(${implementations})
 
+register_rmw_implementation(
+    ${implementations}
+    )
 
+ament_package()
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
-
-    #    add_subdirectory(test)
+  add_subdirectory(test)
 endif()
-
-ament_package(CONFIG_EXTRAS_POST
-  "rmw_microxrcedds-extras.cmake"
-  )
 
 # Install config.h file.
 install(

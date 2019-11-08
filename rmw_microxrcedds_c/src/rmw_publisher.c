@@ -17,8 +17,12 @@
 #include "utils.h"
 #include "rmw_microxrcedds_topic.h"
 
+#ifdef HAVE_C_TYPESUPPORT
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>
+#endif
+#ifdef HAVE_CPP_TYPESUPPORT
 #include <rosidl_typesupport_microxrcedds_cpp/identifier.h>
+#endif
 #include <rosidl_typesupport_microxrcedds_c/message_type_support.h>
 
 #include <rmw/allocators.h>
@@ -89,15 +93,20 @@ rmw_create_publisher(
     custom_publisher->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
     custom_publisher->session = &custom_node->session;
 
-    const rosidl_message_type_support_t * type_support_xrce = get_message_typesupport_handle(
+    const rosidl_message_type_support_t * type_support_xrce = NULL;
+#ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
+    type_support_xrce = get_message_typesupport_handle(
       type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
-    if (!type_support_xrce) {
+#endif
+#ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE
+    if (NULL == type_support_xrce) {
       type_support_xrce = get_message_typesupport_handle(
       type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
-      if (!type_support_xrce) {
-        RMW_SET_ERROR_MSG("type support not from this implementation");
-        goto fail;
-      }
+    }
+#endif
+    if (NULL == type_support_xrce) {
+      RMW_SET_ERROR_MSG("Undefined type support");
+      goto fail;
     }
 
     custom_publisher->type_support_callbacks =
