@@ -199,12 +199,13 @@ register_rmw_implementation(
     ${implementations}
     )
 
-ament_package()
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
   add_subdirectory(test)
 endif()
+
+ament_package()
 
 # Install config.h file.
 install(

@@ -15,8 +15,8 @@
 #ifndef TEST_UTILS_HPP_
 #define TEST_UTILS_HPP_
 
-#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
-#include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
+#include "rosidl_generator_c/message_type_support_struct.h"
+#include "rosidl_typesupport_microxrcedds_c/message_type_support.h"
 
 #include <rmw/node_security_options.h>
 #include <rmw/rmw.h>
@@ -33,13 +33,13 @@ typedef struct
   message_type_support_callbacks_t callbacks;
   std::string topic_name;
   std::string type_name;
-  std::string package_name;
+  std::string message_namespace;
 } dummy_type_support_t;
 
 void ConfigureDummyTypeSupport(
   const char * type_name,
   const char * topic_name,
-  const char * package_name,
+  const char * message_namespace,
   size_t id,
   dummy_type_support_t * dummy_type_support);
 

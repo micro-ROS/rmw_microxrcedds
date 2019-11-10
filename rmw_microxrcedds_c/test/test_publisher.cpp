@@ -1,4 +1,4 @@
-// Copyright 2018 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2018-2019 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
-#include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
+#include "rosidl_typesupport_microxrcedds_c/message_type_support.h"
 
 #include <vector>
 #include <memory>
@@ -25,7 +24,7 @@
 #include "rmw/validate_namespace.h"
 #include "rmw/validate_node_name.h"
 
-#include <rmw_microxrcedds_c/config.h>
+#include "rmw_microxrcedds_c/config.h"
 #include "rmw_base_test.hpp"
 #include "test_utils.hpp"
 
@@ -51,7 +50,7 @@ protected:
 
   const char * topic_type = "topic_type";
   const char * topic_name = "topic_name";
-  const char * package_name = "package_name";
+  const char * message_namespace = "package_name";
 
   size_t id_gen = 0;
 };
@@ -64,7 +63,7 @@ TEST_F(TestPublisher, construction_and_destruction) {
   ConfigureDummyTypeSupport(
     topic_type,
     topic_type,
-    package_name,
+    message_namespace,
     id_gen++,
     &dummy_type_support);
 
@@ -108,7 +107,7 @@ TEST_F(TestPublisher, memory_poll_multiple_topic) {
       ConfigureDummyTypeSupport(
         topic_type,
         topic_type,
-        package_name,
+        message_namespace,
         id_gen++,
         &dummy_type_supports.back());
 
@@ -130,7 +129,7 @@ TEST_F(TestPublisher, memory_poll_multiple_topic) {
     ConfigureDummyTypeSupport(
       topic_type,
       topic_type,
-      package_name,
+      message_namespace,
       id_gen++,
       &dummy_type_supports.back());
 
@@ -156,7 +155,7 @@ TEST_F(TestPublisher, memory_poll_multiple_topic) {
     ConfigureDummyTypeSupport(
       topic_type,
       topic_type,
-      package_name,
+      message_namespace,
       id_gen++,
       &dummy_type_supports.back());
 
@@ -190,7 +189,7 @@ TEST_F(TestPublisher, memory_poll_shared_topic) {
   ConfigureDummyTypeSupport(
     topic_type,
     topic_type,
-    package_name,
+    message_namespace,
     id_gen++,
     &dummy_type_support);
 
