@@ -16,26 +16,28 @@
 
 #include "./test_utils.hpp"
 
+#include "rosidl_typesupport_microxrcedds_c/identifier.h"
+
 void ConfigureDummyTypeSupport(
   const char * type_name,
   const char * topic_name,
-  const char * package_name,
+  const char * message_namespace,
   size_t id,
   dummy_type_support_t * dummy_type_support)
 {
   dummy_type_support->topic_name = std::string(topic_name).append(std::to_string(id));
   dummy_type_support->type_name = std::string(type_name).append(std::to_string(id));
-  dummy_type_support->package_name = std::string(package_name).append(std::to_string(id));
+  dummy_type_support->message_namespace = std::string(message_namespace).append(std::to_string(id));
 
   dummy_type_support->callbacks.message_name_ = dummy_type_support->type_name.data();
-  dummy_type_support->callbacks.package_name_ = dummy_type_support->package_name.data();
+  dummy_type_support->callbacks.message_namespace_ = dummy_type_support->message_namespace.data();
 
   dummy_type_support->callbacks.cdr_serialize =
     [](const void * untyped_ros_message, ucdrBuffer * cdr) {
       return true;
     };
   dummy_type_support->callbacks.cdr_deserialize =
-    [](ucdrBuffer * cdr, void * untyped_ros_message, uint8_t * raw_mem_ptr, size_t raw_mem_size) {
+    [](ucdrBuffer * cdr, void * untyped_ros_message) {
       return true;
     };
   dummy_type_support->callbacks.get_serialized_size = [](const void *) { return uint32_t(0u); };

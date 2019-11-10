@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
-#include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
-
 #include <vector>
 #include <memory>
 #include <string>
