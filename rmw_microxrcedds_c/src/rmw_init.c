@@ -91,14 +91,14 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   context->instance_id = options->instance_id;
   context->implementation_identifier = eprosima_microxrcedds_identifier;
 
-  rmw_context_impl_t context_impl;
+  rmw_context_impl_t * context_impl = (rmw_context_impl_t *)rmw_allocate(sizeof(rmw_context_impl_t));;
   #ifdef MICRO_XRCEDDS_SERIAL
-    memcpy(context_impl.serial_device, options->impl->serial_device, strlen(options->impl->serial_device) + 1);
+    memcpy(context_impl->serial_device, options->impl->serial_device, strlen(options->impl->serial_device) + 1);
   #elif defined(MICRO_XRCEDDS_UDP)
-    memcpy(context_impl.agent_address, options->impl->agent_address, strlen(options->impl->agent_address) + 1);
-    context_impl.agent_port = options->impl->agent_port;
+    memcpy(context_impl->agent_address, options->impl->agent_address, strlen(options->impl->agent_address) + 1);
+    context_impl->agent_port = options->impl->agent_port;
   #endif
-  context->impl = &context_impl;
+  context->impl = context_impl;
 
   // Intialize random number generator
   time_t t;
