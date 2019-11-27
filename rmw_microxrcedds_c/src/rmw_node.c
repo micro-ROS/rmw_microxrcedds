@@ -181,7 +181,6 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
     RMW_SET_ERROR_MSG("Can not create an custom serial connection");
     return NULL;
   }
-  printf("Custom transport mode\n");
 #endif
 
   uxr_init_session(&node_info->session, &node_info->transport.comm, key);
