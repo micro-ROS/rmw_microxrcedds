@@ -174,7 +174,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
     RMW_SET_ERROR_MSG("Can not create an udp connection");
     return NULL;
   }
-  printf("UDP mode => ip: %s - port: %hu\n", UDP_IP, UDP_PORT);
+  printf("UDP mode => ip: %s - port: %hu\n", UDP_IP, (uint16_t)UDP_PORT);
 #elif defined(MICRO_XRCEDDS_CUSTOM)
   if (!uxr_init_serial_transport(&node_info->transport, &node_info->serial_platform, 0, 0, 1))
   {
