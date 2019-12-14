@@ -36,15 +36,22 @@ find_package(microcdr REQUIRED)
 
 find_package(rmw REQUIRED)
 
-if(EXISTS ${PROJECT_SOURCE_DIR}/rmw_microxrcedds.config)
-  configure_file(${PROJECT_SOURCE_DIR}/rmw_microxrcedds.config
-    ${PROJECT_SOURCE_DIR}/CMakeCache.txt COPYONLY
-    )
-  load_cache(${PROJECT_SOURCE_DIR})
-  file(REMOVE ${PROJECT_SOURCE_DIR}/CMakeCache.txt)
+if(DEFINED MICRO_XRCEDDS_CONFIG_PATH)
+  if(EXISTS ${MICRO_XRCEDDS_CONFIG_PATH})
+    message(STATUS "using external config")
+  endif()
+elseif(EXISTS ${PROJECT_SOURCE_DIR}/rmw_microxrcedds.config)
+  message(STATUS "using internal config")
+  set(MICRO_XRCEDDS_CONFIG_PATH ${PROJECT_SOURCE_DIR}/rmw_microxrcedds.config)
 else()
   message(FATAL_ERROR "No rmw_microxrcedds.config found.")
 endif()
+
+configure_file(${MICRO_XRCEDDS_CONFIG_PATH}
+  ${PROJECT_SOURCE_DIR}/CMakeCache.txt COPYONLY
+  )
+load_cache(${PROJECT_SOURCE_DIR})
+file(REMOVE ${PROJECT_SOURCE_DIR}/CMakeCache.txt)
 
 # Transport handle define macros.
 set(MICRO_XRCEDDS_SERIAL OFF)
