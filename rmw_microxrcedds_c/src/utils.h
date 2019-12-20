@@ -35,6 +35,9 @@ size_t generate_type_name(
   const message_type_support_callbacks_t * members, char type_name[],
   size_t buffer_size);
 
+int build_service_xml(const char * service_name_id, const char * service_name, bool requester,  const service_type_support_callbacks_t * members,
+ const rmw_qos_profile_t * qos_policies, char xml[], size_t buffer_size);
+ 
 int build_participant_xml(
   size_t domain_id, const char * participant_name, char xml[],
   size_t buffer_size);

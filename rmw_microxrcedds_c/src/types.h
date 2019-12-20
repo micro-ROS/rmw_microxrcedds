@@ -24,6 +24,9 @@
 #include "rosidl_generator_c/message_type_support_struct.h"
 #include "rosidl_typesupport_microxrcedds_c/message_type_support.h"
 
+#include "rosidl_generator_c/service_type_support_struct.h"
+#include "rosidl_typesupport_microxrcedds_c/service_type_support.h"
+
 #include "memory.h"
 #include <rmw_microxrcedds_c/config.h>
 
@@ -39,6 +42,50 @@ typedef struct custom_topic_t
   int32_t usage_account;
   struct CustomNode * owner_node;
 } custom_topic_t;
+
+typedef struct CustomService
+{
+  struct Item mem;
+  uxrObjectId service_id;
+  rmw_gid_t service_gid;
+  const service_type_support_callbacks_t * type_support_callbacks;
+  uxrSession * session;
+  uint16_t request_id;
+
+  SampleIdentity sample_id[MAX_HISTORY];
+  uint8_t micro_buffer[MAX_HISTORY][MAX_BUFFER_SIZE];
+  size_t micro_buffer_lenght[MAX_HISTORY];
+
+  uint8_t history_write_index;
+  uint8_t history_read_index;
+  bool micro_buffer_in_use;
+
+
+  uint8_t replay_buffer[MAX_TRANSPORT_MTU];
+
+  struct CustomNode * owner_node;
+} CustomService;
+
+typedef struct CustomClient
+{
+  struct Item mem;
+  uxrObjectId client_id;
+  rmw_gid_t client_gid;
+  const service_type_support_callbacks_t * type_support_callbacks;
+  uxrSession * session;
+  uint16_t request_id;
+
+  int64_t reply_id[MAX_HISTORY];
+  uint8_t micro_buffer[MAX_HISTORY][MAX_BUFFER_SIZE];
+  size_t micro_buffer_lenght[MAX_HISTORY];
+  uint8_t history_write_index;
+  uint8_t history_read_index;
+  bool micro_buffer_in_use;
+
+  uint8_t request_buffer[MAX_TRANSPORT_MTU];
+
+  struct CustomNode * owner_node;
+} CustomClient;
 
 typedef struct CustomSubscription
 {
@@ -91,20 +138,27 @@ typedef struct CustomNode
   uxrObjectId participant_id;
   struct MemPool publisher_mem;
   struct MemPool subscription_mem;
+  struct MemPool service_mem;
+  struct MemPool client_mem;
 
   CustomPublisher publisher_info[MAX_PUBLISHERS_X_NODE];
   CustomSubscription subscription_info[MAX_SUBSCRIPTIONS_X_NODE];
+  CustomService service_info[MAX_SERVICES_X_NODE];
+  CustomClient client_info[MAX_CLIENTS_X_NODE];
+
   custom_topic_t * custom_topic_sp;
 
   bool on_subscription;
 
   uxrStreamId reliable_input;
   uxrStreamId reliable_output;
+  uxrStreamId best_effort_output;
+  uxrStreamId best_effort_input;
 
   uint8_t input_reliable_stream_buffer[MAX_BUFFER_SIZE];
   uint8_t output_reliable_stream_buffer[MAX_BUFFER_SIZE];
-
-  uint8_t miscellaneous_temp_buffer[MAX_TRANSPORT_MTU];
+  uint8_t input_best_effort_stream_buffer[MAX_BUFFER_SIZE];
+  uint8_t output_best_effort_stream_buffer[MAX_BUFFER_SIZE];
 
   uint16_t id_gen;
 } CustomNode;

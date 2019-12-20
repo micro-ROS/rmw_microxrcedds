@@ -77,25 +77,60 @@ rmw_wait(
     }
   }
 
-  if ((NULL == subscriptions) || (0 == subscriptions->subscriber_count)) {
-//    return RMW_RET_INVALID_ARGUMENT;
-    return RMW_RET_OK; // TODO (julian): review rcl_wait without subscriptions.
-  }
-
-  CustomSubscription * custom_subscription = (CustomSubscription *)subscriptions->subscribers[0];
-  if (NULL == custom_subscription) {
-    return RMW_RET_INVALID_ARGUMENT;
-  }
-
-  CustomNode * custom_node = custom_subscription->owner_node;
+  rmw_ret_t ret = RMW_RET_OK;
+  
+  // TODO (Pablo): Manage situations where there is no subscription.
+  CustomSubscription * first_subscription = (CustomSubscription *)subscriptions->subscribers[0];
+  CustomNode * custom_node = first_subscription->owner_node;
   if (NULL == custom_node) {
-    return RMW_RET_INVALID_ARGUMENT;
+    ret = RMW_RET_INVALID_ARGUMENT;
   }
 
   if (!uxr_run_session_until_timeout(&custom_node->session, (int)timeout)) {
-    return RMW_RET_TIMEOUT;
+    ret = RMW_RET_TIMEOUT;
+  }
+
+  // Check services
+  if (services) {
+    for (size_t i = 0; i < services->service_count; ++i) {
+      CustomService * custom_service = (CustomService *)services->services[i];
+      
+      if ((MAX_HISTORY > 1 && custom_service->history_read_index == custom_service->history_write_index) || 
+          (MAX_HISTORY == 1 && !custom_service->micro_buffer_in_use))
+      {
+        services->services[i] = NULL;
+      }
+    }
+  }
+
+  // Check clients
+  if (clients) {
+    for (size_t i = 0; i < clients->client_count; ++i) {
+      CustomClient * custom_client = (CustomClient *)clients->clients[i];
+      
+      if ((MAX_HISTORY > 1 && custom_client->history_read_index == custom_client->history_write_index) || 
+          (MAX_HISTORY == 1 && !custom_client->micro_buffer_in_use)) 
+      {
+        clients->clients[i] = NULL;
+      }
+    }
+  }
+
+  // Check subscriptions
+  if (subscriptions) {
+    for (size_t i = 0; i < subscriptions->subscriber_count; ++i) {
+      CustomSubscription * custom_subscription = (CustomSubscription *)subscriptions->subscribers[i];
+      
+      if (!custom_subscription->micro_buffer_in_use)
+      {
+        subscriptions->subscribers[i] = NULL;
+      }
+    }
   }
 
   EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+
+  // TODO (Pablo): When it need to return a timeout?
+  ret = RMW_RET_OK;
+  return ret;
 }

@@ -86,6 +86,86 @@ void on_topic(
   }
 }
 
+void on_request(uxrSession* session, uxrObjectId object_id, uint16_t request_id, SampleIdentity* sample_id, uint8_t* request_buffer, size_t request_len, void* args)
+{
+  (void)session;
+  (void)object_id;
+
+  CustomNode * node = (CustomNode *)args;
+
+  struct Item * service_item = node->service_mem.allocateditems;
+  CustomService * custom_service = NULL;
+
+  while (service_item != NULL) {
+    custom_service = (CustomService *)service_item->data;
+    if ((custom_service->request_id == request_id)){
+
+      custom_service->micro_buffer_lenght[custom_service->history_write_index] = request_len;
+      memcpy(custom_service->micro_buffer[custom_service->history_write_index], 
+          request_buffer, request_len);
+      memcpy(&custom_service->sample_id[custom_service->history_write_index], 
+          sample_id, sizeof(SampleIdentity));
+
+        
+      // TODO (Pablo): Circular overlapping buffer implemented: use qos
+      if (custom_service->history_write_index == custom_service->history_read_index - 1 ||
+          (custom_service->history_write_index == MAX_HISTORY - 1 && custom_service->history_read_index == 0))
+      {
+        custom_service->history_read_index = (custom_service->history_read_index + 1) % MAX_HISTORY;
+      }
+      custom_service->history_write_index = (custom_service->history_write_index + 1) % MAX_HISTORY;
+
+      if (MAX_HISTORY == 1)
+      {
+        custom_service->micro_buffer_in_use = true;
+      }
+      
+
+      break;
+    }
+    service_item = service_item->next;
+  }
+}
+
+void on_reply(uxrSession* session, uxrObjectId object_id, uint16_t request_id, uint16_t reply_id, uint8_t* buffer, size_t len, void* args)
+{ 
+  (void)session;
+  (void)object_id;
+
+  CustomNode * node = (CustomNode *)args;
+
+  struct Item * client_item = node->client_mem.allocateditems;
+  CustomClient * custom_client = NULL;
+
+  while (client_item != NULL) {
+    custom_client = (CustomClient *)client_item->data;
+    if (custom_client->request_id == request_id)
+    { 
+
+      custom_client->micro_buffer_lenght[custom_client->history_write_index] = len;
+      memcpy(custom_client->micro_buffer[custom_client->history_write_index], buffer,len);
+      custom_client->reply_id[custom_client->history_write_index] = reply_id;
+
+      // TODO (Pablo): Circular overlapping buffer implemented: use qos
+      if (custom_client->history_write_index == custom_client->history_read_index - 1 ||
+          (custom_client->history_write_index == MAX_HISTORY - 1 && custom_client->history_read_index == 0))
+      {
+        custom_client->history_read_index = (custom_client->history_read_index + 1) % MAX_HISTORY;
+      }
+      custom_client->history_write_index = (custom_client->history_write_index + 1) % MAX_HISTORY;
+
+      if (MAX_HISTORY == 1)
+      {
+        custom_client->micro_buffer_in_use = true;
+      }
+
+      break;
+  }
+  client_item = client_item->next;
+}
+
+}
+
 void clear_node(rmw_node_t * node)
 {
   CustomNode * micro_node = (CustomNode *)node->data;
@@ -186,6 +266,9 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   uxr_init_session(&node_info->session, &node_info->transport.comm, key);
   uxr_set_topic_callback(&node_info->session, on_topic, node_info);
   uxr_set_status_callback(&node_info->session, on_status, NULL);
+  uxr_set_request_callback(&node_info->session, on_request, node_info);
+  uxr_set_reply_callback(&node_info->session, on_reply, node_info);
+
 
   node_info->reliable_input = uxr_create_input_reliable_stream(
     &node_info->session, node_info->input_reliable_stream_buffer,
@@ -193,6 +276,10 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   node_info->reliable_output =
     uxr_create_output_reliable_stream(&node_info->session, node_info->output_reliable_stream_buffer,
       node_info->transport.comm.mtu * MAX_HISTORY, MAX_HISTORY);
+
+  node_info->best_effort_input = uxr_create_input_best_effort_stream(&node_info->session);
+  node_info->best_effort_output = uxr_create_output_best_effort_stream(&node_info->session,
+      node_info->output_best_effort_stream_buffer,node_info->transport.comm.mtu * MAX_HISTORY);
 
   rmw_node_t * node_handle = NULL;
   node_handle = rmw_node_allocate();
