@@ -30,7 +30,7 @@
 #include "memory.h"
 #include <rmw_microxrcedds_c/config.h>
 
-typedef struct  rmw_context_impl_t
+struct  rmw_context_impl_t
 {
   #ifdef MICRO_XRCEDDS_SERIAL
     char serial_device[50];
@@ -38,8 +38,17 @@ typedef struct  rmw_context_impl_t
     char agent_address[16];
     uint16_t agent_port;
   #endif
+};
 
-} rmw_context_impl_t;
+struct  rmw_init_options_impl_t
+{
+  #ifdef MICRO_XRCEDDS_SERIAL
+    char serial_device[50];
+  #elif defined(MICRO_XRCEDDS_UDP)
+    char agent_address[16];
+    uint16_t agent_port;
+  #endif 
+};
 
 typedef struct custom_topic_t
 {

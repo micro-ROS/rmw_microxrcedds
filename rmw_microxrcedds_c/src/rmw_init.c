@@ -12,19 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// #include "rmw/impl/cpp/macros.hpp"
-// TODO(BojaOuterelo #4547) Add rmw c implementation macros
-
 #include <time.h>
 
-#include "rmw_microxrcedds_c/rmw_microxrcedds.h"
-#include "rmw_microxrcedds_c/rmw_c_macros.h"
+#include "./types.h"
+#include "./rmw_microxrcedds_c/rmw_c_macros.h"
 #include "./rmw_node.h"
 #include "./identifiers.h"
+#include <rmw_microxrcedds_c/config.h>
 
-#include "rmw/rmw.h"
-#include "rmw/error_handling.h"
-#include "rmw/allocators.h"
+#include <rmw/rmw.h>
+#include <rmw/error_handling.h>
+#include <rmw/allocators.h>
 
 
 rmw_ret_t
@@ -77,12 +75,12 @@ rmw_init_options_fini(rmw_init_options_t * init_options)
   return RMW_RET_OK;
 }
 
-// TODO(BorjaOuterelo #4545): How do we pass transport to use?.
 rmw_ret_t
 rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 {
   RCUTILS_CHECK_ARGUMENT_FOR_NULL(options, RMW_RET_INVALID_ARGUMENT);
   RCUTILS_CHECK_ARGUMENT_FOR_NULL(context, RMW_RET_INVALID_ARGUMENT);
+  RCUTILS_CHECK_ARGUMENT_FOR_NULL(options->impl, RMW_RET_INVALID_ARGUMENT);
   RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
     options,
     options->implementation_identifier,
@@ -91,7 +89,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   context->instance_id = options->instance_id;
   context->implementation_identifier = eprosima_microxrcedds_identifier;
 
-  rmw_context_impl_t * context_impl = (rmw_context_impl_t *)rmw_allocate(sizeof(rmw_context_impl_t));;
+  rmw_context_impl_t * context_impl = (rmw_context_impl_t *)rmw_allocate(sizeof(rmw_context_impl_t));
   #ifdef MICRO_XRCEDDS_SERIAL
     memcpy(context_impl->serial_device, options->impl->serial_device, strlen(options->impl->serial_device) + 1);
   #elif defined(MICRO_XRCEDDS_UDP)
