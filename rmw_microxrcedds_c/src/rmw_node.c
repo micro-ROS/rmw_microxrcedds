@@ -26,11 +26,15 @@
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 
+#include "./types.h"
+#include "./utils.h"
 
 #ifdef MICRO_XRCEDDS_SERIAL
 #define CLOSE_TRANSPORT(transport) uxr_close_serial_transport(transport)
 #elif defined(MICRO_XRCEDDS_UDP)
 #define CLOSE_TRANSPORT(transport) uxr_close_udp_transport(transport)
+#else
+#define CLOSE_TRANSPORT(transport)
 #endif
 
 static struct MemPool node_memory;
@@ -171,6 +175,12 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
     return NULL;
   }
   printf("UDP mode => ip: %s - port: %hu\n", UDP_IP, (uint16_t)UDP_PORT);
+#elif defined(MICRO_XRCEDDS_CUSTOM)
+  if (!uxr_init_serial_transport(&node_info->transport, &node_info->serial_platform, 0, 0, 1))
+  {
+    RMW_SET_ERROR_MSG("Can not create an custom serial connection");
+    return NULL;
+  }
 #endif
 
   uxr_init_session(&node_info->session, &node_info->transport.comm, key);

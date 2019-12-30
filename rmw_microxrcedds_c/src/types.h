@@ -80,7 +80,7 @@ typedef struct CustomPublisher
 typedef struct CustomNode
 {
   struct Item mem;
-#ifdef MICRO_XRCEDDS_SERIAL
+#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM)
   uxrSerialTransport transport;
   uxrSerialPlatform serial_platform;
 #elif defined(MICRO_XRCEDDS_UDP)
