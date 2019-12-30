@@ -31,7 +31,6 @@ rmw_wait(
 {
   (void) services;
   (void) clients;
-  (void) guard_conditions;
   (void) events;
   (void) wait_set;
   EPROS_PRINT_TRACE()
@@ -62,6 +61,20 @@ rmw_wait(
     }
   } else {
     timeout = (uint64_t)UXR_TIMEOUT_INF;
+  }
+
+  // Check guard conditions
+  if (guard_conditions) {
+    for (size_t i = 0; i < guard_conditions->guard_condition_count; ++i) {
+      bool * hasTriggered = (bool *)guard_conditions->guard_conditions[i];
+      if ((*hasTriggered) == false)
+      {
+        guard_conditions->guard_conditions[i] = NULL;
+      }else
+      {
+        *hasTriggered = false;
+      }
+    }
   }
 
   if ((NULL == subscriptions) || (0 == subscriptions->subscriber_count)) {
