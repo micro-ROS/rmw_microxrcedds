@@ -39,7 +39,16 @@ rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t all
   init_options->instance_id = 0;
   init_options->implementation_identifier = eprosima_microxrcedds_identifier;
   init_options->allocator = allocator;
-  init_options->impl = NULL;
+
+  init_options->impl = allocator.allocate(sizeof(rmw_init_options_impl_t), allocator.state);
+
+#ifdef MICRO_XRCEDDS_SERIAL
+  strcpy(init_options->impl->serial_device, RMW_DEFAULT_SERIAL_DEVICE);
+#elif defined(MICRO_XRCEDDS_UDP)
+  strcpy(init_options->impl->agent_address, RMW_DEFAULT_UDP_IP);
+  strcpy(init_options->impl->agent_port, RMW_DEFAULT_UDP_PORT);
+#endif
+
   return RMW_RET_OK;
 }
 
@@ -71,6 +80,9 @@ rmw_init_options_fini(rmw_init_options_t * init_options)
     init_options->implementation_identifier,
     eprosima_microxrcedds_identifier,
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+    
+  rmw_free(init_options->impl);
+
   *init_options = rmw_get_zero_initialized_init_options();
   return RMW_RET_OK;
 }
@@ -91,10 +103,10 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 
   rmw_context_impl_t * context_impl = (rmw_context_impl_t *)rmw_allocate(sizeof(rmw_context_impl_t));
   #ifdef MICRO_XRCEDDS_SERIAL
-    memcpy(context_impl->serial_device, options->impl->serial_device, strlen(options->impl->serial_device) + 1);
+    strcpy(context_impl->serial_device, options->impl->serial_device);
   #elif defined(MICRO_XRCEDDS_UDP)
-    memcpy(context_impl->agent_address, options->impl->agent_address, strlen(options->impl->agent_address) + 1);
-    context_impl->agent_port = options->impl->agent_port;
+    strcpy(context_impl->agent_address, options->impl->agent_address);
+    strcpy(context_impl->agent_port, options->impl->agent_port);
   #endif
   context->impl = context_impl;
 

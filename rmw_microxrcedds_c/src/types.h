@@ -36,7 +36,7 @@ struct  rmw_context_impl_t
     char serial_device[50];
   #elif defined(MICRO_XRCEDDS_UDP)
     char agent_address[16];
-    uint16_t agent_port;
+    char agent_port[5];
   #endif
 };
 
@@ -46,7 +46,7 @@ struct  rmw_init_options_impl_t
     char serial_device[50];
   #elif defined(MICRO_XRCEDDS_UDP)
     char agent_address[16];
-    uint16_t agent_port;
+    char agent_port[5];
   #endif 
 };
 

@@ -30,4 +30,25 @@
  */
 rmw_ret_t rmw_uros_init_options(int argc, const char* const argv[], rmw_init_options_t* rmw_options);
 
+/**
+ * \brief Fills rmw implementation specific options with given parameters.
+ *
+ * \param[in] dev Serial device.
+ * \param[in,out] rmw_options Updated options with rmw specifics.
+ * \return RMW_RET_OK If arguments where valid and setted in rmw_init_options.
+ * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
+ */
+rmw_ret_t rmw_uros_options_set_serial_device(const char* dev, rmw_init_options_t* rmw_options);
+
+/**
+ * \brief Fills rmw implementation specific options with given parameters.
+ *
+ * \param[in] ip Agent IP address.
+ * \param[in] port Agent UDP port.
+ * \param[in,out] rmw_options Updated options with rmw specifics.
+ * \return RMW_RET_OK If arguments where valid and setted in rmw_init_options.
+ * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
+ */
+rmw_ret_t rmw_uros_options_set_udp_address(const char* ip, const char* port, rmw_init_options_t* rmw_options);
+
 #endif // !RMW_MICROXRCEDDS_C__RMW_UROS_OPTIONS_H
