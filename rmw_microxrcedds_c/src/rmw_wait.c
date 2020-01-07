@@ -78,14 +78,29 @@ rmw_wait(
   }
 
   rmw_ret_t ret = RMW_RET_OK;
-  
-  // TODO (Pablo): Manage situations where there is no subscription.
-  CustomSubscription * first_subscription = (CustomSubscription *)subscriptions->subscribers[0];
-  CustomNode * custom_node = first_subscription->owner_node;
+
+  // TODO (Pablo): Check this with no subscription or service/client 
+  // TODO (Pablo): Iterate along different nodes avaliable.
+  CustomNode * custom_node = NULL;
+  if (subscriptions->subscriber_count)
+  {
+    CustomSubscription * first_subscription = (CustomSubscription *)subscriptions->subscribers[0];
+    custom_node = first_subscription->owner_node;
+  }else if (services->service_count)
+  {
+    CustomService * first_service = (CustomService *)services->services[0];
+    custom_node = first_service->owner_node;
+  }else if (clients->client_count)
+  {
+    CustomClient * first_client = (CustomClient *)clients->clients[0];
+    custom_node = first_client->owner_node;
+  }
+
   if (NULL == custom_node) {
     ret = RMW_RET_INVALID_ARGUMENT;
   }
-
+  
+  // Run XRCE session
   if (!uxr_run_session_until_timeout(&custom_node->session, (int)timeout)) {
     ret = RMW_RET_TIMEOUT;
   }

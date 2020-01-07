@@ -119,7 +119,7 @@ rmw_create_client(
     char service_name_id[20];
     generate_name(&custom_client->client_id, service_name_id, sizeof(service_name_id));
     if (!build_service_xml(service_name_id, service_name, true, custom_client->type_support_callbacks, qos_policies, xml_buffer, sizeof(xml_buffer))) {
-      RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
+      RMW_SET_ERROR_MSG("failed to generate xml request for client creation");
       goto fail;
     }
     client_req = uxr_buffer_create_requester_xml(&custom_node->session,

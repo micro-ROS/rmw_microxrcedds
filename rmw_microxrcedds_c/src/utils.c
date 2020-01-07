@@ -214,22 +214,22 @@ int build_service_xml(const char * service_name_id, const char * service_name, b
   if (!qos_policies->avoid_ros_namespace_conventions) {
     ret = snprintf(req_full_topic_name, sizeof(req_full_topic_name), "%s%s%s", ros_request_prefix,
         service_name,ros_request_subfix);
-    if ((ret < 0) && (ret >= (int)sizeof(req_full_topic_name))) {
+    if ((ret < 0) || (ret >= (int)sizeof(req_full_topic_name))) {
       return 0;
     }
       
     ret = snprintf(res_full_topic_name, sizeof(res_full_topic_name), "%s%s%s", ros_reply_prefix,
         service_name,ros_reply_subfix);
-    if ((ret < 0) && (ret >= (int)sizeof(res_full_topic_name))) {
+    if ((ret < 0) || (ret >= (int)sizeof(res_full_topic_name))) {
       return 0;
     }
   } else {
     ret = snprintf(req_full_topic_name, sizeof(req_full_topic_name), "%s", service_name);
-    if ((ret < 0) && (ret >= (int)req_full_topic_name)) {
+    if ((ret < 0) || (ret >= (int)sizeof(req_full_topic_name))) {
       return 0;
     }
     ret = snprintf(res_full_topic_name, sizeof(res_full_topic_name), "%s", service_name);
-    if ((ret < 0) && (ret >= (int)res_full_topic_name)) {
+    if ((ret < 0) || (ret >= (int)sizeof(req_full_topic_name))) {
       return 0;
     }
   }

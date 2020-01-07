@@ -33,7 +33,7 @@ rmw_send_request(
   CustomClient * custom_client = (CustomClient *)client->data;
   CustomNode * custom_node = (CustomNode *)custom_client->owner_node;
   
-  const rosidl_message_type_support_t * req_members = custom_client->type_support_callbacks->response_members_();
+  const rosidl_message_type_support_t * req_members = custom_client->type_support_callbacks->request_members_();
   const message_type_support_callbacks_t * functions = (const message_type_support_callbacks_t *)req_members->data;
 
   uint32_t topic_size = functions->get_serialized_size(ros_request);
@@ -45,6 +45,8 @@ rmw_send_request(
  
   *sequence_id = uxr_buffer_request(&custom_node->session, custom_node->reliable_output, 
       custom_client->client_id, custom_client->request_buffer, topic_size);
+
+  uxr_run_session_time(&custom_node->session,1000);
 
   return RMW_RET_OK;
 }

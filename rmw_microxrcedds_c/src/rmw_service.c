@@ -61,7 +61,7 @@ rmw_create_service(
     }
 
     CustomNode * custom_node = (CustomNode *)node->data;
-    struct Item * memory_node = get_memory(&custom_node->subscription_mem);
+    struct Item * memory_node = get_memory(&custom_node->service_mem);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
       goto fail;
@@ -119,7 +119,7 @@ rmw_create_service(
     char service_name_id[20];
     generate_name(&custom_service->service_id, service_name_id, sizeof(service_name_id));
     if (!build_service_xml(service_name_id, service_name, false, custom_service->type_support_callbacks, qos_policies, xml_buffer, sizeof(xml_buffer))) {
-      RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
+      RMW_SET_ERROR_MSG("failed to generate xml request for service creation");
       goto fail;
     }
     service_req = uxr_buffer_create_replier_xml(&custom_node->session,
