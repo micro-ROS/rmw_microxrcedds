@@ -103,7 +103,7 @@ rmw_create_service(
     }
 
 #ifdef MICRO_XRCEDDS_USE_XML
-    char xml_buffer[400];
+    char xml_buffer[RMW_XML_BUFFER_LENGTH];
 #elif defined(MICRO_XRCEDDS_USE_REFS)
     char profile_name[64];
 #endif

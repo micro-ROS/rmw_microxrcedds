@@ -297,6 +297,7 @@ size_t generate_type_name(
   size_t ret = 0;
   size_t full_name_size = strlen(protocol) + strlen(suffix) + strlen(sep) + strlen(members->message_name_) + strlen(suffix) + ((NULL != members->message_namespace_) ? strlen(members->message_namespace_):0) + 1;
   type_name[0] = 0;
+
   if (full_name_size < buffer_size)
   {
       if (NULL != members->message_namespace_)
@@ -311,10 +312,7 @@ size_t generate_type_name(
       strcat(type_name, suffix);
       ret = full_name_size;
   }
-  else
-  {
-      ret = 0;
-  }
+
   return ret;
 }
 
@@ -331,7 +329,7 @@ int build_topic_xml(
     "</dds>";
 
   int ret = 0;
-  static char type_name_buffer[50];
+  static char type_name_buffer[RMW_MICROXRCEDDS_TYPE_NAME_MAX_NAME_LENGTH];
 
   if (RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH >= strlen(topic_name) &&
     0 != generate_type_name(members, type_name_buffer, sizeof(type_name_buffer)))
@@ -365,7 +363,7 @@ int build_xml(
   const rmw_qos_profile_t * qos_policies, char xml[], size_t buffer_size)
 {
   int ret = 0;
-  static char type_name_buffer[50];
+  static char type_name_buffer[RMW_MICROXRCEDDS_TYPE_NAME_MAX_NAME_LENGTH];
 
   if (0 != generate_type_name(members, type_name_buffer, sizeof(type_name_buffer))) {
     char full_topic_name[RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_topic_prefix)];
