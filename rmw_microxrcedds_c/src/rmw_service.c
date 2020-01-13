@@ -44,10 +44,8 @@ rmw_create_service(
     RMW_SET_ERROR_MSG("node handle not from this implementation");
   } else if (!service_name || strlen(service_name) == 0) {
     RMW_SET_ERROR_MSG("service name is null or empty string");
-    return NULL;
   } else if (!qos_policies) {
     RMW_SET_ERROR_MSG("qos_profile is null");
-    return NULL;
   } else {
 
     rmw_service = (rmw_service_t *)rmw_allocate(
@@ -157,7 +155,7 @@ rmw_create_service(
   return rmw_service;
 
 fail:
-  // rmw_subscription_delete(rmw_subscription);
+  rmw_service_delete(rmw_service);
   rmw_service = NULL;
   return rmw_service;
 }

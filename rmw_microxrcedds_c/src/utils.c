@@ -143,6 +143,40 @@ void subscriptions_clear(CustomSubscription subscriptions[MAX_SUBSCRIPTIONS_X_NO
   }
 }
 
+void customservice_clear(CustomService * service)
+{
+  if (service) {
+    memset(&service->service_id, 0, sizeof(uxrObjectId));
+    service->type_support_callbacks = NULL;
+    service->history_write_index = 0;
+    service->history_read_index = 0;
+    service->micro_buffer_in_use = false;
+    service->service_gid.implementation_identifier = NULL;
+    memset(&service->service_gid.data, 0, RMW_GID_STORAGE_SIZE);
+  }
+}
+
+void rmw_service_delete(rmw_service_t * service)
+{
+  if (service->implementation_identifier) {
+    service->implementation_identifier = NULL;
+  }
+  if (service->service_name) {
+    rmw_delete((char *)service->service_name);
+  }
+  if (service->data) {
+    CustomService * custom_service =
+      (CustomService *)service->data;
+
+    put_memory(&custom_service->owner_node->service_mem,
+      &custom_service->mem);
+
+    customservice_clear((CustomService *)service->data);
+    service->data = NULL;
+  }
+  rmw_delete(service);
+}
+
 void customclient_clear(CustomClient * client)
 {
   if (client) {
