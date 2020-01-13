@@ -277,7 +277,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
 
   node_info->best_effort_input = uxr_create_input_best_effort_stream(&node_info->session);
   node_info->best_effort_output = uxr_create_output_best_effort_stream(&node_info->session,
-      node_info->output_best_effort_stream_buffer,node_info->transport.comm.mtu * MAX_HISTORY);
+      node_info->output_best_effort_stream_buffer,node_info->transport.comm.mtu);
 
   rmw_node_t * node_handle = NULL;
   node_handle = rmw_node_allocate();
