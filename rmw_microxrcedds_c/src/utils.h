@@ -27,6 +27,7 @@ void rmw_delete(void * rmw_allocated_ptr);
 void rmw_node_delete(rmw_node_t * node);
 void rmw_publisher_delete(rmw_publisher_t * publisher);
 void rmw_subscription_delete(rmw_subscription_t * subscriber);
+void rmw_client_delete(rmw_client_t * client);
 
 void customnode_clear(CustomNode * node);
 

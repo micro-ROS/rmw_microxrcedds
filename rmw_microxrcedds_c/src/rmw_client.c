@@ -44,10 +44,8 @@ rmw_create_client(
     RMW_SET_ERROR_MSG("node handle not from this implementation");
   } else if (!service_name || strlen(service_name) == 0) {
     RMW_SET_ERROR_MSG("service name is null or empty string");
-    return NULL;
   } else if (!qos_policies) {
     RMW_SET_ERROR_MSG("qos_profile is null");
-    return NULL;
   } else {
 
     rmw_client = (rmw_client_t *)rmw_allocate(
@@ -126,7 +124,7 @@ rmw_create_client(
         custom_node->reliable_output, custom_client->client_id,
         custom_node->participant_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
-    // CHECK IF THIS IS NECESSARY
+    // TODO (Pablo): Is possible to instantiate a replier by ref?
     // client_req = uxr_buffer_create_replier_ref(&custom_node->session,
     //     custom_node->reliable_output, custom_service->subscriber_id,
     //     custom_node->participant_id, "", UXR_REPLACE);
@@ -156,7 +154,7 @@ rmw_create_client(
   return rmw_client;
 
 fail:
-  // rmw_subscription_delete(rmw_subscription);
+  rmw_client_delete(rmw_client);
   rmw_client = NULL;
   return rmw_client;
 }
