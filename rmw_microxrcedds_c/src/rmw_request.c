@@ -46,6 +46,12 @@ rmw_send_request(
   *sequence_id = uxr_buffer_request(&custom_node->session, custom_node->reliable_output, 
       custom_client->client_id, custom_client->request_buffer, topic_size);
 
+  if (UXR_INVALID_REQUEST_ID == *sequence_id)
+  {
+    RMW_SET_ERROR_MSG("Micro XRCE-DDS service request error.");
+    return RMW_RET_ERROR;
+  }
+
   uxr_run_session_time(&custom_node->session,100);
 
   return RMW_RET_OK;
