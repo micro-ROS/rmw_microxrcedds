@@ -46,7 +46,7 @@ rmw_send_request(
   *sequence_id = uxr_buffer_request(&custom_node->session, custom_node->reliable_output, 
       custom_client->client_id, custom_client->request_buffer, topic_size);
 
-  uxr_run_session_time(&custom_node->session,1000);
+  uxr_run_session_time(&custom_node->session,100);
 
   return RMW_RET_OK;
 }
