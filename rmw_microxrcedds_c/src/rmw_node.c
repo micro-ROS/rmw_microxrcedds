@@ -166,13 +166,18 @@ void clear_node(rmw_node_t * node)
   put_memory(&node_memory, &micro_node->mem);
 }
 
-rmw_node_t * create_node(const char * name, const char * namespace_, size_t domain_id, rmw_context_t * context)
+rmw_node_t * create_node(const char * name, const char * namespace_, size_t domain_id, const rmw_context_t * context)
 {
   // TODO(Javier) Need to be changed into a to thread-save code.
   //  The suggested option rand_r() is not valid for this purpose.
   //  This change is pending to new feature in Micro XRCE-DDS that will provide an unused ID.
   //  When removed, the random initalization code in rmw_inint() must be removed.
   uint32_t key = rand();  // NOLINT
+
+  if (!context) {
+    RMW_SET_ERROR_MSG("context is null");
+    return NULL;
+  }
 
   struct Item * memory_node = get_memory(&node_memory);
   if (!memory_node) {
