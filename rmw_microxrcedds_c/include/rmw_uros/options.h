@@ -19,7 +19,7 @@
 #include <rmw/init_options.h>
 
 /**
- * \brief Parse command line args and fills rmw implementation specific options.
+ * \brief Parses command line args and fills rmw implementation-specific options.
  * `rmw_init_options allocator` is used to allocate the specific rmw options.
  *
  * \param[in] argc Number of arguments.
