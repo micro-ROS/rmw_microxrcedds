@@ -72,7 +72,7 @@ if(${CONFIG_MICRO_XRCEDDS_CREATION_MODE} STREQUAL "refs")
 elseif(${CONFIG_MICRO_XRCEDDS_CREATION_MODE} STREQUAL "xml")
   set(MICRO_XRCEDDS_USE_XML ON)
 else()
-  message(FATAL_ERROR "Creation mode not supported. Use \"refs\" or \"xmls\"")
+  message(FATAL_ERROR "Creation mode not supported. Use \"refs\" or \"xml\"")
 endif()
 
 # Create source files with the define
