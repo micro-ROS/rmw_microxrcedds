@@ -59,6 +59,7 @@ rmw_create_service(
       RMW_SET_ERROR_MSG("failed to allocate memory");
       goto fail;
     }
+    memcpy(rmw_service->service_name, service_name, strlen(service_name) + 1);
 
     CustomNode * custom_node = (CustomNode *)node->data;
     struct Item * memory_node = get_memory(&custom_node->service_mem);
