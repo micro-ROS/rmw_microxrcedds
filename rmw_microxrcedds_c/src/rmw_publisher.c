@@ -74,7 +74,7 @@ rmw_create_publisher(
     rmw_publisher = (rmw_publisher_t *)rmw_allocate(sizeof(rmw_publisher_t));
     rmw_publisher->data = NULL;
     rmw_publisher->implementation_identifier = rmw_get_implementation_identifier();
-    rmw_publisher->topic_name = (const char *)(rmw_allocate(sizeof(char) * (strlen(service_name) + 1)));
+    rmw_publisher->topic_name = (const char *)(rmw_allocate(sizeof(char) * (strlen(topic_name) + 1)));
     if (!rmw_publisher->topic_name) {
       RMW_SET_ERROR_MSG("failed to allocate memory");
       goto fail;
