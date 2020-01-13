@@ -43,21 +43,21 @@ rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t all
   init_options->impl = allocator.allocate(sizeof(rmw_init_options_impl_t), allocator.state);
 
 #ifdef MICRO_XRCEDDS_SERIAL
-  if(strlen(RMW_DEFAULT_SERIAL_DEVICE) <= strlen(init_options->impl->serial_device)){
+  if(strlen(RMW_DEFAULT_SERIAL_DEVICE) <= MAX_SERIAL_DEVICE){
     strcpy(init_options->impl->serial_device, RMW_DEFAULT_SERIAL_DEVICE);
   }else{
     RMW_SET_ERROR_MSG("default serial port configuration overflow");
     return RMW_RET_INVALID_ARGUMENT;
   }
 #elif defined(MICRO_XRCEDDS_UDP)
-  if(strlen(RMW_DEFAULT_UDP_IP) <= strlen(init_options->impl->agent_address)){
+  if(strlen(RMW_DEFAULT_UDP_IP) <= MAX_IP_LEN){
     strcpy(init_options->impl->agent_address, RMW_DEFAULT_UDP_IP);
   }else{
     RMW_SET_ERROR_MSG("default ip configuration overflow");
     return RMW_RET_INVALID_ARGUMENT;
   }
   
-  if(strlen(RMW_DEFAULT_UDP_PORT) <= strlen(init_options->impl->agent_port)){
+  if(strlen(RMW_DEFAULT_UDP_PORT) <= MAX_PORT_LEN){
     strcpy(init_options->impl->agent_port, RMW_DEFAULT_UDP_PORT);
   }else{
     RMW_SET_ERROR_MSG("default port configuration overflow");

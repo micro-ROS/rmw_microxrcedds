@@ -51,7 +51,7 @@ rmw_ret_t rmw_uros_options_set_serial_device(const char* dev, rmw_init_options_t
         return RMW_RET_INVALID_ARGUMENT;
     }
 
-    if(strlen(dev) <= strlen(rmw_options->impl->serial_device)){
+    if(strlen(dev) <= MAX_SERIAL_DEVICE){
         strcpy(rmw_options->impl->serial_device, dev);
     }else{
         RMW_SET_ERROR_MSG("serial port configuration overflow");
@@ -76,14 +76,14 @@ rmw_ret_t rmw_uros_options_set_udp_address(const char* ip, const char* port, rmw
         return RMW_RET_INVALID_ARGUMENT;
     }
 
-    if(strlen(ip) <= strlen(rmw_options->impl->agent_address)){
+    if(strlen(ip) <= MAX_IP_LEN){
         strcpy(rmw_options->impl->agent_address, ip);
     }else{
         RMW_SET_ERROR_MSG("default ip configuration overflow");
         return RMW_RET_INVALID_ARGUMENT;
     }
     
-    if(strlen(port) <= strlen(rmw_options->impl->agent_port)){
+    if(strlen(port) <= MAX_PORT_LEN){
         strcpy(rmw_options->impl->agent_port, port);
     }else{
         RMW_SET_ERROR_MSG("default port configuration overflow");
