@@ -289,7 +289,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   }
   node_handle->implementation_identifier = rmw_get_implementation_identifier();
   node_handle->data = node_info;
-  node_handle->name = (const char *)(rmw_allocate(sizeof(char) * strlen(name) + 1));
+  node_handle->name = (const char *)(rmw_allocate(sizeof(char) * (strlen(name) + 1)));
   if (!node_handle->name) {
     RMW_SET_ERROR_MSG("failed to allocate memory");
     CLOSE_TRANSPORT(&node_info->transport);
@@ -298,7 +298,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   }
   memcpy((char *)node_handle->name, name, strlen(name) + 1);
 
-  node_handle->namespace_ = rmw_allocate(sizeof(char) * strlen(namespace_) + 1);
+  node_handle->namespace_ = rmw_allocate(sizeof(char) * (strlen(namespace_) + 1));
   if (!node_handle->namespace_) {
     RMW_SET_ERROR_MSG("failed to allocate memory");
     CLOSE_TRANSPORT(&node_info->transport);

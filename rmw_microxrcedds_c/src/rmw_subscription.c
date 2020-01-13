@@ -79,7 +79,7 @@ rmw_create_subscription(
       sizeof(rmw_subscription_t));
     rmw_subscription->data = NULL;
     rmw_subscription->implementation_identifier = rmw_get_implementation_identifier();
-    rmw_subscription->topic_name = (const char *)(rmw_allocate(sizeof(char) * strlen(topic_name) + 1));
+    rmw_subscription->topic_name = (const char *)(rmw_allocate(sizeof(char) * (strlen(topic_name) + 1)));
     if (!rmw_subscription->topic_name) {
       RMW_SET_ERROR_MSG("failed to allocate memory");
       goto fail;

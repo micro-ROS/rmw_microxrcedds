@@ -52,7 +52,7 @@ rmw_create_client(
       sizeof(rmw_client_t));
     rmw_client->data = NULL;
     rmw_client->implementation_identifier = rmw_get_implementation_identifier();
-    rmw_client->service_name = (const char *)(rmw_allocate(sizeof(char) * strlen(service_name) + 1));
+    rmw_client->service_name = (const char *)(rmw_allocate(sizeof(char) * (strlen(service_name) + 1)));
     if (!rmw_client->service_name) {
       RMW_SET_ERROR_MSG("failed to allocate memory");
       goto fail;
