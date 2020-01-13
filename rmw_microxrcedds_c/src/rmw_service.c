@@ -106,7 +106,7 @@ rmw_create_service(
 #ifdef MICRO_XRCEDDS_USE_XML
     char xml_buffer[RMW_XML_BUFFER_LENGTH];
 #elif defined(MICRO_XRCEDDS_USE_REFS)
-    char profile_name[64];
+    char profile_name[RMW_REF_BUFFER_LENGTH];
 #endif
 
     custom_service->service_id = uxr_object_id(custom_node->id_gen++, UXR_REPLIER_ID);

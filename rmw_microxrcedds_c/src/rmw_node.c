@@ -319,7 +319,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   node_info->participant_id = uxr_object_id(node_info->id_gen++, UXR_PARTICIPANT_ID);
   uint16_t participant_req;
 #ifdef MICRO_XRCEDDS_USE_XML
-  char participant_xml[300];
+  char participant_xml[RMW_XML_BUFFER_LENGTH];
   if (!build_participant_xml(domain_id, name, participant_xml, sizeof(participant_xml))) {
     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
     return NULL;
@@ -328,7 +328,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
     uxr_buffer_create_participant_xml(&node_info->session, node_info->reliable_output,
       node_info->participant_id, (uint16_t)domain_id, participant_xml, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
-  char profile_name[20];
+  char profile_name[RMW_REF_BUFFER_LENGTH];
   if (!build_participant_profile(profile_name, sizeof(profile_name))) {
     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
     return NULL;
