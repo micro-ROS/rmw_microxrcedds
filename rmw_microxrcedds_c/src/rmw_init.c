@@ -65,6 +65,11 @@ rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t all
   }
 #endif
 
+  time_t t;
+  time(&t);
+  srand((unsigned)t);
+  init_options->impl->client_key = rand();
+
   return RMW_RET_OK;
 }
 
@@ -124,11 +129,10 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
     strcpy(context_impl->agent_address, options->impl->agent_address);
     strcpy(context_impl->agent_port, options->impl->agent_port);
   #endif
-  context->impl = context_impl;
 
-  // Intialize random number generator
-  time_t t;
-  srand((unsigned)time(&t));
+  context_impl->client_key = options->impl->client_key;
+
+  context->impl = context_impl;
 
   init_rmw_node();
 

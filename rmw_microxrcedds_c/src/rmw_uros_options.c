@@ -100,3 +100,16 @@ rmw_ret_t rmw_uros_options_set_udp_address(const char* ip, const char* port, rmw
     return RMW_RET_INVALID_ARGUMENT;
 #endif
 }
+
+rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_t* rmw_options)
+{
+    if (NULL == rmw_options)
+    {
+        RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
+        return RMW_RET_INVALID_ARGUMENT;
+    }
+
+    rmw_options->impl->client_key = client_key;
+
+    return RMW_RET_OK;
+}

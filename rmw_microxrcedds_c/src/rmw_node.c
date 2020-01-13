@@ -168,12 +168,6 @@ void clear_node(rmw_node_t * node)
 
 rmw_node_t * create_node(const char * name, const char * namespace_, size_t domain_id, const rmw_context_t * context)
 {
-  // TODO(Javier) Need to be changed into a to thread-save code.
-  //  The suggested option rand_r() is not valid for this purpose.
-  //  This change is pending to new feature in Micro XRCE-DDS that will provide an unused ID.
-  //  When removed, the random initalization code in rmw_inint() must be removed.
-  uint32_t key = rand();  // NOLINT
-
   if (!context) {
     RMW_SET_ERROR_MSG("context is null");
     return NULL;
@@ -257,7 +251,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   }
 #endif
 
-  uxr_init_session(&node_info->session, &node_info->transport.comm, key);
+  uxr_init_session(&node_info->session, &node_info->transport.comm, context->impl->client_key);
   uxr_set_topic_callback(&node_info->session, on_topic, node_info);
   uxr_set_status_callback(&node_info->session, on_status, NULL);
   uxr_set_request_callback(&node_info->session, on_request, node_info);
