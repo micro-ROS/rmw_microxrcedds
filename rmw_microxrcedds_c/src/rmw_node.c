@@ -98,15 +98,13 @@ void on_request(uxrSession* session, uxrObjectId object_id, uint16_t request_id,
 
   while (service_item != NULL) {
     custom_service = (CustomService *)service_item->data;
-    if ((custom_service->request_id == request_id)){
-
+    if (custom_service->request_id == request_id){
       custom_service->micro_buffer_lenght[custom_service->history_write_index] = request_len;
       memcpy(custom_service->micro_buffer[custom_service->history_write_index], 
           request_buffer, request_len);
       memcpy(&custom_service->sample_id[custom_service->history_write_index], 
           sample_id, sizeof(SampleIdentity));
 
-        
       // TODO (Pablo): Circular overlapping buffer implemented: use qos
       if (custom_service->history_write_index == custom_service->history_read_index - 1 ||
           (custom_service->history_write_index == MAX_HISTORY - 1 && custom_service->history_read_index == 0))
