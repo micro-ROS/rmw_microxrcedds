@@ -37,7 +37,7 @@ find_package(microcdr REQUIRED)
 find_package(rmw REQUIRED)
 
 # RMW default configuration
-set(CONFIG_MICRO_XRCEDDS_TRANSPORT "udp" CACHE STRING "Sets Micro XRCE-DDS transport to use. (udp | serial)")
+set(CONFIG_MICRO_XRCEDDS_TRANSPORT "udp" CACHE STRING "Sets Micro XRCE-DDS transport to use. (udp | serial | custom)")
 set(CONFIG_MICRO_XRCEDDS_CREATION_MODE "xml" CACHE STRING "Sets creation mode in Micro XRCE-DDS. (xml | refs)")
 set(CONFIG_MAX_HISTORY "4" CACHE STRING "This value sets the number of MTUs to buffer. Micro XRCE-DDS client configuration provides their size")
 set(CONFIG_MAX_NODES "4" CACHE STRING "This value sets the maximum number of nodes.")
@@ -61,7 +61,7 @@ elseif(${CONFIG_MICRO_XRCEDDS_TRANSPORT} STREQUAL "udp")
 elseif(${CONFIG_MICRO_XRCEDDS_TRANSPORT} STREQUAL "custom")
   set(MICRO_XRCEDDS_CUSTOM ON)
 else()
-  message(FATAL_ERROR "Transport not supported. Use \"serial\" or \"udp\"")
+  message(FATAL_ERROR "Transport not supported. Use \"serial\", \"udp\", \"custom\"")
 endif()
 
 # Create entities type define macros.
