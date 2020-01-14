@@ -18,6 +18,7 @@
 #include <rmw/error_handling.h>
 
 #include <limits.h>
+#include <math.h>
 
 rmw_ret_t
 rmw_wait(
@@ -79,30 +80,65 @@ rmw_wait(
 
   rmw_ret_t ret = RMW_RET_OK;
 
-  // TODO (Pablo): Check this with no subscription or service/client 
-  // TODO (Pablo): Iterate along different nodes avaliable.
-  CustomNode * custom_node = NULL;
-  if (subscriptions->subscriber_count)
-  {
-    CustomSubscription * first_subscription = (CustomSubscription *)subscriptions->subscribers[0];
-    custom_node = first_subscription->owner_node;
-  }else if (services->service_count)
-  {
-    CustomService * first_service = (CustomService *)services->services[0];
-    custom_node = first_service->owner_node;
-  }else if (clients->client_count)
-  {
-    CustomClient * first_client = (CustomClient *)clients->clients[0];
-    custom_node = first_client->owner_node;
+  //Look for every node configured in the wait set
+  CustomNode * node_array[MAX_NODES];
+  size_t node_array_index = 0;
+
+  for (size_t i = 0; i < services->service_count; i++){
+    CustomService * custom_service = (CustomService *)services->services[i];
+    bool included = false;
+
+    for (size_t j = 0; j < node_array_index; j++){
+      if(node_array[j] == custom_service->owner_node){
+        included = true;
+        break;
+      } 
+    }
+
+    if (!included){
+      node_array[node_array_index] = custom_service->owner_node;
+      node_array_index++;
+    }
   }
 
-  if (NULL == custom_node) {
-    ret = RMW_RET_INVALID_ARGUMENT;
+  for (size_t i = 0; i < clients->client_count; i++){
+    CustomClient * custom_client = (CustomClient *)clients->clients[i];
+    bool included = false;
+
+    for (size_t j = 0; j < node_array_index; j++){
+      if(node_array[j] == custom_client->owner_node){
+        included = true;
+        break;
+      } 
+    }
+
+    if (!included){
+      node_array[node_array_index] = custom_client->owner_node;
+      node_array_index++;
+    }
+  }
+
+  for (size_t i = 0; i < subscriptions->subscriber_count; ++i) {
+    CustomSubscription * custom_subscription = (CustomSubscription *)subscriptions->subscribers[i];
+    bool included = false;
+
+    for (size_t j = 0; j < node_array_index; j++){
+      if(node_array[j] == custom_subscription->owner_node){
+        included = true;
+        break;
+      } 
+    }
+
+    if (!included){
+      node_array[node_array_index] = custom_subscription->owner_node;
+      node_array_index++;
+    }
   }
   
-  // Run XRCE session
-  if (!uxr_run_session_until_timeout(&custom_node->session, (int)timeout)) {
-    ret = RMW_RET_TIMEOUT;
+  // Run XRCE sessions
+  for (size_t i = 0; i < node_array_index; i++)
+  { 
+    uxr_run_session_until_timeout(&node_array[i]->session, (int)floor(timeout/node_array_index));
   }
 
   // Check services
