@@ -52,12 +52,13 @@ rmw_create_client(
       sizeof(rmw_client_t));
     rmw_client->data = NULL;
     rmw_client->implementation_identifier = rmw_get_implementation_identifier();
+
     rmw_client->service_name = (const char *)(rmw_allocate(sizeof(char) * (strlen(service_name) + 1)));
     if (!rmw_client->service_name) {
       RMW_SET_ERROR_MSG("failed to allocate memory");
       goto fail;
     }
-    memcpy(rmw_client->service_name, service_name, strlen(service_name) + 1);
+    memcpy((void *)rmw_client->service_name, service_name, strlen(service_name) + 1);
 
     CustomNode * custom_node = (CustomNode *)node->data;
     struct Item * memory_node = get_memory(&custom_node->client_mem);
