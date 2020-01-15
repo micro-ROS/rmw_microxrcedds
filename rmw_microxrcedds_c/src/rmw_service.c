@@ -170,7 +170,7 @@ rmw_destroy_service(
 
   EPROS_PRINT_TRACE()
 
-  rmw_free(service);
+  rmw_service_delete(service);
 
   return RMW_RET_OK;
 }

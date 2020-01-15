@@ -167,7 +167,9 @@ rmw_destroy_client(
   rmw_client_t * client)
 {
   (void) node;
-  (void) client;
+  
   EPROS_PRINT_TRACE()
+
+  rmw_client_delete(client);
   return RMW_RET_OK;
 }
