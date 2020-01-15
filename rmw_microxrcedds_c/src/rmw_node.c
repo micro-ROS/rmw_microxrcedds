@@ -106,7 +106,7 @@ void on_request(uxrSession* session, uxrObjectId object_id, uint16_t request_id,
           sample_id, sizeof(SampleIdentity));
 
       // TODO (Pablo): Circular overlapping buffer implemented: use qos
-      if (custom_service->history_write_index == custom_service->history_read_index){
+      if (custom_service->micro_buffer_in_use && custom_service->history_write_index == custom_service->history_read_index){
         custom_service->history_read_index = (custom_service->history_read_index + 1) % MAX_HISTORY;
       }
 
@@ -139,7 +139,7 @@ void on_reply(uxrSession* session, uxrObjectId object_id, uint16_t request_id, u
       custom_client->reply_id[custom_client->history_write_index] = reply_id;
 
       // TODO (Pablo): Circular overlapping buffer implemented: use qos
-      if (custom_client->history_write_index == custom_client->history_read_index){
+      if (custom_client->micro_buffer_in_use && custom_client->history_write_index == custom_client->history_read_index){
         custom_client->history_read_index = (custom_client->history_read_index + 1) % MAX_HISTORY;
       }
 
