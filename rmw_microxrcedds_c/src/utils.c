@@ -20,6 +20,10 @@
 #include "./rmw_microxrcedds_topic.h"
 
 static const char ros_topic_prefix[] = "rt";
+static const char ros_request_prefix[] = "rq";
+static const char ros_reply_prefix[] =  "rr";
+static const char ros_request_subfix[] = "Request";
+static const char ros_reply_subfix[] =  "Reply";
 
 void custompublisher_clear(CustomPublisher * publisher);
 void customsubscription_clear(CustomSubscription * subscription);
@@ -139,6 +143,74 @@ void subscriptions_clear(CustomSubscription subscriptions[MAX_SUBSCRIPTIONS_X_NO
   }
 }
 
+void customservice_clear(CustomService * service)
+{
+  if (service) {
+    memset(&service->service_id, 0, sizeof(uxrObjectId));
+    service->type_support_callbacks = NULL;
+    service->history_write_index = 0;
+    service->history_read_index = 0;
+    service->micro_buffer_in_use = false;
+    service->service_gid.implementation_identifier = NULL;
+    memset(&service->service_gid.data, 0, RMW_GID_STORAGE_SIZE);
+  }
+}
+
+void rmw_service_delete(rmw_service_t * service)
+{
+  if (service->implementation_identifier) {
+    service->implementation_identifier = NULL;
+  }
+  if (service->service_name) {
+    rmw_delete((char *)service->service_name);
+  }
+  if (service->data) {
+    CustomService * custom_service =
+      (CustomService *)service->data;
+
+    put_memory(&custom_service->owner_node->service_mem,
+      &custom_service->mem);
+
+    customservice_clear((CustomService *)service->data);
+    service->data = NULL;
+  }
+  rmw_delete(service);
+}
+
+void customclient_clear(CustomClient * client)
+{
+  if (client) {
+    memset(&client->client_id, 0, sizeof(uxrObjectId));
+    client->type_support_callbacks = NULL;
+    client->history_write_index = 0;
+    client->history_read_index = 0;
+    client->micro_buffer_in_use = false;
+    client->client_gid.implementation_identifier = NULL;
+    memset(&client->client_gid.data, 0, RMW_GID_STORAGE_SIZE);
+  }
+}
+
+void rmw_client_delete(rmw_client_t * client)
+{
+  if (client->implementation_identifier) {
+    client->implementation_identifier = NULL;
+  }
+  if (client->service_name) {
+    rmw_delete((char *)client->service_name);
+  }
+  if (client->data) {
+    CustomClient * custom_client =
+      (CustomClient *)client->data;
+
+    put_memory(&custom_client->owner_node->client_mem,
+      &custom_client->mem);
+
+    customclient_clear((CustomClient *)client->data);
+    client->data = NULL;
+  }
+  rmw_delete(client);
+}
+
 void customnode_clear(CustomNode * node)
 {
   if (node) {
@@ -164,6 +236,83 @@ int build_participant_xml(
     "</dds>";
 
   int ret = snprintf(xml, buffer_size, format, participant_name);
+  if ((ret < 0) && (ret >= (int)buffer_size)) {
+    ret = 0;
+  }
+
+  return ret;
+}
+
+int build_service_xml(const char * service_name_id, const char * service_name, bool requester,  const service_type_support_callbacks_t * members,
+ const rmw_qos_profile_t * qos_policies, char xml[], size_t buffer_size)
+{
+  int ret;
+
+  static const char format[] =  "<dds>"
+                                "<%s profile_name=\"%s\" "
+                                         "service_name=\"%s\" "
+                                         "request_type=\"%s\" "
+                                         "reply_type=\"%s\">"
+                                    "<request_topic_name>%s</request_topic_name>"
+                                    "<reply_topic_name>%s</reply_topic_name>"
+                                "</%s>"
+                                "</dds>";
+
+  // Retrive request and response types
+  const rosidl_message_type_support_t * req_members = members->request_members_();
+  const rosidl_message_type_support_t * res_members = members->response_members_();
+
+  const message_type_support_callbacks_t * req_callbacks = (const message_type_support_callbacks_t *)req_members->data;
+  const message_type_support_callbacks_t * res_callbacks = (const message_type_support_callbacks_t *)res_members->data;
+
+  
+  static char req_type_name_buffer[RMW_MICROXRCEDDS_TYPE_NAME_MAX_NAME_LENGTH];
+  static char res_type_name_buffer[RMW_MICROXRCEDDS_TYPE_NAME_MAX_NAME_LENGTH];
+
+  generate_type_name(req_callbacks,req_type_name_buffer,RMW_MICROXRCEDDS_TYPE_NAME_MAX_NAME_LENGTH);
+  generate_type_name(res_callbacks,res_type_name_buffer,RMW_MICROXRCEDDS_TYPE_NAME_MAX_NAME_LENGTH);
+
+  // Generate request and reply topic names
+  char req_full_topic_name[RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_request_prefix) + 1 + sizeof(ros_request_subfix)];
+  req_full_topic_name[0] = '\0';
+
+  char res_full_topic_name[RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_reply_prefix) + 1 + sizeof(ros_reply_subfix)];
+  res_full_topic_name[0] = '\0';
+
+  if (!qos_policies->avoid_ros_namespace_conventions) {
+    ret = snprintf(req_full_topic_name, sizeof(req_full_topic_name), "%s%s%s", ros_request_prefix,
+        service_name,ros_request_subfix);
+    if ((ret < 0) || (ret >= (int)sizeof(req_full_topic_name))) {
+      return 0;
+    }
+      
+    ret = snprintf(res_full_topic_name, sizeof(res_full_topic_name), "%s%s%s", ros_reply_prefix,
+        service_name,ros_reply_subfix);
+    if ((ret < 0) || (ret >= (int)sizeof(res_full_topic_name))) {
+      return 0;
+    }
+  } else {
+    ret = snprintf(req_full_topic_name, sizeof(req_full_topic_name), "%s", service_name);
+    if ((ret < 0) || (ret >= (int)sizeof(req_full_topic_name))) {
+      return 0;
+    }
+    ret = snprintf(res_full_topic_name, sizeof(res_full_topic_name), "%s", service_name);
+    if ((ret < 0) || (ret >= (int)sizeof(req_full_topic_name))) {
+      return 0;
+    }
+  }
+
+    
+  ret = snprintf(xml, buffer_size, format, 
+                  requester ? "requester" : "replier", 
+                  service_name_id, 
+                  service_name, 
+                  req_type_name_buffer, 
+                  res_type_name_buffer,
+                  req_full_topic_name,
+                  res_full_topic_name,
+                  requester ? "requester" : "replier"
+                  );
   if ((ret < 0) && (ret >= (int)buffer_size)) {
     ret = 0;
   }
@@ -216,6 +365,7 @@ size_t generate_type_name(
   size_t ret = 0;
   size_t full_name_size = strlen(protocol) + strlen(suffix) + strlen(sep) + strlen(members->message_name_) + strlen(suffix) + ((NULL != members->message_namespace_) ? strlen(members->message_namespace_):0) + 1;
   type_name[0] = 0;
+
   if (full_name_size < buffer_size)
   {
       if (NULL != members->message_namespace_)
@@ -230,10 +380,7 @@ size_t generate_type_name(
       strcat(type_name, suffix);
       ret = full_name_size;
   }
-  else
-  {
-      ret = 0;
-  }
+
   return ret;
 }
 
@@ -250,7 +397,7 @@ int build_topic_xml(
     "</dds>";
 
   int ret = 0;
-  static char type_name_buffer[50];
+  static char type_name_buffer[RMW_MICROXRCEDDS_TYPE_NAME_MAX_NAME_LENGTH];
 
   if (RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH >= strlen(topic_name) &&
     0 != generate_type_name(members, type_name_buffer, sizeof(type_name_buffer)))
@@ -284,7 +431,7 @@ int build_xml(
   const rmw_qos_profile_t * qos_policies, char xml[], size_t buffer_size)
 {
   int ret = 0;
-  static char type_name_buffer[50];
+  static char type_name_buffer[RMW_MICROXRCEDDS_TYPE_NAME_MAX_NAME_LENGTH];
 
   if (0 != generate_type_name(members, type_name_buffer, sizeof(type_name_buffer))) {
     char full_topic_name[RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_topic_prefix)];

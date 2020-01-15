@@ -74,9 +74,9 @@ create_topic(
   custom_topic_ptr->topic_id = uxr_object_id(custom_node->id_gen++, UXR_TOPIC_ID);
 
 #ifdef MICRO_XRCEDDS_USE_XML
-  char xml_buffer[400];
+  char xml_buffer[RMW_XML_BUFFER_LENGTH];
 #elif defined(MICRO_XRCEDDS_USE_REFS)
-  char profile_name[64];
+  char profile_name[RMW_REF_BUFFER_LENGTH];
 #endif
 
   // Generate request
