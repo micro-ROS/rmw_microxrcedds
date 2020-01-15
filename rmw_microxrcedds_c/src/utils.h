@@ -27,6 +27,8 @@ void rmw_delete(void * rmw_allocated_ptr);
 void rmw_node_delete(rmw_node_t * node);
 void rmw_publisher_delete(rmw_publisher_t * publisher);
 void rmw_subscription_delete(rmw_subscription_t * subscriber);
+void rmw_client_delete(rmw_client_t * client);
+void rmw_service_delete(rmw_service_t * client);
 
 void customnode_clear(CustomNode * node);
 
@@ -35,6 +37,9 @@ size_t generate_type_name(
   const message_type_support_callbacks_t * members, char type_name[],
   size_t buffer_size);
 
+int build_service_xml(const char * service_name_id, const char * service_name, bool requester,  const service_type_support_callbacks_t * members,
+ const rmw_qos_profile_t * qos_policies, char xml[], size_t buffer_size);
+ 
 int build_participant_xml(
   size_t domain_id, const char * participant_name, char xml[],
   size_t buffer_size);

@@ -79,7 +79,7 @@ rmw_create_subscription(
       sizeof(rmw_subscription_t));
     rmw_subscription->data = NULL;
     rmw_subscription->implementation_identifier = rmw_get_implementation_identifier();
-    rmw_subscription->topic_name = (const char *)(rmw_allocate(sizeof(char) * strlen(topic_name) + 1));
+    rmw_subscription->topic_name = (const char *)(rmw_allocate(sizeof(char) * (strlen(topic_name) + 1)));
     if (!rmw_subscription->topic_name) {
       RMW_SET_ERROR_MSG("failed to allocate memory");
       goto fail;
@@ -140,9 +140,9 @@ rmw_create_subscription(
     }
 
 #ifdef MICRO_XRCEDDS_USE_XML
-    char xml_buffer[400];
+    char xml_buffer[RMW_XML_BUFFER_LENGTH];
 #elif defined(MICRO_XRCEDDS_USE_REFS)
-    char profile_name[64];
+    char profile_name[RMW_REF_BUFFER_LENGTH];
 #endif
 
     custom_subscription->subscriber_id = uxr_object_id(custom_node->id_gen++, UXR_SUBSCRIBER_ID);

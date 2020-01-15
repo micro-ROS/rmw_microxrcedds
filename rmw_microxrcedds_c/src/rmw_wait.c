@@ -18,6 +18,7 @@
 #include <rmw/error_handling.h>
 
 #include <limits.h>
+#include <math.h>
 
 rmw_ret_t
 rmw_wait(
@@ -77,25 +78,105 @@ rmw_wait(
     }
   }
 
-  if ((NULL == subscriptions) || (0 == subscriptions->subscriber_count)) {
-//    return RMW_RET_INVALID_ARGUMENT;
-    return RMW_RET_OK; // TODO (julian): review rcl_wait without subscriptions.
+  rmw_ret_t ret = RMW_RET_OK;
+
+  //Look for every node configured in the wait set
+  CustomNode * node_array[MAX_NODES];
+  size_t node_array_index = 0;
+
+  for (size_t i = 0; i < services->service_count; i++){
+    CustomService * custom_service = (CustomService *)services->services[i];
+    bool included = false;
+
+    for (size_t j = 0; j < node_array_index; j++){
+      if(node_array[j] == custom_service->owner_node){
+        included = true;
+        break;
+      } 
+    }
+
+    if (!included){
+      node_array[node_array_index] = custom_service->owner_node;
+      node_array_index++;
+    }
   }
 
-  CustomSubscription * custom_subscription = (CustomSubscription *)subscriptions->subscribers[0];
-  if (NULL == custom_subscription) {
-    return RMW_RET_INVALID_ARGUMENT;
+  for (size_t i = 0; i < clients->client_count; i++){
+    CustomClient * custom_client = (CustomClient *)clients->clients[i];
+    bool included = false;
+
+    for (size_t j = 0; j < node_array_index; j++){
+      if(node_array[j] == custom_client->owner_node){
+        included = true;
+        break;
+      } 
+    }
+
+    if (!included){
+      node_array[node_array_index] = custom_client->owner_node;
+      node_array_index++;
+    }
   }
 
-  CustomNode * custom_node = custom_subscription->owner_node;
-  if (NULL == custom_node) {
-    return RMW_RET_INVALID_ARGUMENT;
+  for (size_t i = 0; i < subscriptions->subscriber_count; ++i) {
+    CustomSubscription * custom_subscription = (CustomSubscription *)subscriptions->subscribers[i];
+    bool included = false;
+
+    for (size_t j = 0; j < node_array_index; j++){
+      if(node_array[j] == custom_subscription->owner_node){
+        included = true;
+        break;
+      } 
+    }
+
+    if (!included){
+      node_array[node_array_index] = custom_subscription->owner_node;
+      node_array_index++;
+    }
+  }
+  
+  // Run XRCE sessions
+  for (size_t i = 0; i < node_array_index; i++)
+  { 
+    uxr_run_session_until_timeout(&node_array[i]->session, (int)floor(timeout/node_array_index));
   }
 
-  if (!uxr_run_session_until_timeout(&custom_node->session, (int)timeout)) {
-    return RMW_RET_TIMEOUT;
+  // Check services
+  if (services) {
+    for (size_t i = 0; i < services->service_count; ++i) {
+      CustomService * custom_service = (CustomService *)services->services[i];
+      
+      if (!custom_service->micro_buffer_in_use){
+        services->services[i] = NULL;
+      }
+    }
+  }
+
+  // Check clients
+  if (clients) {
+    for (size_t i = 0; i < clients->client_count; ++i) {
+      CustomClient * custom_client = (CustomClient *)clients->clients[i];
+      
+      if (!custom_client->micro_buffer_in_use){
+        clients->clients[i] = NULL;
+      }
+    }
+  }
+
+  // Check subscriptions
+  if (subscriptions) {
+    for (size_t i = 0; i < subscriptions->subscriber_count; ++i) {
+      CustomSubscription * custom_subscription = (CustomSubscription *)subscriptions->subscribers[i];
+      
+      if (!custom_subscription->micro_buffer_in_use){
+        subscriptions->subscribers[i] = NULL;
+      }
+    }
   }
 
   EPROS_PRINT_TRACE()
-  return RMW_RET_OK;
+
+  // TODO (Pablo): When it need to return a timeout?
+  ret = RMW_RET_OK;
+  return ret;
 }
