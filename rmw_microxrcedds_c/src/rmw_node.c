@@ -106,18 +106,12 @@ void on_request(uxrSession* session, uxrObjectId object_id, uint16_t request_id,
           sample_id, sizeof(SampleIdentity));
 
       // TODO (Pablo): Circular overlapping buffer implemented: use qos
-      if (custom_service->history_write_index == custom_service->history_read_index - 1 ||
-          (custom_service->history_write_index == MAX_HISTORY - 1 && custom_service->history_read_index == 0))
-      {
+      if (custom_service->history_write_index == custom_service->history_read_index){
         custom_service->history_read_index = (custom_service->history_read_index + 1) % MAX_HISTORY;
       }
-      custom_service->history_write_index = (custom_service->history_write_index + 1) % MAX_HISTORY;
 
-      if (MAX_HISTORY == 1)
-      {
-        custom_service->micro_buffer_in_use = true;
-      }
-      
+      custom_service->history_write_index = (custom_service->history_write_index + 1) % MAX_HISTORY;
+      custom_service->micro_buffer_in_use = true;
 
       break;
     }
@@ -145,17 +139,12 @@ void on_reply(uxrSession* session, uxrObjectId object_id, uint16_t request_id, u
       custom_client->reply_id[custom_client->history_write_index] = reply_id;
 
       // TODO (Pablo): Circular overlapping buffer implemented: use qos
-      if (custom_client->history_write_index == custom_client->history_read_index - 1 ||
-          (custom_client->history_write_index == MAX_HISTORY - 1 && custom_client->history_read_index == 0))
-      {
+      if (custom_client->history_write_index == custom_client->history_read_index){
         custom_client->history_read_index = (custom_client->history_read_index + 1) % MAX_HISTORY;
       }
-      custom_client->history_write_index = (custom_client->history_write_index + 1) % MAX_HISTORY;
 
-      if (MAX_HISTORY == 1)
-      {
-        custom_client->micro_buffer_in_use = true;
-      }
+      custom_client->history_write_index = (custom_client->history_write_index + 1) % MAX_HISTORY;
+      custom_client->micro_buffer_in_use = true;
 
       break;
   }

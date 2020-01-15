@@ -77,8 +77,7 @@ rmw_take_response(
 
   CustomClient * custom_client = (CustomClient *)client->data;
 
-  if ((MAX_HISTORY > 1 && custom_client->history_read_index == custom_client->history_write_index) || 
-      (MAX_HISTORY == 1 && !custom_client->micro_buffer_in_use)) {
+  if (!custom_client->micro_buffer_in_use){
     return RMW_RET_ERROR;
   }
 
@@ -97,9 +96,8 @@ rmw_take_response(
     ros_response);
 
   custom_client->history_read_index = (custom_client->history_read_index + 1) % MAX_HISTORY;
-
-  if (MAX_HISTORY == 1){
-    custom_client->micro_buffer_in_use = false;
+  if (custom_client->history_write_index == custom_client->history_read_index){
+      custom_client->micro_buffer_in_use = false;
   }
 
   if (taken != NULL) {

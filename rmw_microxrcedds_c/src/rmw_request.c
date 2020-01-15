@@ -77,9 +77,8 @@ rmw_take_request(
 
   CustomService * custom_service = (CustomService *)service->data;
 
-  if ((MAX_HISTORY > 1 && custom_service->history_read_index == custom_service->history_write_index) || 
-      (MAX_HISTORY == 1 && !custom_service->micro_buffer_in_use)) {
-      return RMW_RET_ERROR;
+  if (!custom_service->micro_buffer_in_use){
+    return RMW_RET_ERROR;
   }
 
   // Conversion from SampleIdentity to rmw_request_id_t 
@@ -100,9 +99,8 @@ rmw_take_request(
   bool deserialize_rv = functions->cdr_deserialize(&temp_buffer, ros_request);
 
   custom_service->history_read_index = (custom_service->history_read_index + 1) % MAX_HISTORY;
-
-  if (MAX_HISTORY == 1){
-    custom_service->micro_buffer_in_use = false;
+  if (custom_service->history_write_index == custom_service->history_read_index){
+      custom_service->micro_buffer_in_use = false;
   }
 
   if (taken != NULL) {
