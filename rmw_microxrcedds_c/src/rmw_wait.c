@@ -146,9 +146,7 @@ rmw_wait(
     for (size_t i = 0; i < services->service_count; ++i) {
       CustomService * custom_service = (CustomService *)services->services[i];
       
-      if ((MAX_HISTORY > 1 && custom_service->history_read_index == custom_service->history_write_index) || 
-          (MAX_HISTORY == 1 && !custom_service->micro_buffer_in_use))
-      {
+      if (!custom_service->micro_buffer_in_use){
         services->services[i] = NULL;
       }
     }
@@ -159,9 +157,7 @@ rmw_wait(
     for (size_t i = 0; i < clients->client_count; ++i) {
       CustomClient * custom_client = (CustomClient *)clients->clients[i];
       
-      if ((MAX_HISTORY > 1 && custom_client->history_read_index == custom_client->history_write_index) || 
-          (MAX_HISTORY == 1 && !custom_client->micro_buffer_in_use)) 
-      {
+      if (!custom_client->micro_buffer_in_use){
         clients->clients[i] = NULL;
       }
     }
@@ -172,8 +168,7 @@ rmw_wait(
     for (size_t i = 0; i < subscriptions->subscriber_count; ++i) {
       CustomSubscription * custom_subscription = (CustomSubscription *)subscriptions->subscribers[i];
       
-      if (!custom_subscription->micro_buffer_in_use)
-      {
+      if (!custom_subscription->micro_buffer_in_use){
         subscriptions->subscribers[i] = NULL;
       }
     }
