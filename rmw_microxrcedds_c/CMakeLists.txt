@@ -43,9 +43,13 @@ set(CONFIG_MAX_HISTORY "4" CACHE STRING "This value sets the number of MTUs to b
 set(CONFIG_MAX_NODES "4" CACHE STRING "This value sets the maximum number of nodes.")
 set(CONFIG_MAX_PUBLISHERS_X_NODE "4" CACHE STRING "This value sets the maximum number of publishers for a node.")
 set(CONFIG_MAX_SUBSCRIPTIONS_X_NODE "4" CACHE STRING "This value sets the maximum number of subscriptions for a node.")
+set(CONFIG_MAX_SERVICES_X_NODE "4" CACHE STRING "This value sets the maximum number of services for a node.")
+set(CONFIG_MAX_CLIENTS_X_NODE "4" CACHE STRING "This value sets the maximum number of clients for a node.")
 set(CONFIG_RMW_NODE_NAME_MAX_NAME_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a node name.")
 set(CONFIG_RMW_TOPIC_NAME_MAX_NAME_LENGTH "100" CACHE STRING "This value sets the maximum number of characters for a topic name.")
 set(CONFIG_RMW_TYPE_NAME_MAX_NAME_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a type name.")
+set(CONFIG_RMW_XML_BUFFER_LENGTH "600" CACHE STRING "This value sets the maximum number of characters for a XML buffer.")
+set(CONFIG_RMW_REF_BUFFER_LENGTH "100" CACHE STRING "This value sets the maximum number of characters for a reference buffer.")
 
 # Transport handle define macros.
 set(MICRO_XRCEDDS_SERIAL OFF)
