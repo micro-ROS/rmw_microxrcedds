@@ -34,7 +34,7 @@
 #define MAX_PORT_LEN 5
 #define MAX_SERIAL_DEVICE 50
 
-struct  rmw_context_impl_t
+struct rmw_microxrcedds_connection
 {
   #ifdef MICRO_XRCEDDS_SERIAL
     char serial_device[MAX_SERIAL_DEVICE];
@@ -45,15 +45,15 @@ struct  rmw_context_impl_t
   uint32_t client_key;
 };
 
+
+struct  rmw_context_impl_t
+{
+  struct rmw_microxrcedds_connection connection_params;
+};
+
 struct  rmw_init_options_impl_t
 {
-  #ifdef MICRO_XRCEDDS_SERIAL
-    char serial_device[MAX_SERIAL_DEVICE];
-  #elif defined(MICRO_XRCEDDS_UDP)
-    char agent_address[MAX_IP_LEN];
-    char agent_port[MAX_PORT_LEN];
-  #endif 
-  uint32_t client_key;
+  struct rmw_microxrcedds_connection connection_params;
 };
 
 typedef struct custom_topic_t

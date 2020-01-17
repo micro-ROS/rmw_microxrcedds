@@ -182,7 +182,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   CustomNode * node_info = (CustomNode *)memory_node->data;
 
 #ifdef MICRO_XRCEDDS_SERIAL
-  int fd = open(context->impl->serial_device, O_RDWR | O_NOCTTY);
+  int fd = open(context->impl->connection_params.serial_device, O_RDWR | O_NOCTTY);
   if (0 < fd) {
     struct termios tty_config;
     memset(&tty_config, 0, sizeof(tty_config));
@@ -234,15 +234,15 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
       }
     }
   }
-  printf("Serial mode => dev: %s\n", context->impl->serial_device);
+  printf("Serial mode => dev: %s\n", context->impl->connection_params.serial_device);
 
 #elif defined(MICRO_XRCEDDS_UDP)
   // TODO(Borja) Think how we are going to select transport to use
-  if (!uxr_init_udp_transport(&node_info->transport, &node_info->udp_platform, UXR_IPv4, context->impl->agent_address, context->impl->agent_port)) {
+  if (!uxr_init_udp_transport(&node_info->transport, &node_info->udp_platform, UXR_IPv4, context->impl->connection_params.agent_address, context->impl->connection_params.agent_port)) {
     RMW_SET_ERROR_MSG("Can not create an udp connection");
     return NULL;
   }
-  printf("UDP mode => ip: %s - port: %s\n", context->impl->agent_address, context->impl->agent_port);
+  printf("UDP mode => ip: %s - port: %s\n", context->impl->connection_params.agent_address, context->impl->connection_params.agent_port);
 #elif defined(MICRO_XRCEDDS_CUSTOM)
   if (!uxr_init_serial_transport(&node_info->transport, &node_info->serial_platform, 0, 0, 1))
   {
@@ -251,7 +251,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   }
 #endif
 
-  uxr_init_session(&node_info->session, &node_info->transport.comm, context->impl->client_key);
+  uxr_init_session(&node_info->session, &node_info->transport.comm, context->impl->connection_params.client_key);
   uxr_set_topic_callback(&node_info->session, on_topic, node_info);
   uxr_set_status_callback(&node_info->session, on_status, NULL);
   uxr_set_request_callback(&node_info->session, on_request, node_info);
