@@ -36,39 +36,47 @@ find_package(microcdr REQUIRED)
 
 find_package(rmw REQUIRED)
 
-if(EXISTS ${PROJECT_SOURCE_DIR}/rmw_microxrcedds.config)
-  configure_file(${PROJECT_SOURCE_DIR}/rmw_microxrcedds.config
-    ${PROJECT_SOURCE_DIR}/CMakeCache.txt COPYONLY
-    )
-  load_cache(${PROJECT_SOURCE_DIR})
-  file(REMOVE ${PROJECT_SOURCE_DIR}/CMakeCache.txt)
-else()
-  message(FATAL_ERROR "No rmw_microxrcedds.config found.")
-endif()
+# RMW default configuration
+set(RMW_UXRCE_TRANSPORT "udp" CACHE STRING "Sets Micro XRCE-DDS transport to use. (udp | serial | custom)")
+set(RMW_UXRCE_CREATION_MODE "xml" CACHE STRING "Sets creation mode in Micro XRCE-DDS. (xml | refs)")
+set(RMW_UXRCE_MAX_HISTORY "4" CACHE STRING "This value sets the number of MTUs to buffer. Micro XRCE-DDS client configuration provides their size")
+set(RMW_UXRCE_MAX_NODES "4" CACHE STRING "This value sets the maximum number of nodes.")
+set(RMW_UXRCE_MAX_PUBLISHERS_X_NODE "4" CACHE STRING "This value sets the maximum number of publishers for a node.")
+set(RMW_UXRCE_MAX_SUBSCRIPTIONS_X_NODE "4" CACHE STRING "This value sets the maximum number of subscriptions for a node.")
+set(RMW_UXRCE_MAX_SERVICES_X_NODE "4" CACHE STRING "This value sets the maximum number of services for a node.")
+set(RMW_UXRCE_MAX_CLIENTS_X_NODE "4" CACHE STRING "This value sets the maximum number of clients for a node.")
+set(RMW_UXRCE_NODE_NAME_MAX_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a node name.")
+set(RMW_UXRCE_TOPIC_NAME_MAX_LENGTH "100" CACHE STRING "This value sets the maximum number of characters for a topic name.")
+set(RMW_UXRCE_TYPE_NAME_MAX_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a type name.")
+set(RMW_UXRCE_XML_BUFFER_LENGTH "600" CACHE STRING "This value sets the maximum number of characters for a XML buffer.")
+set(RMW_UXRCE_REF_BUFFER_LENGTH "100" CACHE STRING "This value sets the maximum number of characters for a reference buffer.")
 
 # Transport handle define macros.
 set(MICRO_XRCEDDS_SERIAL OFF)
 set(MICRO_XRCEDDS_UDP OFF)
 set(MICRO_XRCEDDS_CUSTOM OFF)
-if(${CONFIG_MICRO_XRCEDDS_TRANSPORT} STREQUAL "serial")
+if(${RMW_UXRCE_TRANSPORT} STREQUAL "serial")
   set(MICRO_XRCEDDS_SERIAL ON)
-elseif(${CONFIG_MICRO_XRCEDDS_TRANSPORT} STREQUAL "udp")
+  set(RMW_UXRCE_DEFAULT_SERIAL_DEVICE "/dev/ttyAMA0" CACHE STRING "Sets the agent serial port.")
+elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "udp")
   set(MICRO_XRCEDDS_UDP ON)
-elseif(${CONFIG_MICRO_XRCEDDS_TRANSPORT} STREQUAL "custom")
+  set(RMW_UXRCE_DEFAULT_UDP_IP "127.0.0.1" CACHE STRING "Sets the agent IP address.")
+  set(RMW_UXRCE_DEFAULT_UDP_PORT "8888" CACHE STRING "Sets the agent IP port.")
+elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "custom")
   set(MICRO_XRCEDDS_CUSTOM ON)
 else()
-  message(FATAL_ERROR "rmw_microxrcedds.config transport not supported. Use \"serial\" or \"udp\"")
+  message(FATAL_ERROR "Transport not supported. Use \"serial\", \"udp\", \"custom\"")
 endif()
 
 # Create entities type define macros.
 set(MICRO_XRCEDDS_USE_REFS OFF)
 set(MICRO_XRCEDDS_USE_XML OFF)
-if(${CONFIG_MICRO_XRCEDDS_CREATION_MODE} STREQUAL "refs")
+if(${RMW_UXRCE_CREATION_MODE} STREQUAL "refs")
   set(MICRO_XRCEDDS_USE_REFS ON)
-elseif(${CONFIG_MICRO_XRCEDDS_CREATION_MODE} STREQUAL "xml")
+elseif(${RMW_UXRCE_CREATION_MODE} STREQUAL "xml")
   set(MICRO_XRCEDDS_USE_XML ON)
 else()
-  message(FATAL_ERROR "rmw_microxrcedds.config creation mode not supported. Use \"refs\" or \"xmls\"")
+  message(FATAL_ERROR "Creation mode not supported. Use \"refs\" or \"xml\"")
 endif()
 
 # Create source files with the define
@@ -104,6 +112,7 @@ set(SRCS
   src/rmw_take.c
   src/rmw_topic_names_and_types.c
   src/rmw_trigger_guard_condition.c
+  src/rmw_uros_options.c
   src/rmw_wait.c
   src/rmw_wait_set.c
   src/types.c

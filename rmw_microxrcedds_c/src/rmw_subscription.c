@@ -140,9 +140,9 @@ rmw_create_subscription(
     }
 
 #ifdef MICRO_XRCEDDS_USE_XML
-    char xml_buffer[RMW_XML_BUFFER_LENGTH];
+    char xml_buffer[RMW_UXRCE_XML_BUFFER_LENGTH];
 #elif defined(MICRO_XRCEDDS_USE_REFS)
-    char profile_name[RMW_REF_BUFFER_LENGTH];
+    char profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
 #endif
 
     custom_subscription->subscriber_id = uxr_object_id(custom_node->id_gen++, UXR_SUBSCRIBER_ID);
