@@ -95,7 +95,7 @@ rmw_take_response(
     &temp_buffer,
     ros_response);
 
-  custom_client->history_read_index = (custom_client->history_read_index + 1) % MAX_HISTORY;
+  custom_client->history_read_index = (custom_client->history_read_index + 1) % RMW_UXRCE_MAX_HISTORY;
   if (custom_client->history_write_index == custom_client->history_read_index){
       custom_client->micro_buffer_in_use = false;
   }

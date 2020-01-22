@@ -30,6 +30,32 @@
 #include "memory.h"
 #include <rmw_microxrcedds_c/config.h>
 
+#define MAX_IP_LEN 16
+#define MAX_PORT_LEN 5
+#define MAX_SERIAL_DEVICE 50
+
+struct rmw_microxrcedds_connection
+{
+  #ifdef MICRO_XRCEDDS_SERIAL
+    char serial_device[MAX_SERIAL_DEVICE];
+  #elif defined(MICRO_XRCEDDS_UDP)
+    char agent_address[MAX_IP_LEN];
+    char agent_port[MAX_PORT_LEN];
+  #endif
+  uint32_t client_key;
+};
+
+
+struct  rmw_context_impl_t
+{
+  struct rmw_microxrcedds_connection connection_params;
+};
+
+struct  rmw_init_options_impl_t
+{
+  struct rmw_microxrcedds_connection connection_params;
+};
+
 typedef struct custom_topic_t
 {
   struct custom_topic_t * next_custom_topic;
@@ -52,16 +78,16 @@ typedef struct CustomService
   uxrSession * session;
   uint16_t request_id;
 
-  SampleIdentity sample_id[MAX_HISTORY];
-  uint8_t micro_buffer[MAX_HISTORY][MAX_BUFFER_SIZE];
-  size_t micro_buffer_lenght[MAX_HISTORY];
+  SampleIdentity sample_id[RMW_UXRCE_MAX_HISTORY];
+  uint8_t micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_BUFFER_SIZE];
+  size_t micro_buffer_lenght[RMW_UXRCE_MAX_HISTORY];
 
   uint8_t history_write_index;
   uint8_t history_read_index;
   bool micro_buffer_in_use;
 
 
-  uint8_t replay_buffer[MAX_TRANSPORT_MTU];
+  uint8_t replay_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
 
   struct CustomNode * owner_node;
 } CustomService;
@@ -75,14 +101,14 @@ typedef struct CustomClient
   uxrSession * session;
   uint16_t request_id;
 
-  int64_t reply_id[MAX_HISTORY];
-  uint8_t micro_buffer[MAX_HISTORY][MAX_BUFFER_SIZE];
-  size_t micro_buffer_lenght[MAX_HISTORY];
+  int64_t reply_id[RMW_UXRCE_MAX_HISTORY];
+  uint8_t micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_BUFFER_SIZE];
+  size_t micro_buffer_lenght[RMW_UXRCE_MAX_HISTORY];
   uint8_t history_write_index;
   uint8_t history_read_index;
   bool micro_buffer_in_use;
 
-  uint8_t request_buffer[MAX_TRANSPORT_MTU];
+  uint8_t request_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
 
   struct CustomNode * owner_node;
 } CustomClient;
@@ -141,10 +167,10 @@ typedef struct CustomNode
   struct MemPool service_mem;
   struct MemPool client_mem;
 
-  CustomPublisher publisher_info[MAX_PUBLISHERS_X_NODE];
-  CustomSubscription subscription_info[MAX_SUBSCRIPTIONS_X_NODE];
-  CustomService service_info[MAX_SERVICES_X_NODE];
-  CustomClient client_info[MAX_CLIENTS_X_NODE];
+  CustomPublisher publisher_info[RMW_UXRCE_MAX_PUBLISHERS_X_NODE];
+  CustomSubscription subscription_info[RMW_UXRCE_MAX_SUBSCRIPTIONS_X_NODE];
+  CustomService service_info[RMW_UXRCE_MAX_SERVICES_X_NODE];
+  CustomClient client_info[RMW_UXRCE_MAX_CLIENTS_X_NODE];
 
   custom_topic_t * custom_topic_sp;
 
@@ -155,13 +181,15 @@ typedef struct CustomNode
   uxrStreamId best_effort_output;
   uxrStreamId best_effort_input;
 
-  uint8_t input_reliable_stream_buffer[MAX_BUFFER_SIZE];
-  uint8_t output_reliable_stream_buffer[MAX_BUFFER_SIZE];
-  uint8_t output_best_effort_stream_buffer[MAX_TRANSPORT_MTU];
+  uint8_t input_reliable_stream_buffer[RMW_UXRCE_MAX_BUFFER_SIZE];
+  uint8_t output_reliable_stream_buffer[RMW_UXRCE_MAX_BUFFER_SIZE];
+  uint8_t output_best_effort_stream_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
 
   uint16_t id_gen;
 } CustomNode;
 
-void init_nodes_memory(struct MemPool * memory, CustomNode nodes[MAX_NODES], size_t size);
+
+
+void init_nodes_memory(struct MemPool * memory, CustomNode nodes[RMW_UXRCE_MAX_NODES], size_t size);
 
 #endif  // TYPES_H_

@@ -17,6 +17,8 @@
 #include "utils.h"
 #include "identifiers.h"
 
+#include <rmw_microxrcedds_c/config.h>
+
 #ifdef MICRO_XRCEDDS_SERIAL
 #include <fcntl.h>  // O_RDWR, O_NOCTTY, O_NONBLOCK
 #include <termios.h>
@@ -38,11 +40,11 @@
 #endif
 
 static struct MemPool node_memory;
-static CustomNode custom_nodes[MAX_NODES];
+static CustomNode custom_nodes[RMW_UXRCE_MAX_NODES];
 
 void init_rmw_node()
 {
-  init_nodes_memory(&node_memory, custom_nodes, MAX_NODES);
+  init_nodes_memory(&node_memory, custom_nodes, RMW_UXRCE_MAX_NODES);
 }
 
 void on_status(
@@ -107,10 +109,10 @@ void on_request(uxrSession* session, uxrObjectId object_id, uint16_t request_id,
 
       // TODO (Pablo): Circular overlapping buffer implemented: use qos
       if (custom_service->micro_buffer_in_use && custom_service->history_write_index == custom_service->history_read_index){
-        custom_service->history_read_index = (custom_service->history_read_index + 1) % MAX_HISTORY;
+        custom_service->history_read_index = (custom_service->history_read_index + 1) % RMW_UXRCE_MAX_HISTORY;
       }
 
-      custom_service->history_write_index = (custom_service->history_write_index + 1) % MAX_HISTORY;
+      custom_service->history_write_index = (custom_service->history_write_index + 1) % RMW_UXRCE_MAX_HISTORY;
       custom_service->micro_buffer_in_use = true;
 
       break;
@@ -140,10 +142,10 @@ void on_reply(uxrSession* session, uxrObjectId object_id, uint16_t request_id, u
 
       // TODO (Pablo): Circular overlapping buffer implemented: use qos
       if (custom_client->micro_buffer_in_use && custom_client->history_write_index == custom_client->history_read_index){
-        custom_client->history_read_index = (custom_client->history_read_index + 1) % MAX_HISTORY;
+        custom_client->history_read_index = (custom_client->history_read_index + 1) % RMW_UXRCE_MAX_HISTORY;
       }
 
-      custom_client->history_write_index = (custom_client->history_write_index + 1) % MAX_HISTORY;
+      custom_client->history_write_index = (custom_client->history_write_index + 1) % RMW_UXRCE_MAX_HISTORY;
       custom_client->micro_buffer_in_use = true;
 
       break;
@@ -164,13 +166,12 @@ void clear_node(rmw_node_t * node)
   put_memory(&node_memory, &micro_node->mem);
 }
 
-rmw_node_t * create_node(const char * name, const char * namespace_, size_t domain_id)
+rmw_node_t * create_node(const char * name, const char * namespace_, size_t domain_id, const rmw_context_t * context)
 {
-  // TODO(Javier) Need to be changed into a to thread-save code.
-  //  The suggested option rand_r() is not valid for this purpose.
-  //  This change is pending to new feature in Micro XRCE-DDS that will provide an unused ID.
-  //  When removed, the random initalization code in rmw_inint() must be removed.
-  uint32_t key = rand();  // NOLINT
+  if (!context) {
+    RMW_SET_ERROR_MSG("context is null");
+    return NULL;
+  }
 
   struct Item * memory_node = get_memory(&node_memory);
   if (!memory_node) {
@@ -181,7 +182,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   CustomNode * node_info = (CustomNode *)memory_node->data;
 
 #ifdef MICRO_XRCEDDS_SERIAL
-  int fd = open(SERIAL_DEVICE, O_RDWR | O_NOCTTY);
+  int fd = open(context->impl->connection_params.serial_device, O_RDWR | O_NOCTTY);
   if (0 < fd) {
     struct termios tty_config;
     memset(&tty_config, 0, sizeof(tty_config));
@@ -233,15 +234,15 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
       }
     }
   }
-  printf("Serial mode => dev: %s\n", SERIAL_DEVICE);
+  printf("Serial mode => dev: %s\n", context->impl->connection_params.serial_device);
 
 #elif defined(MICRO_XRCEDDS_UDP)
   // TODO(Borja) Think how we are going to select transport to use
-  if (!uxr_init_udp_transport(&node_info->transport, &node_info->udp_platform, UXR_IPv4, UDP_IP, UDP_PORT)) {
+  if (!uxr_init_udp_transport(&node_info->transport, &node_info->udp_platform, UXR_IPv4, context->impl->connection_params.agent_address, context->impl->connection_params.agent_port)) {
     RMW_SET_ERROR_MSG("Can not create an udp connection");
     return NULL;
   }
-  printf("UDP mode => ip: %s - port: %s\n", UDP_IP, UDP_PORT);
+  printf("UDP mode => ip: %s - port: %s\n", context->impl->connection_params.agent_address, context->impl->connection_params.agent_port);
 #elif defined(MICRO_XRCEDDS_CUSTOM)
   if (!uxr_init_serial_transport(&node_info->transport, &node_info->serial_platform, 0, 0, 1))
   {
@@ -250,7 +251,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   }
 #endif
 
-  uxr_init_session(&node_info->session, &node_info->transport.comm, key);
+  uxr_init_session(&node_info->session, &node_info->transport.comm, context->impl->connection_params.client_key);
   uxr_set_topic_callback(&node_info->session, on_topic, node_info);
   uxr_set_status_callback(&node_info->session, on_status, NULL);
   uxr_set_request_callback(&node_info->session, on_request, node_info);
@@ -259,10 +260,10 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
 
   node_info->reliable_input = uxr_create_input_reliable_stream(
     &node_info->session, node_info->input_reliable_stream_buffer,
-    node_info->transport.comm.mtu * MAX_HISTORY, MAX_HISTORY);
+    node_info->transport.comm.mtu * RMW_UXRCE_MAX_HISTORY, RMW_UXRCE_MAX_HISTORY);
   node_info->reliable_output =
     uxr_create_output_reliable_stream(&node_info->session, node_info->output_reliable_stream_buffer,
-      node_info->transport.comm.mtu * MAX_HISTORY, MAX_HISTORY);
+      node_info->transport.comm.mtu * RMW_UXRCE_MAX_HISTORY, RMW_UXRCE_MAX_HISTORY);
 
   node_info->best_effort_input = uxr_create_input_best_effort_stream(&node_info->session);
   node_info->best_effort_output = uxr_create_output_best_effort_stream(&node_info->session,
@@ -306,7 +307,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   node_info->participant_id = uxr_object_id(node_info->id_gen++, UXR_PARTICIPANT_ID);
   uint16_t participant_req;
 #ifdef MICRO_XRCEDDS_USE_XML
-  char participant_xml[RMW_XML_BUFFER_LENGTH];
+  char participant_xml[RMW_UXRCE_XML_BUFFER_LENGTH];
   if (!build_participant_xml(domain_id, name, participant_xml, sizeof(participant_xml))) {
     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
     return NULL;
@@ -315,7 +316,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
     uxr_buffer_create_participant_xml(&node_info->session, node_info->reliable_output,
       node_info->participant_id, (uint16_t)domain_id, participant_xml, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
-  char profile_name[RMW_REF_BUFFER_LENGTH];
+  char profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
   if (!build_participant_profile(profile_name, sizeof(profile_name))) {
     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
     return NULL;
@@ -359,7 +360,7 @@ rmw_create_node(
   } else if (!security_options) {
     RMW_SET_ERROR_MSG("security_options is null");
   } else {
-    rmw_node = create_node(name, namespace, domain_id);
+    rmw_node = create_node(name, namespace, domain_id, context);
   }
   return rmw_node;
 }

@@ -98,7 +98,7 @@ rmw_take_request(
 
   bool deserialize_rv = functions->cdr_deserialize(&temp_buffer, ros_request);
 
-  custom_service->history_read_index = (custom_service->history_read_index + 1) % MAX_HISTORY;
+  custom_service->history_read_index = (custom_service->history_read_index + 1) % RMW_UXRCE_MAX_HISTORY;
   if (custom_service->history_write_index == custom_service->history_read_index){
       custom_service->micro_buffer_in_use = false;
   }

@@ -92,9 +92,9 @@ void custompublisher_clear(CustomPublisher * publisher)
   }
 }
 
-void publishers_clear(CustomPublisher publishers[MAX_PUBLISHERS_X_NODE])
+void publishers_clear(CustomPublisher publishers[RMW_UXRCE_MAX_PUBLISHERS_X_NODE])
 {
-  for (size_t i = 0; i < MAX_PUBLISHERS_X_NODE; i++) {
+  for (size_t i = 0; i < RMW_UXRCE_MAX_PUBLISHERS_X_NODE; i++) {
     custompublisher_clear(&publishers[i]);
   }
 }
@@ -136,9 +136,9 @@ void customsubscription_clear(CustomSubscription * subscription)
   }
 }
 
-void subscriptions_clear(CustomSubscription subscriptions[MAX_SUBSCRIPTIONS_X_NODE])
+void subscriptions_clear(CustomSubscription subscriptions[RMW_UXRCE_MAX_SUBSCRIPTIONS_X_NODE])
 {
-  for (size_t i = 0; i < MAX_SUBSCRIPTIONS_X_NODE; i++) {
+  for (size_t i = 0; i < RMW_UXRCE_MAX_SUBSCRIPTIONS_X_NODE; i++) {
     customsubscription_clear(&subscriptions[i]);
   }
 }
@@ -266,17 +266,17 @@ int build_service_xml(const char * service_name_id, const char * service_name, b
   const message_type_support_callbacks_t * res_callbacks = (const message_type_support_callbacks_t *)res_members->data;
 
   
-  static char req_type_name_buffer[RMW_MICROXRCEDDS_TYPE_NAME_MAX_NAME_LENGTH];
-  static char res_type_name_buffer[RMW_MICROXRCEDDS_TYPE_NAME_MAX_NAME_LENGTH];
+  static char req_type_name_buffer[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
+  static char res_type_name_buffer[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
 
-  generate_type_name(req_callbacks,req_type_name_buffer,RMW_MICROXRCEDDS_TYPE_NAME_MAX_NAME_LENGTH);
-  generate_type_name(res_callbacks,res_type_name_buffer,RMW_MICROXRCEDDS_TYPE_NAME_MAX_NAME_LENGTH);
+  generate_type_name(req_callbacks,req_type_name_buffer,RMW_UXRCE_TYPE_NAME_MAX_LENGTH);
+  generate_type_name(res_callbacks,res_type_name_buffer,RMW_UXRCE_TYPE_NAME_MAX_LENGTH);
 
   // Generate request and reply topic names
-  char req_full_topic_name[RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_request_prefix) + 1 + sizeof(ros_request_subfix)];
+  char req_full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH + 1 + sizeof(ros_request_prefix) + 1 + sizeof(ros_request_subfix)];
   req_full_topic_name[0] = '\0';
 
-  char res_full_topic_name[RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_reply_prefix) + 1 + sizeof(ros_reply_subfix)];
+  char res_full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH + 1 + sizeof(ros_reply_prefix) + 1 + sizeof(ros_reply_subfix)];
   res_full_topic_name[0] = '\0';
 
   if (!qos_policies->avoid_ros_namespace_conventions) {
@@ -397,12 +397,12 @@ int build_topic_xml(
     "</dds>";
 
   int ret = 0;
-  static char type_name_buffer[RMW_MICROXRCEDDS_TYPE_NAME_MAX_NAME_LENGTH];
+  static char type_name_buffer[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
 
-  if (RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH >= strlen(topic_name) &&
+  if (RMW_UXRCE_TOPIC_NAME_MAX_LENGTH >= strlen(topic_name) &&
     0 != generate_type_name(members, type_name_buffer, sizeof(type_name_buffer)))
   {
-    char full_topic_name[RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_topic_prefix)];
+    char full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH + 1 + sizeof(ros_topic_prefix)];
 
     if (!qos_policies->avoid_ros_namespace_conventions) {
       ret = snprintf(full_topic_name, sizeof(full_topic_name), "%s%s", ros_topic_prefix,
@@ -431,10 +431,10 @@ int build_xml(
   const rmw_qos_profile_t * qos_policies, char xml[], size_t buffer_size)
 {
   int ret = 0;
-  static char type_name_buffer[RMW_MICROXRCEDDS_TYPE_NAME_MAX_NAME_LENGTH];
+  static char type_name_buffer[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
 
   if (0 != generate_type_name(members, type_name_buffer, sizeof(type_name_buffer))) {
-    char full_topic_name[RMW_MICROXRCEDDS_TOPIC_NAME_MAX_NAME_LENGTH + 1 + sizeof(ros_topic_prefix)];
+    char full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH + 1 + sizeof(ros_topic_prefix)];
     full_topic_name[0] = '\0';
 
     if (!qos_policies->avoid_ros_namespace_conventions) {
