@@ -102,7 +102,7 @@ TEST_F(TestPublisher, memory_poll_multiple_topic) {
 
   // Get all available nodes
   {
-    for (size_t i = 0; i < MAX_PUBLISHERS_X_NODE; i++) {
+    for (size_t i = 0; i < RMW_UXRCE_MAX_PUBLISHERS_X_NODE; i++) {
       dummy_type_supports.push_back(dummy_type_support_t());
       ConfigureDummyTypeSupport(
         topic_type,
@@ -205,7 +205,7 @@ TEST_F(TestPublisher, memory_poll_shared_topic) {
 
   // Get all available nodes
   {
-    for (size_t i = 0; i < MAX_PUBLISHERS_X_NODE; i++) {
+    for (size_t i = 0; i < RMW_UXRCE_MAX_PUBLISHERS_X_NODE; i++) {
       publisher = rmw_create_publisher(
         this->node,
         &dummy_type_support.type_support,

@@ -40,11 +40,11 @@
 #endif
 
 static struct MemPool node_memory;
-static CustomNode custom_nodes[MAX_NODES];
+static CustomNode custom_nodes[RMW_UXRCE_MAX_NODES];
 
 void init_rmw_node()
 {
-  init_nodes_memory(&node_memory, custom_nodes, MAX_NODES);
+  init_nodes_memory(&node_memory, custom_nodes, RMW_UXRCE_MAX_NODES);
 }
 
 void on_status(
@@ -109,10 +109,10 @@ void on_request(uxrSession* session, uxrObjectId object_id, uint16_t request_id,
 
       // TODO (Pablo): Circular overlapping buffer implemented: use qos
       if (custom_service->micro_buffer_in_use && custom_service->history_write_index == custom_service->history_read_index){
-        custom_service->history_read_index = (custom_service->history_read_index + 1) % MAX_HISTORY;
+        custom_service->history_read_index = (custom_service->history_read_index + 1) % RMW_UXRCE_MAX_HISTORY;
       }
 
-      custom_service->history_write_index = (custom_service->history_write_index + 1) % MAX_HISTORY;
+      custom_service->history_write_index = (custom_service->history_write_index + 1) % RMW_UXRCE_MAX_HISTORY;
       custom_service->micro_buffer_in_use = true;
 
       break;
@@ -142,10 +142,10 @@ void on_reply(uxrSession* session, uxrObjectId object_id, uint16_t request_id, u
 
       // TODO (Pablo): Circular overlapping buffer implemented: use qos
       if (custom_client->micro_buffer_in_use && custom_client->history_write_index == custom_client->history_read_index){
-        custom_client->history_read_index = (custom_client->history_read_index + 1) % MAX_HISTORY;
+        custom_client->history_read_index = (custom_client->history_read_index + 1) % RMW_UXRCE_MAX_HISTORY;
       }
 
-      custom_client->history_write_index = (custom_client->history_write_index + 1) % MAX_HISTORY;
+      custom_client->history_write_index = (custom_client->history_write_index + 1) % RMW_UXRCE_MAX_HISTORY;
       custom_client->micro_buffer_in_use = true;
 
       break;
@@ -260,10 +260,10 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
 
   node_info->reliable_input = uxr_create_input_reliable_stream(
     &node_info->session, node_info->input_reliable_stream_buffer,
-    node_info->transport.comm.mtu * MAX_HISTORY, MAX_HISTORY);
+    node_info->transport.comm.mtu * RMW_UXRCE_MAX_HISTORY, RMW_UXRCE_MAX_HISTORY);
   node_info->reliable_output =
     uxr_create_output_reliable_stream(&node_info->session, node_info->output_reliable_stream_buffer,
-      node_info->transport.comm.mtu * MAX_HISTORY, MAX_HISTORY);
+      node_info->transport.comm.mtu * RMW_UXRCE_MAX_HISTORY, RMW_UXRCE_MAX_HISTORY);
 
   node_info->best_effort_input = uxr_create_input_best_effort_stream(&node_info->session);
   node_info->best_effort_output = uxr_create_output_best_effort_stream(&node_info->session,
@@ -307,7 +307,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   node_info->participant_id = uxr_object_id(node_info->id_gen++, UXR_PARTICIPANT_ID);
   uint16_t participant_req;
 #ifdef MICRO_XRCEDDS_USE_XML
-  char participant_xml[RMW_XML_BUFFER_LENGTH];
+  char participant_xml[RMW_UXRCE_XML_BUFFER_LENGTH];
   if (!build_participant_xml(domain_id, name, participant_xml, sizeof(participant_xml))) {
     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
     return NULL;
@@ -316,7 +316,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
     uxr_buffer_create_participant_xml(&node_info->session, node_info->reliable_output,
       node_info->participant_id, (uint16_t)domain_id, participant_xml, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
-  char profile_name[RMW_REF_BUFFER_LENGTH];
+  char profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
   if (!build_participant_profile(profile_name, sizeof(profile_name))) {
     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
     return NULL;
