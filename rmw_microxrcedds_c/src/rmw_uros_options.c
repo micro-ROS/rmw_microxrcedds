@@ -38,6 +38,9 @@ rmw_ret_t rmw_uros_init_options(int argc, const char* const argv[], rmw_init_opt
         RMW_SET_ERROR_MSG("Wrong number of arguments in rmw options. Needs an Agent IP and port.");
         ret = RMW_RET_INVALID_ARGUMENT;
     }
+#else
+    (void) argc;
+    (void) argv;
 #endif
     return ret;
 }
