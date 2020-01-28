@@ -21,10 +21,12 @@
 #include <vector>
 #include <memory>
 
-#include "./config.h"
-#include "./rmw_base_test.hpp"
+#include <rmw_microxrcedds_c/config.h>
+//#include <rmw_microxrcedds/config.h>
+//#include "config.h"
+#include "rmw_base_test.hpp"
 
-#include "./test_utils.hpp"
+#include "test_utils.hpp"
 
 class TestNode : public RMWBaseTest
 {
@@ -38,7 +40,7 @@ TEST_F(TestNode, construction_and_destruction) {
   {
     rmw_node_security_options_t security_options;
     rmw_node_t * node = rmw_create_node(&test_context, "my_node", "/ns", 0, &security_options);
-    ASSERT_NE((void *)node, (void *)NULL);
+    ASSERT_NE(node, nullptr);
     rmw_ret_t ret = rmw_destroy_node(node);
     ASSERT_EQ(ret, RMW_RET_OK);
     ASSERT_EQ(CheckErrorState(), false);
@@ -49,7 +51,7 @@ TEST_F(TestNode, construction_and_destruction) {
   {
     rmw_node_security_options_t security_options;
     rmw_node_t * node = rmw_create_node(&test_context, "", "/ns", 0, &security_options);
-    ASSERT_EQ((void *)node, (void *)NULL);
+    ASSERT_EQ(node, nullptr);
     ASSERT_EQ(CheckErrorState(), true);
     rcutils_reset_error();
   }
@@ -58,15 +60,15 @@ TEST_F(TestNode, construction_and_destruction) {
   {
     rmw_node_security_options_t security_options;
     rmw_node_t * node = rmw_create_node(&test_context, "my_node", "", 0, &security_options);
-    ASSERT_EQ((void *)node, (void *)NULL);
+    ASSERT_EQ(node, nullptr);
     rcutils_reset_error();
   }
 
   // Unsuccess creation
   {
     rmw_node_security_options_t security_options;
-    rmw_node_t * node = rmw_create_node(&test_context, "my_node", "/ns", 0, NULL);
-    ASSERT_EQ((void *)node, (void *)NULL);
+    rmw_node_t * node = rmw_create_node(&test_context, "my_node", "/ns", 0, &security_options);
+    ASSERT_EQ(node, nullptr);
     ASSERT_EQ(CheckErrorState(), true);
     rcutils_reset_error();
   }
@@ -82,15 +84,15 @@ TEST_F(TestNode, memory_poll) {
   rmw_node_t * node;
 
   // Get all available nodes
-  for (size_t i = 0; i < MAX_NODES; i++) {
+  for (size_t i = 0; i < RMW_UXRCE_MAX_NODES; i++) {
     node = rmw_create_node(&test_context, "my_node", "/ns", 0, &dummy_security_options);
-    ASSERT_NE((void *)node, (void *)NULL);
+    ASSERT_NE(node, nullptr);
     nodes.push_back(node);
   }
 
   // Try to get one
   node = rmw_create_node(&test_context, "my_node", "/ns", 0, &dummy_security_options);
-  ASSERT_EQ((void *)node, (void *)NULL);
+  ASSERT_EQ(node, nullptr);
   ASSERT_EQ(CheckErrorState(), true);
   rcutils_reset_error();
 
@@ -101,7 +103,7 @@ TEST_F(TestNode, memory_poll) {
 
   // Get one
   node = rmw_create_node(&test_context, "my_node", "/ns", 0, &dummy_security_options);
-  ASSERT_NE((void *)node, (void *)NULL);
+  ASSERT_NE(node, nullptr);
   nodes.push_back(node);
 
   // Release all

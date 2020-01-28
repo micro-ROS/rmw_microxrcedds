@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// #include "rmw/impl/cpp/macros.hpp"
-// TODO(BojaOuterelo #4547) Add rmw c implementation macros
-
 #include <time.h>
 
-#include "rmw_microxrcedds_c/rmw_c_macros.h"
+#include "./types.h"
+#include "./rmw_microxrcedds_c/rmw_c_macros.h"
 #include "./rmw_node.h"
 #include "./identifiers.h"
+#include <rmw_microxrcedds_c/config.h>
 
-#include "rmw/rmw.h"
-#include "rmw/error_handling.h"
-#include "rmw/allocators.h"
+#include <rmw/rmw.h>
+#include <rmw/error_handling.h>
+#include <rmw/allocators.h>
 
 
 rmw_ret_t
@@ -40,7 +39,37 @@ rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t all
   init_options->instance_id = 0;
   init_options->implementation_identifier = eprosima_microxrcedds_identifier;
   init_options->allocator = allocator;
-  init_options->impl = NULL;
+
+  init_options->impl = allocator.allocate(sizeof(rmw_init_options_impl_t), allocator.state);
+
+#ifdef MICRO_XRCEDDS_SERIAL
+  if(strlen(RMW_UXRCE_DEFAULT_SERIAL_DEVICE) <= MAX_SERIAL_DEVICE){
+    strcpy(init_options->impl->connection_params.serial_device, RMW_UXRCE_DEFAULT_SERIAL_DEVICE);
+  }else{
+    RMW_SET_ERROR_MSG("default serial port configuration overflow");
+    return RMW_RET_INVALID_ARGUMENT;
+  }
+#elif defined(MICRO_XRCEDDS_UDP)
+  if(strlen(RMW_UXRCE_DEFAULT_UDP_IP) <= MAX_IP_LEN){
+    strcpy(init_options->impl->connection_params.agent_address, RMW_UXRCE_DEFAULT_UDP_IP);
+  }else{
+    RMW_SET_ERROR_MSG("default ip configuration overflow");
+    return RMW_RET_INVALID_ARGUMENT;
+  }
+  
+  if(strlen(RMW_UXRCE_DEFAULT_UDP_PORT) <= MAX_PORT_LEN){
+    strcpy(init_options->impl->connection_params.agent_port, RMW_UXRCE_DEFAULT_UDP_PORT);
+  }else{
+    RMW_SET_ERROR_MSG("default port configuration overflow");
+    return RMW_RET_INVALID_ARGUMENT;
+  }
+#endif
+
+  time_t t;
+  time(&t);
+  srand((unsigned)t);
+  init_options->impl->connection_params.client_key = rand();
+
   return RMW_RET_OK;
 }
 
@@ -72,16 +101,19 @@ rmw_init_options_fini(rmw_init_options_t * init_options)
     init_options->implementation_identifier,
     eprosima_microxrcedds_identifier,
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+    
+  rmw_free(init_options->impl);
+
   *init_options = rmw_get_zero_initialized_init_options();
   return RMW_RET_OK;
 }
 
-// TODO(BorjaOuterelo #4545): How do we pass transport to use?.
 rmw_ret_t
 rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 {
   RCUTILS_CHECK_ARGUMENT_FOR_NULL(options, RMW_RET_INVALID_ARGUMENT);
   RCUTILS_CHECK_ARGUMENT_FOR_NULL(context, RMW_RET_INVALID_ARGUMENT);
+  RCUTILS_CHECK_ARGUMENT_FOR_NULL(options->impl, RMW_RET_INVALID_ARGUMENT);
   RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
     options,
     options->implementation_identifier,
@@ -89,11 +121,18 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
   context->instance_id = options->instance_id;
   context->implementation_identifier = eprosima_microxrcedds_identifier;
-  context->impl = NULL;
 
-  // Intialize random number generator
-  time_t t;
-  srand((unsigned)time(&t));
+  rmw_context_impl_t * context_impl = (rmw_context_impl_t *)rmw_allocate(sizeof(rmw_context_impl_t));
+  #ifdef MICRO_XRCEDDS_SERIAL
+    strcpy(context_impl->connection_params.serial_device, options->impl->connection_params.serial_device);
+  #elif defined(MICRO_XRCEDDS_UDP)
+    strcpy(context_impl->connection_params.agent_address, options->impl->connection_params.agent_address);
+    strcpy(context_impl->connection_params.agent_port, options->impl->connection_params.agent_port);
+  #endif
+
+  context_impl->connection_params.client_key = options->impl->connection_params.client_key;
+
+  context->impl = context_impl;
 
   init_rmw_node();
 
@@ -113,4 +152,12 @@ rmw_shutdown(rmw_context_t * context)
   // RCUTILS_CHECK_ARGUMENT_FOR_NULL(context->impl, RMW_RET_INVALID_ARGUMENT);
   *context = rmw_get_zero_initialized_context();
   return RMW_RET_OK;
+}
+
+rmw_ret_t
+rmw_context_fini(rmw_context_t * context)
+{
+  (void) context;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
 }

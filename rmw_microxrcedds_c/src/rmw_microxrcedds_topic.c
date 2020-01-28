@@ -22,7 +22,8 @@
 #include "./utils.h"
 
 
-custom_topic_t * create_topic(
+custom_topic_t *
+create_topic(
   struct CustomNode * custom_node,
   const char * topic_name,
   const message_type_support_callbacks_t * message_type_support_callbacks,
@@ -73,9 +74,9 @@ custom_topic_t * create_topic(
   custom_topic_ptr->topic_id = uxr_object_id(custom_node->id_gen++, UXR_TOPIC_ID);
 
 #ifdef MICRO_XRCEDDS_USE_XML
-  char xml_buffer[400];
+  char xml_buffer[RMW_UXRCE_XML_BUFFER_LENGTH];
 #elif defined(MICRO_XRCEDDS_USE_REFS)
-  char profile_name[64];
+  char profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
 #endif
 
   // Generate request
@@ -94,6 +95,7 @@ custom_topic_t * create_topic(
       custom_node->reliable_output, custom_topic_ptr->topic_id,
       custom_node->participant_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
+  (void)qos_policies;
   if (!build_topic_profile(topic_name, profile_name, sizeof(profile_name))) {
     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
     (void)destroy_topic(custom_topic_ptr);
@@ -124,7 +126,8 @@ create_topic_end:
   return custom_topic_ptr;
 }
 
-bool destroy_topic(custom_topic_t * custom_topic)
+bool
+destroy_topic(custom_topic_t * custom_topic)
 {
   bool ok = false;
 
@@ -167,7 +170,8 @@ bool destroy_topic(custom_topic_t * custom_topic)
 }
 
 
-size_t topic_count(struct CustomNode * custom_node)
+size_t
+topic_count(struct CustomNode * custom_node)
 {
   size_t count = 0;
   custom_topic_t * custom_topic_ptr = custom_node->custom_topic_sp;

@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
-#include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
+#include "rosidl_generator_c/message_type_support_struct.h"
 
 #include <vector>
 #include <memory>
@@ -25,9 +24,9 @@
 #include "rmw/validate_namespace.h"
 #include "rmw/validate_node_name.h"
 
-#include "./config.h"
-#include "./rmw_base_test.hpp"
-#include "./test_utils.hpp"
+#include <rmw_microxrcedds_c/config.h>
+#include "rmw_base_test.hpp"
+#include "test_utils.hpp"
 
 class TestSubscription : public RMWBaseTest
 {
@@ -38,7 +37,7 @@ protected:
 
     rmw_node_security_options_t security_options;
     node = rmw_create_node(&test_context, "my_node", "/ns", 0, &security_options);
-    ASSERT_NE((void *)node, (void *)NULL);
+    ASSERT_NE(node, nullptr);
   }
 
   void TearDown() override
@@ -51,7 +50,7 @@ protected:
 
   const char * topic_type = "topic_type";
   const char * topic_name = "topic_name";
-  const char * package_name = "package_name";
+  const char * message_namespace = "package_name";
 
   size_t id_gen = 0;
 };
@@ -64,7 +63,7 @@ TEST_F(TestSubscription, construction_and_destruction) {
   ConfigureDummyTypeSupport(
     topic_type,
     topic_type,
-    package_name,
+    message_namespace,
     id_gen++,
     &dummy_type_support);
 
@@ -79,7 +78,7 @@ TEST_F(TestSubscription, construction_and_destruction) {
     topic_name,
     &dummy_qos_policies,
     ignore_local_publications);
-  ASSERT_NE((void *)sub, (void *)NULL);
+  ASSERT_NE(sub, nullptr);
 
   rmw_ret_t ret = rmw_destroy_subscription(this->node, sub);
   ASSERT_EQ(ret, RMW_RET_OK);
@@ -103,12 +102,12 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
 
   // Get all available nodes
   {
-    for (size_t i = 0; i < MAX_SUBSCRIPTIONS_X_NODE; i++) {
+    for (size_t i = 0; i < RMW_UXRCE_MAX_SUBSCRIPTIONS_X_NODE; i++) {
       dummy_type_supports.push_back(dummy_type_support_t());
       ConfigureDummyTypeSupport(
         topic_type,
         topic_type,
-        package_name,
+        message_namespace,
         id_gen++,
         &dummy_type_supports.back());
       subscription = rmw_create_subscription(
@@ -117,7 +116,7 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
         dummy_type_supports.back().topic_name.data(),
         &dummy_qos_policies,
         ignore_local_publications);
-      ASSERT_NE((void *)subscription, (void *)NULL);
+      ASSERT_NE(subscription, nullptr);
       subscriptions.push_back(subscription);
     }
   }
@@ -129,7 +128,7 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
     ConfigureDummyTypeSupport(
       topic_type,
       topic_type,
-      package_name,
+      message_namespace,
       id_gen++,
       &dummy_type_supports.back());
     subscription = rmw_create_subscription(
@@ -138,7 +137,7 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
       dummy_type_supports.back().topic_name.data(),
       &dummy_qos_policies,
       ignore_local_publications);
-    ASSERT_EQ((void *)subscription, (void *)NULL);
+    ASSERT_EQ(subscription, nullptr);
     ASSERT_EQ(CheckErrorState(), true);
   }
 
@@ -158,7 +157,7 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
     ConfigureDummyTypeSupport(
       topic_type,
       topic_type,
-      package_name,
+      message_namespace,
       id_gen++,
       &dummy_type_supports.back());
     subscription = rmw_create_subscription(
@@ -167,7 +166,7 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
       dummy_type_supports.back().topic_name.data(),
       &dummy_qos_policies,
       ignore_local_publications);
-    ASSERT_NE((void *)subscription, (void *)NULL);
+    ASSERT_NE(subscription, nullptr);
     subscriptions.push_back(subscription);
   }
 
@@ -192,7 +191,7 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
   ConfigureDummyTypeSupport(
     topic_type,
     topic_type,
-    package_name,
+    message_namespace,
     id_gen++,
     &dummy_type_support);
 
@@ -208,14 +207,14 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
 
   // Get all available nodes
   {
-    for (size_t i = 0; i < MAX_SUBSCRIPTIONS_X_NODE; i++) {
+    for (size_t i = 0; i < RMW_UXRCE_MAX_SUBSCRIPTIONS_X_NODE; i++) {
       subscription = rmw_create_subscription(
         this->node,
         &dummy_type_support.type_support,
         dummy_type_support.topic_name.data(),
         &dummy_qos_policies,
         ignore_local_publications);
-      ASSERT_NE((void *)subscription, (void *)NULL);
+      ASSERT_NE(subscription, nullptr);
       subscriptions.push_back(subscription);
     }
   }
@@ -229,7 +228,7 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
       dummy_type_support.topic_name.data(),
       &dummy_qos_policies,
       ignore_local_publications);
-    ASSERT_EQ((void *)subscription, (void *)NULL);
+    ASSERT_EQ(subscription, nullptr);
     ASSERT_EQ(CheckErrorState(), true);
   }
 
@@ -251,7 +250,7 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
       dummy_type_support.topic_name.data(),
       &dummy_qos_policies,
       ignore_local_publications);
-    ASSERT_NE((void *)subscription, (void *)NULL);
+    ASSERT_NE(subscription, nullptr);
     subscriptions.push_back(subscription);
   }
 

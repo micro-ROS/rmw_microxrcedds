@@ -12,15 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMW_MICROXRCEDDS_C__RMW_C_MACROS_H_
-#define RMW_MICROXRCEDDS_C__RMW_C_MACROS_H_
+#include "identifiers.h"
+#include "utils.h"
 
-#define RMW_CHECK_TYPE_IDENTIFIERS_MATCH(ElementName, ElementTypeID, ExpectedTypeID, OnFailure) \
-  { \
-    if (strcmp(ElementTypeID, ExpectedTypeID) != 0) { \
-      RMW_SET_ERROR_MSG("Implementation identifiers does not match"); \
-      OnFailure; \
-    } \
-  }
-
-#endif  // RMW_MICROXRCEDDS_C__RMW_C_MACROS_H_
+const char *
+rmw_get_serialization_format()
+{
+  return eprosima_microxrcedds_serialization_format;
+}

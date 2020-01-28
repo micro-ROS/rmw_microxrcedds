@@ -12,7 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "./rmw_node.h"  // NOLINT
+#include "rmw_node.h"  // NOLINT
+#include "types.h"
+#include "utils.h"
+#include "identifiers.h"
+
+#include <rmw_microxrcedds_c/config.h>
 
 #ifdef MICRO_XRCEDDS_SERIAL
 #include <fcntl.h>  // O_RDWR, O_NOCTTY, O_NONBLOCK
@@ -26,19 +31,20 @@
 #include "./types.h"
 #include "./utils.h"
 
-
 #ifdef MICRO_XRCEDDS_SERIAL
 #define CLOSE_TRANSPORT(transport) uxr_close_serial_transport(transport)
 #elif defined(MICRO_XRCEDDS_UDP)
 #define CLOSE_TRANSPORT(transport) uxr_close_udp_transport(transport)
+#else
+#define CLOSE_TRANSPORT(transport)
 #endif
 
 static struct MemPool node_memory;
-static CustomNode custom_nodes[MAX_NODES];
+static CustomNode custom_nodes[RMW_UXRCE_MAX_NODES];
 
 void init_rmw_node()
 {
-  init_nodes_memory(&node_memory, custom_nodes, MAX_NODES);
+  init_nodes_memory(&node_memory, custom_nodes, RMW_UXRCE_MAX_NODES);
 }
 
 void on_status(
@@ -60,45 +66,93 @@ void on_topic(
   (void)request_id;
   (void)stream_id;
 
-  // Get node pointer
   CustomNode * node = (CustomNode *)args;
 
-  // Search subscription
   struct Item * subscription_item = node->subscription_mem.allocateditems;
   CustomSubscription * custom_subscription = NULL;
-  while (true) {
-    // Check if end of stack
-    if (subscription_item == NULL) {
-      return;
-    }
-
-    // Compare id
+  while (subscription_item != NULL) {
     custom_subscription = (CustomSubscription *)subscription_item->data;
     if ((custom_subscription->datareader_id.id == object_id.id) &&
-      (custom_subscription->datareader_id.type == object_id.type))
+      (custom_subscription->datareader_id.type == object_id.type) &&
+      !custom_subscription->micro_buffer_in_use)
     {
+      memcpy(&custom_subscription->micro_buffer, serialization,
+        sizeof(custom_subscription->micro_buffer));
+
+      node->on_subscription = true;
+      custom_subscription->micro_buffer_in_use = true;
+
       break;
     }
-
-    // Next subscription of the stack
     subscription_item = subscription_item->next;
   }
+}
 
-  // Check if temporal micro buffer is on use
-  if (custom_subscription->micro_buffer_in_use) {
-    RMW_SET_ERROR_MSG("Internal memory error");
-    return;
+void on_request(uxrSession* session, uxrObjectId object_id, uint16_t request_id, SampleIdentity* sample_id, uint8_t* request_buffer, size_t request_len, void* args)
+{
+  (void)session;
+  (void)object_id;
+
+  CustomNode * node = (CustomNode *)args;
+
+  struct Item * service_item = node->service_mem.allocateditems;
+  CustomService * custom_service = NULL;
+
+  while (service_item != NULL) {
+    custom_service = (CustomService *)service_item->data;
+    if (custom_service->request_id == request_id){
+      custom_service->micro_buffer_lenght[custom_service->history_write_index] = request_len;
+      memcpy(custom_service->micro_buffer[custom_service->history_write_index], 
+          request_buffer, request_len);
+      memcpy(&custom_service->sample_id[custom_service->history_write_index], 
+          sample_id, sizeof(SampleIdentity));
+
+      // TODO (Pablo): Circular overlapping buffer implemented: use qos
+      if (custom_service->micro_buffer_in_use && custom_service->history_write_index == custom_service->history_read_index){
+        custom_service->history_read_index = (custom_service->history_read_index + 1) % RMW_UXRCE_MAX_HISTORY;
+      }
+
+      custom_service->history_write_index = (custom_service->history_write_index + 1) % RMW_UXRCE_MAX_HISTORY;
+      custom_service->micro_buffer_in_use = true;
+
+      break;
+    }
+    service_item = service_item->next;
   }
+}
 
-  // not waiting for response any more
-  custom_subscription->waiting_for_response = false;
-  node->on_subscription = true;
+void on_reply(uxrSession* session, uxrObjectId object_id, uint16_t request_id, uint16_t reply_id, uint8_t* buffer, size_t len, void* args)
+{ 
+  (void)session;
+  (void)object_id;
 
+  CustomNode * node = (CustomNode *)args;
 
-  // Copy microbuffer data
-  memcpy(&custom_subscription->micro_buffer, serialization,
-    sizeof(custom_subscription->micro_buffer));
-  custom_subscription->micro_buffer_in_use = true;
+  struct Item * client_item = node->client_mem.allocateditems;
+  CustomClient * custom_client = NULL;
+
+  while (client_item != NULL) {
+    custom_client = (CustomClient *)client_item->data;
+    if (custom_client->request_id == request_id)
+    { 
+
+      custom_client->micro_buffer_lenght[custom_client->history_write_index] = len;
+      memcpy(custom_client->micro_buffer[custom_client->history_write_index], buffer,len);
+      custom_client->reply_id[custom_client->history_write_index] = reply_id;
+
+      // TODO (Pablo): Circular overlapping buffer implemented: use qos
+      if (custom_client->micro_buffer_in_use && custom_client->history_write_index == custom_client->history_read_index){
+        custom_client->history_read_index = (custom_client->history_read_index + 1) % RMW_UXRCE_MAX_HISTORY;
+      }
+
+      custom_client->history_write_index = (custom_client->history_write_index + 1) % RMW_UXRCE_MAX_HISTORY;
+      custom_client->micro_buffer_in_use = true;
+
+      break;
+  }
+  client_item = client_item->next;
+}
+
 }
 
 void clear_node(rmw_node_t * node)
@@ -112,13 +166,12 @@ void clear_node(rmw_node_t * node)
   put_memory(&node_memory, &micro_node->mem);
 }
 
-rmw_node_t * create_node(const char * name, const char * namespace_, size_t domain_id)
+rmw_node_t * create_node(const char * name, const char * namespace_, size_t domain_id, const rmw_context_t * context)
 {
-  // TODO(Javier) Need to be changed into a to thread-save code.
-  //  The suggested option rand_r() is not valid for this purpose.
-  //  This change is pending to new feature in Micro XRCE-DDS that will provide an unused ID.
-  //  When removed, the random initalization code in rmw_inint() must be removed.
-  uint32_t key = rand();  // NOLINT
+  if (!context) {
+    RMW_SET_ERROR_MSG("context is null");
+    return NULL;
+  }
 
   struct Item * memory_node = get_memory(&node_memory);
   if (!memory_node) {
@@ -129,7 +182,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   CustomNode * node_info = (CustomNode *)memory_node->data;
 
 #ifdef MICRO_XRCEDDS_SERIAL
-  int fd = open(SERIAL_DEVICE, O_RDWR | O_NOCTTY);
+  int fd = open(context->impl->connection_params.serial_device, O_RDWR | O_NOCTTY);
   if (0 < fd) {
     struct termios tty_config;
     memset(&tty_config, 0, sizeof(tty_config));
@@ -181,27 +234,40 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
       }
     }
   }
-  printf("Serial mode => dev: %s\n", SERIAL_DEVICE);
+  printf("Serial mode => dev: %s\n", context->impl->connection_params.serial_device);
 
 #elif defined(MICRO_XRCEDDS_UDP)
   // TODO(Borja) Think how we are going to select transport to use
-  if (!uxr_init_udp_transport(&node_info->transport, &node_info->udp_platform, UDP_IP, UDP_PORT)) {
+  if (!uxr_init_udp_transport(&node_info->transport, &node_info->udp_platform, UXR_IPv4, context->impl->connection_params.agent_address, context->impl->connection_params.agent_port)) {
     RMW_SET_ERROR_MSG("Can not create an udp connection");
     return NULL;
   }
-  printf("UDP mode => ip: %s - port: %hu\n", UDP_IP, UDP_PORT);
+  printf("UDP mode => ip: %s - port: %s\n", context->impl->connection_params.agent_address, context->impl->connection_params.agent_port);
+#elif defined(MICRO_XRCEDDS_CUSTOM)
+  if (!uxr_init_serial_transport(&node_info->transport, &node_info->serial_platform, 0, 0, 1))
+  {
+    RMW_SET_ERROR_MSG("Can not create an custom serial connection");
+    return NULL;
+  }
 #endif
 
-  uxr_init_session(&node_info->session, &node_info->transport.comm, key);
+  uxr_init_session(&node_info->session, &node_info->transport.comm, context->impl->connection_params.client_key);
   uxr_set_topic_callback(&node_info->session, on_topic, node_info);
   uxr_set_status_callback(&node_info->session, on_status, NULL);
+  uxr_set_request_callback(&node_info->session, on_request, node_info);
+  uxr_set_reply_callback(&node_info->session, on_reply, node_info);
+
 
   node_info->reliable_input = uxr_create_input_reliable_stream(
     &node_info->session, node_info->input_reliable_stream_buffer,
-    node_info->transport.comm.mtu * MAX_HISTORY, MAX_HISTORY);
+    node_info->transport.comm.mtu * RMW_UXRCE_MAX_HISTORY, RMW_UXRCE_MAX_HISTORY);
   node_info->reliable_output =
     uxr_create_output_reliable_stream(&node_info->session, node_info->output_reliable_stream_buffer,
-      node_info->transport.comm.mtu * MAX_HISTORY, MAX_HISTORY);
+      node_info->transport.comm.mtu * RMW_UXRCE_MAX_HISTORY, RMW_UXRCE_MAX_HISTORY);
+
+  node_info->best_effort_input = uxr_create_input_best_effort_stream(&node_info->session);
+  node_info->best_effort_output = uxr_create_output_best_effort_stream(&node_info->session,
+      node_info->output_best_effort_stream_buffer,node_info->transport.comm.mtu);
 
   rmw_node_t * node_handle = NULL;
   node_handle = rmw_node_allocate();
@@ -211,7 +277,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   }
   node_handle->implementation_identifier = rmw_get_implementation_identifier();
   node_handle->data = node_info;
-  node_handle->name = (const char *)(rmw_allocate(sizeof(char) * strlen(name) + 1));
+  node_handle->name = (const char *)(rmw_allocate(sizeof(char) * (strlen(name) + 1)));
   if (!node_handle->name) {
     RMW_SET_ERROR_MSG("failed to allocate memory");
     CLOSE_TRANSPORT(&node_info->transport);
@@ -220,7 +286,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   }
   memcpy((char *)node_handle->name, name, strlen(name) + 1);
 
-  node_handle->namespace_ = rmw_allocate(sizeof(char) * strlen(namespace_) + 1);
+  node_handle->namespace_ = rmw_allocate(sizeof(char) * (strlen(namespace_) + 1));
   if (!node_handle->namespace_) {
     RMW_SET_ERROR_MSG("failed to allocate memory");
     CLOSE_TRANSPORT(&node_info->transport);
@@ -241,17 +307,16 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   node_info->participant_id = uxr_object_id(node_info->id_gen++, UXR_PARTICIPANT_ID);
   uint16_t participant_req;
 #ifdef MICRO_XRCEDDS_USE_XML
-  char participant_xml[300];
+  char participant_xml[RMW_UXRCE_XML_BUFFER_LENGTH];
   if (!build_participant_xml(domain_id, name, participant_xml, sizeof(participant_xml))) {
     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
     return NULL;
   }
   participant_req =
     uxr_buffer_create_participant_xml(&node_info->session, node_info->reliable_output,
-      node_info->participant_id,
-      domain_id, participant_xml, UXR_REPLACE);
+      node_info->participant_id, (uint16_t)domain_id, participant_xml, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
-  char profile_name[20];
+  char profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
   if (!build_participant_profile(profile_name, sizeof(profile_name))) {
     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
     return NULL;
@@ -277,6 +342,29 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   return node_handle;
 }
 
+rmw_node_t *
+rmw_create_node(
+  rmw_context_t * context,
+  const char * name,
+  const char * namespace,
+  size_t domain_id,
+  const rmw_node_security_options_t * security_options)
+{
+  (void) context;
+  EPROS_PRINT_TRACE()
+  rmw_node_t * rmw_node = NULL;
+  if (!name || strlen(name) == 0) {
+    RMW_SET_ERROR_MSG("name is null");
+  } else if (!namespace || strlen(namespace) == 0) {
+    RMW_SET_ERROR_MSG("node handle not from this implementation");
+  } else if (!security_options) {
+    RMW_SET_ERROR_MSG("security_options is null");
+  } else {
+    rmw_node = create_node(name, namespace, domain_id, context);
+  }
+  return rmw_node;
+}
+
 rmw_ret_t rmw_destroy_node(rmw_node_t * node)
 {
   EPROS_PRINT_TRACE()
@@ -299,3 +387,24 @@ rmw_ret_t rmw_destroy_node(rmw_node_t * node)
   clear_node(node);
   return result_ret;
 }
+
+rmw_ret_t
+rmw_node_assert_liveliness(const rmw_node_t * node)
+{
+  (void) node;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}
+
+const rmw_guard_condition_t *
+rmw_node_get_graph_guard_condition(const rmw_node_t * node)
+{
+  (void)node;
+  EPROS_PRINT_TRACE()
+  rmw_guard_condition_t *
+  ret = (rmw_guard_condition_t *)rmw_allocate(sizeof(rmw_guard_condition_t));
+  ret->data = NULL;
+  ret->implementation_identifier = eprosima_microxrcedds_identifier;
+  return ret;
+}
+

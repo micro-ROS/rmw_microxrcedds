@@ -1,208 +1,62 @@
-# Default to C++14
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
-endif()
+# Copyright 2019 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+cmake_minimum_required(VERSION 3.5)
 
 find_package(ament_cmake_gtest REQUIRED)
 
-set(TEST_UTILS_FILES_SOURCES "test_utils.cpp")
-set(TEST_UTILS_FILES_HEADERS "test_utils.hpp")
+project(rmw_microxrcedds_tests LANGUAGES CXX)
 
-# Node tests
-set(TEST_NAME "test_node")
-set(TEST_FILES "test_node.cpp")
-ament_add_gtest(
-  ${TEST_NAME}
-  ${TEST_FILES}
-  ${SRC_FILES}
-  ${TEST_UTILS_FILES_SOURCES}
-)
-if(TARGET ${TEST_NAME})
-  ament_target_dependencies(
-    ${TEST_NAME}
-    ${PROJECT_NAME}
+macro(rmw_test TEST_NAME TEST_SOURCE)
+  ament_add_gtest(${TEST_NAME}
+    ${TEST_SOURCE}
+    test_utils.cpp
+    )
+
+  target_link_libraries(${TEST_NAME}
+    microcdr
+    microxrcedds_client
+    rmw_microxrcedds
+    )
+
+  include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/../src)
+
+  target_include_directories(${TEST_NAME}
+    PUBLIC
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    PRIVATE
+      ${PROJECT_SOURCE_DIR}/src
+      $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include/>
+    )
+
+  set_target_properties(${TEST_NAME} PROPERTIES
+    CXX_STANDARD
+      14
+    CXX_STANDARD_REQUIRED
+      YES
+    )
+
+  ament_target_dependencies(${TEST_NAME}
+    rmw_microxrcedds
     rmw
     rosidl_typesupport_microxrcedds_shared
-  )
+    )
+endmacro()
 
-  target_link_libraries(
-    ${TEST_NAME}
-    microxrcedds_client
-    microcdr
-  )
-
-  target_include_directories(
-    ${TEST_NAME}
-    PUBLIC
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    PRIVATE
-        ${PROJECT_SOURCE_DIR}/src
-        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
-  )
-endif()
-
-
-# Publisher tests
-set(TEST_NAME "test_publisher")
-set(TEST_FILES "test_publisher.cpp")
-ament_add_gtest(
-  ${TEST_NAME}
-  ${TEST_FILES}
-  ${SRC_FILES}
-  ${TEST_UTILS_FILES_SOURCES}
-)
-if(TARGET ${TEST_NAME})
-  ament_target_dependencies(
-    ${TEST_NAME}
-    ${PROJECT_NAME}
-    rmw
-    rosidl_typesupport_microxrcedds_shared
-  )
-
-  target_link_libraries(
-    ${TEST_NAME}
-    microxrcedds_client
-    microcdr
-  )
-
-  target_include_directories(
-    ${TEST_NAME}
-    PUBLIC
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    PRIVATE
-        ${PROJECT_SOURCE_DIR}/src
-        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
-  )
-endif()
-
-
-# Subscriber tests
-set(TEST_NAME "test_subscription")
-set(TEST_FILES "test_subscription.cpp")
-ament_add_gtest(
-  ${TEST_NAME}
-  ${TEST_FILES}
-  ${SRC_FILES}
-  ${TEST_UTILS_FILES_SOURCES}
-)
-if(TARGET ${TEST_NAME})
-  ament_target_dependencies(
-    ${TEST_NAME}
-    ${PROJECT_NAME}
-    rmw
-    rosidl_typesupport_microxrcedds_shared
-  )
-
-  target_link_libraries(
-    ${TEST_NAME}
-    microxrcedds_client
-    microcdr
-  )
-
-  target_include_directories(
-    ${TEST_NAME}
-    PUBLIC
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    PRIVATE
-        ${PROJECT_SOURCE_DIR}/src
-        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
-  )
-endif()
-
-
-# Pubish and subcribe
-set(TEST_NAME "test_pubsub")
-set(TEST_FILES "test_pubsub.cpp")
-ament_add_gtest(
-  ${TEST_NAME}
-  ${TEST_FILES}
-  ${SRC_FILES}
-  ${TEST_UTILS_FILES_SOURCES}
-)
-if(TARGET ${TEST_NAME})
-  ament_target_dependencies(
-    ${TEST_NAME}
-    ${PROJECT_NAME}
-    rmw
-    rosidl_typesupport_microxrcedds_shared
-  )
-
-  target_link_libraries(
-    ${TEST_NAME}
-    microxrcedds_client
-    microcdr
-  )
-
-  target_include_directories(
-    ${TEST_NAME}
-    PUBLIC
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    PRIVATE
-        ${PROJECT_SOURCE_DIR}/src
-        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
-  )
-endif()
-
-
-# topic
-set(TEST_NAME "test_topic")
-set(TEST_FILES "test_topic.cpp")
-ament_add_gtest(
-  ${TEST_NAME}
-  ${TEST_FILES}
-  ${SRC_FILES}
-  ${TEST_UTILS_FILES_SOURCES}
-)
-if(TARGET ${TEST_NAME})
-  ament_target_dependencies(
-    ${TEST_NAME}
-    ${PROJECT_NAME}
-    rmw
-    rosidl_typesupport_microxrcedds_shared
-  )
-
-  target_link_libraries(
-    ${TEST_NAME}
-    microxrcedds_client
-    microcdr
-  )
-
-  target_include_directories(
-    ${TEST_NAME}
-    PUBLIC
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    PRIVATE
-        ${PROJECT_SOURCE_DIR}/src
-        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
-  )
-endif()
-
-# RMW
-set(TEST_NAME "test_rmw")
-set(TEST_FILES "test_rmw.cpp")
-ament_add_gtest(${TEST_NAME}
-  ${TEST_FILES}
-)
-if(TARGET ${TEST_NAME})
-  ament_target_dependencies(
-    ${TEST_NAME}
-    ${PROJECT_NAME}
-    rmw
-  )
-
-  target_link_libraries(
-    ${TEST_NAME}
-    ${PROJECT_NAME}
-    microxrcedds_client
-    microcdr
-  )
-
-  target_include_directories(
-    ${TEST_NAME}
-    PUBLIC
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    PRIVATE
-        ${PROJECT_SOURCE_DIR}/src
-        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
-  )
-endif()
+rmw_test(test-node        test_node.cpp)
+rmw_test(test-publisher   test_publisher.cpp)
+rmw_test(test-subscriber  test_subscription.cpp)
+rmw_test(test-pubsub      test_pubsub.cpp)
+rmw_test(test-topic       test_topic.cpp)
+rmw_test(test-rmw         test_rmw.cpp)

@@ -1,4 +1,4 @@
-// Copyright 2018 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2019 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,15 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMW_SUBSCRIBER_H_
-#define RMW_SUBSCRIBER_H_
+#include <rmw/rmw.h>
+#include <rmw/names_and_types.h>
+#include <rmw/error_handling.h>
 
-#include <rmw/types.h>
-#include <rosidl_generator_c/message_type_support_struct.h>
-
-rmw_subscription_t * create_subscriber(
-  const rmw_node_t * node, const rosidl_message_type_support_t * type_support,
-  const char * topic_name, const rmw_qos_profile_t * qos_policies,
-  bool ignore_local_publications);
-
-#endif  // RMW_SUBSCRIBER_H_
+rmw_ret_t
+rmw_get_topic_names_and_types(
+  const rmw_node_t * node,
+  rcutils_allocator_t * allocator,
+  bool no_demangle,
+  rmw_names_and_types_t * topic_names_and_types)
+{
+  (void) node;
+  (void) allocator;
+  (void) no_demangle;
+  (void) topic_names_and_types;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}

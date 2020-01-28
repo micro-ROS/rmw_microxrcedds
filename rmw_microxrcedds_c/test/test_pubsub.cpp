@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
-#include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
-
 #include <memory>
 #include <string>
 
@@ -30,9 +27,11 @@
 #include "./rmw_base_test.hpp"
 #include "./test_utils.hpp"
 
+#include "rosidl_generator_c/string.h"
+
 #define MICROXRCEDDS_PADDING sizeof(uint32_t)
 
-const char * test_parameter = "Test message XXXX";
+
 
 class TestSubscription : public RMWBaseTest
 {
@@ -41,41 +40,46 @@ protected:
 
   const char * topic_type = "topic_type";
   const char * topic_name = "topic_name";
-  const char * package_name = "package_name";
+  const char * message_namespace = "package_name";
 };
 
 /*
    Testing publish and subcribe to the same topic in diferent nodes
  */
 TEST_F(TestSubscription, publish_and_receive) {
+  
+
+
   dummy_type_support_t dummy_type_support;
   ConfigureDummyTypeSupport(
     topic_type,
     topic_type,
-    package_name,
+    message_namespace,
     id_gen++,
     &dummy_type_support);
 
   dummy_type_support.callbacks.cdr_serialize =
     [](const void * untyped_ros_message, ucdrBuffer * cdr) -> bool {
       bool ret;
-      ret = ucdr_serialize_string(cdr, reinterpret_cast<const char *>(untyped_ros_message));
+      const rosidl_generator_c__String * ros_message = reinterpret_cast<const rosidl_generator_c__String *>(untyped_ros_message);
+      ret = ucdr_serialize_string(cdr, ros_message->data);
       return ret;
     };
   dummy_type_support.callbacks.cdr_deserialize =
-    [](ucdrBuffer * cdr, void * untyped_ros_message, uint8_t * raw_mem_ptr,
-      size_t raw_mem_size) -> bool {
-      uint32_t Aux_uint32;
+    [](ucdrBuffer * cdr, void * untyped_ros_message) -> bool {
       bool ret;
-      ret = ucdr_deserialize_string(cdr, reinterpret_cast<char *>(raw_mem_ptr), raw_mem_size);
-      *(reinterpret_cast<char **>(untyped_ros_message)) = reinterpret_cast<char *>(raw_mem_ptr);
+      rosidl_generator_c__String * ros_message = reinterpret_cast<rosidl_generator_c__String *>(untyped_ros_message);
+      ret = ucdr_deserialize_string(cdr, ros_message->data, ros_message->capacity);
+      if (ret) {
+        ros_message->size = strlen(ros_message->data);
+      }
       return ret;
     };
-  dummy_type_support.callbacks.get_serialized_size = [](const void *) -> uint32_t {
-      return MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + strlen(
-        test_parameter) + 8;
+  dummy_type_support.callbacks.get_serialized_size = [](const void * untyped_ros_message) -> uint32_t {
+      const rosidl_generator_c__String * ros_message = reinterpret_cast<const rosidl_generator_c__String *>(untyped_ros_message);
+      return MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + ros_message->size + 8;
     };
-  dummy_type_support.callbacks.max_serialized_size = [](bool full_bounded) -> size_t {
+  dummy_type_support.callbacks.max_serialized_size = []() -> size_t {
       return (size_t)(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + 1);
     };
 
@@ -106,14 +110,21 @@ TEST_F(TestSubscription, publish_and_receive) {
   ASSERT_NE((void *)sub, (void *)NULL);
 
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(5));
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-  ASSERT_EQ(rmw_publish(pub, test_parameter), RMW_RET_OK);
+  char content[] = "Test message XXXX";
+  rosidl_generator_c__String ros_message;
+  ros_message.data = content;
+  ros_message.capacity = strlen(ros_message.data);
+  ros_message.size = ros_message.capacity;
+
+  ASSERT_EQ(rmw_publish(pub, &ros_message, NULL), RMW_RET_OK);
 
   rmw_subscriptions_t subscriptions;
   rmw_guard_conditions_t * guard_conditions = NULL;
   rmw_services_t * services = NULL;
   rmw_clients_t * clients = NULL;
+  rmw_events_t * events = NULL;
   rmw_wait_set_t * wait_set = NULL;
   rmw_time_t wait_timeout;
 
@@ -127,19 +138,28 @@ TEST_F(TestSubscription, publish_and_receive) {
       guard_conditions,
       services,
       clients,
+      events,
       wait_set,
       &wait_timeout
     ),
     RMW_RET_OK);
 
-  char * ReadMesg;
+  rosidl_generator_c__String read_ros_message;
+  char buff[strlen(content)];
+  read_ros_message.data =  buff;
+  read_ros_message.capacity = sizeof(buff);
+  read_ros_message.size = 0;
+
   bool taken;
   ASSERT_EQ(rmw_take_with_info(
       sub,
-      &ReadMesg,
+      &read_ros_message,
       &taken,
+      NULL,
       NULL
     ), RMW_RET_OK);
   ASSERT_EQ(taken, true);
-  ASSERT_EQ(strcmp(test_parameter, ReadMesg), 0);
+  ASSERT_EQ(strcmp(content, read_ros_message.data), 0);
+  ASSERT_EQ(strcmp(ros_message.data, read_ros_message.data), 0);
+  ASSERT_EQ(ros_message.size, read_ros_message.size);
 }

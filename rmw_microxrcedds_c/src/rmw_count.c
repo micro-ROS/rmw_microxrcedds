@@ -12,15 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMW_MICROXRCEDDS_C__RMW_C_MACROS_H_
-#define RMW_MICROXRCEDDS_C__RMW_C_MACROS_H_
+#include <rmw/rmw.h>
+#include <rmw/error_handling.h>
 
-#define RMW_CHECK_TYPE_IDENTIFIERS_MATCH(ElementName, ElementTypeID, ExpectedTypeID, OnFailure) \
-  { \
-    if (strcmp(ElementTypeID, ExpectedTypeID) != 0) { \
-      RMW_SET_ERROR_MSG("Implementation identifiers does not match"); \
-      OnFailure; \
-    } \
-  }
+rmw_ret_t
+rmw_count_publishers(
+  const rmw_node_t * node,
+  const char * topic_name,
+  size_t * count)
+{
+  (void) node;
+  (void) topic_name;
+  (void) count;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}
 
-#endif  // RMW_MICROXRCEDDS_C__RMW_C_MACROS_H_
+rmw_ret_t
+rmw_count_subscribers(
+  const rmw_node_t * node,
+  const char * topic_name,
+  size_t * count)
+{
+  (void) node;
+  (void) topic_name;
+  (void) count;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}

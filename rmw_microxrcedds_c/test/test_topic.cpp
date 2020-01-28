@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rosidl_typesupport_microxrcedds_shared/identifier.h>
-#include <rosidl_typesupport_microxrcedds_shared/message_type_support.h>
-
 #include <vector>
 #include <memory>
 #include <string>
@@ -25,12 +22,10 @@
 #include "rmw/validate_namespace.h"
 #include "rmw/validate_node_name.h"
 
-#include "./config.h"
-#include "./rmw_microxrcedds_topic.h"
-
-#include "./rmw_base_test.hpp"
-#include "./test_utils.hpp"
-
+#include <rmw_microxrcedds_c/config.h>
+#include "rmw_microxrcedds_topic.h"
+#include "rmw_base_test.hpp"
+#include "test_utils.hpp"
 
 class TestTopic : public RMWBaseTest
 {

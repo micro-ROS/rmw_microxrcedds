@@ -12,15 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMW_MICROXRCEDDS_C__RMW_C_MACROS_H_
-#define RMW_MICROXRCEDDS_C__RMW_C_MACROS_H_
+#include <rmw/rmw.h>
+#include <rmw/error_handling.h>
+#include <rmw/names_and_types.h>
 
-#define RMW_CHECK_TYPE_IDENTIFIERS_MATCH(ElementName, ElementTypeID, ExpectedTypeID, OnFailure) \
-  { \
-    if (strcmp(ElementTypeID, ExpectedTypeID) != 0) { \
-      RMW_SET_ERROR_MSG("Implementation identifiers does not match"); \
-      OnFailure; \
-    } \
-  }
-
-#endif  // RMW_MICROXRCEDDS_C__RMW_C_MACROS_H_
+rmw_ret_t
+rmw_get_service_names_and_types(
+  const rmw_node_t * node,
+  rcutils_allocator_t * allocator,
+  rmw_names_and_types_t * service_names_and_types)
+{
+  (void) node;
+  (void) allocator;
+  (void) service_names_and_types;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}
