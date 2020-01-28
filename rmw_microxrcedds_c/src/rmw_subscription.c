@@ -98,7 +98,6 @@ rmw_create_subscription(
     custom_subscription->subscription_gid.implementation_identifier =
       rmw_get_implementation_identifier();
     custom_subscription->session = &custom_node->session;
-    custom_subscription->waiting_for_response = false;
     custom_subscription->micro_buffer_in_use = false;
 
     const rosidl_message_type_support_t * type_support_xrce = NULL;

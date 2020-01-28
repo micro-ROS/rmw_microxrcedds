@@ -125,7 +125,6 @@ typedef struct CustomSubscription
   struct ucdrBuffer micro_buffer;
   bool micro_buffer_in_use;
 
-  bool waiting_for_response;
   uint16_t subscription_request;
 
   uxrObjectId topic_id;  // TODO(Javier) Pending to be removed
