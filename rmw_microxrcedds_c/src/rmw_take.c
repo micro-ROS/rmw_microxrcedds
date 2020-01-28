@@ -52,13 +52,19 @@ rmw_take_with_info(
   CustomSubscription * custom_subscription = (CustomSubscription *)subscription->data;
 
   if (!custom_subscription->micro_buffer_in_use) {
-    return RMW_RET_OK;
+    return RMW_RET_ERROR;
   }
 
-  bool deserialize_rv = custom_subscription->type_support_callbacks->cdr_deserialize(
-    &custom_subscription->micro_buffer,
-    ros_message);
-  custom_subscription->micro_buffer_in_use = false;
+  ucdrBuffer temp_buffer;
+  ucdr_init_buffer(&temp_buffer, custom_subscription->micro_buffer[custom_subscription->history_read_index], 
+                    custom_subscription->micro_buffer_lenght[custom_subscription->history_read_index]);
+
+  bool deserialize_rv = custom_subscription->type_support_callbacks->cdr_deserialize(&temp_buffer, ros_message);
+
+  custom_subscription->history_read_index = (custom_subscription->history_read_index + 1) % RMW_UXRCE_MAX_HISTORY;
+  if (custom_subscription->history_write_index == custom_subscription->history_read_index){
+      custom_subscription->micro_buffer_in_use = false;
+  }
 
   if (taken != NULL) {
     *taken = deserialize_rv;

@@ -73,12 +73,22 @@ void on_topic(
   while (subscription_item != NULL) {
     custom_subscription = (CustomSubscription *)subscription_item->data;
     if ((custom_subscription->datareader_id.id == object_id.id) &&
-      (custom_subscription->datareader_id.type == object_id.type) &&
-      !custom_subscription->micro_buffer_in_use)
-    {
-      memcpy(&custom_subscription->micro_buffer, serialization,
-        sizeof(custom_subscription->micro_buffer));
+      (custom_subscription->datareader_id.type == object_id.type))
+    { 
+      
+      ptrdiff_t lenght = serialization->final - serialization->iterator;
+      
+      custom_subscription->micro_buffer_lenght[custom_subscription->history_write_index] = lenght;
+      memcpy(custom_subscription->micro_buffer[custom_subscription->history_write_index],
+          serialization->iterator, lenght);
+      
 
+      // TODO (Pablo): Circular overlapping buffer implemented: use qos
+      if (custom_subscription->micro_buffer_in_use && custom_subscription->history_write_index == custom_subscription->history_read_index){
+        custom_subscription->history_read_index = (custom_subscription->history_read_index + 1) % RMW_UXRCE_MAX_HISTORY;
+      }
+
+      custom_subscription->history_write_index = (custom_subscription->history_write_index + 1) % RMW_UXRCE_MAX_HISTORY;
       custom_subscription->micro_buffer_in_use = true;
 
       break;

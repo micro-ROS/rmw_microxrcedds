@@ -120,7 +120,11 @@ typedef struct CustomSubscription
   rmw_gid_t subscription_gid;
   const message_type_support_callbacks_t * type_support_callbacks;
 
-  struct ucdrBuffer micro_buffer;
+  uint8_t micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_BUFFER_SIZE];
+  size_t micro_buffer_lenght[RMW_UXRCE_MAX_HISTORY];
+
+  uint8_t history_write_index;
+  uint8_t history_read_index;
   bool micro_buffer_in_use;
 
   uint16_t subscription_request;
