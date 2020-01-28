@@ -79,7 +79,6 @@ void on_topic(
       memcpy(&custom_subscription->micro_buffer, serialization,
         sizeof(custom_subscription->micro_buffer));
 
-      node->on_subscription = true;
       custom_subscription->micro_buffer_in_use = true;
 
       break;
