@@ -17,7 +17,7 @@ This layer is the ROS 2 Middleware Abstraction Interface written in C.
 This package provides a middleware implementation for XRCE-DDS (rmw layer).
 The implementation wraps the latest code from eProsima's Micro XRCE-DDS client to communicate with the DDS world.
 This library defines the interface used by upper layers in the ROS 2 stack, and that is implemented using XRCE-DDS middleware in the lower layers.
-For further information about `rmw_microxrcedds` click [here](TODO).
+For further information about `rmw_microxrcedds` click [here](https://github.com/micro-ROS/micro-ROS-doc/blob/dashing/rmw_microxrcedds/README.md).
 
 #### Library build Configurations
 
