@@ -75,7 +75,6 @@ void on_topic(
     if ((custom_subscription->datareader_id.id == object_id.id) &&
       (custom_subscription->datareader_id.type == object_id.type))
     { 
-      
       ptrdiff_t lenght = serialization->final - serialization->iterator;
       
       custom_subscription->micro_buffer_lenght[custom_subscription->history_write_index] = lenght;
