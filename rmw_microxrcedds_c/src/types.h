@@ -38,12 +38,12 @@
 
 struct rmw_microxrcedds_connection
 {
-  #ifdef MICRO_XRCEDDS_SERIAL
-    char serial_device[MAX_SERIAL_DEVICE];
-  #elif defined(MICRO_XRCEDDS_UDP)
-    char agent_address[MAX_IP_LEN];
-    char agent_port[MAX_PORT_LEN];
-  #endif
+#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM) 
+  char serial_device[MAX_SERIAL_DEVICE];
+#elif defined(MICRO_XRCEDDS_UDP)
+  char agent_address[MAX_IP_LEN];
+  char agent_port[MAX_PORT_LEN];
+#endif
   uint32_t client_key;
 };
 
