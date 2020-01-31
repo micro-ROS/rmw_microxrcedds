@@ -82,6 +82,7 @@ rmw_wait(
 
   //Look for every node configured in the wait set
   CustomNode * node_array[RMW_UXRCE_MAX_NODES];
+  memset(node_array, RMW_UXRCE_MAX_NODES, sizeof(CustomNode*));
   size_t node_array_index = 0;
 
   for (size_t i = 0; i < services->service_count; i++){
