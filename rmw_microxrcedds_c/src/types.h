@@ -170,8 +170,6 @@ typedef struct CustomNode
 
   custom_topic_t * custom_topic_sp;
 
-  bool on_subscription;
-
   uxrStreamId reliable_input;
   uxrStreamId reliable_output;
   uxrStreamId best_effort_output;
