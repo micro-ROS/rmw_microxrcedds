@@ -75,7 +75,6 @@ typedef struct CustomService
   uxrObjectId service_id;
   rmw_gid_t service_gid;
   const service_type_support_callbacks_t * type_support_callbacks;
-  uxrSession * session;
   uint16_t request_id;
 
   SampleIdentity sample_id[RMW_UXRCE_MAX_HISTORY];
@@ -98,12 +97,12 @@ typedef struct CustomClient
   uxrObjectId client_id;
   rmw_gid_t client_gid;
   const service_type_support_callbacks_t * type_support_callbacks;
-  uxrSession * session;
   uint16_t request_id;
 
   int64_t reply_id[RMW_UXRCE_MAX_HISTORY];
   uint8_t micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_BUFFER_SIZE];
   size_t micro_buffer_lenght[RMW_UXRCE_MAX_HISTORY];
+
   uint8_t history_write_index;
   uint8_t history_read_index;
   bool micro_buffer_in_use;
@@ -120,7 +119,6 @@ typedef struct CustomSubscription
   uxrObjectId datareader_id;
   rmw_gid_t subscription_gid;
   const message_type_support_callbacks_t * type_support_callbacks;
-  uxrSession * session;  // TODO(Javier) duplicated: owner_node->session
 
   struct ucdrBuffer micro_buffer;
   bool micro_buffer_in_use;
@@ -141,7 +139,6 @@ typedef struct CustomPublisher
   rmw_gid_t publisher_gid;
 
   const message_type_support_callbacks_t * type_support_callbacks;
-  uxrSession * session;  // TODO(Javier) duplicated: owner_node->session
 
   uxrObjectId topic_id;  // TODO(Javier) Pending to be removed
   struct custom_topic_t * topic;

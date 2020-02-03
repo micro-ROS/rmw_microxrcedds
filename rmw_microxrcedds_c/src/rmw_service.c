@@ -71,7 +71,6 @@ rmw_create_service(
     custom_service->owner_node = custom_node;
     custom_service->service_gid.implementation_identifier =
       rmw_get_implementation_identifier();
-    custom_service->session = &custom_node->session;
     custom_service->history_write_index = 0;
     custom_service->history_read_index = 0;
 
