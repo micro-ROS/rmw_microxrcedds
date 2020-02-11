@@ -15,7 +15,7 @@
 #ifndef IDENTIFIERS_H_
 #define IDENTIFIERS_H_
 
-const char * const eprosima_microxrcedds_identifier;
-const char * const eprosima_microxrcedds_serialization_format;
+extern const char * const eprosima_microxrcedds_identifier;
+extern const char * const eprosima_microxrcedds_serialization_format;
 
 #endif  // IDENTIFIERS_H_
