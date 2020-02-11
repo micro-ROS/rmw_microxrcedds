@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <time.h>
-
 #include "./types.h"
 #include "./rmw_microxrcedds_c/rmw_c_macros.h"
 #include "./rmw_node.h"
@@ -65,9 +63,6 @@ rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t all
   }
 #endif
 
-  time_t t;
-  time(&t);
-  srand((unsigned)t);
   init_options->impl->connection_params.client_key = rand();
 
   return RMW_RET_OK;
