@@ -22,7 +22,7 @@
 #include "./utils.h"
 
 
-custom_topic_t *
+CustomTopic *
 create_topic(
   struct CustomNode * custom_node,
   const char * topic_name,
@@ -30,7 +30,7 @@ create_topic(
   const rmw_qos_profile_t * qos_policies)
 {
   // find topic in list
-  custom_topic_t * custom_topic_ptr = custom_node->custom_topic_sp;
+  CustomTopic * custom_topic_ptr = custom_node->custom_topic_sp;
   while (custom_topic_ptr != NULL) {
     if (message_type_support_callbacks == custom_topic_ptr->message_type_support_callbacks) {
       break;
@@ -46,7 +46,7 @@ create_topic(
   }
 
   // Generate new memory
-  custom_topic_ptr = (custom_topic_t *)rmw_allocate(sizeof(custom_topic_t));
+  custom_topic_ptr = (CustomTopic *)rmw_allocate(sizeof(CustomTopic));
   if (custom_topic_ptr == NULL) {
     RMW_SET_ERROR_MSG("failed to allocate topic interna mem");
     goto create_topic_end;
@@ -127,7 +127,7 @@ create_topic_end:
 }
 
 bool
-destroy_topic(custom_topic_t * custom_topic)
+destroy_topic(CustomTopic * custom_topic)
 {
   bool ok = false;
 
@@ -174,7 +174,7 @@ size_t
 topic_count(struct CustomNode * custom_node)
 {
   size_t count = 0;
-  custom_topic_t * custom_topic_ptr = custom_node->custom_topic_sp;
+  CustomTopic * custom_topic_ptr = custom_node->custom_topic_sp;
   while (custom_topic_ptr != NULL) {
     count++;
     custom_topic_ptr = custom_topic_ptr->next_custom_topic;

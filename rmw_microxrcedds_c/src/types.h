@@ -60,10 +60,10 @@ struct  rmw_init_options_impl_t
   struct rmw_microxrcedds_connection connection_params;
 };
 
-typedef struct custom_topic_t
+typedef struct CustomTopic
 {
-  struct custom_topic_t * next_custom_topic;
-  struct custom_topic_t * prev_custom_topic;
+  struct CustomTopic * next_custom_topic;
+  struct CustomTopic * prev_custom_topic;
 
   uxrObjectId topic_id;
   const message_type_support_callbacks_t * message_type_support_callbacks;
@@ -71,7 +71,7 @@ typedef struct custom_topic_t
   bool sync_with_agent;
   int32_t usage_account;
   struct CustomNode * owner_node;
-} custom_topic_t;
+} CustomTopic;
 
 typedef struct CustomService
 {
@@ -134,7 +134,7 @@ typedef struct CustomSubscription
   uint16_t subscription_request;
 
   uxrObjectId topic_id;  // TODO(Javier) Pending to be removed
-  struct custom_topic_t * topic;
+  struct CustomTopic * topic;
 
   struct CustomNode * owner_node;
 } CustomSubscription;
@@ -149,7 +149,7 @@ typedef struct CustomPublisher
   const message_type_support_callbacks_t * type_support_callbacks;
 
   uxrObjectId topic_id;  // TODO(Javier) Pending to be removed
-  struct custom_topic_t * topic;
+  struct CustomTopic * topic;
 
   struct CustomNode * owner_node;
 } CustomPublisher;
@@ -167,7 +167,7 @@ typedef struct CustomNode
   uxrSession session;
   uxrObjectId participant_id;
 
-  custom_topic_t * custom_topic_sp;
+  CustomTopic * custom_topic_sp;
 
   uxrStreamId reliable_input;
   uxrStreamId reliable_output;
