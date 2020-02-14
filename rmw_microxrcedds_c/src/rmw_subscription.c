@@ -86,7 +86,7 @@ rmw_create_subscription(
     }
 
     CustomNode * custom_node = (CustomNode *)node->data;
-    struct Item * memory_node = get_memory(&custom_node->subscription_mem);
+    struct Item * memory_node = get_memory(&subscription_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
       goto fail;
@@ -197,7 +197,7 @@ rmw_create_subscription(
       status, sizeof(status)))
     {
       RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
-      put_memory(&custom_node->subscription_mem, &custom_subscription->mem);
+      put_memory(&subscription_memory, &custom_subscription->mem);
       goto fail;
     }
 
@@ -213,7 +213,7 @@ rmw_create_subscription(
   return rmw_subscription;
 
 fail:
-  rmw_subscription_delete(rmw_subscription);
+  delete_subscription_memory(rmw_subscription);
   rmw_subscription = NULL;
   return rmw_subscription;
 }
@@ -283,7 +283,7 @@ rmw_destroy_subscription(rmw_node_t * node, rmw_subscription_t * subscription)
       RMW_SET_ERROR_MSG("unable to remove publisher from the server");
       result_ret = RMW_RET_ERROR;
     } else {
-      rmw_subscription_delete(subscription);
+      delete_subscription_memory(subscription);
       result_ret = RMW_RET_OK;
     }
   }

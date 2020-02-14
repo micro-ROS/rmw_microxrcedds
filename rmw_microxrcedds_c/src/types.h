@@ -34,6 +34,8 @@
 #define MAX_PORT_LEN 5
 #define MAX_SERIAL_DEVICE 50
 
+// RMW specific definitions
+
 struct rmw_microxrcedds_connection
 {
   #ifdef MICRO_XRCEDDS_SERIAL
@@ -45,7 +47,6 @@ struct rmw_microxrcedds_connection
   uint32_t client_key;
 };
 
-
 struct  rmw_context_impl_t
 {
   struct rmw_microxrcedds_connection connection_params;
@@ -55,6 +56,8 @@ struct  rmw_init_options_impl_t
 {
   struct rmw_microxrcedds_connection connection_params;
 };
+
+// ROS2 entities definitions
 
 typedef struct CustomTopic
 {
@@ -72,6 +75,7 @@ typedef struct CustomTopic
 typedef struct CustomService
 {
   struct Item mem;
+  rmw_service_t * rmw_handle;
   uxrObjectId service_id;
   rmw_gid_t service_gid;
   const service_type_support_callbacks_t * type_support_callbacks;
@@ -94,6 +98,7 @@ typedef struct CustomService
 typedef struct CustomClient
 {
   struct Item mem;
+  rmw_client_t * rmw_handle;
   uxrObjectId client_id;
   rmw_gid_t client_gid;
   const service_type_support_callbacks_t * type_support_callbacks;
@@ -115,6 +120,7 @@ typedef struct CustomClient
 typedef struct CustomSubscription
 {
   struct Item mem;
+  rmw_subscription_t * rmw_handle;
   uxrObjectId subscriber_id;
   uxrObjectId datareader_id;
   rmw_gid_t subscription_gid;
@@ -138,6 +144,7 @@ typedef struct CustomSubscription
 typedef struct CustomPublisher
 {
   struct Item mem;
+  rmw_publisher_t  * rmw_handle;
   uxrObjectId publisher_id;
   uxrObjectId datawriter_id;
   rmw_gid_t publisher_gid;
@@ -177,8 +184,37 @@ typedef struct CustomNode
   uint16_t id_gen;
 } CustomNode;
 
+// Static memory pools
 
+extern struct MemPool node_memory;
+extern CustomNode custom_nodes[RMW_UXRCE_MAX_NODES];
 
-void init_nodes_memory(struct MemPool * memory, CustomNode nodes[RMW_UXRCE_MAX_NODES], size_t size);
+extern struct MemPool publisher_memory;
+extern CustomPublisher custom_publishers[RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_NODES];
+
+extern struct MemPool subscription_memory;
+extern CustomSubscription custom_subscriptions[RMW_UXRCE_MAX_SUBSCRIPTIONS];
+
+extern struct MemPool service_memory;
+extern CustomService custom_services[RMW_UXRCE_MAX_SERVICES];
+
+extern struct MemPool client_memory;
+extern CustomClient custom_clients[RMW_UXRCE_MAX_CLIENTS];
+
+// Memory init functions
+
+void init_nodes_memory(struct MemPool * memory, CustomNode * nodes, size_t size);
+void init_service_memory(struct MemPool * memory, CustomService * services, size_t size);
+void init_client_memory(struct MemPool * memory, CustomClient * clients, size_t size);
+void init_publisher_memory(struct MemPool * memory, CustomPublisher * publishers, size_t size);
+void init_subscriber_memory(struct MemPool * memory, CustomSubscription * subscribers, size_t size);
+
+// Memory management functions
+
+void delete_node_memory(rmw_node_t * node);
+void delete_publisher_memory(rmw_publisher_t * publisher);
+void delete_subscription_memory(rmw_subscription_t * subscriber);
+void delete_client_memory(rmw_client_t * client);
+void delete_service_memory(rmw_service_t * client);
 
 #endif  // TYPES_H_

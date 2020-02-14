@@ -81,7 +81,7 @@ rmw_create_publisher(
     }
 
     CustomNode * custom_node = (CustomNode *)node->data;
-    struct Item * memory_node = get_memory(&custom_node->publisher_mem);
+    struct Item * memory_node = get_memory(&publisher_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
       goto fail;
@@ -187,6 +187,7 @@ rmw_create_publisher(
       status, sizeof(status)))
     {
       RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
+      put_memory(&publisher_memory, &custom_publisher->mem);
       goto fail;
     }
 
@@ -194,7 +195,7 @@ rmw_create_publisher(
   return rmw_publisher;
 
 fail:
-  rmw_publisher_delete(rmw_publisher);
+  delete_publisher_memory(rmw_publisher);
   rmw_publisher = NULL;
   return rmw_publisher;
 }
@@ -274,7 +275,7 @@ rmw_destroy_publisher(
       RMW_SET_ERROR_MSG("unable to remove publisher from the server");
       result_ret = RMW_RET_ERROR;
     } else {
-      rmw_publisher_delete(publisher);
+      delete_publisher_memory(publisher);
       result_ret = RMW_RET_OK;
     }
   }

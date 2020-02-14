@@ -102,7 +102,7 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
 
   // Get all available nodes
   {
-    for (size_t i = 0; i < RMW_UXRCE_MAX_SUBSCRIPTIONS_X_NODE; i++) {
+    for (size_t i = 0; i < RMW_UXRCE_MAX_SUBSCRIPTIONS; i++) {
       dummy_type_supports.push_back(dummy_type_support_t());
       ConfigureDummyTypeSupport(
         topic_type,
@@ -207,7 +207,7 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
 
   // Get all available nodes
   {
-    for (size_t i = 0; i < RMW_UXRCE_MAX_SUBSCRIPTIONS_X_NODE; i++) {
+    for (size_t i = 0; i < RMW_UXRCE_MAX_SUBSCRIPTIONS; i++) {
       subscription = rmw_create_subscription(
         this->node,
         &dummy_type_support.type_support,

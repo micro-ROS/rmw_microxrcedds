@@ -61,7 +61,7 @@ rmw_create_client(
     memcpy((void *)rmw_client->service_name, service_name, strlen(service_name) + 1);
 
     CustomNode * custom_node = (CustomNode *)node->data;
-    struct Item * memory_node = get_memory(&custom_node->client_mem);
+    struct Item * memory_node = get_memory(&client_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
       goto fail;
@@ -139,7 +139,7 @@ rmw_create_client(
       status, 1))
     {
       RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
-      put_memory(&custom_node->service_mem, &custom_client->mem);
+      put_memory(&client_memory, &custom_client->mem);
       goto fail;
     }
 
@@ -155,7 +155,7 @@ rmw_create_client(
   return rmw_client;
 
 fail:
-  rmw_client_delete(rmw_client);
+  delete_client_memory(rmw_client);
   rmw_client = NULL;
   return rmw_client;
 }
@@ -165,10 +165,47 @@ rmw_destroy_client(
   rmw_node_t * node,
   rmw_client_t * client)
 {
-  (void) node;
-  
-  EPROS_PRINT_TRACE()
+    EPROS_PRINT_TRACE()
+  rmw_ret_t result_ret = RMW_RET_OK;
+  if (!node) {
+    RMW_SET_ERROR_MSG("node handle is null");
+    result_ret = RMW_RET_ERROR;
+  } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+    RMW_SET_ERROR_MSG("node handle not from this implementation");
+    result_ret = RMW_RET_ERROR;
+  } else if (!node->data) {
+    RMW_SET_ERROR_MSG("node imp is null");
+    result_ret = RMW_RET_ERROR;
+  } else if (!client) {
+    RMW_SET_ERROR_MSG("client handle is null");
+    result_ret = RMW_RET_ERROR;
+  } else if (strcmp(client->implementation_identifier,  // NOLINT
+    rmw_get_implementation_identifier()) != 0)
+  {
+    RMW_SET_ERROR_MSG("client handle not from this implementation");
+    result_ret = RMW_RET_ERROR;
+  } else if (!client->data) {
+    RMW_SET_ERROR_MSG("client imp is null");
+    result_ret = RMW_RET_ERROR;
+  } else {
+    CustomNode * custom_node = (CustomNode *)node->data;
+    CustomClient * custom_client = (CustomClient *)client->data;
+    uint16_t delete_client =
+      uxr_buffer_delete_entity(&custom_node->session, custom_node->reliable_output,
+        custom_client->client_id);
+    
+    uint16_t requests[] = {delete_client};
+    uint8_t status[sizeof(requests) / 2];
+    if (!uxr_run_session_until_all_status(&custom_node->session, 1000, requests, status,
+      sizeof(status)))
+    {
+      RMW_SET_ERROR_MSG("unable to remove client from the server");
+      result_ret = RMW_RET_ERROR;
+    } else {
+      delete_client_memory(client);
+      result_ret = RMW_RET_OK;
+    }
+  }
 
-  rmw_client_delete(client);
-  return RMW_RET_OK;
+  return result_ret;
 }

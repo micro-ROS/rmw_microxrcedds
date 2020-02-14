@@ -22,21 +22,6 @@
 #include <rmw/error_handling.h>
 #include <rmw/allocators.h>
 
-static struct MemPool node_memory;
-static CustomNode custom_nodes[RMW_UXRCE_MAX_NODES];
-
-static struct MemPool publisher_memory;
-static CustomPublisher custom_publisher[RMW_UXRCE_MAX_PUBLISHERS_X_NODE + RMW_UXRCE_MAX_NODES];
-
-static struct MemPool subscription_memory;
-static CustomSubscription custom_subscription[RMW_UXRCE_MAX_SUBSCRIPTIONS_X_NODE];
-
-static struct MemPool service_memory;
-static CustomService custom_service[RMW_UXRCE_MAX_SERVICES_X_NODE];
-
-static struct MemPool client_memory;
-static CustomClient custom_client[RMW_UXRCE_MAX_CLIENTS_X_NODE];
-
 rmw_ret_t
 rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t allocator)
 {
@@ -146,6 +131,10 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   context->impl = context_impl;
 
   init_nodes_memory(&node_memory, custom_nodes, RMW_UXRCE_MAX_NODES);
+  init_subscriber_memory(&subscription_memory, custom_subscriptions, RMW_UXRCE_MAX_SUBSCRIPTIONS);
+  init_publisher_memory(&publisher_memory, custom_publishers, RMW_UXRCE_MAX_PUBLISHERS);
+  init_service_memory(&service_memory, custom_services, RMW_UXRCE_MAX_SERVICES);
+  init_client_memory(&client_memory, custom_clients, RMW_UXRCE_MAX_CLIENTS);
 
   return RMW_RET_OK;
 }
