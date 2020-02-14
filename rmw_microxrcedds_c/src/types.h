@@ -166,15 +166,6 @@ typedef struct CustomNode
 #endif
   uxrSession session;
   uxrObjectId participant_id;
-  struct MemPool publisher_mem;
-  struct MemPool subscription_mem;
-  struct MemPool service_mem;
-  struct MemPool client_mem;
-
-  CustomPublisher publisher_info[RMW_UXRCE_MAX_PUBLISHERS_X_NODE];
-  CustomSubscription subscription_info[RMW_UXRCE_MAX_SUBSCRIPTIONS_X_NODE];
-  CustomService service_info[RMW_UXRCE_MAX_SERVICES_X_NODE];
-  CustomClient client_info[RMW_UXRCE_MAX_CLIENTS_X_NODE];
 
   custom_topic_t * custom_topic_sp;
 

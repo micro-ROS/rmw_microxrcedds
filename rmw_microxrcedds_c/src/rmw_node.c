@@ -39,14 +39,6 @@
 #define CLOSE_TRANSPORT(transport)
 #endif
 
-static struct MemPool node_memory;
-static CustomNode custom_nodes[RMW_UXRCE_MAX_NODES];
-
-void init_rmw_node()
-{
-  init_nodes_memory(&node_memory, custom_nodes, RMW_UXRCE_MAX_NODES);
-}
-
 void on_status(
   uxrSession * session, uxrObjectId object_id, uint16_t request_id, uint8_t status,
   void * args)
