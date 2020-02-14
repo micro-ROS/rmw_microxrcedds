@@ -70,7 +70,7 @@ TEST_F(TestTopic, construction_and_destruction) {
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
-  custom_topic_t * topic = create_topic(
+  CustomTopic * topic = create_topic(
     reinterpret_cast<struct CustomNode *>(node->data),
     package_name,
     &dummy_type_support.callbacks,
@@ -99,8 +99,8 @@ TEST_F(TestTopic, shared_topic_creation) {
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
-  custom_topic_t * created_topic;
-  custom_topic_t * last_created_topic;
+  CustomTopic * created_topic;
+  CustomTopic * last_created_topic;
   for (size_t i = 0; i < attempts; i++) {
     created_topic = create_topic(
       reinterpret_cast<struct CustomNode *>(node->data),
@@ -134,7 +134,7 @@ TEST_F(TestTopic, multiple_topic_creation) {
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
-  std::vector<custom_topic_t *> created_topics;
+  std::vector<CustomTopic *> created_topics;
   std::vector<dummy_type_support_t> dummy_type_supports;
   for (size_t i = 0; i < attempts; i++) {
     dummy_type_supports.push_back(dummy_type_support_t());
@@ -145,7 +145,7 @@ TEST_F(TestTopic, multiple_topic_creation) {
       id_gen++,
       &dummy_type_supports.back());
 
-    custom_topic_t * created_topic = create_topic(
+    CustomTopic * created_topic = create_topic(
       reinterpret_cast<struct CustomNode *>(node->data),
       dummy_type_supports.back().topic_name.data(),
       &dummy_type_supports.back().callbacks,

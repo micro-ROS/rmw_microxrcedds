@@ -25,7 +25,7 @@ extern "C"
 {
 #endif
 
-custom_topic_t *
+CustomTopic *
 create_topic(
   struct CustomNode * custom_node,
   const char * topic_name,
@@ -34,7 +34,7 @@ create_topic(
 
 
 bool
-destroy_topic(custom_topic_t * custom_topic);
+destroy_topic(CustomTopic * custom_topic);
 
 size_t
 topic_count(struct CustomNode * custom_node);
