@@ -268,10 +268,10 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
 
   node_info->reliable_input = uxr_create_input_reliable_stream(
     &node_info->session, node_info->input_reliable_stream_buffer,
-    node_info->transport.comm.mtu * RMW_UXRCE_MAX_HISTORY, RMW_UXRCE_MAX_HISTORY);
+    node_info->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY, RMW_UXRCE_STREAM_HISTORY);
   node_info->reliable_output =
     uxr_create_output_reliable_stream(&node_info->session, node_info->output_reliable_stream_buffer,
-      node_info->transport.comm.mtu * RMW_UXRCE_MAX_HISTORY, RMW_UXRCE_MAX_HISTORY);
+      node_info->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY, RMW_UXRCE_STREAM_HISTORY);
 
   node_info->best_effort_input = uxr_create_input_best_effort_stream(&node_info->session);
   node_info->best_effort_output = uxr_create_output_best_effort_stream(&node_info->session,
