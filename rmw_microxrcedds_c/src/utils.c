@@ -214,10 +214,12 @@ void rmw_client_delete(rmw_client_t * client)
 void customnode_clear(CustomNode * node)
 {
   if (node) {
-    publishers_clear(node->publisher_info);
-    free_mem_pool(&node->publisher_mem);
-    subscriptions_clear(node->subscription_info);
-    free_mem_pool(&node->subscription_mem);
+    // TODO (Pablo): Remove related entities from other pools
+    
+    // publishers_clear(node->publisher_info);
+    // free_mem_pool(&node->publisher_mem);
+    // subscriptions_clear(node->subscription_info);
+    // free_mem_pool(&node->subscription_mem);
   }
 }
 
