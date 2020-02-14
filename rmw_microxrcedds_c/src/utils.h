@@ -23,15 +23,6 @@
 // (Borja) decide wat to do with this macro.
 #define EPROS_PRINT_TRACE() ;  // printf("func %s, in file %s:%d\n", __func__, __FILE__, __LINE__);
 
-void rmw_delete(void * rmw_allocated_ptr);
-void rmw_node_delete(rmw_node_t * node);
-void rmw_publisher_delete(rmw_publisher_t * publisher);
-void rmw_subscription_delete(rmw_subscription_t * subscriber);
-void rmw_client_delete(rmw_client_t * client);
-void rmw_service_delete(rmw_service_t * client);
-
-void customnode_clear(CustomNode * node);
-
 int generate_name(const uxrObjectId * id, char name[], size_t buffer_size);
 size_t generate_type_name(
   const message_type_support_callbacks_t * members, char type_name[],

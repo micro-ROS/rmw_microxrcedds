@@ -60,10 +60,9 @@ void on_topic(
 
   CustomNode * node = (CustomNode *)args;
 
-  struct Item * subscription_item = node->subscription_mem.allocateditems;
-  CustomSubscription * custom_subscription = NULL;
+  struct Item * subscription_item = subscription_memory.allocateditems;
   while (subscription_item != NULL) {
-    custom_subscription = (CustomSubscription *)subscription_item->data;
+    CustomSubscription * custom_subscription = (CustomSubscription *)subscription_item->data;
     if ((custom_subscription->datareader_id.id == object_id.id) &&
       (custom_subscription->datareader_id.type == object_id.type))
     { 
@@ -95,11 +94,9 @@ void on_request(uxrSession* session, uxrObjectId object_id, uint16_t request_id,
 
   CustomNode * node = (CustomNode *)args;
 
-  struct Item * service_item = node->service_mem.allocateditems;
-  CustomService * custom_service = NULL;
-
+  struct Item * service_item = service_memory.allocateditems;
   while (service_item != NULL) {
-    custom_service = (CustomService *)service_item->data;
+    CustomService * custom_service = (CustomService *)service_item->data;
     if (custom_service->request_id == request_id){
       custom_service->micro_buffer_lenght[custom_service->history_write_index] = request_len;
       memcpy(custom_service->micro_buffer[custom_service->history_write_index], 
@@ -128,11 +125,9 @@ void on_reply(uxrSession* session, uxrObjectId object_id, uint16_t request_id, u
 
   CustomNode * node = (CustomNode *)args;
 
-  struct Item * client_item = node->client_mem.allocateditems;
-  CustomClient * custom_client = NULL;
-
+  struct Item * client_item = client_memory.allocateditems;
   while (client_item != NULL) {
-    custom_client = (CustomClient *)client_item->data;
+    CustomClient * custom_client = (CustomClient *)client_item->data;
     if (custom_client->request_id == request_id)
     { 
 
@@ -153,17 +148,6 @@ void on_reply(uxrSession* session, uxrObjectId object_id, uint16_t request_id, u
   client_item = client_item->next;
 }
 
-}
-
-void clear_node(rmw_node_t * node)
-{
-  CustomNode * micro_node = (CustomNode *)node->data;
-  // TODO(Borja) make sure that session deletion deletes participant and related entities.
-  uxr_delete_session(&micro_node->session);
-  CLOSE_TRANSPORT(&micro_node->transport);
-  rmw_node_delete(node);
-
-  put_memory(&node_memory, &micro_node->mem);
 }
 
 rmw_node_t * create_node(const char * name, const char * namespace_, size_t domain_id, const rmw_context_t * context)
@@ -287,7 +271,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   if (!node_handle->name) {
     RMW_SET_ERROR_MSG("failed to allocate memory");
     CLOSE_TRANSPORT(&node_info->transport);
-    rmw_node_delete(node_handle);
+    delete_node_memory(node_handle);
     return NULL;
   }
   memcpy((char *)node_handle->name, name, strlen(name) + 1);
@@ -296,14 +280,14 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   if (!node_handle->namespace_) {
     RMW_SET_ERROR_MSG("failed to allocate memory");
     CLOSE_TRANSPORT(&node_info->transport);
-    rmw_node_delete(node_handle);
+    delete_node_memory(node_handle);
     return NULL;
   }
   memcpy((char *)node_handle->namespace_, namespace_, strlen(namespace_) + 1);
 
   if (!uxr_create_session(&node_info->session)) {
     CLOSE_TRANSPORT(&node_info->transport);
-    rmw_node_delete(node_handle);
+    delete_node_memory(node_handle);
     RMW_SET_ERROR_MSG("failed to create node session on Micro ROS Agent.");
     return NULL;
   }
@@ -337,14 +321,11 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   if (!uxr_run_session_until_all_status(&node_info->session, 1000, requests, status, 1)) {
     uxr_delete_session(&node_info->session);
     CLOSE_TRANSPORT(&node_info->transport);
-    rmw_node_delete(node_handle);
+    delete_node_memory(node_handle);
     RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
     return NULL;
   }
-
-  // TODO(Borja) create utils methods to handle publishers array.
-  customnode_clear(node_info);
-
+  
   return node_handle;
 }
 
@@ -390,7 +371,52 @@ rmw_ret_t rmw_destroy_node(rmw_node_t * node)
     return RMW_RET_ERROR;
   }
 
-  clear_node(node);
+  CustomNode * custom_node = (CustomNode *)node->data;
+  // TODO(Borja) make sure that session deletion deletes participant and related entities.
+  // TODO(Pablo) make sure that other entities are removed from the pools
+
+  struct Item * item = NULL;
+
+  item = publisher_memory.allocateditems;
+  while (item != NULL) {
+    CustomPublisher * custom_publisher = (CustomPublisher *)item->data;
+    item = item->next;
+    if (custom_publisher->owner_node == custom_node){ 
+      rmw_destroy_publisher(node, custom_publisher->rmw_handle);
+    }
+  }
+
+  item = subscription_memory.allocateditems;
+  while (item != NULL) {
+    CustomSubscription * custom_subscription = (CustomSubscription *)item->data;
+    item = item->next;
+    if (custom_subscription->owner_node == custom_node){ 
+      rmw_destroy_subscription(node, custom_subscription->rmw_handle);
+    }
+  }
+
+  item = service_memory.allocateditems;
+  while (item != NULL) {
+    CustomService * custom_service = (CustomService *)item->data;
+    item = item->next;
+    if (custom_service->owner_node == custom_node){ 
+      rmw_destroy_service(node, custom_service->rmw_handle);
+    }
+  }
+
+  item = client_memory.allocateditems;
+  while (item != NULL) {
+    CustomClient * custom_client = (CustomClient *)item->data;
+    item = item->next;
+    if (custom_client->owner_node == custom_node){ 
+      rmw_destroy_client(node, custom_client->rmw_handle);
+    }
+  }
+
+  uxr_delete_session(&custom_node->session);
+  CLOSE_TRANSPORT(&custom_node->transport);
+  delete_node_memory(node);
+
   return result_ret;
 }
 

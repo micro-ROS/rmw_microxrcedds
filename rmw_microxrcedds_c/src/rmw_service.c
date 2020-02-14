@@ -61,7 +61,7 @@ rmw_create_service(
     memcpy((void *)rmw_service->service_name, service_name, strlen(service_name) + 1);
 
     CustomNode * custom_node = (CustomNode *)node->data;
-    struct Item * memory_node = get_memory(&custom_node->service_mem);
+    struct Item * memory_node = get_memory(&service_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
       goto fail;
@@ -139,7 +139,7 @@ rmw_create_service(
       status, 1))
     {
       RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
-      put_memory(&custom_node->service_mem, &custom_service->mem);
+      put_memory(&service_memory, &custom_service->mem);
       goto fail;
     }
 
@@ -155,7 +155,7 @@ rmw_create_service(
   return rmw_service;
 
 fail:
-  rmw_service_delete(rmw_service);
+  delete_service_memory(rmw_service);
   rmw_service = NULL;
   return rmw_service;
 }
@@ -165,11 +165,47 @@ rmw_destroy_service(
   rmw_node_t * node,
   rmw_service_t * service)
 {
-  (void) node;
-
   EPROS_PRINT_TRACE()
+  rmw_ret_t result_ret = RMW_RET_OK;
+  if (!node) {
+    RMW_SET_ERROR_MSG("node handle is null");
+    result_ret = RMW_RET_ERROR;
+  } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+    RMW_SET_ERROR_MSG("node handle not from this implementation");
+    result_ret = RMW_RET_ERROR;
+  } else if (!node->data) {
+    RMW_SET_ERROR_MSG("node imp is null");
+    result_ret = RMW_RET_ERROR;
+  } else if (!service) {
+    RMW_SET_ERROR_MSG("service handle is null");
+    result_ret = RMW_RET_ERROR;
+  } else if (strcmp(service->implementation_identifier,  // NOLINT
+    rmw_get_implementation_identifier()) != 0)
+  {
+    RMW_SET_ERROR_MSG("service handle not from this implementation");
+    result_ret = RMW_RET_ERROR;
+  } else if (!service->data) {
+    RMW_SET_ERROR_MSG("service imp is null");
+    result_ret = RMW_RET_ERROR;
+  } else {
+    CustomNode * custom_node = (CustomNode *)node->data;
+    CustomService * custom_service = (CustomService *)service->data;
+    uint16_t delete_service =
+      uxr_buffer_delete_entity(&custom_node->session, custom_node->reliable_output,
+        custom_service->service_id);
+    
+    uint16_t requests[] = {delete_service};
+    uint8_t status[sizeof(requests) / 2];
+    if (!uxr_run_session_until_all_status(&custom_node->session, 1000, requests, status,
+      sizeof(status)))
+    {
+      RMW_SET_ERROR_MSG("unable to remove service from the server");
+      result_ret = RMW_RET_ERROR;
+    } else {
+      delete_service_memory(service);
+      result_ret = RMW_RET_OK;
+    }
+  }
 
-  rmw_service_delete(service);
-
-  return RMW_RET_OK;
+  return result_ret;
 }
