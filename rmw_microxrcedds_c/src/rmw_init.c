@@ -63,7 +63,9 @@ rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t all
   }
 #endif
 
-  init_options->impl->connection_params.client_key = rand();
+  do {
+    init_options->impl->connection_params.client_key = rand();
+  } while(init_options->impl->connection_params.client_key == 0);
 
   return RMW_RET_OK;
 }
