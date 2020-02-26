@@ -50,6 +50,24 @@ struct rmw_microxrcedds_connection
 struct  rmw_context_impl_t
 {
   struct rmw_microxrcedds_connection connection_params;
+
+#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM)
+  uxrSerialTransport transport;
+  uxrSerialPlatform serial_platform;
+#elif defined(MICRO_XRCEDDS_UDP)
+  uxrUDPTransport transport;
+  uxrUDPPlatform udp_platform;
+#endif
+  uxrSession session;
+
+  uxrStreamId reliable_input;
+  uxrStreamId reliable_output;
+  uxrStreamId best_effort_output;
+  uxrStreamId best_effort_input;
+
+  uint8_t input_reliable_stream_buffer[RMW_UXRCE_MAX_BUFFER_SIZE];
+  uint8_t output_reliable_stream_buffer[RMW_UXRCE_MAX_BUFFER_SIZE];
+  uint8_t output_best_effort_stream_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
 };
 
 struct  rmw_init_options_impl_t
@@ -160,27 +178,10 @@ typedef struct CustomPublisher
 typedef struct CustomNode
 {
   struct Item mem;
-#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM)
-  uxrSerialTransport transport;
-  uxrSerialPlatform serial_platform;
-#elif defined(MICRO_XRCEDDS_UDP)
-  uxrUDPTransport transport;
-  uxrUDPPlatform udp_platform;
-#endif
-  uxrSession session;
+  struct  rmw_context_impl_t * context;
+
   uxrObjectId participant_id;
-
   CustomTopic * custom_topic_sp;
-
-  uxrStreamId reliable_input;
-  uxrStreamId reliable_output;
-  uxrStreamId best_effort_output;
-  uxrStreamId best_effort_input;
-
-  uint8_t input_reliable_stream_buffer[RMW_UXRCE_MAX_BUFFER_SIZE];
-  uint8_t output_reliable_stream_buffer[RMW_UXRCE_MAX_BUFFER_SIZE];
-  uint8_t output_best_effort_stream_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
-
   uint16_t id_gen;
 } CustomNode;
 

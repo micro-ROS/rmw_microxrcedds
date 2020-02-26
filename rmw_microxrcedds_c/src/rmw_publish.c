@@ -46,15 +46,15 @@ rmw_publish(
 
     ucdrBuffer mb;
     bool written = false;
-    if (uxr_prepare_output_stream(&custom_publisher->owner_node->session,
-      custom_publisher->owner_node->reliable_output, custom_publisher->datawriter_id, &mb,
+    if (uxr_prepare_output_stream(&custom_publisher->owner_node->context->session,
+      custom_publisher->owner_node->context->reliable_output, custom_publisher->datawriter_id, &mb,
       topic_length))
     {
       ucdrBuffer mb_topic;
       ucdr_init_buffer(&mb_topic, mb.iterator, topic_length);
       written = functions->cdr_serialize(ros_message, &mb_topic);
-      written &= uxr_run_session_until_confirm_delivery(&custom_publisher->owner_node->session, 1000);
-      //uxr_flash_output_streams(custom_publisher->session);
+      written &= uxr_run_session_until_confirm_delivery(&custom_publisher->owner_node->context->session, 1000);
+      //uxr_flash_output_streams(custom_publisher->context->session);
     }
     if (!written) {
       RMW_SET_ERROR_MSG("error publishing message");

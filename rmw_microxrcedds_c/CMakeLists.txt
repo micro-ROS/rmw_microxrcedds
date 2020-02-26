@@ -118,6 +118,7 @@ set(SRCS
   src/rmw_wait_set.c
   src/types.c
   src/utils.c
+  src/callbacks.c
   )
 
 add_library(${PROJECT_NAME}
