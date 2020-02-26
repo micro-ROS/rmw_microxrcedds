@@ -80,66 +80,26 @@ rmw_wait(
 
   rmw_ret_t ret = RMW_RET_OK;
 
-  //Look for every node configured in the wait set
-  rmw_uxrce_node_t * node_array[RMW_UXRCE_MAX_NODES] = { NULL };
-  size_t node_array_index = 0;
+  // Look for the XRCE session
+  uxrSession * session = NULL;
 
-  for (size_t i = 0; i < services->service_count; i++){
+  for (size_t i = 0; i < services->service_count && session == NULL; i++){
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)services->services[i];
-    bool included = false;
-
-    for (size_t j = 0; j < node_array_index; j++){
-      if(node_array[j] == custom_service->owner_node){
-        included = true;
-        break;
-      } 
-    }
-
-    if (!included){
-      node_array[node_array_index] = custom_service->owner_node;
-      node_array_index++;
-    }
+    session = &custom_service->owner_node->context->session;
   }
 
-  for (size_t i = 0; i < clients->client_count; i++){
+  for (size_t i = 0; i < clients->client_count && session == NULL; i++){
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)clients->clients[i];
-    bool included = false;
+    session = &custom_client->owner_node->context->session;
 
-    for (size_t j = 0; j < node_array_index; j++){
-      if(node_array[j] == custom_client->owner_node){
-        included = true;
-        break;
-      } 
-    }
-
-    if (!included){
-      node_array[node_array_index] = custom_client->owner_node;
-      node_array_index++;
-    }
   }
 
-  for (size_t i = 0; i < subscriptions->subscriber_count; ++i) {
+  for (size_t i = 0; i < subscriptions->subscriber_count && session == NULL; ++i) {
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscriptions->subscribers[i];
-    bool included = false;
-
-    for (size_t j = 0; j < node_array_index; j++){
-      if(node_array[j] == custom_subscription->owner_node){
-        included = true;
-        break;
-      } 
-    }
-
-    if (!included){
-      node_array[node_array_index] = custom_subscription->owner_node;
-      node_array_index++;
-    }
+    session = &custom_subscription->owner_node->context->session;
   }
-  
-  // Run XRCE sessions
-  for (size_t i = 0; i < node_array_index; i++)
-  { 
-    uxr_run_session_until_timeout(&node_array[i]->session, (int)floor(timeout/node_array_index));
-  }
+
+  uxr_run_session_until_timeout(session, timeout);
 
   // Check services
   if (services) {

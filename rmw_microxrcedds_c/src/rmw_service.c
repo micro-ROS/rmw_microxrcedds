@@ -121,13 +121,13 @@ rmw_create_service(
       RMW_SET_ERROR_MSG("failed to generate xml request for service creation");
       goto fail;
     }
-    service_req = uxr_buffer_create_replier_xml(&custom_node->session,
-        custom_node->reliable_output, custom_service->service_id,
+    service_req = uxr_buffer_create_replier_xml(&custom_node->context->session,
+        custom_node->context->reliable_output, custom_service->service_id,
         custom_node->participant_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
     // CHECK IF THIS IS NECESSARY
-    // service_req = uxr_buffer_create_replier_ref(&custom_node->session,
-    //     custom_node->reliable_output, custom_service->subscriber_id,
+    // service_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
+    //     custom_node->context->reliable_output, custom_service->subscriber_id,
     //     custom_node->participant_id, "", UXR_REPLACE);
 #endif
 
@@ -135,7 +135,7 @@ rmw_create_service(
 
     uint16_t requests[] = {service_req};
     uint8_t status[1];
-    if (!uxr_run_session_until_all_status(&custom_node->session, 1000, requests,
+    if (!uxr_run_session_until_all_status(&custom_node->context->session, 1000, requests,
       status, 1))
     {
       RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
@@ -148,9 +148,9 @@ rmw_create_service(
     delivery_control.min_pace_period = 0;
     delivery_control.max_elapsed_time = UXR_MAX_ELAPSED_TIME_UNLIMITED;
     delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
-    custom_service->request_id = uxr_buffer_request_data(&custom_node->session,
-      custom_node->reliable_output, custom_service->service_id,
-      custom_node->reliable_input, &delivery_control);
+    custom_service->request_id = uxr_buffer_request_data(&custom_node->context->session,
+      custom_node->context->reliable_output, custom_service->service_id,
+      custom_node->context->reliable_input, &delivery_control);
   }
   return rmw_service;
 
@@ -191,12 +191,12 @@ rmw_destroy_service(
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
     uint16_t delete_service =
-      uxr_buffer_delete_entity(&custom_node->session, custom_node->reliable_output,
+      uxr_buffer_delete_entity(&custom_node->context->session, custom_node->context->reliable_output,
         custom_service->service_id);
     
     uint16_t requests[] = {delete_service};
     uint8_t status[sizeof(requests) / 2];
-    if (!uxr_run_session_until_all_status(&custom_node->session, 1000, requests, status,
+    if (!uxr_run_session_until_all_status(&custom_node->context->session, 1000, requests, status,
       sizeof(status)))
     {
       RMW_SET_ERROR_MSG("unable to remove service from the server");

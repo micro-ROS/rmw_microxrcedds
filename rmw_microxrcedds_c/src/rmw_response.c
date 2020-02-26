@@ -51,7 +51,7 @@ rmw_send_response(
 
   functions->cdr_serialize(ros_response,&reply_ub);
  
-  uxr_buffer_reply(&custom_node->session, custom_node->reliable_output, 
+  uxr_buffer_reply(&custom_node->context->session, custom_node->context->reliable_output, 
       custom_service->service_id, &sample_id, custom_service->replay_buffer, topic_size);
 
   return RMW_RET_OK;
