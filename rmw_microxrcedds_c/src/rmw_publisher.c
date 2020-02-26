@@ -261,7 +261,7 @@ rmw_destroy_publisher(
   } else {
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
     uint16_t delete_writer = uxr_buffer_delete_entity(&custom_publisher->owner_node->context->session,
-        custom_publisher->owner_node->reliable_output,
+        custom_publisher->owner_node->context->reliable_output,
         custom_publisher->datawriter_id);
     uint16_t delete_publisher = uxr_buffer_delete_entity(
       &custom_publisher->owner_node->context->session, custom_publisher->owner_node->context->reliable_output,
