@@ -30,7 +30,11 @@
 #include "memory.h"
 #include <rmw_microxrcedds_c/config.h>
 
-#define MAX_IP_LEN 16
+#ifdef MICRO_XRCEDDS_IPV4
+  #define MAX_IP_LEN 16
+#elif defined(MICRO_XRCEDDS_IPV6)
+  #define MAX_IP_LEN 39
+#endif
 #define MAX_PORT_LEN 5
 #define MAX_SERIAL_DEVICE 50
 
