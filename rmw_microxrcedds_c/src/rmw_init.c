@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <time.h>
+
 #include "./types.h"
 #include "./rmw_microxrcedds_c/rmw_c_macros.h"
 #include "./rmw_node.h"
@@ -72,6 +74,10 @@ rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t all
     return RMW_RET_INVALID_ARGUMENT;
   }
 #endif
+
+  struct timespec ts;
+  clock_gettime(CLOCK_REALTIME, &ts);
+  srand((ts.tv_sec * 1000000000UL ) + ts.tv_nsec);
 
   do {
     init_options->impl->connection_params.client_key = rand();
