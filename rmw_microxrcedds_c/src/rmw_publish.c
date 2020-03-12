@@ -44,17 +44,26 @@ rmw_publish(
     const message_type_support_callbacks_t * functions = custom_publisher->type_support_callbacks;
     uint32_t topic_length = functions->get_serialized_size(ros_message);
 
+    uxrStreamId used_stream_id = 
+      (custom_publisher->qos->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+      custom_node->context->best_effort_output :
+      custom_node->context->reliable_output;
+
     ucdrBuffer mb;
     bool written = false;
     if (uxr_prepare_output_stream(&custom_publisher->owner_node->context->session,
-      custom_publisher->owner_node->context->reliable_output, custom_publisher->datawriter_id, &mb,
+      used_stream_id, custom_publisher->datawriter_id, &mb,
       topic_length))
     {
       ucdrBuffer mb_topic;
       ucdr_init_buffer(&mb_topic, mb.iterator, topic_length);
       written = functions->cdr_serialize(ros_message, &mb_topic);
-      written &= uxr_run_session_until_confirm_delivery(&custom_publisher->owner_node->context->session, 1000);
-      //uxr_flash_output_streams(custom_publisher->context->session);
+
+      if (custom_publisher->qos->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT){
+        uxr_flash_output_streams(custom_publisher->context->session);
+      }else{
+        written &= uxr_run_session_until_confirm_delivery(&custom_publisher->owner_node->context->session, 1000);
+      }
     }
     if (!written) {
       RMW_SET_ERROR_MSG("error publishing message");

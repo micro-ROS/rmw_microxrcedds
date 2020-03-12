@@ -50,8 +50,13 @@ rmw_send_response(
   ucdr_init_buffer(&reply_ub, custom_service->replay_buffer, sizeof(custom_service->replay_buffer));
 
   functions->cdr_serialize(ros_response,&reply_ub);
+
+  uxrStreamId used_stream_id = 
+    (custom_service->qos.reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+    custom_node->context->best_effort_output :
+    custom_node->context->reliable_output;
  
-  uxr_buffer_reply(&custom_node->context->session, custom_node->context->reliable_output, 
+  uxr_buffer_reply(&custom_node->context->session, used_stream_id, 
       custom_service->service_id, &sample_id, custom_service->replay_buffer, topic_size);
 
   return RMW_RET_OK;

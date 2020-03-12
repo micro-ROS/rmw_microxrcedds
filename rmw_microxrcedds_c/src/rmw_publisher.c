@@ -91,6 +91,7 @@ rmw_create_publisher(
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)memory_node->data;
     custom_publisher->owner_node = custom_node;
     custom_publisher->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
+    memcpy(&custom_publisher->qos, qos_policies, sizeof(rmw_qos_profile_t));
 
     const rosidl_message_type_support_t * type_support_xrce = NULL;
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE

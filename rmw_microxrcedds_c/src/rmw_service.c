@@ -73,6 +73,7 @@ rmw_create_service(
       rmw_get_implementation_identifier();
     custom_service->history_write_index = 0;
     custom_service->history_read_index = 0;
+    memcpy(&custom_service->qos, qos_policies, sizeof(rmw_qos_profile_t));
 
     const rosidl_service_type_support_t * type_support_xrce = NULL;
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
@@ -148,9 +149,15 @@ rmw_create_service(
     delivery_control.min_pace_period = 0;
     delivery_control.max_elapsed_time = UXR_MAX_ELAPSED_TIME_UNLIMITED;
     delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
+
+    uxrStreamId used_stream_id = 
+      (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+      custom_node->context->best_effort_input :
+      custom_node->context->reliable_input;
+
     custom_service->request_id = uxr_buffer_request_data(&custom_node->context->session,
       custom_node->context->reliable_output, custom_service->service_id,
-      custom_node->context->reliable_input, &delivery_control);
+      used_stream_id, &delivery_control);
   }
   return rmw_service;
 

@@ -42,8 +42,13 @@ rmw_send_request(
   ucdr_init_buffer(&request_ub, custom_client->request_buffer, sizeof(custom_client->request_buffer));
 
   functions->cdr_serialize(ros_request,&request_ub);
+
+  uxrStreamId used_stream_id = 
+    (custom_client->qos.reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+    custom_node->context->best_effort_output :
+    custom_node->context->reliable_output;
  
-  *sequence_id = uxr_buffer_request(&custom_node->context->session, custom_node->context->reliable_output, 
+  *sequence_id = uxr_buffer_request(&custom_node->context->session, used_stream_id, 
       custom_client->client_id, custom_client->request_buffer, topic_size);
 
   if (UXR_INVALID_REQUEST_ID == *sequence_id)
