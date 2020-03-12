@@ -45,7 +45,7 @@ rmw_publish(
     uint32_t topic_length = functions->get_serialized_size(ros_message);
 
     uxrStreamId used_stream_id = 
-      (custom_publisher->qos->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+      (custom_publisher->qos.reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
       custom_node->context->best_effort_output :
       custom_node->context->reliable_output;
 
@@ -59,8 +59,8 @@ rmw_publish(
       ucdr_init_buffer(&mb_topic, mb.iterator, topic_length);
       written = functions->cdr_serialize(ros_message, &mb_topic);
 
-      if (custom_publisher->qos->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT){
-        uxr_flash_output_streams(custom_publisher->context->session);
+      if (custom_publisher->qos.reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT){
+        uxr_flash_output_streams(&custom_publisher->owner_node->context->session);
       }else{
         written &= uxr_run_session_until_confirm_delivery(&custom_publisher->owner_node->context->session, 1000);
       }
