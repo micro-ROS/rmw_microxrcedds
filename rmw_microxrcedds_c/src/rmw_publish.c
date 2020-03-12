@@ -44,15 +44,10 @@ rmw_publish(
     const message_type_support_callbacks_t * functions = custom_publisher->type_support_callbacks;
     uint32_t topic_length = functions->get_serialized_size(ros_message);
 
-    uxrStreamId used_stream_id = 
-      (custom_publisher->qos.reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
-      custom_node->context->best_effort_output :
-      custom_node->context->reliable_output;
-
     ucdrBuffer mb;
     bool written = false;
     if (uxr_prepare_output_stream(&custom_publisher->owner_node->context->session,
-      used_stream_id, custom_publisher->datawriter_id, &mb,
+      custom_publisher->stream_id, custom_publisher->datawriter_id, &mb,
       topic_length))
     {
       ucdrBuffer mb_topic;

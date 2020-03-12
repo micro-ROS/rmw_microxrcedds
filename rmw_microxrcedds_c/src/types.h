@@ -111,7 +111,7 @@ typedef struct rmw_uxrce_service_t
   uint8_t history_read_index;
   bool micro_buffer_in_use;
 
-  rmw_qos_profile_t qos;
+  uxrStreamId stream_id;
 
   uint8_t replay_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
 
@@ -135,7 +135,7 @@ typedef struct rmw_uxrce_client_t
   uint8_t history_read_index;
   bool micro_buffer_in_use;
 
-  rmw_qos_profile_t qos;
+  uxrStreamId stream_id;
 
   uint8_t request_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
 
@@ -164,9 +164,10 @@ typedef struct rmw_uxrce_subscription_t
   struct rmw_uxrce_topic_t * topic;
 
   struct rmw_uxrce_node_t * owner_node;
-  rmw_uxrce_subscription_t;
   rmw_qos_profile_t qos;
-} CustomSubscription;
+  uxrStreamId stream_id;
+
+} rmw_uxrce_subscription_t;
 
 typedef struct rmw_uxrce_publisher_t
 {
@@ -182,6 +183,7 @@ typedef struct rmw_uxrce_publisher_t
   struct rmw_uxrce_topic_t * topic;
   
   rmw_qos_profile_t qos;
+  uxrStreamId stream_id;
 
   struct rmw_uxrce_node_t * owner_node;
 } rmw_uxrce_publisher_t;
