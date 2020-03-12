@@ -160,7 +160,6 @@ typedef struct rmw_uxrce_subscription_t
 
   uint16_t subscription_request;
 
-  uxrObjectId topic_id;  // TODO(Javier) Pending to be removed
   struct rmw_uxrce_topic_t * topic;
 
   struct rmw_uxrce_node_t * owner_node;
@@ -179,7 +178,6 @@ typedef struct rmw_uxrce_publisher_t
 
   const message_type_support_callbacks_t * type_support_callbacks;
 
-  uxrObjectId topic_id;  // TODO(Javier) Pending to be removed
   struct rmw_uxrce_topic_t * topic;
   
   rmw_qos_profile_t qos;
