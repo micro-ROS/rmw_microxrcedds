@@ -16,7 +16,7 @@ rmw_ret_t rmw_uros_init_options(int argc, const char* const argv[], rmw_init_opt
     }
     rmw_ret_t ret = RMW_RET_OK;
     // rmw_options->impl = rmw_options->allocator.allocate(sizeof(rmw_init_options_impl_t), rmw_options->allocator.state);
-#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM)
+#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCE_CUSTOM_SERIAL)
     if (argc >= 2)
     {
         strcpy(rmw_options->impl->connection_params.serial_device, argv[1]);
@@ -47,7 +47,7 @@ rmw_ret_t rmw_uros_init_options(int argc, const char* const argv[], rmw_init_opt
 
 rmw_ret_t rmw_uros_options_set_serial_device(const char* dev, rmw_init_options_t* rmw_options)
 {   
-#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM)
+#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCE_CUSTOM_SERIAL)
     if (NULL == rmw_options)
     {
         RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
