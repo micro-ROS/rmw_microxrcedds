@@ -324,9 +324,13 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
     return NULL;
   }
   printf("UDP mode => ip: %s - port: %s\n", context_impl->connection_params.agent_address, context_impl->connection_params.agent_port);
-#elif defined(MICRO_XRCEDDS_CUSTOM)
-  if (!uxr_init_serial_transport(&context_impl->transport, &context_impl->serial_platform, 0, 0, 1))
-  {
+#elif defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
+  int pseudo_fd = 0;
+  if (strlen(options->impl->connection_params.serial_device) > 0){
+    pseudo_fd = atoi(options->impl->connection_params.serial_device);
+  }
+  
+  if (!uxr_init_serial_transport(&context_impl->transport, &context_impl->serial_platform, pseudo_fd, 0, 1)){
     RMW_SET_ERROR_MSG("Can not create an custom serial connection");
     return NULL;
   }
