@@ -52,7 +52,7 @@ rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t all
 
   init_options->impl = allocator.allocate(sizeof(rmw_init_options_impl_t), allocator.state);
 
-#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCE_CUSTOM_SERIAL)
+#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
   if(strlen(RMW_UXRCE_DEFAULT_SERIAL_DEVICE) <= MAX_SERIAL_DEVICE){
     strcpy(init_options->impl->connection_params.serial_device, RMW_UXRCE_DEFAULT_SERIAL_DEVICE);
   }else{
@@ -136,7 +136,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   context->implementation_identifier = eprosima_microxrcedds_identifier;
 
   rmw_context_impl_t * context_impl = (rmw_context_impl_t *)rmw_allocate(sizeof(rmw_context_impl_t));
-  #if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCE_CUSTOM_SERIAL)
+  #if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
     strcpy(context_impl->connection_params.serial_device, options->impl->connection_params.serial_device);
   #elif defined(MICRO_XRCEDDS_UDP)
     strcpy(context_impl->connection_params.agent_address, options->impl->connection_params.agent_address);
@@ -217,7 +217,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
     return NULL;
   }
   printf("UDP mode => ip: %s - port: %s\n", context_impl->connection_params.agent_address, context_impl->connection_params.agent_port);
-#elif defined(MICRO_XRCE_CUSTOM_SERIAL)
+#elif defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
   int pseudo_fd = 0;
   if (strlen(options->impl->connection_params.serial_device) > 0){
     pseudo_fd = atoi(options->impl->connection_params.serial_device);

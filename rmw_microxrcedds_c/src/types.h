@@ -38,7 +38,7 @@
 
 struct rmw_microxrcedds_connection
 {
-#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCE_CUSTOM_SERIAL) 
+#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL) 
   char serial_device[MAX_SERIAL_DEVICE];
 #elif defined(MICRO_XRCEDDS_UDP)
   char agent_address[MAX_IP_LEN];
@@ -51,7 +51,7 @@ struct  rmw_context_impl_t
 {
   struct rmw_microxrcedds_connection connection_params;
 
-#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCE_CUSTOM_SERIAL)
+#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
   uxrSerialTransport transport;
   uxrSerialPlatform serial_platform;
 #elif defined(MICRO_XRCEDDS_UDP)
