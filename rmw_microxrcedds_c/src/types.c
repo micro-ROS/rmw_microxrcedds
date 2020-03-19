@@ -112,7 +112,10 @@ void rmw_uxrce_init_nodes_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_
   void * data;
 
 void rmw_uxrce_fini_node_memory(rmw_node_t * node)
-{
+{ 
+  if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+    RMW_SET_ERROR_MSG("node handle not from this implementation");
+  }
   if (node->namespace_) {
     rmw_free((char *)node->namespace_);
   }
@@ -136,6 +139,9 @@ void rmw_uxrce_fini_node_memory(rmw_node_t * node)
 
 void rmw_uxrce_fini_publisher_memory(rmw_publisher_t * publisher)
 {
+  if (strcmp(publisher->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+    RMW_SET_ERROR_MSG("node handle not from this implementation");
+  }
   if (publisher->implementation_identifier) {
     publisher->implementation_identifier = NULL;
   }
@@ -160,6 +166,9 @@ void rmw_uxrce_fini_publisher_memory(rmw_publisher_t * publisher)
 
 void rmw_uxrce_fini_subscription_memory(rmw_subscription_t * subscriber)
 {
+  if (strcmp(subscriber->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+    RMW_SET_ERROR_MSG("node handle not from this implementation");
+  }
   if (subscriber->implementation_identifier) {
     subscriber->implementation_identifier = NULL;
   }
@@ -183,6 +192,9 @@ void rmw_uxrce_fini_subscription_memory(rmw_subscription_t * subscriber)
 
 void rmw_uxrce_fini_service_memory(rmw_service_t * service)
 {
+  if (strcmp(service->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+    RMW_SET_ERROR_MSG("node handle not from this implementation");
+  }
   if (service->implementation_identifier) {
     service->implementation_identifier = NULL;
   }
@@ -202,6 +214,9 @@ void rmw_uxrce_fini_service_memory(rmw_service_t * service)
 
 void rmw_uxrce_fini_client_memory(rmw_client_t * client)
 {
+  if (strcmp(client->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+    RMW_SET_ERROR_MSG("node handle not from this implementation");
+  }
   if (client->implementation_identifier) {
     client->implementation_identifier = NULL;
   }
