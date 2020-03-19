@@ -78,7 +78,7 @@ typedef struct rmw_uxrce_topic_t
 
 typedef struct rmw_uxrce_service_t
 {
-  struct Item mem;
+  struct rmw_uxrce_mempool_item_t mem;
   rmw_service_t * rmw_handle;
   uxrObjectId service_id;
   rmw_gid_t service_gid;
@@ -101,7 +101,7 @@ typedef struct rmw_uxrce_service_t
 
 typedef struct rmw_uxrce_client_t
 {
-  struct Item mem;
+  struct rmw_uxrce_mempool_item_t mem;
   rmw_client_t * rmw_handle;
   uxrObjectId client_id;
   rmw_gid_t client_gid;
@@ -123,7 +123,7 @@ typedef struct rmw_uxrce_client_t
 
 typedef struct rmw_uxrce_subscription_t
 {
-  struct Item mem;
+  struct rmw_uxrce_mempool_item_t mem;
   rmw_subscription_t * rmw_handle;
   uxrObjectId subscriber_id;
   uxrObjectId datareader_id;
@@ -147,7 +147,7 @@ typedef struct rmw_uxrce_subscription_t
 
 typedef struct rmw_uxrce_publisher_t
 {
-  struct Item mem;
+  struct rmw_uxrce_mempool_item_t mem;
   rmw_publisher_t  * rmw_handle;
   uxrObjectId publisher_id;
   uxrObjectId datawriter_id;
@@ -163,7 +163,7 @@ typedef struct rmw_uxrce_publisher_t
 
 typedef struct rmw_uxrce_node_t
 {
-  struct Item mem;
+  struct rmw_uxrce_mempool_item_t mem;
 #if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM)
   uxrSerialTransport transport;
   uxrSerialPlatform serial_platform;
