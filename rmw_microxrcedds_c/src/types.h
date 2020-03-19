@@ -215,10 +215,10 @@ void rmw_uxrce_init_subscriber_memory(struct rmw_uxrce_mempool_t * memory, rmw_u
 
 // Memory management functions
 
-void rmw_uxrce_delete_node_memory(rmw_node_t * node);
-void rmw_uxrce_delete_publisher_memory(rmw_publisher_t * publisher);
-void rmw_uxrce_delete_subscription_memory(rmw_subscription_t * subscriber);
-void rmw_uxrce_delete_client_memory(rmw_client_t * client);
-void rmw_uxrce_delete_service_memory(rmw_service_t * client);
+void rmw_uxrce_fini_node_memory(rmw_node_t * node);
+void rmw_uxrce_fini_publisher_memory(rmw_publisher_t * publisher);
+void rmw_uxrce_fini_subscription_memory(rmw_subscription_t * subscriber);
+void rmw_uxrce_fini_client_memory(rmw_client_t * client);
+void rmw_uxrce_fini_service_memory(rmw_service_t * client);
 
 #endif  // TYPES_H_

@@ -213,7 +213,7 @@ rmw_create_subscription(
   return rmw_subscription;
 
 fail:
-  rmw_uxrce_delete_subscription_memory(rmw_subscription);
+  rmw_uxrce_fini_subscription_memory(rmw_subscription);
   rmw_subscription = NULL;
   return rmw_subscription;
 }
@@ -283,7 +283,7 @@ rmw_destroy_subscription(rmw_node_t * node, rmw_subscription_t * subscription)
       RMW_SET_ERROR_MSG("unable to remove publisher from the server");
       result_ret = RMW_RET_ERROR;
     } else {
-      rmw_uxrce_delete_subscription_memory(subscription);
+      rmw_uxrce_fini_subscription_memory(subscription);
       result_ret = RMW_RET_OK;
     }
   }

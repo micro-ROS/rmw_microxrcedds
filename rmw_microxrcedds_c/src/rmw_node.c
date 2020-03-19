@@ -271,7 +271,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   if (!node_handle->name) {
     RMW_SET_ERROR_MSG("failed to allocate memory");
     CLOSE_TRANSPORT(&node_info->transport);
-    rmw_uxrce_delete_node_memory(node_handle);
+    rmw_uxrce_fini_node_memory(node_handle);
     return NULL;
   }
   memcpy((char *)node_handle->name, name, strlen(name) + 1);
@@ -280,14 +280,14 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   if (!node_handle->namespace_) {
     RMW_SET_ERROR_MSG("failed to allocate memory");
     CLOSE_TRANSPORT(&node_info->transport);
-    rmw_uxrce_delete_node_memory(node_handle);
+    rmw_uxrce_fini_node_memory(node_handle);
     return NULL;
   }
   memcpy((char *)node_handle->namespace_, namespace_, strlen(namespace_) + 1);
 
   if (!uxr_create_session(&node_info->session)) {
     CLOSE_TRANSPORT(&node_info->transport);
-    rmw_uxrce_delete_node_memory(node_handle);
+    rmw_uxrce_fini_node_memory(node_handle);
     RMW_SET_ERROR_MSG("failed to create node session on Micro ROS Agent.");
     return NULL;
   }
@@ -321,7 +321,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   if (!uxr_run_session_until_all_status(&node_info->session, 1000, requests, status, 1)) {
     uxr_delete_session(&node_info->session);
     CLOSE_TRANSPORT(&node_info->transport);
-    rmw_uxrce_delete_node_memory(node_handle);
+    rmw_uxrce_fini_node_memory(node_handle);
     RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
     return NULL;
   }
@@ -415,7 +415,7 @@ rmw_ret_t rmw_destroy_node(rmw_node_t * node)
 
   uxr_delete_session(&custom_node->session);
   CLOSE_TRANSPORT(&custom_node->transport);
-  rmw_uxrce_delete_node_memory(node);
+  rmw_uxrce_fini_node_memory(node);
 
   return result_ret;
 }
