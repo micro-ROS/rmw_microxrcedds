@@ -40,7 +40,7 @@
 
 // RMW specific definitions
 
-struct rmw_microxrcedds_connection
+struct rmw_uxrce_connection_t
 {
   #ifdef MICRO_XRCEDDS_SERIAL
     char serial_device[MAX_SERIAL_DEVICE];
@@ -53,12 +53,12 @@ struct rmw_microxrcedds_connection
 
 struct  rmw_context_impl_t
 {
-  struct rmw_microxrcedds_connection connection_params;
+  struct rmw_uxrce_connection_t connection_params;
 };
 
 struct  rmw_init_options_impl_t
 {
-  struct rmw_microxrcedds_connection connection_params;
+  struct rmw_uxrce_connection_t connection_params;
 };
 
 // ROS2 entities definitions
