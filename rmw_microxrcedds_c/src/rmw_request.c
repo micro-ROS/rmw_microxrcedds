@@ -75,7 +75,7 @@ rmw_take_request(
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
   }
 
-  CustomService * custom_service = (CustomService *)service->data;
+  rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
 
   if (!custom_service->micro_buffer_in_use){
     return RMW_RET_ERROR;

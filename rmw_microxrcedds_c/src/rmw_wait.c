@@ -85,7 +85,7 @@ rmw_wait(
   size_t node_array_index = 0;
 
   for (size_t i = 0; i < services->service_count; i++){
-    CustomService * custom_service = (CustomService *)services->services[i];
+    rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)services->services[i];
     bool included = false;
 
     for (size_t j = 0; j < node_array_index; j++){
@@ -144,7 +144,7 @@ rmw_wait(
   // Check services
   if (services) {
     for (size_t i = 0; i < services->service_count; ++i) {
-      CustomService * custom_service = (CustomService *)services->services[i];
+      rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)services->services[i];
       
       if (!custom_service->micro_buffer_in_use){
         services->services[i] = NULL;

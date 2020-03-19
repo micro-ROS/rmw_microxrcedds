@@ -96,7 +96,7 @@ void on_request(uxrSession* session, uxrObjectId object_id, uint16_t request_id,
 
   struct Item * service_item = service_memory.allocateditems;
   while (service_item != NULL) {
-    CustomService * custom_service = (CustomService *)service_item->data;
+    rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service_item->data;
     if (custom_service->request_id == request_id){
       custom_service->micro_buffer_lenght[custom_service->history_write_index] = request_len;
       memcpy(custom_service->micro_buffer[custom_service->history_write_index], 
@@ -397,7 +397,7 @@ rmw_ret_t rmw_destroy_node(rmw_node_t * node)
 
   item = service_memory.allocateditems;
   while (item != NULL) {
-    CustomService * custom_service = (CustomService *)item->data;
+    rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)item->data;
     item = item->next;
     if (custom_service->owner_node == custom_node){ 
       rmw_destroy_service(node, custom_service->rmw_handle);

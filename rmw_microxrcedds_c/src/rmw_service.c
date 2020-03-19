@@ -67,7 +67,7 @@ rmw_create_service(
       goto fail;
     }
 
-    CustomService * custom_service = (CustomService *)memory_node->data;
+    rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)memory_node->data;
     custom_service->owner_node = custom_node;
     custom_service->service_gid.implementation_identifier =
       rmw_get_implementation_identifier();
@@ -189,7 +189,7 @@ rmw_destroy_service(
     result_ret = RMW_RET_ERROR;
   } else {
     CustomNode * custom_node = (CustomNode *)node->data;
-    CustomService * custom_service = (CustomService *)service->data;
+    rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
     uint16_t delete_service =
       uxr_buffer_delete_entity(&custom_node->session, custom_node->reliable_output,
         custom_service->service_id);

@@ -30,7 +30,7 @@ rmw_send_response(
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
   }
 
-  CustomService * custom_service = (CustomService *)service->data;
+  rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
   CustomNode * custom_node = (CustomNode *)custom_service->owner_node;
 
   // Conversion from rmw_request_id_t to SampleIdentity  

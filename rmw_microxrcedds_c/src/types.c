@@ -30,14 +30,14 @@ struct MemPool subscription_memory;
 CustomSubscription custom_subscriptions[RMW_UXRCE_MAX_SUBSCRIPTIONS];
 
 struct MemPool service_memory;
-CustomService custom_services[RMW_UXRCE_MAX_SERVICES];
+rmw_uxrce_service_t custom_services[RMW_UXRCE_MAX_SERVICES];
 
 struct MemPool client_memory;
 CustomClient custom_clients[RMW_UXRCE_MAX_CLIENTS];
 
 // Memory init functions
 
-void rmw_uxrce_init_service_memory(struct MemPool * memory, CustomService * services, size_t size)
+void rmw_uxrce_init_service_memory(struct MemPool * memory, rmw_uxrce_service_t * services, size_t size)
 {
   if (size > 0) {
     link_prev(NULL, &services[0].mem, NULL);
@@ -190,11 +190,11 @@ void rmw_uxrce_delete_service_memory(rmw_service_t * service)
     rmw_free((char *)service->service_name);
   }
   if (service->data) {
-    CustomService * custom_service = (CustomService *)service->data;
+    rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
 
     put_memory(&service_memory,&custom_service->mem);
 
-    memset(custom_service, 0, sizeof(CustomService));
+    memset(custom_service, 0, sizeof(rmw_uxrce_service_t));
     service->data = NULL;
   }
   rmw_free(service);
