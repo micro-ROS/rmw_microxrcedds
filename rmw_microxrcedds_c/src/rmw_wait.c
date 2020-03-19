@@ -119,7 +119,7 @@ rmw_wait(
   }
 
   for (size_t i = 0; i < subscriptions->subscriber_count; ++i) {
-    CustomSubscription * custom_subscription = (CustomSubscription *)subscriptions->subscribers[i];
+    rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscriptions->subscribers[i];
     bool included = false;
 
     for (size_t j = 0; j < node_array_index; j++){
@@ -166,7 +166,7 @@ rmw_wait(
   // Check subscriptions
   if (subscriptions) {
     for (size_t i = 0; i < subscriptions->subscriber_count; ++i) {
-      CustomSubscription * custom_subscription = (CustomSubscription *)subscriptions->subscribers[i];
+      rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscriptions->subscribers[i];
       
       if (!custom_subscription->micro_buffer_in_use){
         subscriptions->subscribers[i] = NULL;

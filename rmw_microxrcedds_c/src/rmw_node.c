@@ -62,7 +62,7 @@ void on_topic(
 
   struct Item * subscription_item = subscription_memory.allocateditems;
   while (subscription_item != NULL) {
-    CustomSubscription * custom_subscription = (CustomSubscription *)subscription_item->data;
+    rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription_item->data;
     if ((custom_subscription->datareader_id.id == object_id.id) &&
       (custom_subscription->datareader_id.type == object_id.type))
     { 
@@ -388,7 +388,7 @@ rmw_ret_t rmw_destroy_node(rmw_node_t * node)
 
   item = subscription_memory.allocateditems;
   while (item != NULL) {
-    CustomSubscription * custom_subscription = (CustomSubscription *)item->data;
+    rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)item->data;
     item = item->next;
     if (custom_subscription->owner_node == custom_node){ 
       rmw_destroy_subscription(node, custom_subscription->rmw_handle);

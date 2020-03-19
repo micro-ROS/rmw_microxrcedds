@@ -93,7 +93,7 @@ rmw_create_subscription(
     }
 
     // TODO(Borja) micro_xrcedds_id is duplicated in subscriber_id and in subscription_gid.data
-    CustomSubscription * custom_subscription = (CustomSubscription *)memory_node->data;
+    rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)memory_node->data;
     custom_subscription->owner_node = custom_node;
     custom_subscription->subscription_gid.implementation_identifier =
       rmw_get_implementation_identifier();
@@ -267,7 +267,7 @@ rmw_destroy_subscription(rmw_node_t * node, rmw_subscription_t * subscription)
     result_ret = RMW_RET_ERROR;
   } else {
     CustomNode * custom_node = (CustomNode *)node->data;
-    CustomSubscription * custom_subscription = (CustomSubscription *)subscription->data;
+    rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
     uint16_t delete_datareader =
       uxr_buffer_delete_entity(&custom_node->session, custom_node->reliable_output,
         custom_subscription->datareader_id);
