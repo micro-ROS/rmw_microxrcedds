@@ -31,7 +31,7 @@ rmw_get_gid_for_publisher(
   }
 
   // Do
-  CustomPublisher * custom_publisher = (CustomPublisher *)publisher->data;
+  rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
   memcpy(gid, &custom_publisher->publisher_gid, sizeof(rmw_gid_t));
 
   return RMW_RET_OK;

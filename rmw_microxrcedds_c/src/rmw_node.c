@@ -379,7 +379,7 @@ rmw_ret_t rmw_destroy_node(rmw_node_t * node)
 
   item = publisher_memory.allocateditems;
   while (item != NULL) {
-    CustomPublisher * custom_publisher = (CustomPublisher *)item->data;
+    rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)item->data;
     item = item->next;
     if (custom_publisher->owner_node == custom_node){ 
       rmw_destroy_publisher(node, custom_publisher->rmw_handle);

@@ -88,7 +88,7 @@ rmw_create_publisher(
     }
 
     // TODO(Borja) micro_xrcedds_id is duplicated in publisher_id and in publisher_gid.data
-    CustomPublisher * custom_publisher = (CustomPublisher *)memory_node->data;
+    rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)memory_node->data;
     custom_publisher->owner_node = custom_node;
     custom_publisher->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
 
@@ -259,7 +259,7 @@ rmw_destroy_publisher(
     RMW_SET_ERROR_MSG("publisher imp is null");
     result_ret = RMW_RET_ERROR;
   } else {
-    CustomPublisher * custom_publisher = (CustomPublisher *)publisher->data;
+    rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
     uint16_t delete_writer = uxr_buffer_delete_entity(&custom_publisher->owner_node->session,
         custom_publisher->owner_node->reliable_output,
         custom_publisher->datawriter_id);

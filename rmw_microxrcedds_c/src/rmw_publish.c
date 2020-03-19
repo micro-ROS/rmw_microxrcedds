@@ -40,7 +40,7 @@ rmw_publish(
     RMW_SET_ERROR_MSG("publisher imp is null");
     ret = RMW_RET_ERROR;
   } else {
-    CustomPublisher * custom_publisher = (CustomPublisher *)publisher->data;
+    rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
     const message_type_support_callbacks_t * functions = custom_publisher->type_support_callbacks;
     uint32_t topic_length = functions->get_serialized_size(ros_message);
 

@@ -24,7 +24,7 @@ struct MemPool node_memory;
 CustomNode custom_nodes[RMW_UXRCE_MAX_NODES];
 
 struct MemPool publisher_memory;
-CustomPublisher custom_publishers[RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_NODES];
+rmw_uxrce_publisher_t custom_publishers[RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_NODES];
 
 struct MemPool subscription_memory;
 rmw_uxrce_subscription_t custom_subscriptions[RMW_UXRCE_MAX_SUBSCRIPTIONS];
@@ -65,7 +65,7 @@ void rmw_uxrce_init_client_memory(struct MemPool * memory, rmw_uxrce_client_t * 
   }
 }
 
-void rmw_uxrce_init_publisher_memory(struct MemPool * memory, CustomPublisher * publishers, size_t size)
+void rmw_uxrce_init_publisher_memory(struct MemPool * memory, rmw_uxrce_publisher_t * publishers, size_t size)
 {
   if (size > 0) {
     link_prev(NULL, &publishers[0].mem, NULL);
@@ -143,7 +143,7 @@ void rmw_uxrce_delete_publisher_memory(rmw_publisher_t * publisher)
     rmw_free((char *)publisher->topic_name);
   }
   if (publisher->data) {
-    CustomPublisher * custom_publisher = (CustomPublisher *)publisher->data;
+    rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
 
     if (custom_publisher->topic != NULL) {
       destroy_topic(custom_publisher->topic);
@@ -151,7 +151,7 @@ void rmw_uxrce_delete_publisher_memory(rmw_publisher_t * publisher)
 
     put_memory(&publisher_memory, &custom_publisher->mem);
 
-    memset(custom_publisher, 0, sizeof(CustomPublisher));
+    memset(custom_publisher, 0, sizeof(rmw_uxrce_publisher_t));
     publisher->data = NULL;
   }
 

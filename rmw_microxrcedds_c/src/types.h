@@ -145,7 +145,7 @@ typedef struct rmw_uxrce_subscription_t
   struct CustomNode * owner_node;
 } rmw_uxrce_subscription_t;
 
-typedef struct CustomPublisher
+typedef struct rmw_uxrce_publisher_t
 {
   struct Item mem;
   rmw_publisher_t  * rmw_handle;
@@ -159,7 +159,7 @@ typedef struct CustomPublisher
   struct rmw_uxrce_topic_t * topic;
 
   struct CustomNode * owner_node;
-} CustomPublisher;
+} rmw_uxrce_publisher_t;
 
 typedef struct CustomNode
 {
@@ -194,7 +194,7 @@ extern struct MemPool node_memory;
 extern CustomNode custom_nodes[RMW_UXRCE_MAX_NODES];
 
 extern struct MemPool publisher_memory;
-extern CustomPublisher custom_publishers[RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_NODES];
+extern rmw_uxrce_publisher_t custom_publishers[RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_NODES];
 
 extern struct MemPool subscription_memory;
 extern rmw_uxrce_subscription_t custom_subscriptions[RMW_UXRCE_MAX_SUBSCRIPTIONS];
@@ -210,7 +210,7 @@ extern rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 void rmw_uxrce_init_nodes_memory(struct MemPool * memory, CustomNode * nodes, size_t size);
 void rmw_uxrce_init_service_memory(struct MemPool * memory, rmw_uxrce_service_t * services, size_t size);
 void rmw_uxrce_init_client_memory(struct MemPool * memory, rmw_uxrce_client_t * clients, size_t size);
-void rmw_uxrce_init_publisher_memory(struct MemPool * memory, CustomPublisher * publishers, size_t size);
+void rmw_uxrce_init_publisher_memory(struct MemPool * memory, rmw_uxrce_publisher_t * publishers, size_t size);
 void rmw_uxrce_init_subscriber_memory(struct MemPool * memory, rmw_uxrce_subscription_t * subscribers, size_t size);
 
 // Memory management functions
