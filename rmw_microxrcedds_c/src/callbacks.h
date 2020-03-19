@@ -26,4 +26,4 @@ void on_request(uxrSession* session, uxrObjectId object_id, uint16_t request_id,
 
 void on_reply(uxrSession* session, uxrObjectId object_id, uint16_t request_id, uint16_t reply_id, uint8_t* buffer, size_t len, void* args);
 
-#endif  // CALLBACKS_H_
+#endif  // RMW_MICROXRCEDDS_C__CALLBACKS_H_
