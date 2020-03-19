@@ -20,24 +20,24 @@
 
 // Static memory pools
 
-struct MemPool node_memory;
+struct rmw_uxrce_mempool_t node_memory;
 rmw_uxrce_node_t custom_nodes[RMW_UXRCE_MAX_NODES];
 
-struct MemPool publisher_memory;
+struct rmw_uxrce_mempool_t publisher_memory;
 rmw_uxrce_publisher_t custom_publishers[RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_NODES];
 
-struct MemPool subscription_memory;
+struct rmw_uxrce_mempool_t subscription_memory;
 rmw_uxrce_subscription_t custom_subscriptions[RMW_UXRCE_MAX_SUBSCRIPTIONS];
 
-struct MemPool service_memory;
+struct rmw_uxrce_mempool_t service_memory;
 rmw_uxrce_service_t custom_services[RMW_UXRCE_MAX_SERVICES];
 
-struct MemPool client_memory;
+struct rmw_uxrce_mempool_t client_memory;
 rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 
 // Memory init functions
 
-void rmw_uxrce_init_service_memory(struct MemPool * memory, rmw_uxrce_service_t * services, size_t size)
+void rmw_uxrce_init_service_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_service_t * services, size_t size)
 {
   if (size > 0) {
     link_prev(NULL, &services[0].mem, NULL);
@@ -51,7 +51,7 @@ void rmw_uxrce_init_service_memory(struct MemPool * memory, rmw_uxrce_service_t 
   }
 }
 
-void rmw_uxrce_init_client_memory(struct MemPool * memory, rmw_uxrce_client_t * clients, size_t size)
+void rmw_uxrce_init_client_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_client_t * clients, size_t size)
 {
   if (size > 0) {
     link_prev(NULL, &clients[0].mem, NULL);
@@ -65,7 +65,7 @@ void rmw_uxrce_init_client_memory(struct MemPool * memory, rmw_uxrce_client_t * 
   }
 }
 
-void rmw_uxrce_init_publisher_memory(struct MemPool * memory, rmw_uxrce_publisher_t * publishers, size_t size)
+void rmw_uxrce_init_publisher_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_publisher_t * publishers, size_t size)
 {
   if (size > 0) {
     link_prev(NULL, &publishers[0].mem, NULL);
@@ -79,7 +79,7 @@ void rmw_uxrce_init_publisher_memory(struct MemPool * memory, rmw_uxrce_publishe
   }
 }
 
-void rmw_uxrce_init_subscriber_memory(struct MemPool * memory, rmw_uxrce_subscription_t * subscribers, size_t size)
+void rmw_uxrce_init_subscriber_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_subscription_t * subscribers, size_t size)
 {
   if (size > 0) {
     link_prev(NULL, &subscribers[0].mem, NULL);
@@ -93,7 +93,7 @@ void rmw_uxrce_init_subscriber_memory(struct MemPool * memory, rmw_uxrce_subscri
   }
 }
 
-void rmw_uxrce_init_nodes_memory(struct MemPool * memory, rmw_uxrce_node_t * nodes, size_t size)
+void rmw_uxrce_init_nodes_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_node_t * nodes, size_t size)
 {
   if (size > 0) {
     link_prev(NULL, &nodes[0].mem, NULL);

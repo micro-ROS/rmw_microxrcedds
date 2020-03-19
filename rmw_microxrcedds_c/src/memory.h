@@ -24,7 +24,7 @@ struct Item
   struct Item * next;
   void * data;
 };
-struct MemPool
+struct rmw_uxrce_mempool_t
 {
   struct Item * allocateditems;
   struct Item * freeitems;
@@ -34,10 +34,10 @@ struct MemPool
 
 void link_next(struct Item * current, struct Item * next, void * data);
 void link_prev(struct Item * previous, struct Item * current, void * data);
-void set_mem_pool(struct MemPool * mem, struct Item * first);
-bool has_memory(struct MemPool * mem);
-struct Item * get_memory(struct MemPool * mem);
-void put_memory(struct MemPool * mem, struct Item * item);
-void free_mem_pool(struct MemPool * mem);
+void set_mem_pool(struct rmw_uxrce_mempool_t * mem, struct Item * first);
+bool has_memory(struct rmw_uxrce_mempool_t * mem);
+struct Item * get_memory(struct rmw_uxrce_mempool_t * mem);
+void put_memory(struct rmw_uxrce_mempool_t * mem, struct Item * item);
+void free_mem_pool(struct rmw_uxrce_mempool_t * mem);
 
 #endif  // MEMORY_H_

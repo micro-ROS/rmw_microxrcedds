@@ -37,13 +37,13 @@ void link_prev(struct Item * previous, struct Item * current, void * data)
   }
 }
 
-void set_mem_pool(struct MemPool * mem, struct Item * first)
+void set_mem_pool(struct rmw_uxrce_mempool_t * mem, struct Item * first)
 {
   mem->freeitems = first;
   mem->allocateditems = NULL;
 }
 
-void free_mem_pool(struct MemPool * mem)
+void free_mem_pool(struct rmw_uxrce_mempool_t * mem)
 {
   if (mem->allocateditems) {
     struct Item * old_free_head = mem->freeitems;
@@ -60,12 +60,12 @@ void free_mem_pool(struct MemPool * mem)
   }
 }
 
-bool has_memory(struct MemPool * mem)
+bool has_memory(struct rmw_uxrce_mempool_t * mem)
 {
   return mem->freeitems != NULL ? true : false;
 }
 
-struct Item * get_memory(struct MemPool * mem)
+struct Item * get_memory(struct rmw_uxrce_mempool_t * mem)
 {
   struct Item * item = NULL;
   if (has_memory(mem)) {
@@ -87,7 +87,7 @@ struct Item * get_memory(struct MemPool * mem)
   return item;
 }
 
-void put_memory(struct MemPool * mem, struct Item * item)
+void put_memory(struct rmw_uxrce_mempool_t * mem, struct Item * item)
 {
   // Gets item from allocated pool
   if (item->prev) {

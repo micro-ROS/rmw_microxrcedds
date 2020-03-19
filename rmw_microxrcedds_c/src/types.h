@@ -190,28 +190,28 @@ typedef struct rmw_uxrce_node_t
 
 // Static memory pools
 
-extern struct MemPool node_memory;
+extern struct rmw_uxrce_mempool_t node_memory;
 extern rmw_uxrce_node_t custom_nodes[RMW_UXRCE_MAX_NODES];
 
-extern struct MemPool publisher_memory;
+extern struct rmw_uxrce_mempool_t publisher_memory;
 extern rmw_uxrce_publisher_t custom_publishers[RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_NODES];
 
-extern struct MemPool subscription_memory;
+extern struct rmw_uxrce_mempool_t subscription_memory;
 extern rmw_uxrce_subscription_t custom_subscriptions[RMW_UXRCE_MAX_SUBSCRIPTIONS];
 
-extern struct MemPool service_memory;
+extern struct rmw_uxrce_mempool_t service_memory;
 extern rmw_uxrce_service_t custom_services[RMW_UXRCE_MAX_SERVICES];
 
-extern struct MemPool client_memory;
+extern struct rmw_uxrce_mempool_t client_memory;
 extern rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 
 // Memory init functions
 
-void rmw_uxrce_init_nodes_memory(struct MemPool * memory, rmw_uxrce_node_t * nodes, size_t size);
-void rmw_uxrce_init_service_memory(struct MemPool * memory, rmw_uxrce_service_t * services, size_t size);
-void rmw_uxrce_init_client_memory(struct MemPool * memory, rmw_uxrce_client_t * clients, size_t size);
-void rmw_uxrce_init_publisher_memory(struct MemPool * memory, rmw_uxrce_publisher_t * publishers, size_t size);
-void rmw_uxrce_init_subscriber_memory(struct MemPool * memory, rmw_uxrce_subscription_t * subscribers, size_t size);
+void rmw_uxrce_init_nodes_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_node_t * nodes, size_t size);
+void rmw_uxrce_init_service_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_service_t * services, size_t size);
+void rmw_uxrce_init_client_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_client_t * clients, size_t size);
+void rmw_uxrce_init_publisher_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_publisher_t * publishers, size_t size);
+void rmw_uxrce_init_subscriber_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_subscription_t * subscribers, size_t size);
 
 // Memory management functions
 
