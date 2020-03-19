@@ -42,18 +42,36 @@
 
 struct rmw_uxrce_connection_t
 {
-  #ifdef MICRO_XRCEDDS_SERIAL
-    char serial_device[MAX_SERIAL_DEVICE];
-  #elif defined(MICRO_XRCEDDS_UDP)
-    char agent_address[MAX_IP_LEN];
-    char agent_port[MAX_PORT_LEN];
-  #endif
+#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL) 
+  char serial_device[MAX_SERIAL_DEVICE];
+#elif defined(MICRO_XRCEDDS_UDP)
+  char agent_address[MAX_IP_LEN];
+  char agent_port[MAX_PORT_LEN];
+#endif
   uint32_t client_key;
 };
 
 struct  rmw_context_impl_t
 {
   struct rmw_uxrce_connection_t connection_params;
+
+#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
+  uxrSerialTransport transport;
+  uxrSerialPlatform serial_platform;
+#elif defined(MICRO_XRCEDDS_UDP)
+  uxrUDPTransport transport;
+  uxrUDPPlatform udp_platform;
+#endif
+  uxrSession session;
+
+  uxrStreamId reliable_input;
+  uxrStreamId reliable_output;
+  uxrStreamId best_effort_output;
+  uxrStreamId best_effort_input;
+
+  uint8_t input_reliable_stream_buffer[RMW_UXRCE_MAX_BUFFER_SIZE];
+  uint8_t output_reliable_stream_buffer[RMW_UXRCE_MAX_BUFFER_SIZE];
+  uint8_t output_best_effort_stream_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
 };
 
 struct  rmw_init_options_impl_t
@@ -164,27 +182,10 @@ typedef struct rmw_uxrce_publisher_t
 typedef struct rmw_uxrce_node_t
 {
   struct rmw_uxrce_mempool_item_t mem;
-#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM)
-  uxrSerialTransport transport;
-  uxrSerialPlatform serial_platform;
-#elif defined(MICRO_XRCEDDS_UDP)
-  uxrUDPTransport transport;
-  uxrUDPPlatform udp_platform;
-#endif
-  uxrSession session;
+  struct  rmw_context_impl_t * context;
+
   uxrObjectId participant_id;
-
   rmw_uxrce_topic_t * custom_topic_sp;
-
-  uxrStreamId reliable_input;
-  uxrStreamId reliable_output;
-  uxrStreamId best_effort_output;
-  uxrStreamId best_effort_input;
-
-  uint8_t input_reliable_stream_buffer[RMW_UXRCE_MAX_BUFFER_SIZE];
-  uint8_t output_reliable_stream_buffer[RMW_UXRCE_MAX_BUFFER_SIZE];
-  uint8_t output_best_effort_stream_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
-
   uint16_t id_gen;
 } rmw_uxrce_node_t;
 

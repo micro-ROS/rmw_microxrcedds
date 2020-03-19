@@ -56,7 +56,7 @@ set(RMW_UXRCE_REF_BUFFER_LENGTH "100" CACHE STRING "This value sets the maximum 
 # Transport handle define macros.
 set(MICRO_XRCEDDS_SERIAL OFF)
 set(MICRO_XRCEDDS_UDP OFF)
-set(MICRO_XRCEDDS_CUSTOM OFF)
+set(MICRO_XRCEDDS_CUSTOM_SERIAL OFF)
 set(MICRO_XRCEDDS_IPV4 OFF)
 set(MICRO_XRCEDDS_IPV6 OFF)
 if(${RMW_UXRCE_TRANSPORT} STREQUAL "serial")
@@ -72,8 +72,8 @@ elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "udp")
     set(RMW_UXRCE_DEFAULT_UDP_IP "::1" CACHE STRING "Sets the agent IP address.")
   endif ()
   set(RMW_UXRCE_DEFAULT_UDP_PORT "8888" CACHE STRING "Sets the agent IP port.")
-elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "custom")
-  set(MICRO_XRCEDDS_CUSTOM ON)
+elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "custom_serial")
+  set(MICRO_XRCEDDS_CUSTOM_SERIAL ON)
 else()
   message(FATAL_ERROR "Transport not supported. Use \"serial\", \"udp\", \"custom\"")
 endif()
@@ -127,6 +127,7 @@ set(SRCS
   src/rmw_wait_set.c
   src/types.c
   src/utils.c
+  src/callbacks.c
   )
 
 add_library(${PROJECT_NAME}
