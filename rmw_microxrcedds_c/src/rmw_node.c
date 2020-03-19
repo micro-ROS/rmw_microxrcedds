@@ -127,7 +127,7 @@ void on_reply(uxrSession* session, uxrObjectId object_id, uint16_t request_id, u
 
   struct Item * client_item = client_memory.allocateditems;
   while (client_item != NULL) {
-    CustomClient * custom_client = (CustomClient *)client_item->data;
+    rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client_item->data;
     if (custom_client->request_id == request_id)
     { 
 
@@ -406,7 +406,7 @@ rmw_ret_t rmw_destroy_node(rmw_node_t * node)
 
   item = client_memory.allocateditems;
   while (item != NULL) {
-    CustomClient * custom_client = (CustomClient *)item->data;
+    rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)item->data;
     item = item->next;
     if (custom_client->owner_node == custom_node){ 
       rmw_destroy_client(node, custom_client->rmw_handle);

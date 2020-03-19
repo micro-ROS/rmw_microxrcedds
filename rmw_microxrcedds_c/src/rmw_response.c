@@ -75,7 +75,7 @@ rmw_take_response(
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
   }
 
-  CustomClient * custom_client = (CustomClient *)client->data;
+  rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
 
   if (!custom_client->micro_buffer_in_use){
     return RMW_RET_ERROR;

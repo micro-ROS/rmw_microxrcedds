@@ -102,7 +102,7 @@ rmw_wait(
   }
 
   for (size_t i = 0; i < clients->client_count; i++){
-    CustomClient * custom_client = (CustomClient *)clients->clients[i];
+    rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)clients->clients[i];
     bool included = false;
 
     for (size_t j = 0; j < node_array_index; j++){
@@ -155,7 +155,7 @@ rmw_wait(
   // Check clients
   if (clients) {
     for (size_t i = 0; i < clients->client_count; ++i) {
-      CustomClient * custom_client = (CustomClient *)clients->clients[i];
+      rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)clients->clients[i];
       
       if (!custom_client->micro_buffer_in_use){
         clients->clients[i] = NULL;

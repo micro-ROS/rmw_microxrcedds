@@ -67,7 +67,7 @@ rmw_create_client(
       goto fail;
     }
 
-    CustomClient * custom_client = (CustomClient *)memory_node->data;
+    rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)memory_node->data;
     custom_client->owner_node = custom_node;
     custom_client->client_gid.implementation_identifier =
       rmw_get_implementation_identifier();
@@ -189,7 +189,7 @@ rmw_destroy_client(
     result_ret = RMW_RET_ERROR;
   } else {
     CustomNode * custom_node = (CustomNode *)node->data;
-    CustomClient * custom_client = (CustomClient *)client->data;
+    rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
     uint16_t delete_client =
       uxr_buffer_delete_entity(&custom_node->session, custom_node->reliable_output,
         custom_client->client_id);
