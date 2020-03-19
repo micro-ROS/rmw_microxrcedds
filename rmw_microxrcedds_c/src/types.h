@@ -63,10 +63,10 @@ struct  rmw_init_options_impl_t
 
 // ROS2 entities definitions
 
-typedef struct CustomTopic
+typedef struct rmw_uxrce_topic_t
 {
-  struct CustomTopic * next_custom_topic;
-  struct CustomTopic * prev_custom_topic;
+  struct rmw_uxrce_topic_t * next_custom_topic;
+  struct rmw_uxrce_topic_t * prev_custom_topic;
 
   uxrObjectId topic_id;
   const message_type_support_callbacks_t * message_type_support_callbacks;
@@ -74,7 +74,7 @@ typedef struct CustomTopic
   bool sync_with_agent;
   int32_t usage_account;
   struct CustomNode * owner_node;
-} CustomTopic;
+} rmw_uxrce_topic_t;
 
 typedef struct CustomService
 {
@@ -140,7 +140,7 @@ typedef struct CustomSubscription
   uint16_t subscription_request;
 
   uxrObjectId topic_id;  // TODO(Javier) Pending to be removed
-  struct CustomTopic * topic;
+  struct rmw_uxrce_topic_t * topic;
 
   struct CustomNode * owner_node;
 } CustomSubscription;
@@ -156,7 +156,7 @@ typedef struct CustomPublisher
   const message_type_support_callbacks_t * type_support_callbacks;
 
   uxrObjectId topic_id;  // TODO(Javier) Pending to be removed
-  struct CustomTopic * topic;
+  struct rmw_uxrce_topic_t * topic;
 
   struct CustomNode * owner_node;
 } CustomPublisher;
@@ -174,7 +174,7 @@ typedef struct CustomNode
   uxrSession session;
   uxrObjectId participant_id;
 
-  CustomTopic * custom_topic_sp;
+  rmw_uxrce_topic_t * custom_topic_sp;
 
   uxrStreamId reliable_input;
   uxrStreamId reliable_output;

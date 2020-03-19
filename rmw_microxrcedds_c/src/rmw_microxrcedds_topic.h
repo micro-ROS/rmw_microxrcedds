@@ -25,7 +25,7 @@ extern "C"
 {
 #endif
 
-CustomTopic *
+rmw_uxrce_topic_t *
 create_topic(
   struct CustomNode * custom_node,
   const char * topic_name,
@@ -34,7 +34,7 @@ create_topic(
 
 
 bool
-destroy_topic(CustomTopic * custom_topic);
+destroy_topic(rmw_uxrce_topic_t * custom_topic);
 
 size_t
 topic_count(struct CustomNode * custom_node);
