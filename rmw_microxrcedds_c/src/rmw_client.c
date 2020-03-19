@@ -155,7 +155,7 @@ rmw_create_client(
   return rmw_client;
 
 fail:
-  delete_client_memory(rmw_client);
+  rmw_uxrce_delete_client_memory(rmw_client);
   rmw_client = NULL;
   return rmw_client;
 }
@@ -202,7 +202,7 @@ rmw_destroy_client(
       RMW_SET_ERROR_MSG("unable to remove client from the server");
       result_ret = RMW_RET_ERROR;
     } else {
-      delete_client_memory(client);
+      rmw_uxrce_delete_client_memory(client);
       result_ret = RMW_RET_OK;
     }
   }

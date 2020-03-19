@@ -130,11 +130,11 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 
   context->impl = context_impl;
 
-  init_nodes_memory(&node_memory, custom_nodes, RMW_UXRCE_MAX_NODES);
-  init_subscriber_memory(&subscription_memory, custom_subscriptions, RMW_UXRCE_MAX_SUBSCRIPTIONS);
-  init_publisher_memory(&publisher_memory, custom_publishers, RMW_UXRCE_MAX_PUBLISHERS);
-  init_service_memory(&service_memory, custom_services, RMW_UXRCE_MAX_SERVICES);
-  init_client_memory(&client_memory, custom_clients, RMW_UXRCE_MAX_CLIENTS);
+  rmw_uxrce_init_nodes_memory(&node_memory, custom_nodes, RMW_UXRCE_MAX_NODES);
+  rmw_uxrce_init_subscriber_memory(&subscription_memory, custom_subscriptions, RMW_UXRCE_MAX_SUBSCRIPTIONS);
+  rmw_uxrce_init_publisher_memory(&publisher_memory, custom_publishers, RMW_UXRCE_MAX_PUBLISHERS);
+  rmw_uxrce_init_service_memory(&service_memory, custom_services, RMW_UXRCE_MAX_SERVICES);
+  rmw_uxrce_init_client_memory(&client_memory, custom_clients, RMW_UXRCE_MAX_CLIENTS);
 
   return RMW_RET_OK;
 }

@@ -37,7 +37,7 @@ CustomClient custom_clients[RMW_UXRCE_MAX_CLIENTS];
 
 // Memory init functions
 
-void init_service_memory(struct MemPool * memory, CustomService * services, size_t size)
+void rmw_uxrce_init_service_memory(struct MemPool * memory, CustomService * services, size_t size)
 {
   if (size > 0) {
     link_prev(NULL, &services[0].mem, NULL);
@@ -51,7 +51,7 @@ void init_service_memory(struct MemPool * memory, CustomService * services, size
   }
 }
 
-void init_client_memory(struct MemPool * memory, CustomClient * clients, size_t size)
+void rmw_uxrce_init_client_memory(struct MemPool * memory, CustomClient * clients, size_t size)
 {
   if (size > 0) {
     link_prev(NULL, &clients[0].mem, NULL);
@@ -65,7 +65,7 @@ void init_client_memory(struct MemPool * memory, CustomClient * clients, size_t 
   }
 }
 
-void init_publisher_memory(struct MemPool * memory, CustomPublisher * publishers, size_t size)
+void rmw_uxrce_init_publisher_memory(struct MemPool * memory, CustomPublisher * publishers, size_t size)
 {
   if (size > 0) {
     link_prev(NULL, &publishers[0].mem, NULL);
@@ -79,7 +79,7 @@ void init_publisher_memory(struct MemPool * memory, CustomPublisher * publishers
   }
 }
 
-void init_subscriber_memory(struct MemPool * memory, CustomSubscription * subscribers, size_t size)
+void rmw_uxrce_init_subscriber_memory(struct MemPool * memory, CustomSubscription * subscribers, size_t size)
 {
   if (size > 0) {
     link_prev(NULL, &subscribers[0].mem, NULL);
@@ -93,7 +93,7 @@ void init_subscriber_memory(struct MemPool * memory, CustomSubscription * subscr
   }
 }
 
-void init_nodes_memory(struct MemPool * memory, CustomNode * nodes, size_t size)
+void rmw_uxrce_init_nodes_memory(struct MemPool * memory, CustomNode * nodes, size_t size)
 {
   if (size > 0) {
     link_prev(NULL, &nodes[0].mem, NULL);
@@ -111,7 +111,7 @@ void init_nodes_memory(struct MemPool * memory, CustomNode * nodes, size_t size)
 
   void * data;
 
-void delete_node_memory(rmw_node_t * node)
+void rmw_uxrce_delete_node_memory(rmw_node_t * node)
 {
   if (node->namespace_) {
     rmw_free((char *)node->namespace_);
@@ -134,7 +134,7 @@ void delete_node_memory(rmw_node_t * node)
   node = NULL;
 }
 
-void delete_publisher_memory(rmw_publisher_t * publisher)
+void rmw_uxrce_delete_publisher_memory(rmw_publisher_t * publisher)
 {
   if (publisher->implementation_identifier) {
     publisher->implementation_identifier = NULL;
@@ -158,7 +158,7 @@ void delete_publisher_memory(rmw_publisher_t * publisher)
   rmw_free(publisher);
 }
 
-void delete_subscription_memory(rmw_subscription_t * subscriber)
+void rmw_uxrce_delete_subscription_memory(rmw_subscription_t * subscriber)
 {
   if (subscriber->implementation_identifier) {
     subscriber->implementation_identifier = NULL;
@@ -181,7 +181,7 @@ void delete_subscription_memory(rmw_subscription_t * subscriber)
   rmw_free(subscriber);
 }
 
-void delete_service_memory(rmw_service_t * service)
+void rmw_uxrce_delete_service_memory(rmw_service_t * service)
 {
   if (service->implementation_identifier) {
     service->implementation_identifier = NULL;
@@ -200,7 +200,7 @@ void delete_service_memory(rmw_service_t * service)
   rmw_free(service);
 }
 
-void delete_client_memory(rmw_client_t * client)
+void rmw_uxrce_delete_client_memory(rmw_client_t * client)
 {
   if (client->implementation_identifier) {
     client->implementation_identifier = NULL;

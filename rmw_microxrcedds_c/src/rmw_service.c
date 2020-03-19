@@ -155,7 +155,7 @@ rmw_create_service(
   return rmw_service;
 
 fail:
-  delete_service_memory(rmw_service);
+  rmw_uxrce_delete_service_memory(rmw_service);
   rmw_service = NULL;
   return rmw_service;
 }
@@ -202,7 +202,7 @@ rmw_destroy_service(
       RMW_SET_ERROR_MSG("unable to remove service from the server");
       result_ret = RMW_RET_ERROR;
     } else {
-      delete_service_memory(service);
+      rmw_uxrce_delete_service_memory(service);
       result_ret = RMW_RET_OK;
     }
   }

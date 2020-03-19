@@ -207,18 +207,18 @@ extern CustomClient custom_clients[RMW_UXRCE_MAX_CLIENTS];
 
 // Memory init functions
 
-void init_nodes_memory(struct MemPool * memory, CustomNode * nodes, size_t size);
-void init_service_memory(struct MemPool * memory, CustomService * services, size_t size);
-void init_client_memory(struct MemPool * memory, CustomClient * clients, size_t size);
-void init_publisher_memory(struct MemPool * memory, CustomPublisher * publishers, size_t size);
-void init_subscriber_memory(struct MemPool * memory, CustomSubscription * subscribers, size_t size);
+void rmw_uxrce_init_nodes_memory(struct MemPool * memory, CustomNode * nodes, size_t size);
+void rmw_uxrce_init_service_memory(struct MemPool * memory, CustomService * services, size_t size);
+void rmw_uxrce_init_client_memory(struct MemPool * memory, CustomClient * clients, size_t size);
+void rmw_uxrce_init_publisher_memory(struct MemPool * memory, CustomPublisher * publishers, size_t size);
+void rmw_uxrce_init_subscriber_memory(struct MemPool * memory, CustomSubscription * subscribers, size_t size);
 
 // Memory management functions
 
-void delete_node_memory(rmw_node_t * node);
-void delete_publisher_memory(rmw_publisher_t * publisher);
-void delete_subscription_memory(rmw_subscription_t * subscriber);
-void delete_client_memory(rmw_client_t * client);
-void delete_service_memory(rmw_service_t * client);
+void rmw_uxrce_delete_node_memory(rmw_node_t * node);
+void rmw_uxrce_delete_publisher_memory(rmw_publisher_t * publisher);
+void rmw_uxrce_delete_subscription_memory(rmw_subscription_t * subscriber);
+void rmw_uxrce_delete_client_memory(rmw_client_t * client);
+void rmw_uxrce_delete_service_memory(rmw_service_t * client);
 
 #endif  // TYPES_H_

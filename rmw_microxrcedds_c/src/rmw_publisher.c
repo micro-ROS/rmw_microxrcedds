@@ -195,7 +195,7 @@ rmw_create_publisher(
   return rmw_publisher;
 
 fail:
-  delete_publisher_memory(rmw_publisher);
+  rmw_uxrce_delete_publisher_memory(rmw_publisher);
   rmw_publisher = NULL;
   return rmw_publisher;
 }
@@ -275,7 +275,7 @@ rmw_destroy_publisher(
       RMW_SET_ERROR_MSG("unable to remove publisher from the server");
       result_ret = RMW_RET_ERROR;
     } else {
-      delete_publisher_memory(publisher);
+      rmw_uxrce_delete_publisher_memory(publisher);
       result_ret = RMW_RET_OK;
     }
   }
