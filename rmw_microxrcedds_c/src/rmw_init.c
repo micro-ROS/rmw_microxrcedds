@@ -26,7 +26,7 @@
 
 #include "./callbacks.h"
 
-#ifdef MICRO_XRCEDDS_SERIAL
+#ifdef MICRO_XRCEDDS_SERIAL || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
 #define CLOSE_TRANSPORT(transport) uxr_close_serial_transport(transport)
 #elif defined(MICRO_XRCEDDS_UDP)
 #define CLOSE_TRANSPORT(transport) uxr_close_udp_transport(transport)
