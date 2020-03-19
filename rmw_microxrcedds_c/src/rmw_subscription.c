@@ -85,7 +85,7 @@ rmw_create_subscription(
       goto fail;
     }
 
-    CustomNode * custom_node = (CustomNode *)node->data;
+    rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     struct Item * memory_node = get_memory(&subscription_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
@@ -266,7 +266,7 @@ rmw_destroy_subscription(rmw_node_t * node, rmw_subscription_t * subscription)
     RMW_SET_ERROR_MSG("subscription imp is null");
     result_ret = RMW_RET_ERROR;
   } else {
-    CustomNode * custom_node = (CustomNode *)node->data;
+    rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
     uint16_t delete_datareader =
       uxr_buffer_delete_entity(&custom_node->session, custom_node->reliable_output,

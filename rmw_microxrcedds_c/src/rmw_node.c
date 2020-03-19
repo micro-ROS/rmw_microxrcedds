@@ -58,7 +58,7 @@ void on_topic(
   (void)request_id;
   (void)stream_id;
 
-  CustomNode * node = (CustomNode *)args;
+  rmw_uxrce_node_t * node = (rmw_uxrce_node_t *)args;
 
   struct Item * subscription_item = subscription_memory.allocateditems;
   while (subscription_item != NULL) {
@@ -92,7 +92,7 @@ void on_request(uxrSession* session, uxrObjectId object_id, uint16_t request_id,
   (void)session;
   (void)object_id;
 
-  CustomNode * node = (CustomNode *)args;
+  rmw_uxrce_node_t * node = (rmw_uxrce_node_t *)args;
 
   struct Item * service_item = service_memory.allocateditems;
   while (service_item != NULL) {
@@ -123,7 +123,7 @@ void on_reply(uxrSession* session, uxrObjectId object_id, uint16_t request_id, u
   (void)session;
   (void)object_id;
 
-  CustomNode * node = (CustomNode *)args;
+  rmw_uxrce_node_t * node = (rmw_uxrce_node_t *)args;
 
   struct Item * client_item = client_memory.allocateditems;
   while (client_item != NULL) {
@@ -163,7 +163,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
     return NULL;
   }
 
-  CustomNode * node_info = (CustomNode *)memory_node->data;
+  rmw_uxrce_node_t * node_info = (rmw_uxrce_node_t *)memory_node->data;
 
 #ifdef MICRO_XRCEDDS_SERIAL
   int fd = open(context->impl->connection_params.serial_device, O_RDWR | O_NOCTTY);
@@ -371,7 +371,7 @@ rmw_ret_t rmw_destroy_node(rmw_node_t * node)
     return RMW_RET_ERROR;
   }
 
-  CustomNode * custom_node = (CustomNode *)node->data;
+  rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
   // TODO(Borja) make sure that session deletion deletes participant and related entities.
   // TODO(Pablo) make sure that other entities are removed from the pools
 

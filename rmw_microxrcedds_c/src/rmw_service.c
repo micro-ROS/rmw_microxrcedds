@@ -60,7 +60,7 @@ rmw_create_service(
     }
     memcpy((void *)rmw_service->service_name, service_name, strlen(service_name) + 1);
 
-    CustomNode * custom_node = (CustomNode *)node->data;
+    rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     struct Item * memory_node = get_memory(&service_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
@@ -188,7 +188,7 @@ rmw_destroy_service(
     RMW_SET_ERROR_MSG("service imp is null");
     result_ret = RMW_RET_ERROR;
   } else {
-    CustomNode * custom_node = (CustomNode *)node->data;
+    rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
     uint16_t delete_service =
       uxr_buffer_delete_entity(&custom_node->session, custom_node->reliable_output,

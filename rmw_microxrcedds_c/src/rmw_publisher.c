@@ -80,7 +80,7 @@ rmw_create_publisher(
       goto fail;
     }
 
-    CustomNode * custom_node = (CustomNode *)node->data;
+    rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     struct Item * memory_node = get_memory(&publisher_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");

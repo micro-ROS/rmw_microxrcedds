@@ -71,15 +71,15 @@ TEST_F(TestTopic, construction_and_destruction) {
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
   rmw_uxrce_topic_t * topic = create_topic(
-    reinterpret_cast<struct CustomNode *>(node->data),
+    reinterpret_cast<struct rmw_uxrce_node_t *>(node->data),
     package_name,
     &dummy_type_support.callbacks,
     &dummy_qos_policies);
   ASSERT_NE((void *)topic, (void *)NULL);
-  ASSERT_EQ(topic_count(reinterpret_cast<struct CustomNode *>(node->data)), 1);
+  ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 1);
 
   bool ret = destroy_topic(topic);
-  ASSERT_EQ(topic_count(reinterpret_cast<struct CustomNode *>(node->data)), 0);
+  ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 0);
   ASSERT_EQ(ret, true);
 }
 
@@ -103,7 +103,7 @@ TEST_F(TestTopic, shared_topic_creation) {
   rmw_uxrce_topic_t * last_created_topic;
   for (size_t i = 0; i < attempts; i++) {
     created_topic = create_topic(
-      reinterpret_cast<struct CustomNode *>(node->data),
+      reinterpret_cast<struct rmw_uxrce_node_t *>(node->data),
       topic_name,
       &dummy_type_support.callbacks,
       &dummy_qos_policies);
@@ -113,17 +113,17 @@ TEST_F(TestTopic, shared_topic_creation) {
     } else {
       ASSERT_NE((void *)created_topic, (void *)NULL);
     }
-    ASSERT_EQ(topic_count(reinterpret_cast<struct CustomNode *>(node->data)), 1);
+    ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 1);
 
     last_created_topic = created_topic;
   }
 
   for (size_t i = 0; i < attempts; i++) {
-    ASSERT_EQ(topic_count(reinterpret_cast<struct CustomNode *>(node->data)), 1);
+    ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 1);
     bool ret = destroy_topic(created_topic);
     ASSERT_EQ(ret, true);
   }
-  ASSERT_EQ(topic_count(reinterpret_cast<struct CustomNode *>(node->data)), 0);
+  ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 0);
 }
 
 
@@ -146,21 +146,21 @@ TEST_F(TestTopic, multiple_topic_creation) {
       &dummy_type_supports.back());
 
     rmw_uxrce_topic_t * created_topic = create_topic(
-      reinterpret_cast<struct CustomNode *>(node->data),
+      reinterpret_cast<struct rmw_uxrce_node_t *>(node->data),
       dummy_type_supports.back().topic_name.data(),
       &dummy_type_supports.back().callbacks,
       &dummy_qos_policies);
 
     ASSERT_NE((void *)created_topic, (void *)NULL);
-    ASSERT_EQ(topic_count(reinterpret_cast<struct CustomNode *>(node->data)), i + 1);
+    ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), i + 1);
 
     created_topics.push_back(created_topic);
   }
 
   for (size_t i = 0; i < created_topics.size(); i++) {
-    ASSERT_EQ(topic_count(reinterpret_cast<struct CustomNode *>(node->data)), attempts - i);
+    ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), attempts - i);
     bool ret = destroy_topic(created_topics.at(i));
     ASSERT_EQ(ret, true);
   }
-  ASSERT_EQ(topic_count(reinterpret_cast<struct CustomNode *>(node->data)), 0);
+  ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 0);
 }

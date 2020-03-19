@@ -31,7 +31,7 @@ rmw_send_request(
   }
 
   rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
-  CustomNode * custom_node = (CustomNode *)custom_client->owner_node;
+  rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)custom_client->owner_node;
   
   const rosidl_message_type_support_t * req_members = custom_client->type_support_callbacks->request_members_();
   const message_type_support_callbacks_t * functions = (const message_type_support_callbacks_t *)req_members->data;

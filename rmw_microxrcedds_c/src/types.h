@@ -73,7 +73,7 @@ typedef struct rmw_uxrce_topic_t
 
   bool sync_with_agent;
   int32_t usage_account;
-  struct CustomNode * owner_node;
+  struct rmw_uxrce_node_t * owner_node;
 } rmw_uxrce_topic_t;
 
 typedef struct rmw_uxrce_service_t
@@ -96,7 +96,7 @@ typedef struct rmw_uxrce_service_t
 
   uint8_t replay_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
 
-  struct CustomNode * owner_node;
+  struct rmw_uxrce_node_t * owner_node;
 } rmw_uxrce_service_t;
 
 typedef struct rmw_uxrce_client_t
@@ -118,7 +118,7 @@ typedef struct rmw_uxrce_client_t
 
   uint8_t request_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
 
-  struct CustomNode * owner_node;
+  struct rmw_uxrce_node_t * owner_node;
 } rmw_uxrce_client_t;
 
 typedef struct rmw_uxrce_subscription_t
@@ -142,7 +142,7 @@ typedef struct rmw_uxrce_subscription_t
   uxrObjectId topic_id;  // TODO(Javier) Pending to be removed
   struct rmw_uxrce_topic_t * topic;
 
-  struct CustomNode * owner_node;
+  struct rmw_uxrce_node_t * owner_node;
 } rmw_uxrce_subscription_t;
 
 typedef struct rmw_uxrce_publisher_t
@@ -158,10 +158,10 @@ typedef struct rmw_uxrce_publisher_t
   uxrObjectId topic_id;  // TODO(Javier) Pending to be removed
   struct rmw_uxrce_topic_t * topic;
 
-  struct CustomNode * owner_node;
+  struct rmw_uxrce_node_t * owner_node;
 } rmw_uxrce_publisher_t;
 
-typedef struct CustomNode
+typedef struct rmw_uxrce_node_t
 {
   struct Item mem;
 #if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM)
@@ -186,12 +186,12 @@ typedef struct CustomNode
   uint8_t output_best_effort_stream_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
 
   uint16_t id_gen;
-} CustomNode;
+} rmw_uxrce_node_t;
 
 // Static memory pools
 
 extern struct MemPool node_memory;
-extern CustomNode custom_nodes[RMW_UXRCE_MAX_NODES];
+extern rmw_uxrce_node_t custom_nodes[RMW_UXRCE_MAX_NODES];
 
 extern struct MemPool publisher_memory;
 extern rmw_uxrce_publisher_t custom_publishers[RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_NODES];
@@ -207,7 +207,7 @@ extern rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 
 // Memory init functions
 
-void rmw_uxrce_init_nodes_memory(struct MemPool * memory, CustomNode * nodes, size_t size);
+void rmw_uxrce_init_nodes_memory(struct MemPool * memory, rmw_uxrce_node_t * nodes, size_t size);
 void rmw_uxrce_init_service_memory(struct MemPool * memory, rmw_uxrce_service_t * services, size_t size);
 void rmw_uxrce_init_client_memory(struct MemPool * memory, rmw_uxrce_client_t * clients, size_t size);
 void rmw_uxrce_init_publisher_memory(struct MemPool * memory, rmw_uxrce_publisher_t * publishers, size_t size);

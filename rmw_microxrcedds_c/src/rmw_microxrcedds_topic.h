@@ -27,7 +27,7 @@ extern "C"
 
 rmw_uxrce_topic_t *
 create_topic(
-  struct CustomNode * custom_node,
+  struct rmw_uxrce_node_t * custom_node,
   const char * topic_name,
   const message_type_support_callbacks_t * message_type_support_callbacks,
   const rmw_qos_profile_t * qos_policies);
@@ -37,7 +37,7 @@ bool
 destroy_topic(rmw_uxrce_topic_t * custom_topic);
 
 size_t
-topic_count(struct CustomNode * custom_node);
+topic_count(struct rmw_uxrce_node_t * custom_node);
 
 #if defined(__cplusplus)
 }

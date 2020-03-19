@@ -60,7 +60,7 @@ rmw_create_client(
     }
     memcpy((void *)rmw_client->service_name, service_name, strlen(service_name) + 1);
 
-    CustomNode * custom_node = (CustomNode *)node->data;
+    rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     struct Item * memory_node = get_memory(&client_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
@@ -188,7 +188,7 @@ rmw_destroy_client(
     RMW_SET_ERROR_MSG("client imp is null");
     result_ret = RMW_RET_ERROR;
   } else {
-    CustomNode * custom_node = (CustomNode *)node->data;
+    rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
     uint16_t delete_client =
       uxr_buffer_delete_entity(&custom_node->session, custom_node->reliable_output,

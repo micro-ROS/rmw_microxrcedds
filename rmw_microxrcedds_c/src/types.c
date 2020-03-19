@@ -21,7 +21,7 @@
 // Static memory pools
 
 struct MemPool node_memory;
-CustomNode custom_nodes[RMW_UXRCE_MAX_NODES];
+rmw_uxrce_node_t custom_nodes[RMW_UXRCE_MAX_NODES];
 
 struct MemPool publisher_memory;
 rmw_uxrce_publisher_t custom_publishers[RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_NODES];
@@ -93,7 +93,7 @@ void rmw_uxrce_init_subscriber_memory(struct MemPool * memory, rmw_uxrce_subscri
   }
 }
 
-void rmw_uxrce_init_nodes_memory(struct MemPool * memory, CustomNode * nodes, size_t size)
+void rmw_uxrce_init_nodes_memory(struct MemPool * memory, rmw_uxrce_node_t * nodes, size_t size)
 {
   if (size > 0) {
     link_prev(NULL, &nodes[0].mem, NULL);
@@ -123,10 +123,10 @@ void rmw_uxrce_delete_node_memory(rmw_node_t * node)
     node->implementation_identifier = NULL;
   }
   if (node->data) {
-    CustomNode * custom_node = (CustomNode *)node->data;
+    rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     put_memory(&node_memory, &custom_node->mem);
 
-    memset(custom_node, 0, sizeof(CustomNode));
+    memset(custom_node, 0, sizeof(rmw_uxrce_node_t));
     node->data = NULL;
   }
 
