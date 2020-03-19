@@ -247,16 +247,15 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
 #elif defined(MICRO_XRCEDDS_UDP)
   // TODO(Borja) Think how we are going to select transport to use
   #ifdef MICRO_XRCEDDS_IPV4
-    if (!uxr_init_udp_transport(&node_info->transport, &node_info->udp_platform, UXR_IPv4, context->impl->connection_params.agent_address, context->impl->connection_params.agent_port)) {
-      RMW_SET_ERROR_MSG("Can not create an udp connection");
-      return NULL;
-    }
+    uxrIpProtocol ip_protocol = UXR_IPv4;
   #elif defined(MICRO_XRCEDDS_IPV6)
-    if (!uxr_init_udp_transport(&node_info->transport, &node_info->udp_platform, UXR_IPv6, context->impl->connection_params.agent_address, context->impl->connection_params.agent_port)) {
+    uxrIpProtocol ip_protocol = UXR_IPv6;
+  #endif
+
+    if (!uxr_init_udp_transport(&node_info->transport, &node_info->udp_platform, ip_protocol, context->impl->connection_params.agent_address, context->impl->connection_params.agent_port)) {
       RMW_SET_ERROR_MSG("Can not create an udp connection");
       return NULL;
     }
-  #endif
   printf("UDP mode => ip: %s - port: %s\n", context->impl->connection_params.agent_address, context->impl->connection_params.agent_port);
 #elif defined(MICRO_XRCEDDS_CUSTOM)
   if (!uxr_init_serial_transport(&node_info->transport, &node_info->serial_platform, 0, 0, 1))
@@ -422,4 +421,3 @@ rmw_node_get_graph_guard_condition(const rmw_node_t * node)
   ret->implementation_identifier = eprosima_microxrcedds_identifier;
   return ret;
 }
-
