@@ -98,7 +98,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
 
   if (!uxr_run_session_until_all_status(&node_info->context->session, 1000, requests, status, 1)) {
     uxr_delete_session(&node_info->context->session);
-    delete_node_memory(node_handle);
+    rmw_uxrce_fini_node_memory(node_handle);
     RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
     return NULL;
   }
