@@ -43,10 +43,10 @@ set(RMW_UXRCE_CREATION_MODE "xml" CACHE STRING "Sets creation mode in Micro XRCE
 set(RMW_UXRCE_STREAM_HISTORY "4" CACHE STRING "This value sets the number of MTUs to buffer. Micro XRCE-DDS client configuration provides their size")
 set(RMW_UXRCE_MAX_HISTORY "4" CACHE STRING "This value sets the number of history slots available for RMW subscriptions, requests and replies")
 set(RMW_UXRCE_MAX_NODES "4" CACHE STRING "This value sets the maximum number of nodes.")
-set(RMW_UXRCE_MAX_PUBLISHERS_X_NODE "4" CACHE STRING "This value sets the maximum number of publishers for a node.")
-set(RMW_UXRCE_MAX_SUBSCRIPTIONS_X_NODE "4" CACHE STRING "This value sets the maximum number of subscriptions for a node.")
-set(RMW_UXRCE_MAX_SERVICES_X_NODE "4" CACHE STRING "This value sets the maximum number of services for a node.")
-set(RMW_UXRCE_MAX_CLIENTS_X_NODE "4" CACHE STRING "This value sets the maximum number of clients for a node.")
+set(RMW_UXRCE_MAX_PUBLISHERS "4" CACHE STRING "This value sets the maximum number of publishers for an application.")
+set(RMW_UXRCE_MAX_SUBSCRIPTIONS "4" CACHE STRING "This value sets the maximum number of subscriptions for an application.")
+set(RMW_UXRCE_MAX_SERVICES "4" CACHE STRING "This value sets the maximum number of services for an application.")
+set(RMW_UXRCE_MAX_CLIENTS "4" CACHE STRING "This value sets the maximum number of clients for an application.")
 set(RMW_UXRCE_NODE_NAME_MAX_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a node name.")
 set(RMW_UXRCE_TOPIC_NAME_MAX_LENGTH "100" CACHE STRING "This value sets the maximum number of characters for a topic name.")
 set(RMW_UXRCE_TYPE_NAME_MAX_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a type name.")
@@ -56,7 +56,7 @@ set(RMW_UXRCE_REF_BUFFER_LENGTH "100" CACHE STRING "This value sets the maximum 
 # Transport handle define macros.
 set(MICRO_XRCEDDS_SERIAL OFF)
 set(MICRO_XRCEDDS_UDP OFF)
-set(MICRO_XRCEDDS_CUSTOM OFF)
+set(MICRO_XRCEDDS_CUSTOM_SERIAL OFF)
 set(MICRO_XRCEDDS_IPV4 OFF)
 set(MICRO_XRCEDDS_IPV6 OFF)
 if(${RMW_UXRCE_TRANSPORT} STREQUAL "serial")
@@ -72,8 +72,8 @@ elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "udp")
     set(RMW_UXRCE_DEFAULT_UDP_IP "::1" CACHE STRING "Sets the agent IP address.")
   endif ()
   set(RMW_UXRCE_DEFAULT_UDP_PORT "8888" CACHE STRING "Sets the agent IP port.")
-elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "custom")
-  set(MICRO_XRCEDDS_CUSTOM ON)
+elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "custom_serial")
+  set(MICRO_XRCEDDS_CUSTOM_SERIAL ON)
 else()
   message(FATAL_ERROR "Transport not supported. Use \"serial\", \"udp\", \"custom\"")
 endif()
@@ -127,6 +127,7 @@ set(SRCS
   src/rmw_wait_set.c
   src/types.c
   src/utils.c
+  src/callbacks.c
   )
 
 add_library(${PROJECT_NAME}

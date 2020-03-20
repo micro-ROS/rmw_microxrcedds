@@ -15,7 +15,7 @@
 #include "./memory.h"  // NOLINT
 
 
-void link_next(struct Item * current, struct Item * next, void * data)
+void link_next(struct rmw_uxrce_mempool_item_t * current, struct rmw_uxrce_mempool_item_t * next, void * data)
 {
   if (current) {
     current->next = next;
@@ -26,7 +26,7 @@ void link_next(struct Item * current, struct Item * next, void * data)
   }
 }
 
-void link_prev(struct Item * previous, struct Item * current, void * data)
+void link_prev(struct rmw_uxrce_mempool_item_t * previous, struct rmw_uxrce_mempool_item_t * current, void * data)
 {
   if (current) {
     current->prev = previous;
@@ -37,21 +37,21 @@ void link_prev(struct Item * previous, struct Item * current, void * data)
   }
 }
 
-void set_mem_pool(struct MemPool * mem, struct Item * first)
+void set_mem_pool(struct rmw_uxrce_mempool_t * mem, struct rmw_uxrce_mempool_item_t * first)
 {
   mem->freeitems = first;
   mem->allocateditems = NULL;
 }
 
-void free_mem_pool(struct MemPool * mem)
+void free_mem_pool(struct rmw_uxrce_mempool_t * mem)
 {
   if (mem->allocateditems) {
-    struct Item * old_free_head = mem->freeitems;
+    struct rmw_uxrce_mempool_item_t * old_free_head = mem->freeitems;
     mem->freeitems = mem->allocateditems;
     mem->freeitems->prev = NULL;
     mem->allocateditems = NULL;
 
-    struct Item * free_item = mem->freeitems;
+    struct rmw_uxrce_mempool_item_t * free_item = mem->freeitems;
     while (free_item->next) {
       free_item = free_item->next;
     }
@@ -60,14 +60,14 @@ void free_mem_pool(struct MemPool * mem)
   }
 }
 
-bool has_memory(struct MemPool * mem)
+bool has_memory(struct rmw_uxrce_mempool_t * mem)
 {
   return mem->freeitems != NULL ? true : false;
 }
 
-struct Item * get_memory(struct MemPool * mem)
+struct rmw_uxrce_mempool_item_t * get_memory(struct rmw_uxrce_mempool_t * mem)
 {
-  struct Item * item = NULL;
+  struct rmw_uxrce_mempool_item_t * item = NULL;
   if (has_memory(mem)) {
     // Gets item from free pool
     item = mem->freeitems;
@@ -87,7 +87,7 @@ struct Item * get_memory(struct MemPool * mem)
   return item;
 }
 
-void put_memory(struct MemPool * mem, struct Item * item)
+void put_memory(struct rmw_uxrce_mempool_t * mem, struct rmw_uxrce_mempool_item_t * item)
 {
   // Gets item from allocated pool
   if (item->prev) {

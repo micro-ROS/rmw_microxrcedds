@@ -49,7 +49,7 @@ rmw_take_with_info(
     return RMW_RET_ERROR;
   }
 
-  CustomSubscription * custom_subscription = (CustomSubscription *)subscription->data;
+  rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
 
   if (!custom_subscription->micro_buffer_in_use) {
     return RMW_RET_ERROR;

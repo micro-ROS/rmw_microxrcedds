@@ -40,8 +40,10 @@ The configuration file is placed in `rmw_microxrcedds_c/rmw_microxrcedds.config`
 
 - *RMW_UXRCE_MAX_HISTORY*: This value sets the number of MTUs to buffer. Micro XRCE-DDS client configuration provides their size.
 - *RMW_UXRCE_MAX_NODES*: This value sets the maximum number of nodes.
-- *RMW_UXRCE_MAX_PUBLISHERS_X_NODE*: This value sets the maximum number of publishers for a node.
-- *RMW_UXRCE_MAX_SUBSCRIPTIONS_X_NODE*: This value sets the maximum number of subscriptions for a node.
+- *RMW_UXRCE_MAX_PUBLISHERS*: This value sets the maximum number of publishers.
+- *RMW_UXRCE_MAX_SUBSCRIPTIONS*: This value sets the maximum number of subscriptions.
+- *RMW_UXRCE_MAX_CLIENTS*: This value sets the maximum number of clients.
+- *RMW_UXRCE_MAX_SERVICES*: This value sets the maximum number of services.
 - *RMW_UXRCE_NODE_NAME_MAX_LENGTH*: This value sets the maximum number of characters for a node name.
 - *RMW_UXRCE_TOPIC_NAME_MAX_LENGTH*: This value sets the maximum number of characters for a topic name.
 - *RMW_UXRCE_TYPE_NAME_MAX_LENGTH*: This value sets the maximum number of characters for a type name.

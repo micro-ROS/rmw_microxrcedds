@@ -60,14 +60,14 @@ rmw_create_client(
     }
     memcpy((void *)rmw_client->service_name, service_name, strlen(service_name) + 1);
 
-    CustomNode * custom_node = (CustomNode *)node->data;
-    struct Item * memory_node = get_memory(&custom_node->client_mem);
+    rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
+    struct rmw_uxrce_mempool_item_t * memory_node = get_memory(&client_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
       goto fail;
     }
 
-    CustomClient * custom_client = (CustomClient *)memory_node->data;
+    rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)memory_node->data;
     custom_client->owner_node = custom_node;
     custom_client->client_gid.implementation_identifier =
       rmw_get_implementation_identifier();
@@ -121,13 +121,13 @@ rmw_create_client(
       RMW_SET_ERROR_MSG("failed to generate xml request for client creation");
       goto fail;
     }
-    client_req = uxr_buffer_create_requester_xml(&custom_node->session,
-        custom_node->reliable_output, custom_client->client_id,
+    client_req = uxr_buffer_create_requester_xml(&custom_node->context->session,
+        custom_node->context->reliable_output, custom_client->client_id,
         custom_node->participant_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
     // TODO (Pablo): Is possible to instantiate a replier by ref?
-    // client_req = uxr_buffer_create_replier_ref(&custom_node->session,
-    //     custom_node->reliable_output, custom_service->subscriber_id,
+    // client_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
+    //     custom_node->context->reliable_output, custom_service->subscriber_id,
     //     custom_node->participant_id, "", UXR_REPLACE);
 #endif
 
@@ -135,11 +135,11 @@ rmw_create_client(
 
     uint16_t requests[] = {client_req};
     uint8_t status[1];
-    if (!uxr_run_session_until_all_status(&custom_node->session, 1000, requests,
+    if (!uxr_run_session_until_all_status(&custom_node->context->session, 1000, requests,
       status, 1))
     {
       RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
-      put_memory(&custom_node->service_mem, &custom_client->mem);
+      put_memory(&client_memory, &custom_client->mem);
       goto fail;
     }
 
@@ -148,14 +148,14 @@ rmw_create_client(
     delivery_control.min_pace_period = 0;
     delivery_control.max_elapsed_time = UXR_MAX_ELAPSED_TIME_UNLIMITED;
     delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
-    custom_client->request_id = uxr_buffer_request_data(&custom_node->session,
-      custom_node->reliable_output, custom_client->client_id,
-      custom_node->reliable_input, &delivery_control);
+    custom_client->request_id = uxr_buffer_request_data(&custom_node->context->session,
+      custom_node->context->reliable_output, custom_client->client_id,
+      custom_node->context->reliable_input, &delivery_control);
   }
   return rmw_client;
 
 fail:
-  rmw_client_delete(rmw_client);
+  rmw_uxrce_fini_client_memory(rmw_client);
   rmw_client = NULL;
   return rmw_client;
 }
@@ -165,10 +165,47 @@ rmw_destroy_client(
   rmw_node_t * node,
   rmw_client_t * client)
 {
-  (void) node;
-  
-  EPROS_PRINT_TRACE()
+    EPROS_PRINT_TRACE()
+  rmw_ret_t result_ret = RMW_RET_OK;
+  if (!node) {
+    RMW_SET_ERROR_MSG("node handle is null");
+    result_ret = RMW_RET_ERROR;
+  } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+    RMW_SET_ERROR_MSG("node handle not from this implementation");
+    result_ret = RMW_RET_ERROR;
+  } else if (!node->data) {
+    RMW_SET_ERROR_MSG("node imp is null");
+    result_ret = RMW_RET_ERROR;
+  } else if (!client) {
+    RMW_SET_ERROR_MSG("client handle is null");
+    result_ret = RMW_RET_ERROR;
+  } else if (strcmp(client->implementation_identifier,  // NOLINT
+    rmw_get_implementation_identifier()) != 0)
+  {
+    RMW_SET_ERROR_MSG("client handle not from this implementation");
+    result_ret = RMW_RET_ERROR;
+  } else if (!client->data) {
+    RMW_SET_ERROR_MSG("client imp is null");
+    result_ret = RMW_RET_ERROR;
+  } else {
+    rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
+    rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
+    uint16_t delete_client =
+      uxr_buffer_delete_entity(&custom_node->context->session, custom_node->context->reliable_output,
+        custom_client->client_id);
+    
+    uint16_t requests[] = {delete_client};
+    uint8_t status[sizeof(requests) / 2];
+    if (!uxr_run_session_until_all_status(&custom_node->context->session, 1000, requests, status,
+      sizeof(status)))
+    {
+      RMW_SET_ERROR_MSG("unable to remove client from the server");
+      result_ret = RMW_RET_ERROR;
+    } else {
+      rmw_uxrce_fini_client_memory(client);
+      result_ret = RMW_RET_OK;
+    }
+  }
 
-  rmw_client_delete(client);
-  return RMW_RET_OK;
+  return result_ret;
 }

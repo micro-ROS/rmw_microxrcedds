@@ -22,15 +22,15 @@
 #include "./utils.h"
 
 
-custom_topic_t *
+rmw_uxrce_topic_t *
 create_topic(
-  struct CustomNode * custom_node,
+  struct rmw_uxrce_node_t * custom_node,
   const char * topic_name,
   const message_type_support_callbacks_t * message_type_support_callbacks,
   const rmw_qos_profile_t * qos_policies)
 {
   // find topic in list
-  custom_topic_t * custom_topic_ptr = custom_node->custom_topic_sp;
+  rmw_uxrce_topic_t * custom_topic_ptr = custom_node->custom_topic_sp;
   while (custom_topic_ptr != NULL) {
     if (message_type_support_callbacks == custom_topic_ptr->message_type_support_callbacks) {
       break;
@@ -46,7 +46,7 @@ create_topic(
   }
 
   // Generate new memory
-  custom_topic_ptr = (custom_topic_t *)rmw_allocate(sizeof(custom_topic_t));
+  custom_topic_ptr = (rmw_uxrce_topic_t *)rmw_allocate(sizeof(rmw_uxrce_topic_t));
   if (custom_topic_ptr == NULL) {
     RMW_SET_ERROR_MSG("failed to allocate topic interna mem");
     goto create_topic_end;
@@ -91,8 +91,8 @@ create_topic(
     goto create_topic_end;
   }
 
-  topic_req = uxr_buffer_create_topic_xml(&custom_node->session,
-      custom_node->reliable_output, custom_topic_ptr->topic_id,
+  topic_req = uxr_buffer_create_topic_xml(&custom_node->context->session,
+      custom_node->context->reliable_output, custom_topic_ptr->topic_id,
       custom_node->participant_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
   (void)qos_policies;
@@ -103,15 +103,15 @@ create_topic(
     goto create_topic_end;
   }
 
-  topic_req = uxr_buffer_create_topic_ref(&custom_node->session,
-      custom_node->reliable_output, custom_topic_ptr->topic_id,
+  topic_req = uxr_buffer_create_topic_ref(&custom_node->context->session,
+      custom_node->context->reliable_output, custom_topic_ptr->topic_id,
       custom_node->participant_id, profile_name, UXR_REPLACE);
 #endif
 
   // Send the request and wait for response
   uint8_t status;
   custom_topic_ptr->sync_with_agent =
-    uxr_run_session_until_all_status(&custom_node->session, 1000, &topic_req,
+    uxr_run_session_until_all_status(&custom_node->context->session, 1000, &topic_req,
       &status, 1);
   if (!custom_topic_ptr->sync_with_agent) {
     RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
@@ -127,7 +127,7 @@ create_topic_end:
 }
 
 bool
-destroy_topic(custom_topic_t * custom_topic)
+destroy_topic(rmw_uxrce_topic_t * custom_topic)
 {
   bool ok = false;
 
@@ -145,11 +145,11 @@ destroy_topic(custom_topic_t * custom_topic)
       }
 
       if (custom_topic->sync_with_agent) {
-        uint16_t request = uxr_buffer_delete_entity(&custom_topic->owner_node->session,
-            custom_topic->owner_node->reliable_output,
+        uint16_t request = uxr_buffer_delete_entity(&custom_topic->owner_node->context->session,
+            custom_topic->owner_node->context->reliable_output,
             custom_topic->topic_id);
         uint8_t status;
-        if (!uxr_run_session_until_all_status(&custom_topic->owner_node->session, 1000,
+        if (!uxr_run_session_until_all_status(&custom_topic->owner_node->context->session, 1000,
           &request, &status, 1))
         {
           RMW_SET_ERROR_MSG("unable to remove publisher from the server");
@@ -171,10 +171,10 @@ destroy_topic(custom_topic_t * custom_topic)
 
 
 size_t
-topic_count(struct CustomNode * custom_node)
+topic_count(struct rmw_uxrce_node_t * custom_node)
 {
   size_t count = 0;
-  custom_topic_t * custom_topic_ptr = custom_node->custom_topic_sp;
+  rmw_uxrce_topic_t * custom_topic_ptr = custom_node->custom_topic_sp;
   while (custom_topic_ptr != NULL) {
     count++;
     custom_topic_ptr = custom_topic_ptr->next_custom_topic;

@@ -80,15 +80,15 @@ rmw_create_publisher(
       goto fail;
     }
 
-    CustomNode * custom_node = (CustomNode *)node->data;
-    struct Item * memory_node = get_memory(&custom_node->publisher_mem);
+    rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
+    struct rmw_uxrce_mempool_item_t * memory_node = get_memory(&publisher_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
       goto fail;
     }
 
     // TODO(Borja) micro_xrcedds_id is duplicated in publisher_id and in publisher_gid.data
-    CustomPublisher * custom_publisher = (CustomPublisher *)memory_node->data;
+    rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)memory_node->data;
     custom_publisher->owner_node = custom_node;
     custom_publisher->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
 
@@ -144,14 +144,14 @@ rmw_create_publisher(
       RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
       goto fail;
     }
-    publisher_req = uxr_buffer_create_publisher_xml(&custom_publisher->owner_node->session,
-        custom_node->reliable_output, custom_publisher->publisher_id,
+    publisher_req = uxr_buffer_create_publisher_xml(&custom_publisher->owner_node->context->session,
+        custom_node->context->reliable_output, custom_publisher->publisher_id,
         custom_node->participant_id, xml_buffer, UXR_REPLACE);
   #elif defined(MICRO_XRCEDDS_USE_REFS)
     // TODO(BORJA) Publisher by reference does not make sense
     //             in current micro XRCE-DDS implementation.
-    publisher_req = uxr_buffer_create_publisher_xml(custom_publisher->session,
-        custom_node->reliable_output, custom_publisher->publisher_id,
+    publisher_req = uxr_buffer_create_publisher_xml(custom_publisher->context->session,
+        custom_node->context->reliable_output, custom_publisher->publisher_id,
         custom_node->participant_id, "", UXR_REPLACE);
   #endif
 
@@ -166,7 +166,7 @@ rmw_create_publisher(
     }
 
     datawriter_req = uxr_buffer_create_datawriter_xml(
-      &custom_publisher->owner_node->session, custom_node->reliable_output, custom_publisher->datawriter_id,
+      &custom_publisher->owner_node->context->session, custom_node->context->reliable_output, custom_publisher->datawriter_id,
       custom_publisher->publisher_id, xml_buffer, UXR_REPLACE);
   #elif defined(MICRO_XRCEDDS_USE_REFS)
     if (!build_datawriter_profile(topic_name, profile_name, sizeof(profile_name))) {
@@ -174,8 +174,8 @@ rmw_create_publisher(
       goto fail;
     }
 
-    datawriter_req = uxr_buffer_create_datawriter_ref(custom_publisher->session,
-        custom_node->reliable_output, custom_publisher->datawriter_id,
+    datawriter_req = uxr_buffer_create_datawriter_ref(custom_publisher->context->session,
+        custom_node->context->reliable_output, custom_publisher->datawriter_id,
         custom_publisher->publisher_id, profile_name, UXR_REPLACE);
   #endif
 
@@ -183,10 +183,11 @@ rmw_create_publisher(
 
     uint16_t requests[] = {publisher_req, datawriter_req};
     uint8_t status[sizeof(requests) / 2];
-    if (!uxr_run_session_until_all_status(&custom_publisher->owner_node->session, 1000, requests,
+    if (!uxr_run_session_until_all_status(&custom_publisher->owner_node->context->session, 1000, requests,
       status, sizeof(status)))
     {
       RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
+      put_memory(&publisher_memory, &custom_publisher->mem);
       goto fail;
     }
 
@@ -194,7 +195,7 @@ rmw_create_publisher(
   return rmw_publisher;
 
 fail:
-  rmw_publisher_delete(rmw_publisher);
+  rmw_uxrce_fini_publisher_memory(rmw_publisher);
   rmw_publisher = NULL;
   return rmw_publisher;
 }
@@ -258,23 +259,23 @@ rmw_destroy_publisher(
     RMW_SET_ERROR_MSG("publisher imp is null");
     result_ret = RMW_RET_ERROR;
   } else {
-    CustomPublisher * custom_publisher = (CustomPublisher *)publisher->data;
-    uint16_t delete_writer = uxr_buffer_delete_entity(&custom_publisher->owner_node->session,
+    rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
+    uint16_t delete_writer = uxr_buffer_delete_entity(&custom_publisher->owner_node->context->session,
         custom_publisher->owner_node->reliable_output,
         custom_publisher->datawriter_id);
     uint16_t delete_publisher = uxr_buffer_delete_entity(
-      &custom_publisher->owner_node->session, custom_publisher->owner_node->reliable_output,
+      &custom_publisher->owner_node->context->session, custom_publisher->owner_node->context->reliable_output,
       custom_publisher->publisher_id);
 
     uint16_t requests[] = {delete_writer, delete_publisher};
     uint8_t status[sizeof(requests) / 2];
-    if (!uxr_run_session_until_all_status(&custom_publisher->owner_node->session, 1000, requests, status,
+    if (!uxr_run_session_until_all_status(&custom_publisher->owner_node->context->session, 1000, requests, status,
       sizeof(status)))
     {
       RMW_SET_ERROR_MSG("unable to remove publisher from the server");
       result_ret = RMW_RET_ERROR;
     } else {
-      rmw_publisher_delete(publisher);
+      rmw_uxrce_fini_publisher_memory(publisher);
       result_ret = RMW_RET_OK;
     }
   }

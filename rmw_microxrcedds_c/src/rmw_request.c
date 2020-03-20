@@ -30,8 +30,8 @@ rmw_send_request(
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
   }
 
-  CustomClient * custom_client = (CustomClient *)client->data;
-  CustomNode * custom_node = (CustomNode *)custom_client->owner_node;
+  rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
+  rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)custom_client->owner_node;
   
   const rosidl_message_type_support_t * req_members = custom_client->type_support_callbacks->request_members_();
   const message_type_support_callbacks_t * functions = (const message_type_support_callbacks_t *)req_members->data;
@@ -43,7 +43,7 @@ rmw_send_request(
 
   functions->cdr_serialize(ros_request,&request_ub);
  
-  *sequence_id = uxr_buffer_request(&custom_node->session, custom_node->reliable_output, 
+  *sequence_id = uxr_buffer_request(&custom_node->context->session, custom_node->context->reliable_output, 
       custom_client->client_id, custom_client->request_buffer, topic_size);
 
   if (UXR_INVALID_REQUEST_ID == *sequence_id)
@@ -52,7 +52,7 @@ rmw_send_request(
     return RMW_RET_ERROR;
   }
 
-  uxr_run_session_time(&custom_node->session,100);
+  uxr_run_session_time(&custom_node->context->session,100);
 
   return RMW_RET_OK;
 }
@@ -75,7 +75,7 @@ rmw_take_request(
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
   }
 
-  CustomService * custom_service = (CustomService *)service->data;
+  rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
 
   if (!custom_service->micro_buffer_in_use){
     return RMW_RET_ERROR;

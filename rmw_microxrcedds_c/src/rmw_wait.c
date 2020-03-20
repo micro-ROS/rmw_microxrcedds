@@ -80,71 +80,31 @@ rmw_wait(
 
   rmw_ret_t ret = RMW_RET_OK;
 
-  //Look for every node configured in the wait set
-  CustomNode * node_array[RMW_UXRCE_MAX_NODES] = { NULL };
-  size_t node_array_index = 0;
+  // Look for the XRCE session
+  uxrSession * session = NULL;
 
-  for (size_t i = 0; i < services->service_count; i++){
-    CustomService * custom_service = (CustomService *)services->services[i];
-    bool included = false;
-
-    for (size_t j = 0; j < node_array_index; j++){
-      if(node_array[j] == custom_service->owner_node){
-        included = true;
-        break;
-      } 
-    }
-
-    if (!included){
-      node_array[node_array_index] = custom_service->owner_node;
-      node_array_index++;
-    }
+  for (size_t i = 0; i < services->service_count && session == NULL; i++){
+    rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)services->services[i];
+    session = &custom_service->owner_node->context->session;
   }
 
-  for (size_t i = 0; i < clients->client_count; i++){
-    CustomClient * custom_client = (CustomClient *)clients->clients[i];
-    bool included = false;
+  for (size_t i = 0; i < clients->client_count && session == NULL; i++){
+    rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)clients->clients[i];
+    session = &custom_client->owner_node->context->session;
 
-    for (size_t j = 0; j < node_array_index; j++){
-      if(node_array[j] == custom_client->owner_node){
-        included = true;
-        break;
-      } 
-    }
-
-    if (!included){
-      node_array[node_array_index] = custom_client->owner_node;
-      node_array_index++;
-    }
   }
 
-  for (size_t i = 0; i < subscriptions->subscriber_count; ++i) {
-    CustomSubscription * custom_subscription = (CustomSubscription *)subscriptions->subscribers[i];
-    bool included = false;
-
-    for (size_t j = 0; j < node_array_index; j++){
-      if(node_array[j] == custom_subscription->owner_node){
-        included = true;
-        break;
-      } 
-    }
-
-    if (!included){
-      node_array[node_array_index] = custom_subscription->owner_node;
-      node_array_index++;
-    }
+  for (size_t i = 0; i < subscriptions->subscriber_count && session == NULL; ++i) {
+    rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscriptions->subscribers[i];
+    session = &custom_subscription->owner_node->context->session;
   }
-  
-  // Run XRCE sessions
-  for (size_t i = 0; i < node_array_index; i++)
-  { 
-    uxr_run_session_until_timeout(&node_array[i]->session, (int)floor(timeout/node_array_index));
-  }
+
+  uxr_run_session_until_timeout(session, timeout);
 
   // Check services
   if (services) {
     for (size_t i = 0; i < services->service_count; ++i) {
-      CustomService * custom_service = (CustomService *)services->services[i];
+      rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)services->services[i];
       
       if (!custom_service->micro_buffer_in_use){
         services->services[i] = NULL;
@@ -155,7 +115,7 @@ rmw_wait(
   // Check clients
   if (clients) {
     for (size_t i = 0; i < clients->client_count; ++i) {
-      CustomClient * custom_client = (CustomClient *)clients->clients[i];
+      rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)clients->clients[i];
       
       if (!custom_client->micro_buffer_in_use){
         clients->clients[i] = NULL;
@@ -166,7 +126,7 @@ rmw_wait(
   // Check subscriptions
   if (subscriptions) {
     for (size_t i = 0; i < subscriptions->subscriber_count; ++i) {
-      CustomSubscription * custom_subscription = (CustomSubscription *)subscriptions->subscribers[i];
+      rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscriptions->subscribers[i];
       
       if (!custom_subscription->micro_buffer_in_use){
         subscriptions->subscribers[i] = NULL;

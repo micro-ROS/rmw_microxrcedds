@@ -30,8 +30,8 @@ rmw_send_response(
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
   }
 
-  CustomService * custom_service = (CustomService *)service->data;
-  CustomNode * custom_node = (CustomNode *)custom_service->owner_node;
+  rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
+  rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)custom_service->owner_node;
 
   // Conversion from rmw_request_id_t to SampleIdentity  
   SampleIdentity sample_id;
@@ -51,7 +51,7 @@ rmw_send_response(
 
   functions->cdr_serialize(ros_response,&reply_ub);
  
-  uxr_buffer_reply(&custom_node->session, custom_node->reliable_output, 
+  uxr_buffer_reply(&custom_node->context->session, custom_node->context->reliable_output, 
       custom_service->service_id, &sample_id, custom_service->replay_buffer, topic_size);
 
   return RMW_RET_OK;
@@ -75,7 +75,7 @@ rmw_take_response(
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
   }
 
-  CustomClient * custom_client = (CustomClient *)client->data;
+  rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
 
   if (!custom_client->micro_buffer_in_use){
     return RMW_RET_ERROR;
