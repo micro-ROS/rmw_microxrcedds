@@ -91,6 +91,10 @@ rmw_create_publisher(
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)memory_node->data;
     custom_publisher->owner_node = custom_node;
     custom_publisher->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
+    custom_publisher->stream_id = 
+      (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT)
+      ? custom_node->context->best_effort_input
+      : custom_node->context->reliable_input;
 
     const rosidl_message_type_support_t * type_support_xrce = NULL;
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
@@ -261,7 +265,7 @@ rmw_destroy_publisher(
   } else {
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
     uint16_t delete_writer = uxr_buffer_delete_entity(&custom_publisher->owner_node->context->session,
-        custom_publisher->owner_node->reliable_output,
+        custom_publisher->owner_node->context->reliable_output,
         custom_publisher->datawriter_id);
     uint16_t delete_publisher = uxr_buffer_delete_entity(
       &custom_publisher->owner_node->context->session, custom_publisher->owner_node->context->reliable_output,

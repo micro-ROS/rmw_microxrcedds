@@ -51,13 +51,13 @@ int build_service_xml(const char * service_name_id, const char * service_name, b
   int ret;
 
   static const char format[] =  "<dds>"
-                                "<%s profile_name=\"%s\" "
-                                         "service_name=\"%s\" "
-                                         "request_type=\"%s\" "
-                                         "reply_type=\"%s\">"
-                                    "<request_topic_name>%s</request_topic_name>"
-                                    "<reply_topic_name>%s</reply_topic_name>"
-                                "</%s>"
+                                  "<%s profile_name=\"%s\" "
+                                          "service_name=\"%s\" "
+                                          "request_type=\"%s\" "
+                                          "reply_type=\"%s\">"
+                                      "<request_topic_name>%s</request_topic_name>"
+                                      "<reply_topic_name>%s</reply_topic_name>"
+                                  "</%s>"
                                 "</dds>";
 
   // Retrive request and response types
@@ -252,7 +252,13 @@ int build_xml(
       }
     }
 
-    ret = snprintf(xml, buffer_size, format, full_topic_name, type_name_buffer);
+    ret = snprintf(xml, 
+                  buffer_size, 
+                  format, 
+                  (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ? "BEST_EFFORT" : "RELIABLE",
+                  full_topic_name, 
+                  type_name_buffer);
+
     if ((ret < 0) && (ret >= (int)buffer_size)) {
       ret = 0;
     }
@@ -266,17 +272,23 @@ int build_datawriter_xml(
 {
   static const char format[] =
     "<dds>"
-    "<data_writer>"
-    "<topic>"
-    "<kind>NO_KEY</kind>"
-    "<name>%s</name>"
-    "<dataType>%s</dataType>"
-    "<historyQos>"
-    "<kind>KEEP_ALL</kind>"
-    "</historyQos>"
-    "</topic>"
-    "</data_writer>"
+      "<data_writer>"
+        "<qos>"
+          "<reliability>"
+            "<kind>%s</kind>"
+          "</reliability>"
+        "</qos>"
+        "<topic>"
+          "<kind>NO_KEY</kind>"
+          "<name>%s</name>"
+          "<dataType>%s</dataType>"
+          "<historyQos>"
+          "<kind>KEEP_ALL</kind>"
+          "</historyQos>"
+        "</topic>"
+      "</data_writer>"
     "</dds>";
+
   return build_xml(format, topic_name, members, qos_policies, xml, buffer_size);
 }
 
@@ -286,17 +298,23 @@ int build_datareader_xml(
 {
   static const char format[] =
     "<dds>"
-    "<data_reader>"
-    "<topic>"
-    "<kind>NO_KEY</kind>"
-    "<name>%s</name>"
-    "<dataType>%s</dataType>"
-    "<historyQos>"
-    "<kind>KEEP_ALL</kind>"
-    "</historyQos>"
-    "</topic>"
-    "</data_reader>"
+      "<data_reader>"
+        "<qos>"
+          "<reliability>"
+            "<kind>%s</kind>"
+          "</reliability>"
+        "</qos>"
+        "<topic>"
+          "<kind>NO_KEY</kind>"
+          "<name>%s</name>"
+          "<dataType>%s</dataType>"
+          "<historyQos>"
+          "<kind>KEEP_ALL</kind>"
+          "</historyQos>"
+        "</topic>"
+      "</data_reader>"
     "</dds>";
+
   return build_xml(format, topic_name, members, qos_policies, xml, buffer_size);
 }
 

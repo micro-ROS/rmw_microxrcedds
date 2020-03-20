@@ -33,9 +33,9 @@ void on_topic(
   (void)request_id;
   (void)stream_id;
 
-  struct Item * subscription_item = subscription_memory.allocateditems;
+  struct rmw_uxrce_mempool_item_t * subscription_item = subscription_memory.allocateditems;
   while (subscription_item != NULL) {
-    CustomSubscription * custom_subscription = (CustomSubscription *)subscription_item->data;
+    rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription_item->data;
     if ((custom_subscription->datareader_id.id == object_id.id) &&
       (custom_subscription->datareader_id.type == object_id.type))
     { 
@@ -65,9 +65,9 @@ void on_request(uxrSession* session, uxrObjectId object_id, uint16_t request_id,
   (void)session;
   (void)object_id;
 
-  struct Item * service_item = service_memory.allocateditems;
+  struct rmw_uxrce_mempool_item_t * service_item = service_memory.allocateditems;
   while (service_item != NULL) {
-    CustomService * custom_service = (CustomService *)service_item->data;
+    rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service_item->data;
     if (custom_service->request_id == request_id){
       custom_service->micro_buffer_lenght[custom_service->history_write_index] = request_len;
       memcpy(custom_service->micro_buffer[custom_service->history_write_index], 
@@ -94,9 +94,9 @@ void on_reply(uxrSession* session, uxrObjectId object_id, uint16_t request_id, u
   (void)session;
   (void)object_id;
 
-  struct Item * client_item = client_memory.allocateditems;
+  struct rmw_uxrce_mempool_item_t * client_item = client_memory.allocateditems;
   while (client_item != NULL) {
-    CustomClient * custom_client = (CustomClient *)client_item->data;
+    rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client_item->data;
     if (custom_client->request_id == request_id)
     { 
 

@@ -206,9 +206,15 @@ rmw_create_subscription(
     delivery_control.min_pace_period = 0;
     delivery_control.max_elapsed_time = UXR_MAX_ELAPSED_TIME_UNLIMITED;
     delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
+
+    custom_subscription->stream_id = 
+      (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT)
+      ? custom_node->context->best_effort_input
+      : custom_node->context->reliable_input;
+
     custom_subscription->subscription_request = uxr_buffer_request_data(&custom_node->context->session,
       custom_node->context->reliable_output, custom_subscription->datareader_id,
-      custom_node->context->reliable_input, &delivery_control);
+      custom_subscription->stream_id, &delivery_control);
   }
   return rmw_subscription;
 

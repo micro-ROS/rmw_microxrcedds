@@ -12,11 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "utils.h"
+
 #include "./types.h"  // NOLINT
 #include "./memory.h"
 #include "./rmw_microxrcedds_topic.h"
 
+#ifdef HAVE_C_TYPESUPPORT
+#include <rosidl_typesupport_microxrcedds_c/identifier.h>
+#endif
+#ifdef HAVE_CPP_TYPESUPPORT
+#include <rosidl_typesupport_microxrcedds_cpp/identifier.h>
+#endif
+
 #include "rmw/allocators.h"
+#include <rmw/error_handling.h>
 
 // Static memory pools
 
