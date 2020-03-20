@@ -91,7 +91,6 @@ rmw_create_publisher(
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)memory_node->data;
     custom_publisher->owner_node = custom_node;
     custom_publisher->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
-    memcpy(&custom_publisher->qos, qos_policies, sizeof(rmw_qos_profile_t));
     custom_publisher->stream_id = 
       (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT)
       ? custom_node->context->best_effort_input

@@ -54,7 +54,7 @@ rmw_publish(
       ucdr_init_buffer(&mb_topic, mb.iterator, topic_length);
       written = functions->cdr_serialize(ros_message, &mb_topic);
 
-      if (custom_publisher->qos.reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT){
+      if (UXR_BEST_EFFORT_STREAM == custom_publisher->stream_id.type){
         uxr_flash_output_streams(&custom_publisher->owner_node->context->session);
       }else{
         written &= uxr_run_session_until_confirm_delivery(&custom_publisher->owner_node->context->session, 1000);

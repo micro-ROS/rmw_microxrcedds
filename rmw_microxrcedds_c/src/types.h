@@ -180,7 +180,6 @@ typedef struct rmw_uxrce_publisher_t
 
   struct rmw_uxrce_topic_t * topic;
   
-  rmw_qos_profile_t qos;
   uxrStreamId stream_id;
 
   struct rmw_uxrce_node_t * owner_node;
