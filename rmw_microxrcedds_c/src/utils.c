@@ -273,6 +273,7 @@ int build_datawriter_xml(
   static const char format[] =
     "<dds>"
       "<data_writer>"
+        "<historyMemoryPolicy>PREALLOCATED_WITH_REALLOC</historyMemoryPolicy>"
         "<qos>"
           "<reliability>"
             "<kind>%s</kind>"
@@ -299,6 +300,7 @@ int build_datareader_xml(
   static const char format[] =
     "<dds>"
       "<data_reader>"
+        "<historyMemoryPolicy>PREALLOCATED_WITH_REALLOC</historyMemoryPolicy>"
         "<qos>"
           "<reliability>"
             "<kind>%s</kind>"
