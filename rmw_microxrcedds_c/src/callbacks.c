@@ -46,9 +46,7 @@ void on_topic(  struct uxrSession* session,
       (custom_subscription->datareader_id.type == object_id.type))
     {       
       custom_subscription->micro_buffer_lenght[custom_subscription->history_write_index] = length;
-      memcpy(custom_subscription->micro_buffer[custom_subscription->history_write_index],
-          ub->iterator, length);
-      
+      ucdr_deserialize_array_uint8_t(ub, custom_subscription->micro_buffer[custom_subscription->history_write_index], length);
 
       // TODO (Pablo): Circular overlapping buffer implemented: use qos
       if (custom_subscription->micro_buffer_in_use && custom_subscription->history_write_index == custom_subscription->history_read_index){
