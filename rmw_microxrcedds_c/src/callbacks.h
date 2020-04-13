@@ -18,12 +18,34 @@
 #include "./types.h"
 #include <rmw_microxrcedds_c/config.h>
 
-void on_status(uxrSession * session, uxrObjectId object_id, uint16_t request_id, uint8_t status, void * args);
+void on_status( struct uxrSession* session,
+                uxrObjectId object_id,
+                uint16_t request_id,
+                uint8_t status,
+                void* args);
 
-void on_topic(uxrSession * session, uxrObjectId object_id, uint16_t request_id, uxrStreamId stream_id, struct ucdrBuffer * serialization, void * args);
+void on_topic(  struct uxrSession* session,
+                uxrObjectId object_id,
+                uint16_t request_id,
+                uxrStreamId stream_id,
+                struct ucdrBuffer* ub,
+                uint16_t length,
+                void* args);
 
-void on_request(uxrSession* session, uxrObjectId object_id, uint16_t request_id, SampleIdentity* sample_id, uint8_t* request_buffer, size_t request_len, void* args);
+void on_request(struct uxrSession* session,
+                uxrObjectId object_id,
+                uint16_t request_id,
+                SampleIdentity* sample_id,
+                struct ucdrBuffer* ub,
+                size_t length,
+                void* args);
 
-void on_reply(uxrSession* session, uxrObjectId object_id, uint16_t request_id, uint16_t reply_id, uint8_t* buffer, size_t len, void* args);
+void on_reply(  struct uxrSession* session,
+                uxrObjectId object_id,
+                uint16_t request_id,
+                uint16_t reply_id,
+                struct ucdrBuffer* ub,
+                size_t length,
+                void* args);
 
 #endif  // RMW_MICROXRCEDDS_C__CALLBACKS_H_

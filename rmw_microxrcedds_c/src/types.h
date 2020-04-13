@@ -226,6 +226,6 @@ void rmw_uxrce_fini_node_memory(rmw_node_t * node);
 void rmw_uxrce_fini_publisher_memory(rmw_publisher_t * publisher);
 void rmw_uxrce_fini_subscription_memory(rmw_subscription_t * subscriber);
 void rmw_uxrce_fini_client_memory(rmw_client_t * client);
-void rmw_uxrce_fini_service_memory(rmw_service_t * client);
+void rmw_uxrce_fini_service_memory(rmw_service_t * service);
 
 #endif  // TYPES_H_
