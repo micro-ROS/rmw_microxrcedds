@@ -37,7 +37,7 @@ void on_request(struct uxrSession* session,
                 uint16_t request_id,
                 SampleIdentity* sample_id,
                 struct ucdrBuffer* ub,
-                size_t length,
+                uint16_t length,
                 void* args);
 
 void on_reply(  struct uxrSession* session,
@@ -45,7 +45,7 @@ void on_reply(  struct uxrSession* session,
                 uint16_t request_id,
                 uint16_t reply_id,
                 struct ucdrBuffer* ub,
-                size_t length,
+                uint16_t length,
                 void* args);
 
 #endif  // RMW_MICROXRCEDDS_C__CALLBACKS_H_
