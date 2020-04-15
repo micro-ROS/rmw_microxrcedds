@@ -135,7 +135,16 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   context->instance_id = options->instance_id;
   context->implementation_identifier = eprosima_microxrcedds_identifier;
 
-  rmw_context_impl_t * context_impl = (rmw_context_impl_t *)rmw_allocate(sizeof(rmw_context_impl_t));
+  rmw_uxrce_init_sessions_memory(&session_memory, custom_sessions, RMW_UXRCE_MAX_SESSIONS);
+
+  struct rmw_uxrce_mempool_item_t * memory_node = get_memory(&session_memory);
+  if (!memory_node) {
+    RMW_SET_ERROR_MSG("Not available session memory node");
+    return RMW_RET_ERROR;
+  }
+
+  rmw_context_impl_t * context_impl = (rmw_context_impl_t *)memory_node->data;
+
   #if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
     strcpy(context_impl->connection_params.serial_device, options->impl->connection_params.serial_device);
   #elif defined(MICRO_XRCEDDS_UDP)
@@ -257,7 +266,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   if (!uxr_create_session(&context_impl->session)) {
     CLOSE_TRANSPORT(&context_impl->transport);
     RMW_SET_ERROR_MSG("failed to create node session on Micro ROS Agent.");
-    return NULL;
+    return RMW_RET_ERROR;
   }
 
   return RMW_RET_OK;
@@ -274,6 +283,8 @@ rmw_shutdown(rmw_context_t * context)
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
   // context impl is explicitly supposed to be nullptr for now, see rmw_init's code
   // RCUTILS_CHECK_ARGUMENT_FOR_NULL(context->impl, RMW_RET_INVALID_ARGUMENT);
+  rmw_context_fini(context);
+
   *context = rmw_get_zero_initialized_context();
   return RMW_RET_OK;
 }
@@ -281,11 +292,9 @@ rmw_shutdown(rmw_context_t * context)
 rmw_ret_t
 rmw_context_fini(rmw_context_t * context)
 {
-  rmw_ret_t ret = RMW_RET_ERROR;
+  uxr_delete_session(&context->impl->session);
+  rmw_uxrce_fini_session_memory(context->impl);
+  context->impl = NULL;
 
-  if (uxr_delete_session(&context->impl->session)){
-    ret = RMW_RET_OK;
-  }
-
-  return ret;
+  return RMW_RET_OK;
 }
