@@ -99,7 +99,9 @@ rmw_wait(
     session = &custom_subscription->owner_node->context->session;
   }
 
-  uxr_run_session_until_timeout(session, timeout);
+  if(!uxr_run_session_until_timeout(session, timeout)){
+    ret = RMW_RET_TIMEOUT;
+  }
 
   // Check services
   if (services) {
@@ -136,7 +138,5 @@ rmw_wait(
 
   EPROS_PRINT_TRACE()
 
-  // TODO (Pablo): When it need to return a timeout?
-  ret = RMW_RET_OK;
   return ret;
 }

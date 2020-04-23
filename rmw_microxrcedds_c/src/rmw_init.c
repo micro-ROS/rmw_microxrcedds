@@ -100,7 +100,10 @@ rmw_init_options_copy(const rmw_init_options_t * src, rmw_init_options_t * dst)
     RMW_SET_ERROR_MSG("expected zero-initialized dst");
     return RMW_RET_INVALID_ARGUMENT;
   }
-  *dst = *src;
+  memcpy(dst, src, sizeof(rmw_init_options_t));
+  dst->impl = rmw_allocate(sizeof(rmw_init_options_impl_t));
+  memcpy(dst->impl, src->impl, sizeof(rmw_init_options_impl_t));
+
   return RMW_RET_OK;
 }
 
