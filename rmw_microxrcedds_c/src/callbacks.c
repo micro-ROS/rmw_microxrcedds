@@ -14,9 +14,11 @@
 
 #include "./callbacks.h"
 
-void on_status(
-  uxrSession * session, uxrObjectId object_id, uint16_t request_id, uint8_t status,
-  void * args)
+void on_status( struct uxrSession* session,
+                uxrObjectId object_id,
+                uint16_t request_id,
+                uint8_t status,
+                void* args)
 {
   (void)session;
   (void)object_id;
@@ -25,9 +27,13 @@ void on_status(
   (void)args;
 }
 
-void on_topic(
-  uxrSession * session, uxrObjectId object_id, uint16_t request_id, uxrStreamId stream_id,
-  struct ucdrBuffer * serialization, void * args)
+void on_topic(  struct uxrSession* session,
+                uxrObjectId object_id,
+                uint16_t request_id,
+                uxrStreamId stream_id,
+                struct ucdrBuffer* ub,
+                uint16_t length,
+                void* args)
 {
   (void)session;
   (void)request_id;
@@ -38,13 +44,9 @@ void on_topic(
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription_item->data;
     if ((custom_subscription->datareader_id.id == object_id.id) &&
       (custom_subscription->datareader_id.type == object_id.type))
-    { 
-      ptrdiff_t lenght = serialization->final - serialization->iterator;
-      
-      custom_subscription->micro_buffer_lenght[custom_subscription->history_write_index] = lenght;
-      memcpy(custom_subscription->micro_buffer[custom_subscription->history_write_index],
-          serialization->iterator, lenght);
-      
+    {       
+      custom_subscription->micro_buffer_lenght[custom_subscription->history_write_index] = length;
+      ucdr_deserialize_array_uint8_t(ub, custom_subscription->micro_buffer[custom_subscription->history_write_index], length);
 
       // TODO (Pablo): Circular overlapping buffer implemented: use qos
       if (custom_subscription->micro_buffer_in_use && custom_subscription->history_write_index == custom_subscription->history_read_index){
@@ -60,7 +62,13 @@ void on_topic(
   }
 }
 
-void on_request(uxrSession* session, uxrObjectId object_id, uint16_t request_id, SampleIdentity* sample_id, uint8_t* request_buffer, size_t request_len, void* args)
+void on_request(struct uxrSession* session,
+                uxrObjectId object_id,
+                uint16_t request_id,
+                SampleIdentity* sample_id,
+                struct ucdrBuffer* ub,
+                uint16_t length,
+                void* args)
 {
   (void)session;
   (void)object_id;
@@ -69,9 +77,8 @@ void on_request(uxrSession* session, uxrObjectId object_id, uint16_t request_id,
   while (service_item != NULL) {
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service_item->data;
     if (custom_service->request_id == request_id){
-      custom_service->micro_buffer_lenght[custom_service->history_write_index] = request_len;
-      memcpy(custom_service->micro_buffer[custom_service->history_write_index], 
-          request_buffer, request_len);
+      custom_service->micro_buffer_lenght[custom_service->history_write_index] = length;
+      ucdr_deserialize_array_uint8_t(ub, custom_service->micro_buffer[custom_service->history_write_index], length);
       memcpy(&custom_service->sample_id[custom_service->history_write_index], 
           sample_id, sizeof(SampleIdentity));
 
@@ -89,7 +96,13 @@ void on_request(uxrSession* session, uxrObjectId object_id, uint16_t request_id,
   }
 }
 
-void on_reply(uxrSession* session, uxrObjectId object_id, uint16_t request_id, uint16_t reply_id, uint8_t* buffer, size_t len, void* args)
+void on_reply(  struct uxrSession* session,
+                uxrObjectId object_id,
+                uint16_t request_id,
+                uint16_t reply_id,
+                struct ucdrBuffer* ub,
+                uint16_t length,
+                void* args)
 { 
   (void)session;
   (void)object_id;
@@ -99,9 +112,8 @@ void on_reply(uxrSession* session, uxrObjectId object_id, uint16_t request_id, u
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client_item->data;
     if (custom_client->request_id == request_id)
     { 
-
-      custom_client->micro_buffer_lenght[custom_client->history_write_index] = len;
-      memcpy(custom_client->micro_buffer[custom_client->history_write_index], buffer,len);
+      custom_client->micro_buffer_lenght[custom_client->history_write_index] = length;
+      ucdr_deserialize_array_uint8_t(ub, custom_client->micro_buffer[custom_client->history_write_index], length);
       custom_client->reply_id[custom_client->history_write_index] = reply_id;
 
       // TODO (Pablo): Circular overlapping buffer implemented: use qos

@@ -50,9 +50,7 @@ rmw_publish(
       custom_publisher->stream_id, custom_publisher->datawriter_id, &mb,
       topic_length))
     {
-      ucdrBuffer mb_topic;
-      ucdr_init_buffer(&mb_topic, mb.iterator, topic_length);
-      written = functions->cdr_serialize(ros_message, &mb_topic);
+      written = functions->cdr_serialize(ros_message, &mb);
 
       if (UXR_BEST_EFFORT_STREAM == custom_publisher->stream_id.type){
         uxr_flash_output_streams(&custom_publisher->owner_node->context->session);
