@@ -30,6 +30,9 @@
 
 // Static memory pools
 
+struct rmw_uxrce_mempool_t session_memory;
+rmw_context_impl_t custom_sessions[RMW_UXRCE_MAX_SESSIONS];
+
 struct rmw_uxrce_mempool_t node_memory;
 rmw_uxrce_node_t custom_nodes[RMW_UXRCE_MAX_NODES];
 
@@ -117,9 +120,26 @@ void rmw_uxrce_init_nodes_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_
   }
 }
 
+void rmw_uxrce_init_sessions_memory(struct rmw_uxrce_mempool_t * memory, rmw_context_impl_t * sessions, size_t size)
+{
+  if (size > 0) {
+    link_prev(NULL, &sessions[0].mem, NULL);
+    size > 1 ? link_next(&sessions[0].mem, &sessions[1].mem, &sessions[0]) : link_next(&sessions[0].mem, NULL,
+      &sessions[0]);
+    for (unsigned int i = 1; i <= size - 1; i++) {
+      link_prev(&sessions[i - 1].mem, &sessions[i].mem, &sessions[i]);
+    }
+    link_next(&sessions[size - 1].mem, NULL, &sessions[size - 1]);
+    set_mem_pool(memory, &sessions[0].mem);
+  }
+}
+
 // Memory management functions
 
-  void * data;
+void rmw_uxrce_fini_session_memory(rmw_context_impl_t * session)
+{ 
+  put_memory(&session_memory, &session->mem);
+}
 
 void rmw_uxrce_fini_node_memory(rmw_node_t * node)
 { 

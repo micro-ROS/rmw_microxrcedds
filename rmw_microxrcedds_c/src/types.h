@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef TYPES_H_
-#define TYPES_H_
+#ifndef RMW_MICROXRCEDDS_C__SRC__TYPES_H
+#define RMW_MICROXRCEDDS_C__SRC__TYPES_H
 
 #include <stddef.h>
 
@@ -53,6 +53,7 @@ struct rmw_uxrce_connection_t
 
 struct  rmw_context_impl_t
 {
+  struct rmw_uxrce_mempool_item_t mem;
   struct rmw_uxrce_connection_t connection_params;
 
 #if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
@@ -197,6 +198,9 @@ typedef struct rmw_uxrce_node_t
 
 // Static memory pools
 
+extern struct rmw_uxrce_mempool_t session_memory;
+extern rmw_context_impl_t custom_sessions[RMW_UXRCE_MAX_SESSIONS];
+
 extern struct rmw_uxrce_mempool_t node_memory;
 extern rmw_uxrce_node_t custom_nodes[RMW_UXRCE_MAX_NODES];
 
@@ -214,6 +218,7 @@ extern rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 
 // Memory init functions
 
+void rmw_uxrce_init_sessions_memory(struct rmw_uxrce_mempool_t * memory, rmw_context_impl_t * sessions, size_t size);
 void rmw_uxrce_init_nodes_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_node_t * nodes, size_t size);
 void rmw_uxrce_init_service_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_service_t * services, size_t size);
 void rmw_uxrce_init_client_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_client_t * clients, size_t size);
@@ -222,10 +227,11 @@ void rmw_uxrce_init_subscriber_memory(struct rmw_uxrce_mempool_t * memory, rmw_u
 
 // Memory management functions
 
+void rmw_uxrce_fini_session_memory(rmw_context_impl_t * session);
 void rmw_uxrce_fini_node_memory(rmw_node_t * node);
 void rmw_uxrce_fini_publisher_memory(rmw_publisher_t * publisher);
 void rmw_uxrce_fini_subscription_memory(rmw_subscription_t * subscriber);
 void rmw_uxrce_fini_client_memory(rmw_client_t * client);
 void rmw_uxrce_fini_service_memory(rmw_service_t * service);
 
-#endif  // TYPES_H_
+#endif  // RMW_MICROXRCEDDS_C__SRC__TYPES_H

@@ -42,6 +42,7 @@ set(RMW_UXRCE_IPV "ipv4" CACHE STRING "Sets Micro XRCE-DDS IP version to use. (i
 set(RMW_UXRCE_CREATION_MODE "xml" CACHE STRING "Sets creation mode in Micro XRCE-DDS. (xml | refs)")
 set(RMW_UXRCE_STREAM_HISTORY "4" CACHE STRING "This value sets the number of MTUs to buffer. Micro XRCE-DDS client configuration provides their size")
 set(RMW_UXRCE_MAX_HISTORY "4" CACHE STRING "This value sets the number of history slots available for RMW subscriptions, requests and replies")
+set(RMW_UXRCE_MAX_SESSIONS "1" CACHE STRING "This value sets the maximum number of Micro XRCE-DDS sessions.")
 set(RMW_UXRCE_MAX_NODES "4" CACHE STRING "This value sets the maximum number of nodes.")
 set(RMW_UXRCE_MAX_PUBLISHERS "4" CACHE STRING "This value sets the maximum number of publishers for an application.")
 set(RMW_UXRCE_MAX_SUBSCRIPTIONS "4" CACHE STRING "This value sets the maximum number of subscriptions for an application.")
