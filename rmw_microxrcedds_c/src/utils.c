@@ -333,7 +333,7 @@ bool build_participant_profile(char profile_name[], size_t buffer_size)
 
 bool build_topic_profile(const char * topic_name, char profile_name[], size_t buffer_size)
 {
-  const char * const format = "%s_t";
+  const char * const format = "%s__t";
   topic_name++;
   bool ret = false;
   int written = snprintf(profile_name, buffer_size, format, topic_name);
@@ -343,7 +343,7 @@ bool build_topic_profile(const char * topic_name, char profile_name[], size_t bu
 
 bool build_datawriter_profile(const char * topic_name, char profile_name[], size_t buffer_size)
 {
-  const char * const format = "%s_p";
+  const char * const format = "%s__dw";
   topic_name++;
   bool ret = false;
   int written = snprintf(profile_name, buffer_size, format, topic_name);
@@ -353,7 +353,7 @@ bool build_datawriter_profile(const char * topic_name, char profile_name[], size
 
 bool build_datareader_profile(const char * topic_name, char profile_name[], size_t buffer_size)
 {
-  const char * const format = "%s_s";
+  const char * const format = "%s__dr";
   topic_name++;
   bool ret = false;
   int written = snprintf(profile_name, buffer_size, format, topic_name);

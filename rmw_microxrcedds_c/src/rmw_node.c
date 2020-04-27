@@ -81,7 +81,9 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
     return NULL;
   }
   participant_req =
-    uxr_buffer_create_participant_xml(&node_info->context->session, node_info->context->reliable_output,
+    uxr_buffer_create_participant_xml(
+      &node_info->context->session,
+      node_info->context->reliable_output,
       node_info->participant_id, (uint16_t)domain_id, participant_xml, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
   char profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
@@ -89,9 +91,11 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
     return NULL;
   }
-  participant_req = uxr_buffer_create_participant_ref(&node_info->context->context->session,
+  participant_req =
+    uxr_buffer_create_participant_ref(
+      &node_info->context->session,
       node_info->context->reliable_output,
-      node_info->participant_id, domain_id, profile_name, UXR_REPLACE);
+      node_info->participant_id, (uint16_t)domain_id, profile_name, UXR_REPLACE);
 #endif
   uint8_t status[1];
   uint16_t requests[] = {participant_req};
