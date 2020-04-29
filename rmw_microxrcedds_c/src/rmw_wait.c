@@ -110,6 +110,8 @@ rmw_wait(
       
       if (!custom_service->micro_buffer_in_use){
         services->services[i] = NULL;
+      }else{
+        ret = RMW_RET_OK;
       }
     }
   }
@@ -121,6 +123,8 @@ rmw_wait(
       
       if (!custom_client->micro_buffer_in_use){
         clients->clients[i] = NULL;
+      }else{
+        ret = RMW_RET_OK;
       }
     }
   }
@@ -132,6 +136,8 @@ rmw_wait(
       
       if (!custom_subscription->micro_buffer_in_use){
         subscriptions->subscribers[i] = NULL;
+      }else{
+        ret = RMW_RET_OK;
       }
     }
   }
