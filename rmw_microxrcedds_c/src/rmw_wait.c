@@ -99,9 +99,8 @@ rmw_wait(
     session = &custom_subscription->owner_node->context->session;
   }
 
-  if(!uxr_run_session_until_timeout(session, timeout)){
-    ret = RMW_RET_TIMEOUT;
-  }
+  bool run_session_status = uxr_run_session_until_timeout(session, timeout);
+  bool buffered_status = false;
 
   // Check services
   if (services) {
@@ -111,7 +110,7 @@ rmw_wait(
       if (!custom_service->micro_buffer_in_use){
         services->services[i] = NULL;
       }else{
-        ret = RMW_RET_OK;
+        buffered_status = true;
       }
     }
   }
@@ -124,7 +123,7 @@ rmw_wait(
       if (!custom_client->micro_buffer_in_use){
         clients->clients[i] = NULL;
       }else{
-        ret = RMW_RET_OK;
+        buffered_status = true;
       }
     }
   }
@@ -137,12 +136,13 @@ rmw_wait(
       if (!custom_subscription->micro_buffer_in_use){
         subscriptions->subscribers[i] = NULL;
       }else{
-        ret = RMW_RET_OK;
+        buffered_status = true;
       }
     }
   }
 
   EPROS_PRINT_TRACE()
-
-  return ret;
+    
+  return  (buffered_status) ? RMW_RET_OK : 
+          ((run_session_status) ? RMW_RET_ERROR : RMW_RET_TIMEOUT);
 }
