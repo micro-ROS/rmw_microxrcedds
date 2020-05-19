@@ -73,6 +73,8 @@ struct  rmw_context_impl_t
   uint8_t input_reliable_stream_buffer[RMW_UXRCE_MAX_BUFFER_SIZE];
   uint8_t output_reliable_stream_buffer[RMW_UXRCE_MAX_BUFFER_SIZE];
   uint8_t output_best_effort_stream_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
+
+  uint16_t id_gen;
 };
 
 struct  rmw_init_options_impl_t
@@ -193,7 +195,6 @@ typedef struct rmw_uxrce_node_t
 
   uxrObjectId participant_id;
   rmw_uxrce_topic_t * custom_topic_sp;
-  uint16_t id_gen;
 } rmw_uxrce_node_t;
 
 // Static memory pools

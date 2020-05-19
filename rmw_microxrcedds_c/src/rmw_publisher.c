@@ -139,7 +139,7 @@ rmw_create_publisher(
     char profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
   #endif
 
-    custom_publisher->publisher_id = uxr_object_id(custom_node->id_gen++, UXR_PUBLISHER_ID);
+    custom_publisher->publisher_id = uxr_object_id(custom_node->context->id_gen++, UXR_PUBLISHER_ID);
     uint16_t publisher_req;
   #ifdef MICRO_XRCEDDS_USE_XML
     char publisher_name[20];
@@ -161,7 +161,7 @@ rmw_create_publisher(
       custom_node->participant_id, "", UXR_REPLACE);
   #endif
 
-    custom_publisher->datawriter_id = uxr_object_id(custom_node->id_gen++, UXR_DATAWRITER_ID);
+    custom_publisher->datawriter_id = uxr_object_id(custom_node->context->id_gen++, UXR_DATAWRITER_ID);
     uint16_t datawriter_req;
   #ifdef MICRO_XRCEDDS_USE_XML
     if (!build_datawriter_xml(topic_name, custom_publisher->type_support_callbacks,
