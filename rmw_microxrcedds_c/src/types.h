@@ -74,7 +74,14 @@ struct  rmw_context_impl_t
   uint8_t output_reliable_stream_buffer[RMW_UXRCE_MAX_BUFFER_SIZE];
   uint8_t output_best_effort_stream_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
 
-  uint16_t id_gen;
+  uint16_t id_participant;
+  uint16_t id_topic;
+  uint16_t id_publisher;
+  uint16_t id_datawriter;
+  uint16_t id_subscriber;
+  uint16_t id_datareader;
+  uint16_t id_requester;
+  uint16_t id_replier;
 };
 
 struct  rmw_init_options_impl_t

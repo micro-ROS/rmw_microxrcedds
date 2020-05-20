@@ -156,7 +156,15 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   #endif
 
   context_impl->connection_params.client_key = options->impl->connection_params.client_key;
-  context_impl->id_gen = 1;
+
+  context_impl->id_participant = 0;
+  context_impl->id_topic = 0;
+  context_impl->id_publisher = 0;
+  context_impl->id_datawriter = 0;
+  context_impl->id_subscriber = 0;
+  context_impl->id_datareader = 0;
+  context_impl->id_requester = 0;
+  context_impl->id_replier = 0;
 
   context->impl = context_impl;
 

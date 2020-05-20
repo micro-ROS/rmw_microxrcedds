@@ -107,7 +107,7 @@ rmw_create_client(
     char profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
 #endif
 
-    custom_client->client_id = uxr_object_id(custom_node->context->id_gen++, UXR_REQUESTER_ID);
+    custom_client->client_id = uxr_object_id(custom_node->context->id_requester++, UXR_REQUESTER_ID);
 
     memset(custom_client->client_gid.data, 0, RMW_GID_STORAGE_SIZE);
     memcpy(custom_client->client_gid.data, &custom_client->client_id,
