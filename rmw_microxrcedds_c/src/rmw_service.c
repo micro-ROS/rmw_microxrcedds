@@ -107,7 +107,7 @@ rmw_create_service(
     char profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
 #endif
 
-    custom_service->service_id = uxr_object_id(custom_node->id_gen++, UXR_REPLIER_ID);
+    custom_service->service_id = uxr_object_id(custom_node->context->id_replier++, UXR_REPLIER_ID);
 
     memset(custom_service->service_gid.data, 0, RMW_GID_STORAGE_SIZE);
     memcpy(custom_service->service_gid.data, &custom_service->service_id,

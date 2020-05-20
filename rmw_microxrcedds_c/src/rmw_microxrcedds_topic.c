@@ -71,7 +71,7 @@ create_topic(
 
 
   // Generate topic id
-  custom_topic_ptr->topic_id = uxr_object_id(custom_node->id_gen++, UXR_TOPIC_ID);
+  custom_topic_ptr->topic_id = uxr_object_id(custom_node->context->id_topic++, UXR_TOPIC_ID);
 
 #ifdef MICRO_XRCEDDS_USE_XML
   char xml_buffer[RMW_UXRCE_XML_BUFFER_LENGTH];
