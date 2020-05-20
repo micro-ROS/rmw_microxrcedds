@@ -99,7 +99,7 @@ rmw_wait(
     session = &custom_subscription->owner_node->context->session;
   }
 
-  bool run_session_status = uxr_run_session_until_timeout(session, timeout);
+  uxr_run_session_until_timeout(session, timeout);
   bool buffered_status = false;
 
   // Check services
@@ -143,6 +143,5 @@ rmw_wait(
 
   EPROS_PRINT_TRACE()
     
-  return  (buffered_status) ? RMW_RET_OK : 
-          ((run_session_status) ? RMW_RET_ERROR : RMW_RET_TIMEOUT);
+  return  (buffered_status) ? RMW_RET_OK : RMW_RET_TIMEOUT;
 }
