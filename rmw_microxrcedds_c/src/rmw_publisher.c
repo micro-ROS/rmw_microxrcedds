@@ -234,11 +234,30 @@ rmw_publisher_get_actual_qos(
   const rmw_publisher_t * publisher,
   rmw_qos_profile_t * qos)
 {
+rmw_ret_t
+rmw_borrow_loaned_message(
+  const rmw_publisher_t * publisher,
+  const rosidl_message_type_support_t * type_support,
+  void ** ros_message)
+{
   (void) publisher;
-  (void) qos;
-//  RMW_SET_ERROR_MSG("function not implemeted");
-//  return RMW_RET_ERROR;
-  return RMW_RET_OK; // TODO (julian): implement function.
+  (void) type_support;
+  (void) ros_message;
+
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_UNSUPPORTED;
+}
+
+rmw_ret_t
+rmw_return_loaned_message_from_publisher(
+  const rmw_publisher_t * publisher,
+  void * loaned_message)
+{
+  (void) publisher;
+  (void) loaned_message;
+
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
