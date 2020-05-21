@@ -39,7 +39,7 @@ rmw_init_publisher_allocation(
   (void) message_bounds;
   (void) allocation;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -48,7 +48,7 @@ rmw_fini_publisher_allocation(
 {
   (void) allocation;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }
 
 rmw_publisher_t *
@@ -221,7 +221,7 @@ rmw_publisher_count_matched_subscriptions(
   (void) publisher;
   (void) subscription_count;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -229,7 +229,7 @@ rmw_publisher_assert_liveliness(const rmw_publisher_t * publisher)
 {
   (void) publisher;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t

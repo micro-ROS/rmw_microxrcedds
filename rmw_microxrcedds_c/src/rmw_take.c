@@ -91,7 +91,7 @@ rmw_take_serialized_message(
   (void) taken;
   (void) allocation;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -108,7 +108,7 @@ rmw_take_serialized_message_with_info(
   (void) message_info;
   (void) allocation;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -167,5 +167,5 @@ rmw_take_event(
   (void) event_info;
   (void) taken;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }

@@ -28,5 +28,5 @@ rmw_get_topic_names_and_types(
   (void) no_demangle;
   (void) topic_names_and_types;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }

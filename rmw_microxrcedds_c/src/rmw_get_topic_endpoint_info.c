@@ -32,7 +32,7 @@ rmw_get_publishers_info_by_topic(
   (void) no_mangle;
   (void) publishers_info;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -49,5 +49,5 @@ rmw_get_subscriptions_info_by_topic(
   (void) no_mangle;
   (void) subscriptions_info;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }

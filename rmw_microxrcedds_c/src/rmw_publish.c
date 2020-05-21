@@ -76,7 +76,7 @@ rmw_publish_serialized_message(
   (void) serialized_message;
   (void) allocation;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t

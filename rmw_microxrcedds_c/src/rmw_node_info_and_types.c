@@ -32,7 +32,7 @@ rmw_get_publisher_names_and_types_by_node(
   (void) demangle;
   (void) topic_names_and_types;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -51,7 +51,7 @@ rmw_get_subscriber_names_and_types_by_node(
   (void) demangle;
   (void) topic_names_and_types;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -68,7 +68,7 @@ rmw_get_service_names_and_types_by_node(
   (void) node_namespace;
   (void) service_names_and_types;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -85,5 +85,5 @@ rmw_get_client_names_and_types_by_node(
   (void) node_namespace;
   (void) service_names_and_types;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }

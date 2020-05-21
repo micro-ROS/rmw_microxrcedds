@@ -25,7 +25,7 @@ rmw_serialize(
   (void) type_support;
   (void) serialized_message;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -38,7 +38,7 @@ rmw_deserialize(
   (void) type_support;
   (void) ros_message;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -51,5 +51,5 @@ rmw_get_serialized_message_size(
   (void) message_bounds;
   (void) size;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }

@@ -26,5 +26,5 @@ rmw_get_service_names_and_types(
   (void) allocator;
   (void) service_names_and_types;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }
