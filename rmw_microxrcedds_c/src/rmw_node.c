@@ -114,21 +114,19 @@ rmw_node_t *
 rmw_create_node(
   rmw_context_t * context,
   const char * name,
-  const char * namespace,
+  const char * namespace_,
   size_t domain_id,
-  const rmw_node_security_options_t * security_options)
+  bool localhost_only)
 {
   (void) context;
   EPROS_PRINT_TRACE()
   rmw_node_t * rmw_node = NULL;
   if (!name || strlen(name) == 0) {
     RMW_SET_ERROR_MSG("name is null");
-  } else if (!namespace || strlen(namespace) == 0) {
+  } else if (!namespace_ || strlen(namespace_) == 0) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
-  } else if (!security_options) {
-    RMW_SET_ERROR_MSG("security_options is null");
   } else {
-    rmw_node = create_node(name, namespace, domain_id, context);
+    rmw_node = create_node(name, namespace_, domain_id, context);
   }
   return rmw_node;
 }

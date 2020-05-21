@@ -60,7 +60,7 @@ rmw_send_request(
 rmw_ret_t
 rmw_take_request(
   const rmw_service_t * service,
-  rmw_request_id_t * request_header,
+  rmw_service_info_t * request_header,
   void * ros_request,
   bool * taken)
 {
@@ -82,11 +82,11 @@ rmw_take_request(
   }
 
   // Conversion from SampleIdentity to rmw_request_id_t 
-  request_header->sequence_number = (((int64_t) custom_service->sample_id[custom_service->history_read_index].sequence_number.high) << 32) | 
+  request_header->request_id.sequence_number = (((int64_t) custom_service->sample_id[custom_service->history_read_index].sequence_number.high) << 32) | 
                                     custom_service->sample_id[custom_service->history_read_index].sequence_number.low;
-  request_header->writer_guid[0] = (int8_t) custom_service->sample_id[custom_service->history_read_index].writer_guid.entityId.entityKind;
-  memcpy(&request_header->writer_guid[1],custom_service->sample_id[custom_service->history_read_index].writer_guid.entityId.entityKey,3);
-  memcpy(&request_header->writer_guid[4],custom_service->sample_id[custom_service->history_read_index].writer_guid.guidPrefix.data,12);
+  request_header->request_id.writer_guid[0] = (int8_t) custom_service->sample_id[custom_service->history_read_index].writer_guid.entityId.entityKind;
+  memcpy(&request_header->request_id.writer_guid[1],custom_service->sample_id[custom_service->history_read_index].writer_guid.entityId.entityKey,3);
+  memcpy(&request_header->request_id.writer_guid[4],custom_service->sample_id[custom_service->history_read_index].writer_guid.guidPrefix.data,12);
 
   const rosidl_message_type_support_t * req_members = custom_service->type_support_callbacks->request_members_();
   const message_type_support_callbacks_t * functions = (const message_type_support_callbacks_t *)req_members->data;

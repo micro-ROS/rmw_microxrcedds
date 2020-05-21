@@ -60,7 +60,7 @@ rmw_send_response(
 rmw_ret_t
 rmw_take_response(
   const rmw_client_t * client,
-  rmw_request_id_t * request_header,
+  rmw_service_info_t * request_header,
   void * ros_response,
   bool * taken)
 {
@@ -81,7 +81,7 @@ rmw_take_response(
     return RMW_RET_ERROR;
   }
 
-  request_header->sequence_number = custom_client->reply_id[custom_client->history_read_index];
+  request_header->request_id.sequence_number = custom_client->reply_id[custom_client->history_read_index];
 
   const rosidl_message_type_support_t * res_members = custom_client->type_support_callbacks->response_members_();
   const message_type_support_callbacks_t * functions = (const message_type_support_callbacks_t *)res_members->data;

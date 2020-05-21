@@ -30,6 +30,7 @@ endif()
 
 find_package(ament_cmake_ros REQUIRED)
 find_package(rcutils REQUIRED)
+find_package(rosidl_runtime_c REQUIRED)
 
 find_package(microxrcedds_client REQUIRED)
 find_package(microcdr REQUIRED)

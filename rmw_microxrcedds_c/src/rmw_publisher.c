@@ -32,7 +32,7 @@
 rmw_ret_t
 rmw_init_publisher_allocation(
   const rosidl_message_type_support_t * type_support,
-  const rosidl_message_bounds_t * message_bounds,
+  const rosidl_runtime_c__Sequence__bound * message_bounds,
   rmw_publisher_allocation_t * allocation)
 {
   (void) type_support;
@@ -56,7 +56,8 @@ rmw_create_publisher(
   const rmw_node_t * node,
   const rosidl_message_type_support_t * type_support,
   const char * topic_name,
-  const rmw_qos_profile_t * qos_policies)
+  const rmw_qos_profile_t * qos_policies,
+  const rmw_publisher_options_t * publisher_options)
 {
   EPROS_PRINT_TRACE()
   rmw_publisher_t * rmw_publisher = NULL;
@@ -91,6 +92,8 @@ rmw_create_publisher(
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)memory_node->data;
     custom_publisher->owner_node = custom_node;
     custom_publisher->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
+    memcpy(&custom_publisher->qos, qos_policies, sizeof(rmw_qos_profile_t));
+
     custom_publisher->stream_id = 
       (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT)
       ? custom_node->context->best_effort_input
@@ -234,6 +237,12 @@ rmw_publisher_get_actual_qos(
   const rmw_publisher_t * publisher,
   rmw_qos_profile_t * qos)
 {
+  rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
+  qos = &custom_publisher->qos;
+
+  return RMW_RET_OK;
+}
+
 rmw_ret_t
 rmw_borrow_loaned_message(
   const rmw_publisher_t * publisher,

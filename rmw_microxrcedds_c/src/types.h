@@ -21,10 +21,10 @@
 #include <ucdr/microcdr.h>
 #include <uxr/client/client.h>
 
-#include "rosidl_generator_c/message_type_support_struct.h"
+#include "rosidl_runtime_c/message_type_support_struct.h"
 #include "rosidl_typesupport_microxrcedds_c/message_type_support.h"
 
-#include "rosidl_generator_c/service_type_support_struct.h"
+#include "rosidl_runtime_c/service_type_support_struct.h"
 #include "rosidl_typesupport_microxrcedds_c/service_type_support.h"
 
 #include "memory.h"
@@ -190,6 +190,7 @@ typedef struct rmw_uxrce_publisher_t
 
   struct rmw_uxrce_topic_t * topic;
   
+  rmw_qos_profile_t qos;
   uxrStreamId stream_id;
 
   struct rmw_uxrce_node_t * owner_node;

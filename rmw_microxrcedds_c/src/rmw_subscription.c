@@ -30,7 +30,7 @@
 rmw_ret_t
 rmw_init_subscription_allocation(
   const rosidl_message_type_support_t * type_support,
-  const rosidl_message_bounds_t * message_bounds,
+  const rosidl_runtime_c__Sequence__bound * message_bounds,
   rmw_subscription_allocation_t * allocation)
 {
   (void) type_support;
@@ -54,7 +54,7 @@ rmw_create_subscription(
   const rosidl_message_type_support_t * type_support,
   const char * topic_name,
   const rmw_qos_profile_t * qos_policies,
-  bool ignore_local_publications)
+  const rmw_subscription_options_t * subscription_options)
 {
   EPROS_PRINT_TRACE()
   rmw_subscription_t * rmw_subscription = NULL;
@@ -71,9 +71,6 @@ rmw_create_subscription(
     RMW_SET_ERROR_MSG("qos_profile is null");
     return NULL;
   } else {
-
-    (void)qos_policies;
-    (void)ignore_local_publications;
 
     rmw_subscription = (rmw_subscription_t *)rmw_allocate(
       sizeof(rmw_subscription_t));
@@ -98,6 +95,7 @@ rmw_create_subscription(
     custom_subscription->subscription_gid.implementation_identifier =
       rmw_get_implementation_identifier();
     custom_subscription->micro_buffer_in_use = false;
+    memcpy(&custom_subscription->qos, qos_policies, sizeof(rmw_qos_profile_t));
 
     const rosidl_message_type_support_t * type_support_xrce = NULL;
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
@@ -240,10 +238,10 @@ rmw_subscription_get_actual_qos(
         const rmw_subscription_t * subscription,
         rmw_qos_profile_t * qos)
 {
-  (void) subscription;
-  (void) qos;
-  RMW_SET_ERROR_MSG("function not implemeted");
-  return RMW_RET_ERROR;
+  rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
+  qos = &custom_subscription->qos;
+
+  return RMW_RET_OK;
 }
 
 rmw_ret_t
