@@ -70,3 +70,20 @@ rmw_get_service_names_and_types_by_node(
   RMW_SET_ERROR_MSG("function not implemeted");
   return RMW_RET_ERROR;
 }
+
+rmw_ret_t
+rmw_get_client_names_and_types_by_node(
+  const rmw_node_t * node,
+  rcutils_allocator_t * allocator,
+  const char * node_name,
+  const char * node_namespace,
+  rmw_names_and_types_t * service_names_and_types)
+{
+  (void) node;
+  (void) allocator;
+  (void) node_name;
+  (void) node_namespace;
+  (void) service_names_and_types;
+  RMW_SET_ERROR_MSG("function not implemeted");
+  return RMW_RET_ERROR;
+}
