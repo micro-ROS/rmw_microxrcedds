@@ -25,5 +25,20 @@ rmw_get_node_names(
   (void) node_names;
   (void) node_namespaces;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
+}
+
+rmw_ret_t
+rmw_get_node_names_with_enclaves(
+  const rmw_node_t * node,
+  rcutils_string_array_t * node_names,
+  rcutils_string_array_t * node_namespaces,
+  rcutils_string_array_t * enclaves)
+{
+  (void) node;
+  (void) node_names;
+  (void) node_namespaces;
+  (void) enclaves;
+  RMW_SET_ERROR_MSG("function not implemented");
+  return RMW_RET_UNSUPPORTED;
 }
