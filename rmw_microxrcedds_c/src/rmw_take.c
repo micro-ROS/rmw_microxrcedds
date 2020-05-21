@@ -90,7 +90,7 @@ rmw_take_serialized_message(
   (void) serialized_message;
   (void) taken;
   (void) allocation;
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_ERROR;
 }
 
@@ -107,7 +107,7 @@ rmw_take_serialized_message_with_info(
   (void) taken;
   (void) message_info;
   (void) allocation;
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_ERROR;
 }
 
@@ -123,7 +123,7 @@ rmw_take_loaned_message(
   (void) taken;
   (void) allocation;
 
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -141,7 +141,7 @@ rmw_take_loaned_message_with_info(
   (void) message_info;
   (void) allocation;
 
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -153,7 +153,7 @@ rmw_return_loaned_message_from_subscription(
   (void) subscription;
   (void) loaned_message;
 
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_UNSUPPORTED;
 }
 

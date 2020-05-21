@@ -23,6 +23,6 @@ rmw_ret_t rmw_service_server_is_available(
   (void) node;
   (void) client;
   (void) is_available;
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_ERROR;
 }

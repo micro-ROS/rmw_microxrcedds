@@ -75,7 +75,7 @@ rmw_publish_serialized_message(
   (void) publisher;
   (void) serialized_message;
   (void) allocation;
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_ERROR;
 }
 
@@ -89,6 +89,6 @@ rmw_publish_loaned_message(
   (void) ros_message;
   (void) allocation;
 
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_UNSUPPORTED;
 }

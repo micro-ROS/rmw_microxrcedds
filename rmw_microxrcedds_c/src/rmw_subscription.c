@@ -36,7 +36,7 @@ rmw_init_subscription_allocation(
   (void) type_support;
   (void) message_bounds;
   (void) allocation;
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_ERROR;
 }
 
@@ -44,7 +44,7 @@ rmw_ret_t
 rmw_fini_subscription_allocation(rmw_subscription_allocation_t * allocation)
 {
   (void) allocation;
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_ERROR;
 }
 
@@ -229,7 +229,7 @@ rmw_subscription_count_matched_publishers(
 {
   (void) subscription;
   (void) publisher_count;
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_ERROR;
 }
 

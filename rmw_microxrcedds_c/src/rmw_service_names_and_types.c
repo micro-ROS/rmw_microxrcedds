@@ -25,6 +25,6 @@ rmw_get_service_names_and_types(
   (void) node;
   (void) allocator;
   (void) service_names_and_types;
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_ERROR;
 }

@@ -201,7 +201,7 @@ rmw_ret_t
 rmw_node_assert_liveliness(const rmw_node_t * node)
 {
   (void) node;
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_ERROR;
 }
 

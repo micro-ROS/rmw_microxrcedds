@@ -38,7 +38,7 @@ rmw_init_publisher_allocation(
   (void) type_support;
   (void) message_bounds;
   (void) allocation;
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_ERROR;
 }
 
@@ -47,7 +47,7 @@ rmw_fini_publisher_allocation(
   rmw_publisher_allocation_t * allocation)
 {
   (void) allocation;
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_ERROR;
 }
 
@@ -220,7 +220,7 @@ rmw_publisher_count_matched_subscriptions(
 {
   (void) publisher;
   (void) subscription_count;
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_ERROR;
 }
 
@@ -228,7 +228,7 @@ rmw_ret_t
 rmw_publisher_assert_liveliness(const rmw_publisher_t * publisher)
 {
   (void) publisher;
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_ERROR;
 }
 
@@ -253,7 +253,7 @@ rmw_borrow_loaned_message(
   (void) type_support;
   (void) ros_message;
 
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -265,7 +265,7 @@ rmw_return_loaned_message_from_publisher(
   (void) publisher;
   (void) loaned_message;
 
-  RMW_SET_ERROR_MSG("function not implemeted");
+  RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_UNSUPPORTED;
 }
 
