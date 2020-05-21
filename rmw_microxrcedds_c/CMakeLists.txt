@@ -102,6 +102,7 @@ set(SRCS
   src/rmw_client.c
   src/rmw_compare_gids_equal.c
   src/rmw_count.c
+  src/rmw_event.c
   src/rmw_get_gid_for_publisher.c
   src/rmw_get_implementation_identifier.c
   src/rmw_get_serialization_format.c
