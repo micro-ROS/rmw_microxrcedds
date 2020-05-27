@@ -29,20 +29,10 @@ create_topic(
   const message_type_support_callbacks_t * message_type_support_callbacks,
   const rmw_qos_profile_t * qos_policies)
 {
-  // find topic in list
+  // TODO (pablogs9): Refactor topic memory and reutilization
   rmw_uxrce_topic_t * custom_topic_ptr = custom_node->custom_topic_sp;
   while (custom_topic_ptr != NULL) {
-    if (message_type_support_callbacks == custom_topic_ptr->message_type_support_callbacks) {
-      break;
-    }
-
     custom_topic_ptr = custom_topic_ptr->next_custom_topic;
-  }
-
-  // Check if allready exists
-  if (custom_topic_ptr != NULL) {
-    custom_topic_ptr->usage_account++;
-    goto create_topic_end;
   }
 
   // Generate new memory
