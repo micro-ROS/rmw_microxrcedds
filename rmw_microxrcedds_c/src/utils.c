@@ -124,25 +124,16 @@ int build_service_xml(const char * service_name_id, const char * service_name, b
 
 int build_publisher_xml(const char * publisher_name, char xml[], size_t buffer_size)
 {
-  static const char format[] = "<publisher name=\"%s\">";
-  int ret = snprintf(xml, buffer_size, format, publisher_name);
-  if ((ret < 0) && (ret >= (int)buffer_size)) {
-    ret = 0;
-  }
-
-  return ret;
+  // TODO (pablogs9): Check if there is any case where this xml should be filled
+  xml[0] = '\0';
+  return 1;
 }
 
 int build_subscriber_xml(const char * subscriber_name, char xml[], size_t buffer_size)
 {
-  static const char format[] = "<subscriber name=\"%s\">";
-
-  int ret = snprintf(xml, buffer_size, format, subscriber_name);
-  if ((ret < 0) && (ret >= (int)buffer_size)) {
-    ret = 0;
-  }
-
-  return ret;
+  // TODO (pablogs9): Check if there is any case where this xml should be filled
+  xml[0] = '\0';
+  return 1;
 }
 
 int generate_name(const uxrObjectId * id, char name[], size_t buffer_size)
