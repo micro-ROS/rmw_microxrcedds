@@ -173,6 +173,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   rmw_uxrce_init_publisher_memory(&publisher_memory, custom_publishers, RMW_UXRCE_MAX_PUBLISHERS);
   rmw_uxrce_init_service_memory(&service_memory, custom_services, RMW_UXRCE_MAX_SERVICES);
   rmw_uxrce_init_client_memory(&client_memory, custom_clients, RMW_UXRCE_MAX_CLIENTS);
+  rmw_uxrce_init_topics_memory(&topics_memory, custom_topics, RMW_UXRCE_MAX_TOPICS);
 
   // Micro-XRCE-DDS Client initialization
 

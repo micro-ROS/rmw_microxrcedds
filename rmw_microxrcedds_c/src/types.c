@@ -54,6 +54,10 @@ struct rmw_uxrce_mempool_t client_memory;
 rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 static bool client_memory_init = false;
 
+struct rmw_uxrce_mempool_t topics_memory;
+rmw_uxrce_client_t custom_topics[RMW_UXRCE_MAX_TOPICS];
+static bool topic_memory_init = false;
+
 // Memory init functions
 
 void rmw_uxrce_init_service_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_service_t * services, size_t size)
@@ -146,6 +150,22 @@ void rmw_uxrce_init_sessions_memory(struct rmw_uxrce_mempool_t * memory, rmw_con
   }
 }
 
+void rmw_uxrce_init_topics_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_topic_t * topics, size_t size)
+{
+  if (size > 0 && !topic_memory_init) {
+    topic_memory_init = true;
+    link_prev(NULL, &topics[0].mem, NULL);
+    size > 1 ? link_next(&topics[0].mem, &topics[1].mem, &topics[0]) : link_next(&topics[0].mem, NULL,
+      &topics[0]);
+    for (unsigned int i = 1; i <= size - 1; i++) {
+      link_prev(&topics[i - 1].mem, &topics[i].mem, &topics[i]);
+    }
+    link_next(&topics[size - 1].mem, NULL, &topics[size - 1]);
+    set_mem_pool(memory, &topics[0].mem);
+  }
+}
+
+
 // Memory management functions
 
 void rmw_uxrce_fini_session_memory(rmw_context_impl_t * session)
@@ -196,7 +216,7 @@ void rmw_uxrce_fini_publisher_memory(rmw_publisher_t * publisher)
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
 
     if (custom_publisher->topic != NULL) {
-      destroy_topic(custom_publisher->topic);
+      rmw_uxrce_fini_topic_memory(custom_publisher->topic);
     }
 
     put_memory(&publisher_memory, &custom_publisher->mem);
@@ -224,7 +244,7 @@ void rmw_uxrce_fini_subscription_memory(rmw_subscription_t * subscriber)
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscriber->data;
 
     if (custom_subscription->topic != NULL) {
-      destroy_topic(custom_subscription->topic);
+      rmw_uxrce_fini_topic_memory(custom_subscription->topic);
     }
 
     put_memory(&subscription_memory, &custom_subscription->mem);
@@ -279,4 +299,10 @@ void rmw_uxrce_fini_client_memory(rmw_client_t * client)
     client->data = NULL;
   }
   rmw_free(client);
+}
+
+void rmw_uxrce_fini_topic_memory(rmw_uxrce_topic_t * topic)
+{
+  put_memory(&topics_memory, &topic->mem);
+  memset(topic, 0, sizeof(rmw_uxrce_topic_t));
 }

@@ -49,6 +49,7 @@ set(RMW_UXRCE_MAX_PUBLISHERS "4" CACHE STRING "This value sets the maximum numbe
 set(RMW_UXRCE_MAX_SUBSCRIPTIONS "4" CACHE STRING "This value sets the maximum number of subscriptions for an application.")
 set(RMW_UXRCE_MAX_SERVICES "4" CACHE STRING "This value sets the maximum number of services for an application.")
 set(RMW_UXRCE_MAX_CLIENTS "4" CACHE STRING "This value sets the maximum number of clients for an application.")
+set(RMW_UXRCE_MAX_TOPICS "-1" CACHE STRING "This value sets the maximum number of topics for an application.")
 set(RMW_UXRCE_NODE_NAME_MAX_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a node name.")
 set(RMW_UXRCE_TOPIC_NAME_MAX_LENGTH "100" CACHE STRING "This value sets the maximum number of characters for a topic name.")
 set(RMW_UXRCE_TYPE_NAME_MAX_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a type name.")
