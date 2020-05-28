@@ -48,16 +48,13 @@ macro(rmw_test TEST_NAME TEST_SOURCE)
     )
 
   ament_target_dependencies(${TEST_NAME}
-    rmw_microxrcedds
     rmw
-    rosidl_typesupport_microxrcedds_shared
     )
 endmacro()
 
-# TODO (pablogs9): Check how testing works in foxy
-#rmw_test(test-node        test_node.cpp)
-#rmw_test(test-publisher   test_publisher.cpp)
-#rmw_test(test-subscriber  test_subscription.cpp)
-#rmw_test(test-pubsub      test_pubsub.cpp)
-#rmw_test(test-topic       test_topic.cpp)
-#rmw_test(test-rmw         test_rmw.cpp)
+rmw_test(test-node        test_node.cpp)
+rmw_test(test-publisher   test_publisher.cpp)
+rmw_test(test-subscriber  test_subscription.cpp)
+rmw_test(test-pubsub      test_pubsub.cpp)
+rmw_test(test-topic       test_topic.cpp)
+rmw_test(test-rmw         test_rmw.cpp)

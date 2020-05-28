@@ -17,7 +17,6 @@
 #include <string>
 
 #include "rmw/error_handling.h"
-#include "rmw/node_security_options.h"
 #include "rmw/rmw.h"
 #include "rmw/validate_namespace.h"
 #include "rmw/validate_node_name.h"
@@ -34,8 +33,7 @@ protected:
   {
     RMWBaseTest::SetUp();
 
-    rmw_node_security_options_t security_options;
-    node = rmw_create_node(&test_context, "my_node", "/ns", 0, &security_options);
+    node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
     ASSERT_NE((void *)node, (void *)NULL);
   }
 

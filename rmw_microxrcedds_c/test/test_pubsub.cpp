@@ -19,7 +19,6 @@
 #include <thread>
 
 #include "rmw/error_handling.h"
-#include "rmw/node_security_options.h"
 #include "rmw/rmw.h"
 #include "rmw/validate_namespace.h"
 #include "rmw/validate_node_name.h"
@@ -27,7 +26,7 @@
 #include "./rmw_base_test.hpp"
 #include "./test_utils.hpp"
 
-#include "rosidl_generator_c/string.h"
+#include "rosidl_runtime_c/string.h"
 
 #define MICROXRCEDDS_PADDING sizeof(uint32_t)
 
@@ -61,14 +60,14 @@ TEST_F(TestSubscription, publish_and_receive) {
   dummy_type_support.callbacks.cdr_serialize =
     [](const void * untyped_ros_message, ucdrBuffer * cdr) -> bool {
       bool ret;
-      const rosidl_generator_c__String * ros_message = reinterpret_cast<const rosidl_generator_c__String *>(untyped_ros_message);
+      const rosidl_runtime_c__String * ros_message = reinterpret_cast<const rosidl_runtime_c__String *>(untyped_ros_message);
       ret = ucdr_serialize_string(cdr, ros_message->data);
       return ret;
     };
   dummy_type_support.callbacks.cdr_deserialize =
     [](ucdrBuffer * cdr, void * untyped_ros_message) -> bool {
       bool ret;
-      rosidl_generator_c__String * ros_message = reinterpret_cast<rosidl_generator_c__String *>(untyped_ros_message);
+      rosidl_runtime_c__String * ros_message = reinterpret_cast<rosidl_runtime_c__String *>(untyped_ros_message);
       ret = ucdr_deserialize_string(cdr, ros_message->data, ros_message->capacity);
       if (ret) {
         ros_message->size = strlen(ros_message->data);
@@ -76,7 +75,7 @@ TEST_F(TestSubscription, publish_and_receive) {
       return ret;
     };
   dummy_type_support.callbacks.get_serialized_size = [](const void * untyped_ros_message) -> uint32_t {
-      const rosidl_generator_c__String * ros_message = reinterpret_cast<const rosidl_generator_c__String *>(untyped_ros_message);
+      const rosidl_runtime_c__String * ros_message = reinterpret_cast<const rosidl_runtime_c__String *>(untyped_ros_message);
       return MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + ros_message->size + 8;
     };
   dummy_type_support.callbacks.max_serialized_size = []() -> size_t {
@@ -88,32 +87,30 @@ TEST_F(TestSubscription, publish_and_receive) {
 
   bool ignore_local_publications = true;
 
-  rmw_node_security_options_t dummy_security_options;
-
-
   rmw_node_t * node_pub;
-  node_pub = rmw_create_node(NULL, "pub_node", "/ns", 0, &dummy_security_options);
+  node_pub = rmw_create_node(NULL, "pub_node", "/ns", 0, false);
   ASSERT_NE((void *)node_pub, (void *)NULL);
 
-
+  rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
   rmw_publisher_t * pub = rmw_create_publisher(node_pub, &dummy_type_support.type_support,
-      topic_name, &dummy_qos_policies);
+      topic_name, &dummy_qos_policies, &default_publisher_options);
   ASSERT_NE((void *)pub, (void *)NULL);
 
   rmw_node_t * node_sub;
-  node_sub = rmw_create_node(NULL, "sub_node", "/ns", 0, &dummy_security_options);
+  node_sub = rmw_create_node(NULL, "sub_node", "/ns", 0, false);
   ASSERT_NE((void *)node_sub, (void *)NULL);
 
+  rmw_subscription_options_t default_subscription_options = rmw_get_default_subscription_options();
 
   rmw_subscription_t * sub = rmw_create_subscription(node_sub, &dummy_type_support.type_support,
-      topic_name, &dummy_qos_policies, ignore_local_publications);
+      topic_name, &dummy_qos_policies, &default_subscription_options);
   ASSERT_NE((void *)sub, (void *)NULL);
 
 
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
   char content[] = "Test message XXXX";
-  rosidl_generator_c__String ros_message;
+  rosidl_runtime_c__String ros_message;
   ros_message.data = content;
   ros_message.capacity = strlen(ros_message.data);
   ros_message.size = ros_message.capacity;
@@ -144,7 +141,7 @@ TEST_F(TestSubscription, publish_and_receive) {
     ),
     RMW_RET_OK);
 
-  rosidl_generator_c__String read_ros_message;
+  rosidl_runtime_c__String read_ros_message;
   char buff[strlen(content)];
   read_ros_message.data =  buff;
   read_ros_message.capacity = sizeof(buff);
