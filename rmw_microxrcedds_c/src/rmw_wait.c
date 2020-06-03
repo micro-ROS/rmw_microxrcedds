@@ -64,20 +64,6 @@ rmw_wait(
     timeout = (uint64_t)UXR_TIMEOUT_INF;
   }
 
-  // Check guard conditions
-  if (guard_conditions) {
-    for (size_t i = 0; i < guard_conditions->guard_condition_count; ++i) {
-      bool * hasTriggered = (bool *)guard_conditions->guard_conditions[i];
-      if ((*hasTriggered) == false)
-      {
-        guard_conditions->guard_conditions[i] = NULL;
-      }else
-      {
-        *hasTriggered = false;
-      }
-    }
-  }
-
   rmw_ret_t ret = RMW_RET_OK;
 
   // Look for the XRCE session
@@ -139,6 +125,19 @@ rmw_wait(
       if (!custom_subscription->micro_buffer_in_use){
         subscriptions->subscribers[i] = NULL;
       }else{
+        buffered_status = true;
+      }
+    }
+  }
+
+  // Check guard conditions
+  if (guard_conditions) {
+    for (size_t i = 0; i < guard_conditions->guard_condition_count; ++i) {
+      bool * hasTriggered = (bool *)guard_conditions->guard_conditions[i];
+      if ((*hasTriggered) == false){
+        guard_conditions->guard_conditions[i] = NULL;
+      }else{
+        *hasTriggered = false;
         buffered_status = true;
       }
     }
