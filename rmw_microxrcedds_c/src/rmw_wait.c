@@ -99,7 +99,10 @@ rmw_wait(
     session = &custom_subscription->owner_node->context->session;
   }
 
-  uxr_run_session_until_timeout(session, timeout);
+  if (session != NULL){
+    uxr_run_session_until_timeout(session, timeout);
+  }
+  
   bool buffered_status = false;
 
   // Check services
