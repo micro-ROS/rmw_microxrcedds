@@ -119,6 +119,7 @@ rmw_create_node(
   bool localhost_only)
 {
   (void) context;
+  (void) localhost_only;
   EPROS_PRINT_TRACE()
   rmw_node_t * rmw_node = NULL;
   if (!name || strlen(name) == 0) {
