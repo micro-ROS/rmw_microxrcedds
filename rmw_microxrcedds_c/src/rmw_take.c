@@ -114,13 +114,11 @@ rmw_take_sequence(
       allocation
     );
 
-    if (ret != RMW_RET_OK) {
+    if (ret != RMW_RET_OK || !taken_flag) {
       break;
     }
-
-    if (taken_flag) {
-      (*taken)++;
-    }
+    
+    (*taken)++;
   }
 
   message_sequence->size = *taken;
