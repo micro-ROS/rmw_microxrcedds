@@ -107,10 +107,11 @@ rmw_take_sequence(
   for(size_t i = 0; i < count; i++){
     taken_flag = false;
     
-    ret = rmw_take(
+    ret = rmw_take_with_info(
       subscription,
       message_sequence->data[*taken],
       &taken_flag,
+      &message_info_sequence->data[*taken],
       allocation
     );
 
