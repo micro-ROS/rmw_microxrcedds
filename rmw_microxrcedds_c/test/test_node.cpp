@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #include <rmw/error_handling.h>
-#include <rmw/node_security_options.h>
 #include <rmw/rmw.h>
 #include <rmw/validate_namespace.h>
 #include <rmw/validate_node_name.h>
@@ -38,8 +37,7 @@ class TestNode : public RMWBaseTest
 TEST_F(TestNode, construction_and_destruction) {
   // Success creation
   {
-    rmw_node_security_options_t security_options;
-    rmw_node_t * node = rmw_create_node(&test_context, "my_node", "/ns", 0, &security_options);
+    rmw_node_t * node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
     ASSERT_NE(node, nullptr);
     rmw_ret_t ret = rmw_destroy_node(node);
     ASSERT_EQ(ret, RMW_RET_OK);
@@ -49,8 +47,7 @@ TEST_F(TestNode, construction_and_destruction) {
 
   // Unsuccess creation
   {
-    rmw_node_security_options_t security_options;
-    rmw_node_t * node = rmw_create_node(&test_context, "", "/ns", 0, &security_options);
+    rmw_node_t * node = rmw_create_node(&test_context, "", "/ns", 0, false);
     ASSERT_EQ(node, nullptr);
     ASSERT_EQ(CheckErrorState(), true);
     rcutils_reset_error();
@@ -58,16 +55,14 @@ TEST_F(TestNode, construction_and_destruction) {
 
   // Unsuccess creation
   {
-    rmw_node_security_options_t security_options;
-    rmw_node_t * node = rmw_create_node(&test_context, "my_node", "", 0, &security_options);
+    rmw_node_t * node = rmw_create_node(&test_context, "my_node", "", 0, false);
     ASSERT_EQ(node, nullptr);
     rcutils_reset_error();
   }
 
   // Unsuccess creation
   {
-    rmw_node_security_options_t security_options;
-    rmw_node_t * node = rmw_create_node(&test_context, "my_node", "/ns", 0, &security_options);
+    rmw_node_t * node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
     ASSERT_EQ(node, nullptr);
     ASSERT_EQ(CheckErrorState(), true);
     rcutils_reset_error();
@@ -78,20 +73,19 @@ TEST_F(TestNode, construction_and_destruction) {
    Testing node memory poll
  */
 TEST_F(TestNode, memory_poll) {
-  rmw_node_security_options_t dummy_security_options;
   std::vector<rmw_node_t *> nodes;
   rmw_ret_t ret;
   rmw_node_t * node;
 
   // Get all available nodes
   for (size_t i = 0; i < RMW_UXRCE_MAX_NODES; i++) {
-    node = rmw_create_node(&test_context, "my_node", "/ns", 0, &dummy_security_options);
+    node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
     ASSERT_NE(node, nullptr);
     nodes.push_back(node);
   }
 
   // Try to get one
-  node = rmw_create_node(&test_context, "my_node", "/ns", 0, &dummy_security_options);
+  node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
   ASSERT_EQ(node, nullptr);
   ASSERT_EQ(CheckErrorState(), true);
   rcutils_reset_error();
@@ -102,7 +96,7 @@ TEST_F(TestNode, memory_poll) {
   nodes.pop_back();
 
   // Get one
-  node = rmw_create_node(&test_context, "my_node", "/ns", 0, &dummy_security_options);
+  node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
   ASSERT_NE(node, nullptr);
   nodes.push_back(node);
 
