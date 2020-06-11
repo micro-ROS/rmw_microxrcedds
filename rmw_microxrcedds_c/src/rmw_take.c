@@ -88,15 +88,44 @@ rmw_take_sequence(
   size_t * taken,
   rmw_subscription_allocation_t * allocation)
 {
-  // TODO (pablogs9): Implement this
-  (void) subscription;
-  (void) count;
-  (void) message_sequence;
-  (void) message_info_sequence;
-  (void) taken;
-  (void) allocation;
-  RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_UNSUPPORTED;
+  bool taken_flag;
+  rmw_ret_t ret = RMW_RET_OK;
+
+  *taken = 0;
+
+  if (strcmp(subscription->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+    RMW_SET_ERROR_MSG("Wrong implementation");
+    return RMW_RET_ERROR;
+  }
+
+  rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
+
+  if (!custom_subscription->micro_buffer_in_use) {
+    return RMW_RET_ERROR;
+  }
+
+  for(size_t i = 0; i < count; i++){
+    taken_flag = false;
+    
+    ret = rmw_take_with_info(
+      subscription,
+      message_sequence->data[*taken],
+      &taken_flag,
+      &message_info_sequence->data[*taken],
+      allocation
+    );
+
+    if (ret != RMW_RET_OK || !taken_flag) {
+      break;
+    }
+    
+    (*taken)++;
+  }
+
+  message_sequence->size = *taken;
+  message_info_sequence->size = *taken;
+
+  return ret;
 }
 
 rmw_ret_t
