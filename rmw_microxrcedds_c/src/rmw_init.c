@@ -49,6 +49,7 @@ rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t all
   init_options->instance_id = 0;
   init_options->implementation_identifier = eprosima_microxrcedds_identifier;
   init_options->allocator = allocator;
+  init_options->enclave = "/";
 
   init_options->impl = allocator.allocate(sizeof(rmw_init_options_impl_t), allocator.state);
 
