@@ -142,7 +142,7 @@ TEST_F(TestSubscription, publish_and_receive) {
     RMW_RET_OK);
 
   rosidl_runtime_c__String read_ros_message;
-  char buff[strlen(content)];
+  char buff[100];
   read_ros_message.data =  buff;
   read_ros_message.capacity = sizeof(buff);
   read_ros_message.size = 0;
