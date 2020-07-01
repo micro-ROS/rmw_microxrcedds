@@ -64,8 +64,6 @@ rmw_wait(
     timeout = (uint64_t)UXR_TIMEOUT_INF;
   }
 
-  rmw_ret_t ret = RMW_RET_OK;
-
   // Look for the XRCE session
   uxrSession * session = NULL;
 

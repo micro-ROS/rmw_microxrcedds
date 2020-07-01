@@ -56,6 +56,8 @@ rmw_create_subscription(
   const rmw_qos_profile_t * qos_policies,
   const rmw_subscription_options_t * subscription_options)
 {
+  (void) subscription_options;
+
   EPROS_PRINT_TRACE()
   rmw_subscription_t * rmw_subscription = NULL;
   if (!node) {
@@ -238,6 +240,8 @@ rmw_subscription_get_actual_qos(
         const rmw_subscription_t * subscription,
         rmw_qos_profile_t * qos)
 {
+  (void) qos;
+  
   rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
   qos = &custom_subscription->qos;
 

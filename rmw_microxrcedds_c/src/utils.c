@@ -123,15 +123,21 @@ int build_service_xml(const char * service_name_id, const char * service_name, b
 }
 
 int build_publisher_xml(const char * publisher_name, char xml[], size_t buffer_size)
-{
-  // TODO (pablogs9): Check if there is any case where this xml should be filled
+{ 
+  (void) publisher_name;
+  (void) buffer_size;
+
+  // TODO (pablogs9): Check if there is any case where this xml should be filled for FastDDS 
   xml[0] = '\0';
   return 1;
 }
 
 int build_subscriber_xml(const char * subscriber_name, char xml[], size_t buffer_size)
 {
-  // TODO (pablogs9): Check if there is any case where this xml should be filled
+  (void) subscriber_name;
+  (void) buffer_size;
+  
+  // TODO (pablogs9): Check if there is any case where this xml should be filled for FastDDS
   xml[0] = '\0';
   return 1;
 }

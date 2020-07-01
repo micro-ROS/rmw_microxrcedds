@@ -59,6 +59,8 @@ rmw_create_publisher(
   const rmw_qos_profile_t * qos_policies,
   const rmw_publisher_options_t * publisher_options)
 {
+  (void) publisher_options;
+
   EPROS_PRINT_TRACE()
   rmw_publisher_t * rmw_publisher = NULL;
   if (!node) {
@@ -237,6 +239,8 @@ rmw_publisher_get_actual_qos(
   const rmw_publisher_t * publisher,
   rmw_qos_profile_t * qos)
 {
+  (void) qos;
+  
   rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
   qos = &custom_publisher->qos;
 

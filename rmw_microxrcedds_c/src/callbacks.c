@@ -38,6 +38,7 @@ void on_topic(  struct uxrSession* session,
   (void)session;
   (void)request_id;
   (void)stream_id;
+  (void)args;
 
   struct rmw_uxrce_mempool_item_t * subscription_item = subscription_memory.allocateditems;
   while (subscription_item != NULL) {
@@ -72,6 +73,7 @@ void on_request(struct uxrSession* session,
 {
   (void)session;
   (void)object_id;
+  (void)args;
 
   struct rmw_uxrce_mempool_item_t * service_item = service_memory.allocateditems;
   while (service_item != NULL) {
@@ -106,6 +108,7 @@ void on_reply(  struct uxrSession* session,
 { 
   (void)session;
   (void)object_id;
+  (void)args;
 
   struct rmw_uxrce_mempool_item_t * client_item = client_memory.allocateditems;
   while (client_item != NULL) {

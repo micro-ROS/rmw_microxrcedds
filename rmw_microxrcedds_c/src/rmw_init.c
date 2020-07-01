@@ -26,7 +26,7 @@
 
 #include "./callbacks.h"
 
-#ifdef MICRO_XRCEDDS_SERIAL || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
+#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
 #define CLOSE_TRANSPORT(transport) uxr_close_serial_transport(transport)
 #elif defined(MICRO_XRCEDDS_UDP)
 #define CLOSE_TRANSPORT(transport) uxr_close_udp_transport(transport)
@@ -226,7 +226,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
           &context_impl->serial_platform, fd, 0, 1))
         {
           RMW_SET_ERROR_MSG("Can not create an serial connection");
-          return NULL;
+          return RMW_RET_ERROR;
         }
       }
     }
@@ -243,7 +243,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 
   if (!uxr_init_udp_transport(&context_impl->transport, &context_impl->udp_platform, ip_protocol, context_impl->connection_params.agent_address, context_impl->connection_params.agent_port)) {
     RMW_SET_ERROR_MSG("Can not create an udp connection");
-    return NULL;
+    return RMW_RET_ERROR;
   }
   printf("UDP mode => ip: %s - port: %s\n", context_impl->connection_params.agent_address, context_impl->connection_params.agent_port);
 #elif defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
@@ -254,7 +254,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   
   if (!uxr_init_serial_transport(&context_impl->transport, &context_impl->serial_platform, pseudo_fd, 0, 1)){
     RMW_SET_ERROR_MSG("Can not create an custom serial connection");
-    return NULL;
+    return RMW_RET_ERROR;
   }
 #endif
 
@@ -295,17 +295,20 @@ rmw_shutdown(rmw_context_t * context)
     context->implementation_identifier,
     eprosima_microxrcedds_identifier,
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
-  // context impl is explicitly supposed to be nullptr for now, see rmw_init's code
-  // RCUTILS_CHECK_ARGUMENT_FOR_NULL(context->impl, RMW_RET_INVALID_ARGUMENT);
-  rmw_context_fini(context);
+  
+  rmw_ret_t ret = rmw_context_fini(context);
 
-  *context = rmw_get_zero_initialized_context();
-  return RMW_RET_OK;
+  if (RMW_RET_OK == ret){
+    *context = rmw_get_zero_initialized_context();
+  }
+  
+  return ret;
 }
 
 rmw_ret_t
 rmw_context_fini(rmw_context_t * context)
 {
+  // TODO (pablogs9): Should we manage not closed XRCE sessions?
   uxr_delete_session(&context->impl->session);
   rmw_uxrce_fini_session_memory(context->impl);
   context->impl = NULL;
