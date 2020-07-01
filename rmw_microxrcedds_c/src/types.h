@@ -93,8 +93,7 @@ struct  rmw_init_options_impl_t
 
 typedef struct rmw_uxrce_topic_t
 {
-  struct rmw_uxrce_topic_t * next_custom_topic;
-  struct rmw_uxrce_topic_t * prev_custom_topic;
+  struct rmw_uxrce_mempool_item_t mem;
 
   uxrObjectId topic_id;
   const message_type_support_callbacks_t * message_type_support_callbacks;
@@ -202,7 +201,6 @@ typedef struct rmw_uxrce_node_t
   struct  rmw_context_impl_t * context;
 
   uxrObjectId participant_id;
-  rmw_uxrce_topic_t * custom_topic_sp;
 } rmw_uxrce_node_t;
 
 // Static memory pools
@@ -225,6 +223,9 @@ extern rmw_uxrce_service_t custom_services[RMW_UXRCE_MAX_SERVICES];
 extern struct rmw_uxrce_mempool_t client_memory;
 extern rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 
+extern struct rmw_uxrce_mempool_t topics_memory;
+extern rmw_uxrce_client_t custom_topics[RMW_UXRCE_MAX_TOPICS];
+
 // Memory init functions
 
 void rmw_uxrce_init_sessions_memory(struct rmw_uxrce_mempool_t * memory, rmw_context_impl_t * sessions, size_t size);
@@ -233,6 +234,7 @@ void rmw_uxrce_init_service_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrc
 void rmw_uxrce_init_client_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_client_t * clients, size_t size);
 void rmw_uxrce_init_publisher_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_publisher_t * publishers, size_t size);
 void rmw_uxrce_init_subscriber_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_subscription_t * subscribers, size_t size);
+void rmw_uxrce_init_topics_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_topic_t * topics, size_t size);
 
 // Memory management functions
 
@@ -242,5 +244,6 @@ void rmw_uxrce_fini_publisher_memory(rmw_publisher_t * publisher);
 void rmw_uxrce_fini_subscription_memory(rmw_subscription_t * subscriber);
 void rmw_uxrce_fini_client_memory(rmw_client_t * client);
 void rmw_uxrce_fini_service_memory(rmw_service_t * service);
+void rmw_uxrce_fini_topic_memory(rmw_uxrce_topic_t * topic);
 
 #endif  // RMW_MICROXRCEDDS_C__SRC__TYPES_H
