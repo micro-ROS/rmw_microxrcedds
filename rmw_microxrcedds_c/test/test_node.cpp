@@ -42,7 +42,6 @@ TEST_F(TestNode, construction_and_destruction) {
     ASSERT_EQ(CheckErrorState(), false);
   }
 
-
   // Unsuccess creation
   {
     rmw_node_t * node = rmw_create_node(&test_context, "", "/ns", 0, false);
