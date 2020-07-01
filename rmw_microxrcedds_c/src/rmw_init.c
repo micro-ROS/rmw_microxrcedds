@@ -308,7 +308,7 @@ rmw_shutdown(rmw_context_t * context)
 rmw_ret_t
 rmw_context_fini(rmw_context_t * context)
 {
-  // TODO (pablogs9): Should we manage not closed XRCE sessions?
+  // TODO(pablogs9): Should we manage not closed XRCE sessions?
   uxr_delete_session(&context->impl->session);
   rmw_uxrce_fini_session_memory(context->impl);
   context->impl = NULL;

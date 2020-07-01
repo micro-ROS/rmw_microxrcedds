@@ -49,7 +49,7 @@ void on_topic(  struct uxrSession* session,
       custom_subscription->micro_buffer_lenght[custom_subscription->history_write_index] = length;
       ucdr_deserialize_array_uint8_t(ub, custom_subscription->micro_buffer[custom_subscription->history_write_index], length);
 
-      // TODO (Pablo): Circular overlapping buffer implemented: use qos
+      // TODO(pablogs9): Circular overlapping buffer implemented: use qos
       if (custom_subscription->micro_buffer_in_use && custom_subscription->history_write_index == custom_subscription->history_read_index){
         custom_subscription->history_read_index = (custom_subscription->history_read_index + 1) % RMW_UXRCE_MAX_HISTORY;
       }
@@ -84,7 +84,7 @@ void on_request(struct uxrSession* session,
       memcpy(&custom_service->sample_id[custom_service->history_write_index], 
           sample_id, sizeof(SampleIdentity));
 
-      // TODO (Pablo): Circular overlapping buffer implemented: use qos
+      // TODO(pablogs9): Circular overlapping buffer implemented: use qos
       if (custom_service->micro_buffer_in_use && custom_service->history_write_index == custom_service->history_read_index){
         custom_service->history_read_index = (custom_service->history_read_index + 1) % RMW_UXRCE_MAX_HISTORY;
       }
@@ -119,7 +119,7 @@ void on_reply(  struct uxrSession* session,
       ucdr_deserialize_array_uint8_t(ub, custom_client->micro_buffer[custom_client->history_write_index], length);
       custom_client->reply_id[custom_client->history_write_index] = reply_id;
 
-      // TODO (Pablo): Circular overlapping buffer implemented: use qos
+      // TODO(pablogs9): Circular overlapping buffer implemented: use qos
       if (custom_client->micro_buffer_in_use && custom_client->history_write_index == custom_client->history_read_index){
         custom_client->history_read_index = (custom_client->history_read_index + 1) % RMW_UXRCE_MAX_HISTORY;
       }

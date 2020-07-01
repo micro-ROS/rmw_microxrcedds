@@ -127,7 +127,7 @@ int build_publisher_xml(const char * publisher_name, char xml[], size_t buffer_s
   (void) publisher_name;
   (void) buffer_size;
 
-  // TODO (pablogs9): Check if there is any case where this xml should be filled for FastDDS 
+  // TODO(pablogs9): Check if there is any case where this xml should be filled for FastDDS 
   xml[0] = '\0';
   return 1;
 }
@@ -137,7 +137,7 @@ int build_subscriber_xml(const char * subscriber_name, char xml[], size_t buffer
   (void) subscriber_name;
   (void) buffer_size;
   
-  // TODO (pablogs9): Check if there is any case where this xml should be filled for FastDDS
+  // TODO(pablogs9): Check if there is any case where this xml should be filled for FastDDS
   xml[0] = '\0';
   return 1;
 }

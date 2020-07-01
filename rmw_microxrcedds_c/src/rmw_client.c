@@ -126,7 +126,7 @@ rmw_create_client(
         custom_node->context->reliable_output, custom_client->client_id,
         custom_node->participant_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
-    // TODO (Pablo): Is possible to instantiate a replier by ref?
+    // TODO(pablogs9): Is possible to instantiate a replier by ref?
     // client_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
     //     custom_node->context->reliable_output, custom_service->subscriber_id,
     //     custom_node->participant_id, "", UXR_REPLACE);
