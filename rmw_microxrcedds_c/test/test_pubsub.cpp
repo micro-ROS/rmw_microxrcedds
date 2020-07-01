@@ -89,24 +89,24 @@ TEST_F(TestSubscription, publish_and_receive) {
 
   rmw_node_t * node_pub;
   node_pub = rmw_create_node(NULL, "pub_node", "/ns", 0, false);
-  ASSERT_NE((void *)node_pub, (void *)NULL);
+  EXPECT_NE((void *)node_pub, (void *)NULL);
 
   rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
   rmw_publisher_t * pub = rmw_create_publisher(
     node_pub, &dummy_type_support.type_support,
     topic_name, &dummy_qos_policies, &default_publisher_options);
-  ASSERT_NE((void *)pub, (void *)NULL);
+  EXPECT_NE((void *)pub, (void *)NULL);
 
   rmw_node_t * node_sub;
   node_sub = rmw_create_node(NULL, "sub_node", "/ns", 0, false);
-  ASSERT_NE((void *)node_sub, (void *)NULL);
+  EXPECT_NE((void *)node_sub, (void *)NULL);
 
   rmw_subscription_options_t default_subscription_options = rmw_get_default_subscription_options();
 
   rmw_subscription_t * sub = rmw_create_subscription(
     node_sub, &dummy_type_support.type_support,
     topic_name, &dummy_qos_policies, &default_subscription_options);
-  ASSERT_NE((void *)sub, (void *)NULL);
+  EXPECT_NE((void *)sub, (void *)NULL);
 
 
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -117,7 +117,7 @@ TEST_F(TestSubscription, publish_and_receive) {
   ros_message.capacity = strlen(ros_message.data);
   ros_message.size = ros_message.capacity;
 
-  ASSERT_EQ(rmw_publish(pub, &ros_message, NULL), RMW_RET_OK);
+  EXPECT_EQ(rmw_publish(pub, &ros_message, NULL), RMW_RET_OK);
 
   rmw_subscriptions_t subscriptions;
   rmw_guard_conditions_t * guard_conditions = NULL;
@@ -132,7 +132,7 @@ TEST_F(TestSubscription, publish_and_receive) {
 
   wait_timeout.sec = 1;
 
-  ASSERT_EQ(
+  EXPECT_EQ(
     rmw_wait(
       &subscriptions,
       guard_conditions,
@@ -151,7 +151,7 @@ TEST_F(TestSubscription, publish_and_receive) {
   read_ros_message.size = 0;
 
   bool taken;
-  ASSERT_EQ(
+  EXPECT_EQ(
     rmw_take_with_info(
       sub,
       &read_ros_message,
@@ -159,8 +159,8 @@ TEST_F(TestSubscription, publish_and_receive) {
       NULL,
       NULL
     ), RMW_RET_OK);
-  ASSERT_EQ(taken, true);
-  ASSERT_EQ(strcmp(content, read_ros_message.data), 0);
-  ASSERT_EQ(strcmp(ros_message.data, read_ros_message.data), 0);
-  ASSERT_EQ(ros_message.size, read_ros_message.size);
+  EXPECT_EQ(taken, true);
+  EXPECT_EQ(strcmp(content, read_ros_message.data), 0);
+  EXPECT_EQ(strcmp(ros_message.data, read_ros_message.data), 0);
+  EXPECT_EQ(ros_message.size, read_ros_message.size);
 }

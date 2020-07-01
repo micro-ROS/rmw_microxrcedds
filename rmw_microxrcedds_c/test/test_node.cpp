@@ -34,36 +34,22 @@ class TestNode : public RMWBaseTest
  */
 TEST_F(TestNode, construction_and_destruction) {
   // Success creation
-  {
-    rmw_node_t * node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
-    ASSERT_NE(node, nullptr);
-    rmw_ret_t ret = rmw_destroy_node(node);
-    ASSERT_EQ(ret, RMW_RET_OK);
-    ASSERT_EQ(CheckErrorState(), false);
-  }
+  rmw_node_t * node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
+  EXPECT_NE(node, nullptr);
+  rmw_ret_t ret = rmw_destroy_node(node);
+  EXPECT_EQ(ret, RMW_RET_OK);
+  EXPECT_EQ(CheckErrorState(), false);
 
   // Unsuccess creation
-  {
-    rmw_node_t * node = rmw_create_node(&test_context, "", "/ns", 0, false);
-    ASSERT_EQ(node, nullptr);
-    ASSERT_EQ(CheckErrorState(), true);
-    rcutils_reset_error();
-  }
+  node = rmw_create_node(&test_context, "", "/ns", 0, false);
+  EXPECT_EQ(node, nullptr);
+  EXPECT_EQ(CheckErrorState(), true);
+  rcutils_reset_error();
 
   // Unsuccess creation
-  {
-    rmw_node_t * node = rmw_create_node(&test_context, "my_node", "", 0, false);
-    ASSERT_EQ(node, nullptr);
-    rcutils_reset_error();
-  }
-
-  // Unsuccess creation
-  {
-    rmw_node_t * node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
-    ASSERT_EQ(node, nullptr);
-    ASSERT_EQ(CheckErrorState(), true);
-    rcutils_reset_error();
-  }
+  node = rmw_create_node(&test_context, "my_node", "", 0, false);
+  EXPECT_EQ(node, nullptr);
+  rcutils_reset_error();
 }
 
 /*
@@ -77,30 +63,30 @@ TEST_F(TestNode, memory_poll) {
   // Get all available nodes
   for (size_t i = 0; i < RMW_UXRCE_MAX_NODES; i++) {
     node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
-    ASSERT_NE(node, nullptr);
+    EXPECT_NE(node, nullptr);
     nodes.push_back(node);
   }
 
   // Try to get one
   node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
-  ASSERT_EQ(node, nullptr);
-  ASSERT_EQ(CheckErrorState(), true);
+  EXPECT_EQ(node, nullptr);
+  EXPECT_EQ(CheckErrorState(), true);
   rcutils_reset_error();
 
   // Relese one
   ret = rmw_destroy_node(nodes.back());
-  ASSERT_EQ(ret, RMW_RET_OK);
+  EXPECT_EQ(ret, RMW_RET_OK);
   nodes.pop_back();
 
   // Get one
   node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
-  ASSERT_NE(node, nullptr);
+  EXPECT_NE(node, nullptr);
   nodes.push_back(node);
 
   // Release all
   for (size_t i = 0; i < nodes.size(); i++) {
     ret = rmw_destroy_node(nodes.at(i));
-    ASSERT_EQ(ret, RMW_RET_OK);
+    EXPECT_EQ(ret, RMW_RET_OK);
   }
   nodes.clear();
 }

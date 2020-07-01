@@ -35,12 +35,12 @@ protected:
     RMWBaseTest::SetUp();
 
     node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
-    ASSERT_NE((void *)node, (void *)NULL);
+    EXPECT_NE((void *)node, (void *)NULL);
   }
 
   void TearDown() override
   {
-    ASSERT_EQ(rmw_destroy_node(node), RMW_RET_OK);
+    EXPECT_EQ(rmw_destroy_node(node), RMW_RET_OK);
     RMWBaseTest::TearDown();
   }
 
@@ -79,10 +79,10 @@ TEST_F(TestPublisher, construction_and_destruction) {
     topic_name,
     &dummy_qos_policies,
     &default_publisher_options);
-  ASSERT_NE((void *)pub, (void *)NULL);
+  EXPECT_NE((void *)pub, (void *)NULL);
 
   rmw_ret_t ret = rmw_destroy_publisher(this->node, pub);
-  ASSERT_EQ(ret, RMW_RET_OK);
+  EXPECT_EQ(ret, RMW_RET_OK);
 }
 
 
@@ -120,7 +120,7 @@ TEST_F(TestPublisher, memory_poll_multiple_topic) {
         dummy_type_supports.back().topic_name.data(),
         &dummy_qos_policies,
         &default_publisher_options);
-      ASSERT_NE((void *)publisher, (void *)NULL);
+      EXPECT_NE((void *)publisher, (void *)NULL);
       publishers.push_back(publisher);
     }
   }
@@ -142,14 +142,14 @@ TEST_F(TestPublisher, memory_poll_multiple_topic) {
       dummy_type_supports.back().topic_name.data(),
       &dummy_qos_policies,
       &default_publisher_options);
-    ASSERT_EQ((void *)publisher, (void *)NULL);
-    ASSERT_EQ(CheckErrorState(), true);
+    EXPECT_EQ((void *)publisher, (void *)NULL);
+    EXPECT_EQ(CheckErrorState(), true);
 
     // Relese one
     publisher = publishers.back();
     publishers.pop_back();
     ret = rmw_destroy_publisher(this->node, publisher);
-    ASSERT_EQ(ret, RMW_RET_OK);
+    EXPECT_EQ(ret, RMW_RET_OK);
   }
 
 
@@ -169,7 +169,7 @@ TEST_F(TestPublisher, memory_poll_multiple_topic) {
       dummy_type_supports.back().topic_name.data(),
       &dummy_qos_policies,
       &default_publisher_options);
-    ASSERT_NE((void *)publisher, (void *)NULL);
+    EXPECT_NE((void *)publisher, (void *)NULL);
     publishers.push_back(publisher);
   }
 
@@ -179,7 +179,7 @@ TEST_F(TestPublisher, memory_poll_multiple_topic) {
     for (size_t i = 0; i < publishers.size(); i++) {
       publisher = publishers.at(i);
       ret = rmw_destroy_publisher(this->node, publisher);
-      ASSERT_EQ(ret, RMW_RET_OK);
+      EXPECT_EQ(ret, RMW_RET_OK);
     }
     publishers.clear();
   }
@@ -218,7 +218,7 @@ TEST_F(TestPublisher, memory_poll_shared_topic) {
         topic_name,
         &dummy_qos_policies,
         &default_publisher_options);
-      ASSERT_NE((void *)publisher, (void *)NULL);
+      EXPECT_NE((void *)publisher, (void *)NULL);
       publishers.push_back(publisher);
     }
   }
@@ -232,14 +232,14 @@ TEST_F(TestPublisher, memory_poll_shared_topic) {
       topic_name,
       &dummy_qos_policies,
       &default_publisher_options);
-    ASSERT_EQ((void *)publisher, (void *)NULL);
-    ASSERT_EQ(CheckErrorState(), true);
+    EXPECT_EQ((void *)publisher, (void *)NULL);
+    EXPECT_EQ(CheckErrorState(), true);
 
     // Relese one
     publisher = publishers.back();
     publishers.pop_back();
     ret = rmw_destroy_publisher(this->node, publisher);
-    ASSERT_EQ(ret, RMW_RET_OK);
+    EXPECT_EQ(ret, RMW_RET_OK);
   }
 
 
@@ -251,7 +251,7 @@ TEST_F(TestPublisher, memory_poll_shared_topic) {
       topic_name,
       &dummy_qos_policies,
       &default_publisher_options);
-    ASSERT_NE((void *)publisher, (void *)NULL);
+    EXPECT_NE((void *)publisher, (void *)NULL);
     publishers.push_back(publisher);
   }
 
@@ -261,7 +261,7 @@ TEST_F(TestPublisher, memory_poll_shared_topic) {
     for (size_t i = 0; i < publishers.size(); i++) {
       publisher = publishers.at(i);
       ret = rmw_destroy_publisher(this->node, publisher);
-      ASSERT_EQ(ret, RMW_RET_OK);
+      EXPECT_EQ(ret, RMW_RET_OK);
     }
     publishers.clear();
   }

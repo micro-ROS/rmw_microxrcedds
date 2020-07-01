@@ -24,7 +24,7 @@
 TEST(rmw_microxrcedds, init_shutdown) {
   rmw_context_t test_context = rmw_get_zero_initialized_context();
   rmw_init_options_t test_options = rmw_get_zero_initialized_init_options();
-  ASSERT_EQ(rmw_init_options_init(&test_options, rcutils_get_default_allocator()), RMW_RET_OK);
-  ASSERT_EQ(rmw_init(&test_options, &test_context), RMW_RET_OK);
-  ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
+  EXPECT_EQ(rmw_init_options_init(&test_options, rcutils_get_default_allocator()), RMW_RET_OK);
+  EXPECT_EQ(rmw_init(&test_options, &test_context), RMW_RET_OK);
+  EXPECT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
 }

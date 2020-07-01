@@ -35,12 +35,12 @@ protected:
     RMWBaseTest::SetUp();
 
     node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
-    ASSERT_NE(node, nullptr);
+    EXPECT_NE(node, nullptr);
   }
 
   void TearDown() override
   {
-    ASSERT_EQ(rmw_destroy_node(node), RMW_RET_OK);
+    EXPECT_EQ(rmw_destroy_node(node), RMW_RET_OK);
     RMWBaseTest::TearDown();
   }
 
@@ -76,10 +76,10 @@ TEST_F(TestSubscription, construction_and_destruction) {
     topic_name,
     &dummy_qos_policies,
     &default_subscription_options);
-  ASSERT_NE(sub, nullptr);
+  EXPECT_NE(sub, nullptr);
 
   rmw_ret_t ret = rmw_destroy_subscription(this->node, sub);
-  ASSERT_EQ(ret, RMW_RET_OK);
+  EXPECT_EQ(ret, RMW_RET_OK);
 }
 
 
@@ -113,7 +113,7 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
         dummy_type_supports.back().topic_name.data(),
         &dummy_qos_policies,
         &default_subscription_options);
-      ASSERT_NE(subscription, nullptr);
+      EXPECT_NE(subscription, nullptr);
       subscriptions.push_back(subscription);
     }
   }
@@ -134,8 +134,8 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
       dummy_type_supports.back().topic_name.data(),
       &dummy_qos_policies,
       &default_subscription_options);
-    ASSERT_EQ(subscription, nullptr);
-    ASSERT_EQ(CheckErrorState(), true);
+    EXPECT_EQ(subscription, nullptr);
+    EXPECT_EQ(CheckErrorState(), true);
   }
 
 
@@ -144,7 +144,7 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
     subscription = subscriptions.back();
     subscriptions.pop_back();
     ret = rmw_destroy_subscription(this->node, subscription);
-    ASSERT_EQ(ret, RMW_RET_OK);
+    EXPECT_EQ(ret, RMW_RET_OK);
   }
 
 
@@ -163,7 +163,7 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
       dummy_type_supports.back().topic_name.data(),
       &dummy_qos_policies,
       &default_subscription_options);
-    ASSERT_NE(subscription, nullptr);
+    EXPECT_NE(subscription, nullptr);
     subscriptions.push_back(subscription);
   }
 
@@ -173,7 +173,7 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
     for (size_t i = 0; i < subscriptions.size(); i++) {
       subscription = subscriptions.at(i);
       ret = rmw_destroy_subscription(this->node, subscription);
-      ASSERT_EQ(ret, RMW_RET_OK);
+      EXPECT_EQ(ret, RMW_RET_OK);
     }
     subscriptions.clear();
   }
@@ -211,7 +211,7 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
         dummy_type_support.topic_name.data(),
         &dummy_qos_policies,
         &default_subscription_options);
-      ASSERT_NE(subscription, nullptr);
+      EXPECT_NE(subscription, nullptr);
       subscriptions.push_back(subscription);
     }
   }
@@ -225,8 +225,8 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
       dummy_type_support.topic_name.data(),
       &dummy_qos_policies,
       &default_subscription_options);
-    ASSERT_EQ(subscription, nullptr);
-    ASSERT_EQ(CheckErrorState(), true);
+    EXPECT_EQ(subscription, nullptr);
+    EXPECT_EQ(CheckErrorState(), true);
   }
 
 
@@ -235,7 +235,7 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
     subscription = subscriptions.back();
     subscriptions.pop_back();
     ret = rmw_destroy_subscription(this->node, subscription);
-    ASSERT_EQ(ret, RMW_RET_OK);
+    EXPECT_EQ(ret, RMW_RET_OK);
   }
 
 
@@ -247,7 +247,7 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
       dummy_type_support.topic_name.data(),
       &dummy_qos_policies,
       &default_subscription_options);
-    ASSERT_NE(subscription, nullptr);
+    EXPECT_NE(subscription, nullptr);
     subscriptions.push_back(subscription);
   }
 
@@ -257,7 +257,7 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
     for (size_t i = 0; i < subscriptions.size(); i++) {
       subscription = subscriptions.at(i);
       ret = rmw_destroy_subscription(this->node, subscription);
-      ASSERT_EQ(ret, RMW_RET_OK);
+      EXPECT_EQ(ret, RMW_RET_OK);
     }
     subscriptions.clear();
   }
