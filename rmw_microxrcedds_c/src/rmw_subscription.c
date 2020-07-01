@@ -73,7 +73,6 @@ rmw_create_subscription(
     RMW_SET_ERROR_MSG("qos_profile is null");
     return NULL;
   } else {
-
     rmw_subscription = (rmw_subscription_t *)rmw_allocate(
       sizeof(rmw_subscription_t));
     rmw_subscription->data = NULL;

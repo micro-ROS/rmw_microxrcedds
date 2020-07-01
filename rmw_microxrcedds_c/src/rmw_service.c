@@ -47,7 +47,6 @@ rmw_create_service(
   } else if (!qos_policies) {
     RMW_SET_ERROR_MSG("qos_profile is null");
   } else {
-
     rmw_service = (rmw_service_t *)rmw_allocate(
       sizeof(rmw_service_t));
     rmw_service->data = NULL;

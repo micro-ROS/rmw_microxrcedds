@@ -46,9 +46,6 @@ protected:
    Testing publish and subcribe to the same topic in diferent nodes
  */
 TEST_F(TestSubscription, publish_and_receive) {
-
-
-
   dummy_type_support_t dummy_type_support;
   ConfigureDummyTypeSupport(
     topic_type,
