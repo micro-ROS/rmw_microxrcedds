@@ -41,7 +41,7 @@ rmw_send_request(
   ucdrBuffer request_ub;
   ucdr_init_buffer(&request_ub, custom_client->request_buffer, sizeof(custom_client->request_buffer));
 
-  functions->cdr_serialize(ros_request,&request_ub);
+  functions->cdr_serialize(ros_request, &request_ub);
 
   *sequence_id = uxr_buffer_request(&custom_node->context->session, custom_client->stream_id,
       custom_client->client_id, custom_client->request_buffer, topic_size);
@@ -52,7 +52,7 @@ rmw_send_request(
     return RMW_RET_ERROR;
   }
 
-  uxr_run_session_time(&custom_node->context->session,100);
+  uxr_run_session_time(&custom_node->context->session, 100);
 
   return RMW_RET_OK;
 }
@@ -85,8 +85,8 @@ rmw_take_request(
   request_header->request_id.sequence_number = (((int64_t) custom_service->sample_id[custom_service->history_read_index].sequence_number.high) << 32) |
                                     custom_service->sample_id[custom_service->history_read_index].sequence_number.low;
   request_header->request_id.writer_guid[0] = (int8_t) custom_service->sample_id[custom_service->history_read_index].writer_guid.entityId.entityKind;
-  memcpy(&request_header->request_id.writer_guid[1],custom_service->sample_id[custom_service->history_read_index].writer_guid.entityId.entityKey,3);
-  memcpy(&request_header->request_id.writer_guid[4],custom_service->sample_id[custom_service->history_read_index].writer_guid.guidPrefix.data,12);
+  memcpy(&request_header->request_id.writer_guid[1], custom_service->sample_id[custom_service->history_read_index].writer_guid.entityId.entityKey, 3);
+  memcpy(&request_header->request_id.writer_guid[4], custom_service->sample_id[custom_service->history_read_index].writer_guid.guidPrefix.data, 12);
 
   const rosidl_message_type_support_t * req_members = custom_service->type_support_callbacks->request_members_();
   const message_type_support_callbacks_t * functions = (const message_type_support_callbacks_t *)req_members->data;

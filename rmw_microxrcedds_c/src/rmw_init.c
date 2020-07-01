@@ -274,7 +274,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 
   context_impl->best_effort_input = uxr_create_input_best_effort_stream(&context_impl->session);
   context_impl->best_effort_output = uxr_create_output_best_effort_stream(&context_impl->session,
-      context_impl->output_best_effort_stream_buffer,context_impl->transport.comm.mtu);
+      context_impl->output_best_effort_stream_buffer, context_impl->transport.comm.mtu);
 
 
   if (!uxr_create_session(&context_impl->session)) {

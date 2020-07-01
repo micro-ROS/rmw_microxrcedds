@@ -38,8 +38,8 @@ rmw_send_response(
   sample_id.sequence_number.high = (int32_t) (request_header->sequence_number >> 32);
   sample_id.sequence_number.low = (uint32_t) request_header->sequence_number & 0xFFFFFFFF;
   sample_id.writer_guid.entityId.entityKind = (uint8_t) request_header->writer_guid[0];
-  memcpy(sample_id.writer_guid.entityId.entityKey,&request_header->writer_guid[1],sizeof(sample_id.writer_guid.entityId.entityKey));
-  memcpy(sample_id.writer_guid.guidPrefix.data,&request_header->writer_guid[4],sizeof(sample_id.writer_guid.guidPrefix.data));
+  memcpy(sample_id.writer_guid.entityId.entityKey, &request_header->writer_guid[1], sizeof(sample_id.writer_guid.entityId.entityKey));
+  memcpy(sample_id.writer_guid.guidPrefix.data, &request_header->writer_guid[4], sizeof(sample_id.writer_guid.guidPrefix.data));
 
   const rosidl_message_type_support_t * res_members = custom_service->type_support_callbacks->response_members_();
   const message_type_support_callbacks_t * functions = (const message_type_support_callbacks_t *)res_members->data;
@@ -49,7 +49,7 @@ rmw_send_response(
   ucdrBuffer reply_ub;
   ucdr_init_buffer(&reply_ub, custom_service->replay_buffer, sizeof(custom_service->replay_buffer));
 
-  functions->cdr_serialize(ros_response,&reply_ub);
+  functions->cdr_serialize(ros_response, &reply_ub);
 
   uxr_buffer_reply(&custom_node->context->session, custom_service->stream_id,
       custom_service->service_id, &sample_id, custom_service->replay_buffer, topic_size);

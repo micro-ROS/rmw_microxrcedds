@@ -270,7 +270,7 @@ void rmw_uxrce_fini_service_memory(rmw_service_t * service)
   if (service->data) {
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
 
-    put_memory(&service_memory,&custom_service->mem);
+    put_memory(&service_memory, &custom_service->mem);
 
     memset(custom_service, 0, sizeof(rmw_uxrce_service_t));
     service->data = NULL;
