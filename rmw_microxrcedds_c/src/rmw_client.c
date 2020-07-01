@@ -113,7 +113,8 @@ rmw_create_client(
     memcpy(custom_client->client_gid.data, &custom_client->client_id,
       sizeof(uxrObjectId));
 
-    uint16_t client_req;
+    uint16_t client_req = UXR_INVALID_REQUEST_ID;
+
 #ifdef MICRO_XRCEDDS_USE_XML
     char service_name_id[20];
     generate_name(&custom_client->client_id, service_name_id, sizeof(service_name_id));

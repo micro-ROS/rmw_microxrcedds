@@ -145,7 +145,8 @@ rmw_create_publisher(
   #endif
 
     custom_publisher->publisher_id = uxr_object_id(custom_node->context->id_publisher++, UXR_PUBLISHER_ID);
-    uint16_t publisher_req;
+    uint16_t publisher_req = UXR_INVALID_REQUEST_ID;
+
   #ifdef MICRO_XRCEDDS_USE_XML
     char publisher_name[20];
     generate_name(&custom_publisher->publisher_id, publisher_name, sizeof(publisher_name));
@@ -167,7 +168,8 @@ rmw_create_publisher(
   #endif
 
     custom_publisher->datawriter_id = uxr_object_id(custom_node->context->id_datawriter++, UXR_DATAWRITER_ID);
-    uint16_t datawriter_req;
+    uint16_t datawriter_req = UXR_INVALID_REQUEST_ID;
+
   #ifdef MICRO_XRCEDDS_USE_XML
     if (!build_datawriter_xml(topic_name, custom_publisher->type_support_callbacks,
       qos_policies, xml_buffer, sizeof(xml_buffer)))

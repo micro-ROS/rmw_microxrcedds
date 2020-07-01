@@ -144,7 +144,8 @@ rmw_create_subscription(
 #endif
 
     custom_subscription->subscriber_id = uxr_object_id(custom_node->context->id_subscriber++, UXR_SUBSCRIBER_ID);
-    uint16_t subscriber_req;
+    uint16_t subscriber_req = UXR_INVALID_REQUEST_ID;
+
 #ifdef MICRO_XRCEDDS_USE_XML
     char subscriber_name[20];
     generate_name(&custom_subscription->subscriber_id, subscriber_name, sizeof(subscriber_name));
@@ -165,7 +166,8 @@ rmw_create_subscription(
 
 
     custom_subscription->datareader_id = uxr_object_id(custom_node->context->id_datareader++, UXR_DATAREADER_ID);
-    uint16_t datareader_req;
+    uint16_t datareader_req = UXR_INVALID_REQUEST_ID;
+    
 #ifdef MICRO_XRCEDDS_USE_XML
     if (!build_datareader_xml(topic_name, custom_subscription->type_support_callbacks,
       qos_policies, xml_buffer,

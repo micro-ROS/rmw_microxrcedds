@@ -73,7 +73,8 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   memcpy((char *)node_handle->namespace_, namespace_, strlen(namespace_) + 1);
 
   node_info->participant_id = uxr_object_id(node_info->context->id_participant++, UXR_PARTICIPANT_ID);
-  uint16_t participant_req;
+  uint16_t participant_req = UXR_INVALID_REQUEST_ID;
+
 #ifdef MICRO_XRCEDDS_USE_XML
   char participant_xml[RMW_UXRCE_XML_BUFFER_LENGTH];
   if (!build_participant_xml(domain_id, name, participant_xml, sizeof(participant_xml))) {

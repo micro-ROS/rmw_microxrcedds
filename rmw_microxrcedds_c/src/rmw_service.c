@@ -113,7 +113,8 @@ rmw_create_service(
     memcpy(custom_service->service_gid.data, &custom_service->service_id,
       sizeof(uxrObjectId));
 
-    uint16_t service_req;
+    uint16_t service_req = UXR_INVALID_REQUEST_ID;
+    
 #ifdef MICRO_XRCEDDS_USE_XML
     char service_name_id[20];
     generate_name(&custom_service->service_id, service_name_id, sizeof(service_name_id));
