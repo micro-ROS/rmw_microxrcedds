@@ -34,9 +34,7 @@ rmw_ret_t rmw_uros_init_options(int argc, const char* const argv[], rmw_init_opt
     if (argc >= 2)
     {
         strcpy(rmw_options->impl->connection_params.serial_device, argv[1]);
-    }
-    else
-    {
+    }else{
         RMW_SET_ERROR_MSG("Wrong number of arguments in rmw options. Needs one argument with the serial device.");
         ret = RMW_RET_INVALID_ARGUMENT;
     }
@@ -46,9 +44,7 @@ rmw_ret_t rmw_uros_init_options(int argc, const char* const argv[], rmw_init_opt
     {
         strcpy(rmw_options->impl->connection_params.agent_address, argv[1]);
         strcpy(rmw_options->impl->connection_params.agent_port, argv[2]);
-    }
-    else
-    {
+    }else{
         RMW_SET_ERROR_MSG("Wrong number of arguments in rmw options. Needs an Agent IP and port.");
         ret = RMW_RET_INVALID_ARGUMENT;
     }
