@@ -62,4 +62,4 @@ rmw_ret_t rmw_uros_options_set_udp_address(const char* ip, const char* port, rmw
 rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_t* rmw_options);
 
 
-#endif // RMW_UROS__OPTIONS_H_
+#endif  // RMW_UROS__OPTIONS_H_
