@@ -67,7 +67,7 @@ rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t all
     RMW_SET_ERROR_MSG("default ip configuration overflow");
     return RMW_RET_INVALID_ARGUMENT;
   }
-  
+
   if(strlen(RMW_UXRCE_DEFAULT_UDP_PORT) <= MAX_PORT_LEN){
     strcpy(init_options->impl->connection_params.agent_port, RMW_UXRCE_DEFAULT_UDP_PORT);
   }else{
@@ -118,7 +118,7 @@ rmw_init_options_fini(rmw_init_options_t * init_options)
     init_options->implementation_identifier,
     eprosima_microxrcedds_identifier,
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
-    
+
   rmw_free(init_options->impl);
 
   *init_options = rmw_get_zero_initialized_init_options();
@@ -251,7 +251,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   if (strlen(options->impl->connection_params.serial_device) > 0){
     pseudo_fd = atoi(options->impl->connection_params.serial_device);
   }
-  
+
   if (!uxr_init_serial_transport(&context_impl->transport, &context_impl->serial_platform, pseudo_fd, 0, 1)){
     RMW_SET_ERROR_MSG("Can not create an custom serial connection");
     return RMW_RET_ERROR;
@@ -275,7 +275,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   context_impl->best_effort_input = uxr_create_input_best_effort_stream(&context_impl->session);
   context_impl->best_effort_output = uxr_create_output_best_effort_stream(&context_impl->session,
       context_impl->output_best_effort_stream_buffer,context_impl->transport.comm.mtu);
-  
+
 
   if (!uxr_create_session(&context_impl->session)) {
     CLOSE_TRANSPORT(&context_impl->transport);
@@ -295,13 +295,13 @@ rmw_shutdown(rmw_context_t * context)
     context->implementation_identifier,
     eprosima_microxrcedds_identifier,
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
-  
+
   rmw_ret_t ret = rmw_context_fini(context);
 
   if (RMW_RET_OK == ret){
     *context = rmw_get_zero_initialized_context();
   }
-  
+
   return ret;
 }
 

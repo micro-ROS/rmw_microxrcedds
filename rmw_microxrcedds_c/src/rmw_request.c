@@ -32,7 +32,7 @@ rmw_send_request(
 
   rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
   rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)custom_client->owner_node;
-  
+
   const rosidl_message_type_support_t * req_members = custom_client->type_support_callbacks->request_members_();
   const message_type_support_callbacks_t * functions = (const message_type_support_callbacks_t *)req_members->data;
 
@@ -42,8 +42,8 @@ rmw_send_request(
   ucdr_init_buffer(&request_ub, custom_client->request_buffer, sizeof(custom_client->request_buffer));
 
   functions->cdr_serialize(ros_request,&request_ub);
- 
-  *sequence_id = uxr_buffer_request(&custom_node->context->session, custom_client->stream_id, 
+
+  *sequence_id = uxr_buffer_request(&custom_node->context->session, custom_client->stream_id,
       custom_client->client_id, custom_client->request_buffer, topic_size);
 
   if (UXR_INVALID_REQUEST_ID == *sequence_id)
@@ -81,8 +81,8 @@ rmw_take_request(
     return RMW_RET_ERROR;
   }
 
-  // Conversion from SampleIdentity to rmw_request_id_t 
-  request_header->request_id.sequence_number = (((int64_t) custom_service->sample_id[custom_service->history_read_index].sequence_number.high) << 32) | 
+  // Conversion from SampleIdentity to rmw_request_id_t
+  request_header->request_id.sequence_number = (((int64_t) custom_service->sample_id[custom_service->history_read_index].sequence_number.high) << 32) |
                                     custom_service->sample_id[custom_service->history_read_index].sequence_number.low;
   request_header->request_id.writer_guid[0] = (int8_t) custom_service->sample_id[custom_service->history_read_index].writer_guid.entityId.entityKind;
   memcpy(&request_header->request_id.writer_guid[1],custom_service->sample_id[custom_service->history_read_index].writer_guid.entityId.entityKey,3);
@@ -92,7 +92,7 @@ rmw_take_request(
   const message_type_support_callbacks_t * functions = (const message_type_support_callbacks_t *)req_members->data;
 
   ucdrBuffer temp_buffer;
-  ucdr_init_buffer(&temp_buffer, custom_service->micro_buffer[custom_service->history_read_index], 
+  ucdr_init_buffer(&temp_buffer, custom_service->micro_buffer[custom_service->history_read_index],
                     custom_service->micro_buffer_lenght[custom_service->history_read_index]);
 
 

@@ -169,12 +169,12 @@ void rmw_uxrce_init_topics_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce
 // Memory management functions
 
 void rmw_uxrce_fini_session_memory(rmw_context_impl_t * session)
-{ 
+{
   put_memory(&session_memory, &session->mem);
 }
 
 void rmw_uxrce_fini_node_memory(rmw_node_t * node)
-{ 
+{
   if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
     return;

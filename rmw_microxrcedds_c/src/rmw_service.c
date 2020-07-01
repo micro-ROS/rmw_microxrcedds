@@ -114,7 +114,7 @@ rmw_create_service(
       sizeof(uxrObjectId));
 
     uint16_t service_req = UXR_INVALID_REQUEST_ID;
-    
+
 #ifdef MICRO_XRCEDDS_USE_XML
     char service_name_id[20];
     generate_name(&custom_service->service_id, service_name_id, sizeof(service_name_id));
@@ -150,7 +150,7 @@ rmw_create_service(
     delivery_control.max_elapsed_time = UXR_MAX_ELAPSED_TIME_UNLIMITED;
     delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
 
-    custom_service->stream_id = 
+    custom_service->stream_id =
       (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT)
       ? custom_node->context->best_effort_input
       : custom_node->context->reliable_input;
@@ -200,7 +200,7 @@ rmw_destroy_service(
     uint16_t delete_service =
       uxr_buffer_delete_entity(&custom_node->context->session, custom_node->context->reliable_output,
         custom_service->service_id);
-    
+
     uint16_t requests[] = {delete_service};
     uint8_t status[sizeof(requests) / 2];
     if (!uxr_run_session_until_all_status(&custom_node->context->session, 1000, requests, status,

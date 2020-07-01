@@ -150,7 +150,7 @@ rmw_create_client(
     delivery_control.max_elapsed_time = UXR_MAX_ELAPSED_TIME_UNLIMITED;
     delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
 
-    custom_client->stream_id = 
+    custom_client->stream_id =
       (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT)
       ? custom_node->context->best_effort_input
       : custom_node->context->reliable_input;
@@ -200,7 +200,7 @@ rmw_destroy_client(
     uint16_t delete_client =
       uxr_buffer_delete_entity(&custom_node->context->session, custom_node->context->reliable_output,
         custom_client->client_id);
-    
+
     uint16_t requests[] = {delete_client};
     uint8_t status[sizeof(requests) / 2];
     if (!uxr_run_session_until_all_status(&custom_node->context->session, 1000, requests, status,

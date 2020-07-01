@@ -33,7 +33,7 @@ rmw_send_response(
   rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
   rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)custom_service->owner_node;
 
-  // Conversion from rmw_request_id_t to SampleIdentity  
+  // Conversion from rmw_request_id_t to SampleIdentity
   SampleIdentity sample_id;
   sample_id.sequence_number.high = (int32_t) (request_header->sequence_number >> 32);
   sample_id.sequence_number.low = (uint32_t) request_header->sequence_number & 0xFFFFFFFF;
@@ -50,8 +50,8 @@ rmw_send_response(
   ucdr_init_buffer(&reply_ub, custom_service->replay_buffer, sizeof(custom_service->replay_buffer));
 
   functions->cdr_serialize(ros_response,&reply_ub);
- 
-  uxr_buffer_reply(&custom_node->context->session, custom_service->stream_id, 
+
+  uxr_buffer_reply(&custom_node->context->session, custom_service->stream_id,
       custom_service->service_id, &sample_id, custom_service->replay_buffer, topic_size);
 
   return RMW_RET_OK;
@@ -88,7 +88,7 @@ rmw_take_response(
 
 
   ucdrBuffer temp_buffer;
-  ucdr_init_buffer(&temp_buffer, custom_client->micro_buffer[custom_client->history_read_index], 
+  ucdr_init_buffer(&temp_buffer, custom_client->micro_buffer[custom_client->history_read_index],
                   custom_client->micro_buffer_lenght[custom_client->history_read_index]);
 
   bool deserialize_rv = functions->cdr_deserialize(

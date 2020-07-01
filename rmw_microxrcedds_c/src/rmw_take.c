@@ -56,7 +56,7 @@ rmw_take_with_info(
   }
 
   ucdrBuffer temp_buffer;
-  ucdr_init_buffer(&temp_buffer, custom_subscription->micro_buffer[custom_subscription->history_read_index], 
+  ucdr_init_buffer(&temp_buffer, custom_subscription->micro_buffer[custom_subscription->history_read_index],
                     custom_subscription->micro_buffer_lenght[custom_subscription->history_read_index]);
 
   bool deserialize_rv = custom_subscription->type_support_callbacks->cdr_deserialize(&temp_buffer, ros_message);
@@ -106,7 +106,7 @@ rmw_take_sequence(
 
   for(size_t i = 0; i < count; i++){
     taken_flag = false;
-    
+
     ret = rmw_take_with_info(
       subscription,
       message_sequence->data[*taken],
@@ -118,7 +118,7 @@ rmw_take_sequence(
     if (ret != RMW_RET_OK || !taken_flag) {
       break;
     }
-    
+
     (*taken)++;
   }
 

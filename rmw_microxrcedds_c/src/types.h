@@ -42,7 +42,7 @@
 
 struct rmw_uxrce_connection_t
 {
-#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL) 
+#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
   char serial_device[MAX_SERIAL_DEVICE];
 #elif defined(MICRO_XRCEDDS_UDP)
   char agent_address[MAX_IP_LEN];
@@ -188,7 +188,7 @@ typedef struct rmw_uxrce_publisher_t
   const message_type_support_callbacks_t * type_support_callbacks;
 
   struct rmw_uxrce_topic_t * topic;
-  
+
   rmw_qos_profile_t qos;
   uxrStreamId stream_id;
 

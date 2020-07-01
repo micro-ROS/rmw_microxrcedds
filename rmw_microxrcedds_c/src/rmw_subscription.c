@@ -167,7 +167,7 @@ rmw_create_subscription(
 
     custom_subscription->datareader_id = uxr_object_id(custom_node->context->id_datareader++, UXR_DATAREADER_ID);
     uint16_t datareader_req = UXR_INVALID_REQUEST_ID;
-    
+
 #ifdef MICRO_XRCEDDS_USE_XML
     if (!build_datareader_xml(topic_name, custom_subscription->type_support_callbacks,
       qos_policies, xml_buffer,
@@ -209,7 +209,7 @@ rmw_create_subscription(
     delivery_control.max_elapsed_time = UXR_MAX_ELAPSED_TIME_UNLIMITED;
     delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
 
-    custom_subscription->stream_id = 
+    custom_subscription->stream_id =
       (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT)
       ? custom_node->context->best_effort_input
       : custom_node->context->reliable_input;
@@ -243,7 +243,7 @@ rmw_subscription_get_actual_qos(
         rmw_qos_profile_t * qos)
 {
   (void) qos;
-  
+
   rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
   qos = &custom_subscription->qos;
 

@@ -40,7 +40,7 @@ rmw_ret_t rmw_uros_init_options(int argc, const char* const argv[], rmw_init_opt
         RMW_SET_ERROR_MSG("Wrong number of arguments in rmw options. Needs one argument with the serial device.");
         ret = RMW_RET_INVALID_ARGUMENT;
     }
-    
+
 #elif defined(MICRO_XRCEDDS_UDP)
     if (argc >= 3)
     {
@@ -60,7 +60,7 @@ rmw_ret_t rmw_uros_init_options(int argc, const char* const argv[], rmw_init_opt
 }
 
 rmw_ret_t rmw_uros_options_set_serial_device(const char* dev, rmw_init_options_t* rmw_options)
-{   
+{
 #if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
     if (NULL == rmw_options)
     {
@@ -73,7 +73,7 @@ rmw_ret_t rmw_uros_options_set_serial_device(const char* dev, rmw_init_options_t
     }else{
         RMW_SET_ERROR_MSG("serial port configuration error");
         return RMW_RET_INVALID_ARGUMENT;
-    }   
+    }
     return RMW_RET_OK;
 #else
     (void) dev;
@@ -99,7 +99,7 @@ rmw_ret_t rmw_uros_options_set_udp_address(const char* ip, const char* port, rmw
         RMW_SET_ERROR_MSG("default ip configuration error");
         return RMW_RET_INVALID_ARGUMENT;
     }
-    
+
     if(port != NULL && strlen(port) <= MAX_PORT_LEN){
         strcpy(rmw_options->impl->connection_params.agent_port, port);
     }else{

@@ -67,7 +67,7 @@ int build_service_xml(const char * service_name_id, const char * service_name, b
   const message_type_support_callbacks_t * req_callbacks = (const message_type_support_callbacks_t *)req_members->data;
   const message_type_support_callbacks_t * res_callbacks = (const message_type_support_callbacks_t *)res_members->data;
 
-  
+
   static char req_type_name_buffer[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
   static char res_type_name_buffer[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
 
@@ -87,7 +87,7 @@ int build_service_xml(const char * service_name_id, const char * service_name, b
     if ((ret < 0) || (ret >= (int)sizeof(req_full_topic_name))) {
       return 0;
     }
-      
+
     ret = snprintf(res_full_topic_name, sizeof(res_full_topic_name), "%s%s%s", ros_reply_prefix,
         service_name,ros_reply_subfix);
     if ((ret < 0) || (ret >= (int)sizeof(res_full_topic_name))) {
@@ -104,12 +104,12 @@ int build_service_xml(const char * service_name_id, const char * service_name, b
     }
   }
 
-    
-  ret = snprintf(xml, buffer_size, format, 
-                  requester ? "requester" : "replier", 
-                  service_name_id, 
-                  service_name, 
-                  req_type_name_buffer, 
+
+  ret = snprintf(xml, buffer_size, format,
+                  requester ? "requester" : "replier",
+                  service_name_id,
+                  service_name,
+                  req_type_name_buffer,
                   res_type_name_buffer,
                   req_full_topic_name,
                   res_full_topic_name,
@@ -123,11 +123,11 @@ int build_service_xml(const char * service_name_id, const char * service_name, b
 }
 
 int build_publisher_xml(const char * publisher_name, char xml[], size_t buffer_size)
-{ 
+{
   (void) publisher_name;
   (void) buffer_size;
 
-  // TODO(pablogs9): Check if there is any case where this xml should be filled for FastDDS 
+  // TODO(pablogs9): Check if there is any case where this xml should be filled for FastDDS
   xml[0] = '\0';
   return 1;
 }
@@ -136,7 +136,7 @@ int build_subscriber_xml(const char * subscriber_name, char xml[], size_t buffer
 {
   (void) subscriber_name;
   (void) buffer_size;
-  
+
   // TODO(pablogs9): Check if there is any case where this xml should be filled for FastDDS
   xml[0] = '\0';
   return 1;
@@ -249,11 +249,11 @@ int build_xml(
       }
     }
 
-    ret = snprintf(xml, 
-                  buffer_size, 
-                  format, 
+    ret = snprintf(xml,
+                  buffer_size,
+                  format,
                   (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ? "BEST_EFFORT" : "RELIABLE",
-                  full_topic_name, 
+                  full_topic_name,
                   type_name_buffer);
 
     if ((ret < 0) && (ret >= (int)buffer_size)) {
