@@ -135,7 +135,7 @@ rmw_create_node(
 rmw_ret_t rmw_destroy_node(rmw_node_t * node)
 {
   EPROS_PRINT_TRACE()
-  rmw_ret_t result_ret = RMW_RET_OK;
+  rmw_ret_t ret = RMW_RET_OK;
   if (!node) {
     RMW_SET_ERROR_MSG("node handle is null");
     return RMW_RET_ERROR;
@@ -156,7 +156,6 @@ rmw_ret_t rmw_destroy_node(rmw_node_t * node)
   // TODO(Pablo) make sure that other entities are removed from the pools
 
   struct rmw_uxrce_mempool_item_t * item = NULL;
-  rmw_ret_t ret;
 
   item = publisher_memory.allocateditems;
   while (item != NULL) {
@@ -196,7 +195,7 @@ rmw_ret_t rmw_destroy_node(rmw_node_t * node)
 
   rmw_uxrce_fini_node_memory(node);
 
-  return result_ret;
+  return ret;
 }
 
 rmw_ret_t
