@@ -263,8 +263,8 @@ int build_xml(
       xml,
       buffer_size,
       format,
-      (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ? 
-        "BEST_EFFORT" : "RELIABLE",
+      (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+      "BEST_EFFORT" : "RELIABLE",
       full_topic_name,
       type_name_buffer);
 
