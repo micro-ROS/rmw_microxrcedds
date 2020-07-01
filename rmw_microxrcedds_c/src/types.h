@@ -174,7 +174,6 @@ typedef struct rmw_uxrce_subscription_t
   struct rmw_uxrce_node_t * owner_node;
   rmw_qos_profile_t qos;
   uxrStreamId stream_id;
-
 } rmw_uxrce_subscription_t;
 
 typedef struct rmw_uxrce_publisher_t

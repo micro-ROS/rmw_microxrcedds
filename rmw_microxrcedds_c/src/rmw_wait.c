@@ -75,7 +75,6 @@ rmw_wait(
   for (size_t i = 0; i < clients->client_count && session == NULL; i++){
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)clients->clients[i];
     session = &custom_client->owner_node->context->session;
-
   }
 
   for (size_t i = 0; i < subscriptions->subscriber_count && session == NULL; ++i) {

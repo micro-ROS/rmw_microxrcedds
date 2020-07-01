@@ -207,7 +207,6 @@ rmw_create_publisher(
       put_memory(&publisher_memory, &custom_publisher->mem);
       goto fail;
     }
-
   }
   return rmw_publisher;
 
