@@ -30,7 +30,10 @@ rmw_ret_t rmw_uros_init_options(
     return RMW_RET_INVALID_ARGUMENT;
   }
   rmw_ret_t ret = RMW_RET_OK;
-  // rmw_options->impl = rmw_options->allocator.allocate(sizeof(rmw_init_options_impl_t), rmw_options->allocator.state);
+  // TODO(pablogs9): Is the impl allocated at this point?
+  // rmw_options->impl = rmw_options->allocator.allocate(
+  // sizeof(rmw_init_options_impl_t),
+  // rmw_options->allocator.state);
 #if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
   if (argc >= 2) {
     strcpy(rmw_options->impl->connection_params.serial_device, argv[1]);
