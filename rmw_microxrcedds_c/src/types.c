@@ -60,7 +60,9 @@ static bool topic_memory_init = false;
 
 // Memory init functions
 
-void rmw_uxrce_init_service_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_service_t * services, size_t size)
+void rmw_uxrce_init_service_memory(
+  struct rmw_uxrce_mempool_t * memory,
+  rmw_uxrce_service_t * services, size_t size)
 {
   if (size > 0 && !service_memory_init) {
     service_memory_init = true;
@@ -75,7 +77,9 @@ void rmw_uxrce_init_service_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrc
   }
 }
 
-void rmw_uxrce_init_client_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_client_t * clients, size_t size)
+void rmw_uxrce_init_client_memory(
+  struct rmw_uxrce_mempool_t * memory, rmw_uxrce_client_t * clients,
+  size_t size)
 {
   if (size > 0 && !client_memory_init) {
     client_memory_init = true;
@@ -90,7 +94,9 @@ void rmw_uxrce_init_client_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce
   }
 }
 
-void rmw_uxrce_init_publisher_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_publisher_t * publishers, size_t size)
+void rmw_uxrce_init_publisher_memory(
+  struct rmw_uxrce_mempool_t * memory,
+  rmw_uxrce_publisher_t * publishers, size_t size)
 {
   if (size > 0 && !publisher_memory_init) {
     publisher_memory_init = true;
@@ -105,7 +111,9 @@ void rmw_uxrce_init_publisher_memory(struct rmw_uxrce_mempool_t * memory, rmw_ux
   }
 }
 
-void rmw_uxrce_init_subscriber_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_subscription_t * subscribers, size_t size)
+void rmw_uxrce_init_subscriber_memory(
+  struct rmw_uxrce_mempool_t * memory,
+  rmw_uxrce_subscription_t * subscribers, size_t size)
 {
   if (size > 0 && !subscription_memory_init) {
     subscription_memory_init = true;
@@ -120,12 +128,15 @@ void rmw_uxrce_init_subscriber_memory(struct rmw_uxrce_mempool_t * memory, rmw_u
   }
 }
 
-void rmw_uxrce_init_nodes_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_node_t * nodes, size_t size)
+void rmw_uxrce_init_nodes_memory(
+  struct rmw_uxrce_mempool_t * memory, rmw_uxrce_node_t * nodes,
+  size_t size)
 {
   if (size > 0 && !node_memory_init) {
     node_memory_init = true;
     link_prev(NULL, &nodes[0].mem, NULL);
-    size > 1 ? link_next(&nodes[0].mem, &nodes[1].mem, &nodes[0]) : link_next(&nodes[0].mem, NULL,
+    size > 1 ? link_next(&nodes[0].mem, &nodes[1].mem, &nodes[0]) : link_next(
+      &nodes[0].mem, NULL,
       &nodes[0]);
     for (unsigned int i = 1; i <= size - 1; i++) {
       link_prev(&nodes[i - 1].mem, &nodes[i].mem, &nodes[i]);
@@ -135,12 +146,15 @@ void rmw_uxrce_init_nodes_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_
   }
 }
 
-void rmw_uxrce_init_sessions_memory(struct rmw_uxrce_mempool_t * memory, rmw_context_impl_t * sessions, size_t size)
+void rmw_uxrce_init_sessions_memory(
+  struct rmw_uxrce_mempool_t * memory,
+  rmw_context_impl_t * sessions, size_t size)
 {
   if (size > 0 && !session_memory_init) {
     session_memory_init = true;
     link_prev(NULL, &sessions[0].mem, NULL);
-    size > 1 ? link_next(&sessions[0].mem, &sessions[1].mem, &sessions[0]) : link_next(&sessions[0].mem, NULL,
+    size > 1 ? link_next(&sessions[0].mem, &sessions[1].mem, &sessions[0]) : link_next(
+      &sessions[0].mem, NULL,
       &sessions[0]);
     for (unsigned int i = 1; i <= size - 1; i++) {
       link_prev(&sessions[i - 1].mem, &sessions[i].mem, &sessions[i]);

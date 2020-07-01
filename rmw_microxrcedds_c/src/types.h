@@ -179,7 +179,7 @@ typedef struct rmw_uxrce_subscription_t
 typedef struct rmw_uxrce_publisher_t
 {
   struct rmw_uxrce_mempool_item_t mem;
-  rmw_publisher_t  * rmw_handle;
+  rmw_publisher_t * rmw_handle;
   uxrObjectId publisher_id;
   uxrObjectId datawriter_id;
   rmw_gid_t publisher_gid;

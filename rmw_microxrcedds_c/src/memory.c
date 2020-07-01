@@ -15,7 +15,9 @@
 #include "./memory.h"  // NOLINT
 
 
-void link_next(struct rmw_uxrce_mempool_item_t * current, struct rmw_uxrce_mempool_item_t * next, void * data)
+void link_next(
+  struct rmw_uxrce_mempool_item_t * current, struct rmw_uxrce_mempool_item_t * next,
+  void * data)
 {
   if (current) {
     current->next = next;
@@ -26,7 +28,9 @@ void link_next(struct rmw_uxrce_mempool_item_t * current, struct rmw_uxrce_mempo
   }
 }
 
-void link_prev(struct rmw_uxrce_mempool_item_t * previous, struct rmw_uxrce_mempool_item_t * current, void * data)
+void link_prev(
+  struct rmw_uxrce_mempool_item_t * previous,
+  struct rmw_uxrce_mempool_item_t * current, void * data)
 {
   if (current) {
     current->prev = previous;

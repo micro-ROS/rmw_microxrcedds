@@ -52,7 +52,8 @@ rmw_create_service(
     rmw_service->data = NULL;
     rmw_service->implementation_identifier = rmw_get_implementation_identifier();
 
-    rmw_service->service_name = (const char *)(rmw_allocate(sizeof(char) * (strlen(service_name) + 1)));
+    rmw_service->service_name =
+      (const char *)(rmw_allocate(sizeof(char) * (strlen(service_name) + 1)));
     if (!rmw_service->service_name) {
       RMW_SET_ERROR_MSG("failed to allocate memory");
       goto fail;
@@ -81,7 +82,7 @@ rmw_create_service(
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE
     if (NULL == type_support_xrce) {
       type_support_xrce = get_service_typesupport_handle(
-      type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
+        type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
     }
 #endif
     if (NULL == type_support_xrce) {
@@ -109,7 +110,8 @@ rmw_create_service(
     custom_service->service_id = uxr_object_id(custom_node->context->id_replier++, UXR_REPLIER_ID);
 
     memset(custom_service->service_gid.data, 0, RMW_GID_STORAGE_SIZE);
-    memcpy(custom_service->service_gid.data, &custom_service->service_id,
+    memcpy(
+      custom_service->service_gid.data, &custom_service->service_id,
       sizeof(uxrObjectId));
 
     uint16_t service_req = UXR_INVALID_REQUEST_ID;
@@ -117,13 +119,17 @@ rmw_create_service(
 #ifdef MICRO_XRCEDDS_USE_XML
     char service_name_id[20];
     generate_name(&custom_service->service_id, service_name_id, sizeof(service_name_id));
-    if (!build_service_xml(service_name_id, service_name, false, custom_service->type_support_callbacks, qos_policies, xml_buffer, sizeof(xml_buffer))) {
+    if (!build_service_xml(
+        service_name_id, service_name, false,
+        custom_service->type_support_callbacks, qos_policies, xml_buffer, sizeof(xml_buffer)))
+    {
       RMW_SET_ERROR_MSG("failed to generate xml request for service creation");
       goto fail;
     }
-    service_req = uxr_buffer_create_replier_xml(&custom_node->context->session,
-        custom_node->context->reliable_output, custom_service->service_id,
-        custom_node->participant_id, xml_buffer, UXR_REPLACE);
+    service_req = uxr_buffer_create_replier_xml(
+      &custom_node->context->session,
+      custom_node->context->reliable_output, custom_service->service_id,
+      custom_node->participant_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
     // CHECK IF THIS IS NECESSARY
     // service_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
@@ -135,8 +141,9 @@ rmw_create_service(
 
     uint16_t requests[] = {service_req};
     uint8_t status[1];
-    if (!uxr_run_session_until_all_status(&custom_node->context->session, 1000, requests,
-      status, 1))
+    if (!uxr_run_session_until_all_status(
+        &custom_node->context->session, 1000, requests,
+        status, 1))
     {
       RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
       put_memory(&service_memory, &custom_service->mem);
@@ -150,11 +157,12 @@ rmw_create_service(
     delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
 
     custom_service->stream_id =
-      (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT)
-      ? custom_node->context->best_effort_input
-      : custom_node->context->reliable_input;
+      (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+      custom_node->context->best_effort_input :
+      custom_node->context->reliable_input;
 
-    custom_service->request_id = uxr_buffer_request_data(&custom_node->context->session,
+    custom_service->request_id = uxr_buffer_request_data(
+      &custom_node->context->session,
       custom_node->context->reliable_output, custom_service->service_id,
       custom_service->stream_id, &delivery_control);
   }
@@ -185,8 +193,9 @@ rmw_destroy_service(
   } else if (!service) {
     RMW_SET_ERROR_MSG("service handle is null");
     result_ret = RMW_RET_ERROR;
-  } else if (strcmp(service->implementation_identifier,  // NOLINT
-    rmw_get_implementation_identifier()) != 0)
+  } else if (strcmp(
+      service->implementation_identifier,                // NOLINT
+      rmw_get_implementation_identifier()) != 0)
   {
     RMW_SET_ERROR_MSG("service handle not from this implementation");
     result_ret = RMW_RET_ERROR;
@@ -197,13 +206,15 @@ rmw_destroy_service(
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
     uint16_t delete_service =
-      uxr_buffer_delete_entity(&custom_node->context->session, custom_node->context->reliable_output,
-        custom_service->service_id);
+      uxr_buffer_delete_entity(
+      &custom_node->context->session, custom_node->context->reliable_output,
+      custom_service->service_id);
 
     uint16_t requests[] = {delete_service};
     uint8_t status[sizeof(requests) / 2];
-    if (!uxr_run_session_until_all_status(&custom_node->context->session, 1000, requests, status,
-      sizeof(status)))
+    if (!uxr_run_session_until_all_status(
+        &custom_node->context->session, 1000, requests, status,
+        sizeof(status)))
     {
       RMW_SET_ERROR_MSG("unable to remove service from the server");
       result_ret = RMW_RET_ERROR;

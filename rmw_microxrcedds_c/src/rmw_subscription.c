@@ -77,7 +77,8 @@ rmw_create_subscription(
       sizeof(rmw_subscription_t));
     rmw_subscription->data = NULL;
     rmw_subscription->implementation_identifier = rmw_get_implementation_identifier();
-    rmw_subscription->topic_name = (const char *)(rmw_allocate(sizeof(char) * (strlen(topic_name) + 1)));
+    rmw_subscription->topic_name =
+      (const char *)(rmw_allocate(sizeof(char) * (strlen(topic_name) + 1)));
     if (!rmw_subscription->topic_name) {
       RMW_SET_ERROR_MSG("failed to allocate memory");
       goto fail;
@@ -106,7 +107,7 @@ rmw_create_subscription(
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE
     if (NULL == type_support_xrce) {
       type_support_xrce = get_message_typesupport_handle(
-      type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
+        type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
     }
 #endif
     if (NULL == type_support_xrce) {
@@ -126,12 +127,14 @@ rmw_create_subscription(
     }
 
     memset(custom_subscription->subscription_gid.data, 0, RMW_GID_STORAGE_SIZE);
-    memcpy(custom_subscription->subscription_gid.data, &custom_subscription->subscriber_id,
+    memcpy(
+      custom_subscription->subscription_gid.data, &custom_subscription->subscriber_id,
       sizeof(uxrObjectId));
 
 
-    custom_subscription->topic = create_topic(custom_node, topic_name,
-        custom_subscription->type_support_callbacks, qos_policies);
+    custom_subscription->topic = create_topic(
+      custom_node, topic_name,
+      custom_subscription->type_support_callbacks, qos_policies);
     if (custom_subscription->topic == NULL) {
       goto fail;
     }
@@ -142,7 +145,9 @@ rmw_create_subscription(
     char profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
 #endif
 
-    custom_subscription->subscriber_id = uxr_object_id(custom_node->context->id_subscriber++, UXR_SUBSCRIBER_ID);
+    custom_subscription->subscriber_id = uxr_object_id(
+      custom_node->context->id_subscriber++,
+      UXR_SUBSCRIBER_ID);
     uint16_t subscriber_req = UXR_INVALID_REQUEST_ID;
 
 #ifdef MICRO_XRCEDDS_USE_XML
@@ -152,50 +157,58 @@ rmw_create_subscription(
       RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
       goto fail;
     }
-    subscriber_req = uxr_buffer_create_subscriber_xml(&custom_node->context->session,
-        custom_node->context->reliable_output, custom_subscription->subscriber_id,
-        custom_node->participant_id, xml_buffer, UXR_REPLACE);
+    subscriber_req = uxr_buffer_create_subscriber_xml(
+      &custom_node->context->session,
+      custom_node->context->reliable_output, custom_subscription->subscriber_id,
+      custom_node->participant_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
     // TODO(BORJA)  Publisher by reference does not make sense in
     //              current micro XRCE-DDS implementation.
-    subscriber_req = uxr_buffer_create_subscriber_xml(&custom_node->context->session,
-        custom_node->context->reliable_output, custom_subscription->subscriber_id,
-        custom_node->participant_id, "", UXR_REPLACE);
+    subscriber_req = uxr_buffer_create_subscriber_xml(
+      &custom_node->context->session,
+      custom_node->context->reliable_output, custom_subscription->subscriber_id,
+      custom_node->participant_id, "", UXR_REPLACE);
 #endif
 
 
-    custom_subscription->datareader_id = uxr_object_id(custom_node->context->id_datareader++, UXR_DATAREADER_ID);
+    custom_subscription->datareader_id = uxr_object_id(
+      custom_node->context->id_datareader++,
+      UXR_DATAREADER_ID);
     uint16_t datareader_req = UXR_INVALID_REQUEST_ID;
 
 #ifdef MICRO_XRCEDDS_USE_XML
-    if (!build_datareader_xml(topic_name, custom_subscription->type_support_callbacks,
-      qos_policies, xml_buffer,
-      sizeof(xml_buffer)))
+    if (!build_datareader_xml(
+        topic_name, custom_subscription->type_support_callbacks,
+        qos_policies, xml_buffer,
+        sizeof(xml_buffer)))
     {
       RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
       goto fail;
     }
 
-    datareader_req = uxr_buffer_create_datareader_xml(&custom_node->context->session,
-        custom_node->context->reliable_output, custom_subscription->datareader_id,
-        custom_subscription->subscriber_id, xml_buffer, UXR_REPLACE);
+    datareader_req = uxr_buffer_create_datareader_xml(
+      &custom_node->context->session,
+      custom_node->context->reliable_output, custom_subscription->datareader_id,
+      custom_subscription->subscriber_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
     if (!build_datareader_profile(topic_name, profile_name, sizeof(profile_name))) {
       RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
       goto fail;
     }
 
-    datareader_req = uxr_buffer_create_datareader_ref(&custom_node->context->session,
-        custom_node->context->reliable_output, custom_subscription->datareader_id,
-        custom_subscription->subscriber_id, profile_name, UXR_REPLACE);
+    datareader_req = uxr_buffer_create_datareader_ref(
+      &custom_node->context->session,
+      custom_node->context->reliable_output, custom_subscription->datareader_id,
+      custom_subscription->subscriber_id, profile_name, UXR_REPLACE);
 #endif
 
     rmw_subscription->data = custom_subscription;
 
     uint16_t requests[] = {subscriber_req, datareader_req};
     uint8_t status[sizeof(requests) / 2];
-    if (!uxr_run_session_until_all_status(&custom_node->context->session, 1000, requests,
-      status, sizeof(status)))
+    if (!uxr_run_session_until_all_status(
+        &custom_node->context->session, 1000, requests,
+        status, sizeof(status)))
     {
       RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
       put_memory(&subscription_memory, &custom_subscription->mem);
@@ -209,11 +222,12 @@ rmw_create_subscription(
     delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
 
     custom_subscription->stream_id =
-      (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT)
-      ? custom_node->context->best_effort_input
-      : custom_node->context->reliable_input;
+      (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+      custom_node->context->best_effort_input :
+      custom_node->context->reliable_input;
 
-    custom_subscription->subscription_request = uxr_buffer_request_data(&custom_node->context->session,
+    custom_subscription->subscription_request = uxr_buffer_request_data(
+      &custom_node->context->session,
       custom_node->context->reliable_output, custom_subscription->datareader_id,
       custom_subscription->stream_id, &delivery_control);
   }
@@ -238,8 +252,8 @@ rmw_subscription_count_matched_publishers(
 
 rmw_ret_t
 rmw_subscription_get_actual_qos(
-        const rmw_subscription_t * subscription,
-        rmw_qos_profile_t * qos)
+  const rmw_subscription_t * subscription,
+  rmw_qos_profile_t * qos)
 {
   (void) qos;
 
@@ -266,8 +280,9 @@ rmw_destroy_subscription(rmw_node_t * node, rmw_subscription_t * subscription)
   } else if (!subscription) {
     RMW_SET_ERROR_MSG("subscription handle is null");
     result_ret = RMW_RET_ERROR;
-  } else if (strcmp(subscription->implementation_identifier,  // NOLINT
-    rmw_get_implementation_identifier()) != 0)
+  } else if (strcmp(
+      subscription->implementation_identifier,                // NOLINT
+      rmw_get_implementation_identifier()) != 0)
   {
     RMW_SET_ERROR_MSG("subscription handle not from this implementation");
     result_ret = RMW_RET_ERROR;
@@ -278,16 +293,19 @@ rmw_destroy_subscription(rmw_node_t * node, rmw_subscription_t * subscription)
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
     uint16_t delete_datareader =
-      uxr_buffer_delete_entity(&custom_node->context->session, custom_node->context->reliable_output,
-        custom_subscription->datareader_id);
+      uxr_buffer_delete_entity(
+      &custom_node->context->session, custom_node->context->reliable_output,
+      custom_subscription->datareader_id);
     uint16_t delete_subscriber =
-      uxr_buffer_delete_entity(&custom_node->context->session, custom_node->context->reliable_output,
-        custom_subscription->subscriber_id);
+      uxr_buffer_delete_entity(
+      &custom_node->context->session, custom_node->context->reliable_output,
+      custom_subscription->subscriber_id);
 
     uint16_t requests[] = {delete_datareader, delete_subscriber};
     uint8_t status[sizeof(requests) / 2];
-    if (!uxr_run_session_until_all_status(&custom_node->context->session, 1000, requests, status,
-      sizeof(status)))
+    if (!uxr_run_session_until_all_status(
+        &custom_node->context->session, 1000, requests, status,
+        sizeof(status)))
     {
       RMW_SET_ERROR_MSG("unable to remove publisher from the server");
       result_ret = RMW_RET_ERROR;

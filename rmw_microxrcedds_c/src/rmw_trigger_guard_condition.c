@@ -26,7 +26,10 @@ rmw_trigger_guard_condition(const rmw_guard_condition_t * guard_condition)
   if (!guard_condition) {
     RMW_SET_ERROR_MSG("guard condition pointer is null");
     ret = RMW_RET_ERROR;
-  } else if (strcmp(guard_condition->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+  } else if (strcmp(
+      guard_condition->implementation_identifier,
+      rmw_get_implementation_identifier()) != 0)
+  {
     RMW_SET_ERROR_MSG("guard condition handle not from this implementation");
     ret = RMW_RET_ERROR;
   } else {
