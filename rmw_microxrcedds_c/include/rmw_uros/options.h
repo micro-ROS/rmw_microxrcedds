@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMW_MICROXRCEDDS_C__RMW_UROS_OPTIONS_H
-#define RMW_MICROXRCEDDS_C__RMW_UROS_OPTIONS_H
+#ifndef RMW_UROS__OPTIONS_H_
+#define RMW_UROS__OPTIONS_H_
 
 #include <rmw/ret_types.h>
 #include <rmw/init_options.h>
@@ -62,4 +62,4 @@ rmw_ret_t rmw_uros_options_set_udp_address(const char* ip, const char* port, rmw
 rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_t* rmw_options);
 
 
-#endif // !RMW_MICROXRCEDDS_C__RMW_UROS_OPTIONS_H
+#endif // RMW_UROS__OPTIONS_H_

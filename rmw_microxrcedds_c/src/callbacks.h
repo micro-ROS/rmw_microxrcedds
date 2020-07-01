@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMW_MICROXRCEDDS_C__CALLBACKS_H_
-#define RMW_MICROXRCEDDS_C__CALLBACKS_H_
+#ifndef CALLBACKS_H_
+#define CALLBACKS_H_
 
 #include "./types.h"
 #include <rmw_microxrcedds_c/config.h>
@@ -48,4 +48,4 @@ void on_reply(  struct uxrSession* session,
                 uint16_t length,
                 void* args);
 
-#endif  // RMW_MICROXRCEDDS_C__CALLBACKS_H_
+#endif  // CALLBACKS_H_

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMW_MICROXRCEDDS_C__SRC__TYPES_H
-#define RMW_MICROXRCEDDS_C__SRC__TYPES_H
+#ifndef TYPES_H_
+#define TYPES_H_
 
 #include <stddef.h>
 
@@ -246,4 +246,4 @@ void rmw_uxrce_fini_client_memory(rmw_client_t * client);
 void rmw_uxrce_fini_service_memory(rmw_service_t * service);
 void rmw_uxrce_fini_topic_memory(rmw_uxrce_topic_t * topic);
 
-#endif  // RMW_MICROXRCEDDS_C__SRC__TYPES_H
+#endif  // TYPES_H_
