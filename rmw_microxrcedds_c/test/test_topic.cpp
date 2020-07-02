@@ -78,9 +78,10 @@ TEST_F(TestTopic, construction_and_destruction) {
   // TODO(pablogs9): Topic must be related to publisher in order to be counted
   // ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 1);
 
-  bool ret = destroy_topic(topic);
+  rmw_ret_t ret = destroy_topic(topic);
+  // TODO(pablogs9): Topic must be related to publisher in order to be counted
   // ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 0);
-  ASSERT_EQ(ret, true);
+  ASSERT_EQ(ret, RMW_RET_OK);
 }
 
 /*
@@ -108,15 +109,18 @@ TEST_F(TestTopic, multiple_topic_creation) {
       &dummy_qos_policies);
 
     ASSERT_NE((void *)created_topic, (void *)NULL);
-    ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), i + 1);
+    // TODO(pablogs9): Topic must be related to publisher in order to be counted
+    // ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), i + 1);
 
     created_topics.push_back(created_topic);
   }
 
   for (size_t i = 0; i < created_topics.size(); i++) {
-    ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), attempts - i);
-    bool ret = destroy_topic(created_topics.at(i));
-    ASSERT_EQ(ret, true);
+    // TODO(pablogs9): Topic must be related to publisher in order to be counted
+    // ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), attempts - i);
+    rmw_ret_t ret = destroy_topic(created_topics.at(i));
+    ASSERT_EQ(ret, RMW_RET_OK);
   }
-  ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 0);
+  // TODO(pablogs9): Topic must be related to publisher in order to be counted
+  // ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 0);
 }
