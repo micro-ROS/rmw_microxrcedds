@@ -55,7 +55,7 @@ rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 static bool client_memory_init = false;
 
 struct rmw_uxrce_mempool_t topics_memory;
-rmw_uxrce_client_t custom_topics[RMW_UXRCE_MAX_TOPICS];
+rmw_uxrce_client_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
 static bool topic_memory_init = false;
 
 // Memory init functions

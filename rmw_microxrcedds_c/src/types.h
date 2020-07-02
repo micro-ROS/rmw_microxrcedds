@@ -224,7 +224,7 @@ extern struct rmw_uxrce_mempool_t client_memory;
 extern rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 
 extern struct rmw_uxrce_mempool_t topics_memory;
-extern rmw_uxrce_client_t custom_topics[RMW_UXRCE_MAX_TOPICS];
+extern rmw_uxrce_client_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
 
 // Memory init functions
 
