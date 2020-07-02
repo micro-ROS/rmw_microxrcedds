@@ -119,8 +119,7 @@ TEST_F(TestSubscription, publish_and_receive) {
   ASSERT_EQ(rmw_publish(pub, &ros_message, NULL), RMW_RET_OK);
 
   void * aux_ptr;
-  do
-  {
+  do {
     aux_ptr = sub->data;
     rmw_subscriptions_t subscriptions;
     subscriptions.subscribers = &aux_ptr;
@@ -143,14 +142,14 @@ TEST_F(TestSubscription, publish_and_receive) {
     wait_timeout.sec = 1;
 
     rmw_ret_t ret = rmw_wait(
-        &subscriptions,
-        &guard_conditions,
-        &services,
-        &clients,
-        events,
-        wait_set,
-        &wait_timeout
-      );
+      &subscriptions,
+      &guard_conditions,
+      &services,
+      &clients,
+      events,
+      wait_set,
+      &wait_timeout
+    );
   } while (aux_ptr == NULL);
 
   rosidl_runtime_c__String read_ros_message;
