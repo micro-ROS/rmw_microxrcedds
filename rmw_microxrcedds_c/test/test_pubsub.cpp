@@ -31,7 +31,7 @@
 #define MICROXRCEDDS_PADDING sizeof(uint32_t)
 
 
-class TestSubscription : public RMWBaseTest
+class TestPubSub : public RMWBaseTest
 {
 protected:
   size_t id_gen = 0;
@@ -44,7 +44,7 @@ protected:
 /*
    Testing publish and subcribe to the same topic in diferent nodes
  */
-TEST_F(TestSubscription, publish_and_receive) {
+TEST_F(TestPubSub, publish_and_receive) {
   dummy_type_support_t dummy_type_support;
   ConfigureDummyTypeSupport(
     topic_type,
