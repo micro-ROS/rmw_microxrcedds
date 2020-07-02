@@ -141,6 +141,7 @@ TEST_F(TestPubSub, publish_and_receive) {
 
     wait_timeout.sec = 1;
 
+    // TODO(pablogs9): Ensure here that the wait works the first time with the Micro XRCE-DDS run session until data message update 
     rmw_ret_t ret = rmw_wait(
       &subscriptions,
       &guard_conditions,
