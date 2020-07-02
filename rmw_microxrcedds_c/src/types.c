@@ -164,12 +164,15 @@ void rmw_uxrce_init_sessions_memory(
   }
 }
 
-void rmw_uxrce_init_topics_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_topic_t * topics, size_t size)
+void rmw_uxrce_init_topics_memory(
+  struct rmw_uxrce_mempool_t * memory, rmw_uxrce_topic_t * topics,
+  size_t size)
 {
   if (size > 0 && !topic_memory_init) {
     topic_memory_init = true;
     link_prev(NULL, &topics[0].mem, NULL);
-    size > 1 ? link_next(&topics[0].mem, &topics[1].mem, &topics[0]) : link_next(&topics[0].mem, NULL,
+    size > 1 ? link_next(&topics[0].mem, &topics[1].mem, &topics[0]) : link_next(
+      &topics[0].mem, NULL,
       &topics[0]);
     for (unsigned int i = 1; i <= size - 1; i++) {
       link_prev(&topics[i - 1].mem, &topics[i].mem, &topics[i]);

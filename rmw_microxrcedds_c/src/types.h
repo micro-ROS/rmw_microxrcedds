@@ -227,13 +227,27 @@ extern rmw_uxrce_topic_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
 
 // Memory init functions
 
-void rmw_uxrce_init_sessions_memory(struct rmw_uxrce_mempool_t * memory, rmw_context_impl_t * sessions, size_t size);
-void rmw_uxrce_init_nodes_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_node_t * nodes, size_t size);
-void rmw_uxrce_init_service_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_service_t * services, size_t size);
-void rmw_uxrce_init_client_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_client_t * clients, size_t size);
-void rmw_uxrce_init_publisher_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_publisher_t * publishers, size_t size);
-void rmw_uxrce_init_subscriber_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_subscription_t * subscribers, size_t size);
-void rmw_uxrce_init_topics_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_topic_t * topics, size_t size);
+void rmw_uxrce_init_sessions_memory(
+  struct rmw_uxrce_mempool_t * memory,
+  rmw_context_impl_t * sessions, size_t size);
+void rmw_uxrce_init_nodes_memory(
+  struct rmw_uxrce_mempool_t * memory, rmw_uxrce_node_t * nodes,
+  size_t size);
+void rmw_uxrce_init_service_memory(
+  struct rmw_uxrce_mempool_t * memory,
+  rmw_uxrce_service_t * services, size_t size);
+void rmw_uxrce_init_client_memory(
+  struct rmw_uxrce_mempool_t * memory, rmw_uxrce_client_t * clients,
+  size_t size);
+void rmw_uxrce_init_publisher_memory(
+  struct rmw_uxrce_mempool_t * memory,
+  rmw_uxrce_publisher_t * publishers, size_t size);
+void rmw_uxrce_init_subscriber_memory(
+  struct rmw_uxrce_mempool_t * memory,
+  rmw_uxrce_subscription_t * subscribers, size_t size);
+void rmw_uxrce_init_topics_memory(
+  struct rmw_uxrce_mempool_t * memory, rmw_uxrce_topic_t * topics,
+  size_t size);
 
 // Memory management functions
 

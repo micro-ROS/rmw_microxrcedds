@@ -67,9 +67,10 @@ create_topic(
     goto fail;
   }
 
-  topic_req = uxr_buffer_create_topic_xml(&custom_node->context->session,
-      custom_node->context->reliable_output, custom_topic->topic_id,
-      custom_node->participant_id, xml_buffer, UXR_REPLACE);
+  topic_req = uxr_buffer_create_topic_xml(
+    &custom_node->context->session,
+    custom_node->context->reliable_output, custom_topic->topic_id,
+    custom_node->participant_id, xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
   (void)qos_policies;
   if (!build_topic_profile(topic_name, profile_name, sizeof(profile_name))) {
@@ -79,16 +80,18 @@ create_topic(
     goto fail;
   }
 
-  topic_req = uxr_buffer_create_topic_ref(&custom_node->context->session,
-      custom_node->context->reliable_output, custom_topic->topic_id,
-      custom_node->participant_id, profile_name, UXR_REPLACE);
+  topic_req = uxr_buffer_create_topic_ref(
+    &custom_node->context->session,
+    custom_node->context->reliable_output, custom_topic->topic_id,
+    custom_node->participant_id, profile_name, UXR_REPLACE);
 #endif
 
   // Send the request and wait for response
   uint8_t status;
   custom_topic->sync_with_agent =
-    uxr_run_session_until_all_status(&custom_node->context->session, 1000, &topic_req,
-      &status, 1);
+    uxr_run_session_until_all_status(
+    &custom_node->context->session, 1000, &topic_req,
+    &status, 1);
   if (!custom_topic->sync_with_agent) {
     RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
     rmw_uxrce_fini_topic_memory(custom_topic);
@@ -102,24 +105,26 @@ fail:
 
 rmw_ret_t destroy_topic(rmw_uxrce_topic_t * topic)
 {
-    rmw_ret_t result_ret = RMW_RET_OK;
+  rmw_ret_t result_ret = RMW_RET_OK;
 
-    uint16_t delete_topic = uxr_buffer_delete_entity(
-      &topic->owner_node->context->session,
-      topic->owner_node->context->reliable_output,
-      topic->topic_id);
+  uint16_t delete_topic = uxr_buffer_delete_entity(
+    &topic->owner_node->context->session,
+    topic->owner_node->context->reliable_output,
+    topic->topic_id);
 
-    uint16_t requests[] = {delete_topic};
-    uint8_t status[1];
-    if (!uxr_run_session_until_all_status(&topic->owner_node->context->session, 1000, requests, status, 1))
-    {
-      RMW_SET_ERROR_MSG("unable to remove topic from the server");
-      result_ret = RMW_RET_ERROR;
-    } else {
-      rmw_uxrce_fini_topic_memory(topic);
-      result_ret = RMW_RET_OK;
-    }
-    return result_ret;
+  uint16_t requests[] = {delete_topic};
+  uint8_t status[1];
+  if (!uxr_run_session_until_all_status(
+      &topic->owner_node->context->session, 1000, requests,
+      status, 1))
+  {
+    RMW_SET_ERROR_MSG("unable to remove topic from the server");
+    result_ret = RMW_RET_ERROR;
+  } else {
+    rmw_uxrce_fini_topic_memory(topic);
+    result_ret = RMW_RET_OK;
+  }
+  return result_ret;
 }
 
 size_t topic_count(rmw_uxrce_node_t * custom_node)

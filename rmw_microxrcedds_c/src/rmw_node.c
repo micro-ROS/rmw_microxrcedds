@@ -57,7 +57,7 @@ rmw_node_t * create_node(
     RMW_SET_ERROR_MSG("failed to allocate rmw_node_t");
     return NULL;
   }
-  
+
   node_info->rmw_handle = node_handle;
 
   node_handle->implementation_identifier = rmw_get_implementation_identifier();
