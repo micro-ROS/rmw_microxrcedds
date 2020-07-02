@@ -93,6 +93,8 @@ rmw_create_subscription(
 
     // TODO(Borja) micro_xrcedds_id is duplicated in subscriber_id and in subscription_gid.data
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)memory_node->data;
+    custom_subscription->rmw_handle = rmw_subscription;
+
     custom_subscription->owner_node = custom_node;
     custom_subscription->subscription_gid.implementation_identifier =
       rmw_get_implementation_identifier();

@@ -69,6 +69,8 @@ rmw_create_client(
     }
 
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)memory_node->data;
+    custom_client->rmw_handle = rmw_client;
+
     custom_client->owner_node = custom_node;
     custom_client->client_gid.implementation_identifier =
       rmw_get_implementation_identifier();

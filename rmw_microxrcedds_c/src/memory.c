@@ -105,9 +105,8 @@ void put_memory(struct rmw_uxrce_mempool_t * mem, struct rmw_uxrce_mempool_item_
     mem->allocateditems = item->next;
   }
 
-  // if (mem->freeitems)
-  // {
-  //     mem->freeitems->prev    = NULL;
+  // if (mem->freeitems){
+  //     mem->freeitems->prev = NULL;
   // }
 
   // Puts item in free pool

@@ -68,6 +68,8 @@ rmw_create_service(
     }
 
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)memory_node->data;
+    custom_service->rmw_handle = rmw_service;
+
     custom_service->owner_node = custom_node;
     custom_service->service_gid.implementation_identifier =
       rmw_get_implementation_identifier();

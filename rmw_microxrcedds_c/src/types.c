@@ -204,9 +204,11 @@ void rmw_uxrce_fini_node_memory(rmw_node_t * node)
   }
   if (node->data) {
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
+    custom_node->rmw_handle = NULL;
+    custom_node->context = NULL;
+
     put_memory(&node_memory, &custom_node->mem);
 
-    memset(custom_node, 0, sizeof(rmw_uxrce_node_t));
     node->data = NULL;
   }
 
@@ -232,10 +234,9 @@ void rmw_uxrce_fini_publisher_memory(rmw_publisher_t * publisher)
     if (custom_publisher->topic != NULL) {
       rmw_uxrce_fini_topic_memory(custom_publisher->topic);
     }
+    custom_publisher->rmw_handle = NULL;
 
     put_memory(&publisher_memory, &custom_publisher->mem);
-
-    memset(custom_publisher, 0, sizeof(rmw_uxrce_publisher_t));
     publisher->data = NULL;
   }
 
@@ -260,10 +261,9 @@ void rmw_uxrce_fini_subscription_memory(rmw_subscription_t * subscriber)
     if (custom_subscription->topic != NULL) {
       rmw_uxrce_fini_topic_memory(custom_subscription->topic);
     }
+    custom_subscription->rmw_handle = NULL;
 
     put_memory(&subscription_memory, &custom_subscription->mem);
-
-    memset(custom_subscription, 0, sizeof(rmw_uxrce_subscription_t));
     subscriber->data = NULL;
   }
   rmw_free(subscriber);
@@ -283,10 +283,9 @@ void rmw_uxrce_fini_service_memory(rmw_service_t * service)
   }
   if (service->data) {
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
+    custom_service->rmw_handle = NULL;
 
     put_memory(&service_memory, &custom_service->mem);
-
-    memset(custom_service, 0, sizeof(rmw_uxrce_service_t));
     service->data = NULL;
   }
   rmw_free(service);
@@ -306,10 +305,9 @@ void rmw_uxrce_fini_client_memory(rmw_client_t * client)
   }
   if (client->data) {
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
+    custom_client->rmw_handle = NULL;
 
     put_memory(&client_memory, &custom_client->mem);
-
-    memset(custom_client, 0, sizeof(rmw_uxrce_client_t));
     client->data = NULL;
   }
   rmw_free(client);

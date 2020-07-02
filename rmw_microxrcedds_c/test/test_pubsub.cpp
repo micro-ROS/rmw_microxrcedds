@@ -88,26 +88,25 @@ TEST_F(TestSubscription, publish_and_receive) {
   bool ignore_local_publications = true;
 
   rmw_node_t * node_pub;
-  node_pub = rmw_create_node(NULL, "pub_node", "/ns", 0, false);
-  EXPECT_NE((void *)node_pub, (void *)NULL);
+  node_pub = rmw_create_node(&test_context, "pub_node", "/ns", 0, false);
+  ASSERT_NE((void *)node_pub, (void *)NULL);
 
   rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
   rmw_publisher_t * pub = rmw_create_publisher(
     node_pub, &dummy_type_support.type_support,
     topic_name, &dummy_qos_policies, &default_publisher_options);
-  EXPECT_NE((void *)pub, (void *)NULL);
+  ASSERT_NE((void *)pub, (void *)NULL);
 
   rmw_node_t * node_sub;
-  node_sub = rmw_create_node(NULL, "sub_node", "/ns", 0, false);
-  EXPECT_NE((void *)node_sub, (void *)NULL);
+  node_sub = rmw_create_node(&test_context, "sub_node", "/ns", 0, false);
+  ASSERT_NE((void *)node_sub, (void *)NULL);
 
   rmw_subscription_options_t default_subscription_options = rmw_get_default_subscription_options();
 
   rmw_subscription_t * sub = rmw_create_subscription(
     node_sub, &dummy_type_support.type_support,
     topic_name, &dummy_qos_policies, &default_subscription_options);
-  EXPECT_NE((void *)sub, (void *)NULL);
-
+  ASSERT_NE((void *)sub, (void *)NULL);
 
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
@@ -117,32 +116,42 @@ TEST_F(TestSubscription, publish_and_receive) {
   ros_message.capacity = strlen(ros_message.data);
   ros_message.size = ros_message.capacity;
 
-  EXPECT_EQ(rmw_publish(pub, &ros_message, NULL), RMW_RET_OK);
+  ASSERT_EQ(rmw_publish(pub, &ros_message, NULL), RMW_RET_OK);
 
-  rmw_subscriptions_t subscriptions;
-  rmw_guard_conditions_t * guard_conditions = NULL;
-  rmw_services_t * services = NULL;
-  rmw_clients_t * clients = NULL;
-  rmw_events_t * events = NULL;
-  rmw_wait_set_t * wait_set = NULL;
-  rmw_time_t wait_timeout;
+  void * aux_ptr;
+  do
+  {
+    aux_ptr = sub->data;
+    rmw_subscriptions_t subscriptions;
+    subscriptions.subscribers = &aux_ptr;
+    subscriptions.subscriber_count = 1;
 
-  subscriptions.subscribers = reinterpret_cast<void **>(&sub->data);
-  subscriptions.subscriber_count = 1;
+    rmw_guard_conditions_t guard_conditions;
+    guard_conditions.guard_condition_count = 0;
 
-  wait_timeout.sec = 1;
+    rmw_services_t services;
+    services.service_count = 0;
 
-  EXPECT_EQ(
-    rmw_wait(
-      &subscriptions,
-      guard_conditions,
-      services,
-      clients,
-      events,
-      wait_set,
-      &wait_timeout
-    ),
-    RMW_RET_OK);
+    rmw_clients_t clients;
+    clients.client_count = 0;
+
+    rmw_events_t * events = NULL;
+    rmw_wait_set_t * wait_set = NULL;
+    rmw_time_t wait_timeout;
+
+
+    wait_timeout.sec = 1;
+
+      rmw_wait(
+        &subscriptions,
+        &guard_conditions,
+        &services,
+        &clients,
+        events,
+        wait_set,
+        &wait_timeout
+      );
+  } while (aux_ptr == NULL);
 
   rosidl_runtime_c__String read_ros_message;
   char buff[100];
@@ -151,7 +160,7 @@ TEST_F(TestSubscription, publish_and_receive) {
   read_ros_message.size = 0;
 
   bool taken;
-  EXPECT_EQ(
+  ASSERT_EQ(
     rmw_take_with_info(
       sub,
       &read_ros_message,
@@ -159,8 +168,8 @@ TEST_F(TestSubscription, publish_and_receive) {
       NULL,
       NULL
     ), RMW_RET_OK);
-  EXPECT_EQ(taken, true);
-  EXPECT_EQ(strcmp(content, read_ros_message.data), 0);
-  EXPECT_EQ(strcmp(ros_message.data, read_ros_message.data), 0);
-  EXPECT_EQ(ros_message.size, read_ros_message.size);
+  ASSERT_EQ(taken, true);
+  ASSERT_EQ(strcmp(content, read_ros_message.data), 0);
+  ASSERT_EQ(strcmp(ros_message.data, read_ros_message.data), 0);
+  ASSERT_EQ(ros_message.size, read_ros_message.size);
 }

@@ -197,6 +197,7 @@ typedef struct rmw_uxrce_publisher_t
 typedef struct rmw_uxrce_node_t
 {
   struct rmw_uxrce_mempool_item_t mem;
+  rmw_node_t * rmw_handle;
   struct  rmw_context_impl_t * context;
 
   uxrObjectId participant_id;

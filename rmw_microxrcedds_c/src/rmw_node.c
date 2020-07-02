@@ -35,6 +35,8 @@ rmw_node_t * create_node(
   const char * name, const char * namespace_, size_t domain_id,
   const rmw_context_t * context)
 {
+  rmw_node_t * node_handle = NULL;
+
   if (!context) {
     RMW_SET_ERROR_MSG("context is null");
     return NULL;
@@ -43,19 +45,21 @@ rmw_node_t * create_node(
   struct rmw_uxrce_mempool_item_t * memory_node = get_memory(&node_memory);
   if (!memory_node) {
     RMW_SET_ERROR_MSG("Not available memory node");
-    return NULL;
+    goto fail;
   }
 
   rmw_uxrce_node_t * node_info = (rmw_uxrce_node_t *)memory_node->data;
 
   node_info->context = context->impl;
 
-  rmw_node_t * node_handle = NULL;
   node_handle = rmw_node_allocate();
   if (!node_handle) {
     RMW_SET_ERROR_MSG("failed to allocate rmw_node_t");
     return NULL;
   }
+  
+  node_info->rmw_handle = node_handle;
+
   node_handle->implementation_identifier = rmw_get_implementation_identifier();
   node_handle->data = node_info;
   node_handle->name = (const char *)(rmw_allocate(sizeof(char) * (strlen(name) + 1)));
@@ -105,12 +109,18 @@ rmw_node_t * create_node(
   uint16_t requests[] = {participant_req};
 
   if (!uxr_run_session_until_all_status(&node_info->context->session, 1000, requests, status, 1)) {
-    uxr_delete_session(&node_info->context->session);
     rmw_uxrce_fini_node_memory(node_handle);
     RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
     return NULL;
   }
 
+  return node_handle;
+
+fail:
+  if (node_handle != NULL) {
+    rmw_uxrce_fini_node_memory(node_handle);
+  }
+  node_handle = NULL;
   return node_handle;
 }
 
@@ -156,7 +166,6 @@ rmw_ret_t rmw_destroy_node(rmw_node_t * node)
   }
 
   rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
-  // TODO(Borja) make sure that session deletion deletes participant and related entities.
   // TODO(Pablo) make sure that other entities are removed from the pools
 
   struct rmw_uxrce_mempool_item_t * item = NULL;
@@ -195,6 +204,20 @@ rmw_ret_t rmw_destroy_node(rmw_node_t * node)
     if (custom_client->owner_node == custom_node) {
       ret = rmw_destroy_client(node, custom_client->rmw_handle);
     }
+  }
+
+  uint16_t participant_req = uxr_buffer_delete_entity(
+    &custom_node->context->session,
+    custom_node->context->reliable_output,
+    custom_node->participant_id);
+  uint8_t status[1];
+  uint16_t requests[] = {participant_req};
+
+  if (!uxr_run_session_until_all_status(
+      &custom_node->context->session, 1000, requests, status,
+      1))
+  {
+    ret = RMW_RET_ERROR;
   }
 
   rmw_uxrce_fini_node_memory(node);
