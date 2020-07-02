@@ -292,21 +292,23 @@ rmw_destroy_subscription(rmw_node_t * node, rmw_subscription_t * subscription)
     RMW_SET_ERROR_MSG("subscription imp is null");
     result_ret = RMW_RET_ERROR;
   } else {
-    rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
+
+    destroy_topic(custom_subscription->topic);
+
     uint16_t delete_datareader =
       uxr_buffer_delete_entity(
-      &custom_node->context->session, custom_node->context->reliable_output,
+      &custom_subscription->owner_node->context->session, custom_subscription->owner_node->context->reliable_output,
       custom_subscription->datareader_id);
     uint16_t delete_subscriber =
       uxr_buffer_delete_entity(
-      &custom_node->context->session, custom_node->context->reliable_output,
+      &custom_subscription->owner_node->context->session, custom_subscription->owner_node->context->reliable_output,
       custom_subscription->subscriber_id);
 
     uint16_t requests[] = {delete_datareader, delete_subscriber};
     uint8_t status[sizeof(requests) / 2];
     if (!uxr_run_session_until_all_status(
-        &custom_node->context->session, 1000, requests, status,
+        &custom_subscription->owner_node->context->session, 1000, requests, status,
         sizeof(status)))
     {
       RMW_SET_ERROR_MSG("unable to remove publisher from the server");

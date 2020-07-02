@@ -40,7 +40,6 @@ create_topic(
 
   // Init
   custom_topic->sync_with_agent = false;
-  custom_topic->usage_account = 1;
   custom_topic->owner_node = custom_node;
 
   // Asociate to typesupport
@@ -99,4 +98,52 @@ create_topic(
 
 fail:
   return custom_topic;
+}
+
+rmw_ret_t destroy_topic(rmw_uxrce_topic_t * topic)
+{
+    rmw_ret_t result_ret = RMW_RET_OK;
+
+    uint16_t delete_topic = uxr_buffer_delete_entity(
+      &topic->owner_node->context->session,
+      topic->owner_node->context->reliable_output,
+      topic->topic_id);
+
+    uint16_t requests[] = {delete_topic};
+    uint8_t status[1];
+    if (!uxr_run_session_until_all_status(&topic->owner_node->context->session, 1000, requests, status, 1))
+    {
+      RMW_SET_ERROR_MSG("unable to remove topic from the server");
+      result_ret = RMW_RET_ERROR;
+    } else {
+      rmw_uxrce_fini_topic_memory(topic);
+      result_ret = RMW_RET_OK;
+    }
+    return result_ret;
+}
+
+size_t topic_count(rmw_uxrce_node_t * custom_node)
+{
+  size_t count = 0;
+  struct rmw_uxrce_mempool_item_t * item = NULL;
+
+  item = publisher_memory.allocateditems;
+  while (item != NULL) {
+    rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)item->data;
+    item = item->next;
+    if (custom_publisher->owner_node == custom_node && custom_publisher->topic != NULL) {
+      count++;
+    }
+  }
+
+  item = subscription_memory.allocateditems;
+  while (item != NULL) {
+    rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)item->data;
+    item = item->next;
+    if (custom_subscription->owner_node == custom_node && custom_subscription->topic != NULL) {
+      count++;
+    }
+  }
+
+  return count;
 }

@@ -74,10 +74,12 @@ TEST_F(TestTopic, construction_and_destruction) {
     &dummy_type_support.callbacks,
     &dummy_qos_policies);
   ASSERT_NE((void *)topic, (void *)NULL);
-  ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 1);
+
+  // TODO(pablogs9): Topic must be related to publisher in order to be counted
+  // ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 1);
 
   bool ret = destroy_topic(topic);
-  ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 0);
+  // ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 0);
   ASSERT_EQ(ret, true);
 }
 

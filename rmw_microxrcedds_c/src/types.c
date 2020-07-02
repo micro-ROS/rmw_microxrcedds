@@ -55,7 +55,7 @@ rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 static bool client_memory_init = false;
 
 struct rmw_uxrce_mempool_t topics_memory;
-rmw_uxrce_client_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
+rmw_uxrce_topic_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
 static bool topic_memory_init = false;
 
 // Memory init functions
@@ -231,9 +231,6 @@ void rmw_uxrce_fini_publisher_memory(rmw_publisher_t * publisher)
   if (publisher->data) {
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
 
-    if (custom_publisher->topic != NULL) {
-      rmw_uxrce_fini_topic_memory(custom_publisher->topic);
-    }
     custom_publisher->rmw_handle = NULL;
 
     put_memory(&publisher_memory, &custom_publisher->mem);
@@ -258,9 +255,6 @@ void rmw_uxrce_fini_subscription_memory(rmw_subscription_t * subscriber)
   if (subscriber->data) {
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscriber->data;
 
-    if (custom_subscription->topic != NULL) {
-      rmw_uxrce_fini_topic_memory(custom_subscription->topic);
-    }
     custom_subscription->rmw_handle = NULL;
 
     put_memory(&subscription_memory, &custom_subscription->mem);
@@ -316,5 +310,4 @@ void rmw_uxrce_fini_client_memory(rmw_client_t * client)
 void rmw_uxrce_fini_topic_memory(rmw_uxrce_topic_t * topic)
 {
   put_memory(&topics_memory, &topic->mem);
-  memset(topic, 0, sizeof(rmw_uxrce_topic_t));
 }

@@ -99,7 +99,6 @@ typedef struct rmw_uxrce_topic_t
   const message_type_support_callbacks_t * message_type_support_callbacks;
 
   bool sync_with_agent;
-  int32_t usage_account;
   struct rmw_uxrce_node_t * owner_node;
 } rmw_uxrce_topic_t;
 
@@ -224,7 +223,7 @@ extern struct rmw_uxrce_mempool_t client_memory;
 extern rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 
 extern struct rmw_uxrce_mempool_t topics_memory;
-extern rmw_uxrce_client_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
+extern rmw_uxrce_topic_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
 
 // Memory init functions
 

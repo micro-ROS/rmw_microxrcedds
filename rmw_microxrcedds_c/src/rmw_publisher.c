@@ -314,6 +314,9 @@ rmw_destroy_publisher(
     result_ret = RMW_RET_ERROR;
   } else {
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
+
+    destroy_topic(custom_publisher->topic);
+
     uint16_t delete_writer = uxr_buffer_delete_entity(
       &custom_publisher->owner_node->context->session,
       custom_publisher->owner_node->context->reliable_output,

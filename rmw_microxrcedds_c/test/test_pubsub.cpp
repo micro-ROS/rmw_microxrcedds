@@ -142,7 +142,7 @@ TEST_F(TestSubscription, publish_and_receive) {
 
     wait_timeout.sec = 1;
 
-      rmw_wait(
+    rmw_ret_t ret = rmw_wait(
         &subscriptions,
         &guard_conditions,
         &services,
