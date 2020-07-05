@@ -27,6 +27,11 @@
 
 #include "./utils.h"
 
+/* Variables definition to fix compiler warnings */
+
+#define SERVICE_MAX_NAME    20
+#define TIMEOUT_IN_MS       1000
+
 rmw_service_t *
 rmw_create_service(
   const rmw_node_t * node,
@@ -115,7 +120,7 @@ rmw_create_service(
 
     uint16_t service_req;
 #ifdef MICRO_XRCEDDS_USE_XML
-    char service_name_id[20];
+    char service_name_id[SERVICE_MAX_NAME];
     generate_name(&custom_service->service_id, service_name_id, sizeof(service_name_id));
     if (!build_service_xml(service_name_id, service_name, false, custom_service->type_support_callbacks, qos_policies, xml_buffer, sizeof(xml_buffer))) {
       RMW_SET_ERROR_MSG("failed to generate xml request for service creation");

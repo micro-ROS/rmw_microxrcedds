@@ -80,7 +80,7 @@ create_topic(
 #endif
 
   // Generate request
-  uint16_t topic_req;
+  uint16_t topic_req = 0;
 #ifdef MICRO_XRCEDDS_USE_XML
   if (!build_topic_xml(topic_name, message_type_support_callbacks,
     qos_policies, xml_buffer, sizeof(xml_buffer)))

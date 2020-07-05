@@ -20,6 +20,12 @@
 #include <limits.h>
 #include <math.h>
 
+/* Variables definition to fix compiler warnings */
+
+#define TIMEOUT_IN_MS    1000
+#define MILISEC_TO_SEC   1000
+#define NANOSEC_TO_MS    1000000
+
 rmw_ret_t
 rmw_wait(
   rmw_subscriptions_t * subscriptions,
@@ -40,13 +46,13 @@ rmw_wait(
   uint64_t timeout;
   if (wait_timeout != NULL) {
     // Convert to int (checking overflow)
-    if (wait_timeout->sec >= (UINT64_MAX / 1000)) {
+    if (wait_timeout->sec >= (UINT64_MAX / MILISEC_TO_SEC)) {
       // Overflow
       timeout = INT_MAX;
       RMW_SET_ERROR_MSG("Wait timeout overflow");
     } else {
-      timeout = wait_timeout->sec * 1000;
-      uint64_t timeout_ms = wait_timeout->nsec / 1000000;
+      timeout = wait_timeout->sec * MILISEC_TO_SEC;
+      uint64_t timeout_ms = wait_timeout->nsec / NANOSEC_TO_MS;
       if ((UINT64_MAX - timeout) <= timeout_ms) {
         // Overflow
         timeout = INT_MAX;

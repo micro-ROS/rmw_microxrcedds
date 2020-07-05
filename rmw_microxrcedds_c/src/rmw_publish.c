@@ -18,6 +18,10 @@
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 
+/* Variables definition to fix compiler warnings */
+
+#define TIMEOUT_IN_MS    1000
+
 rmw_ret_t
 rmw_publish(
   const rmw_publisher_t * publisher,
@@ -55,7 +59,8 @@ rmw_publish(
       if (UXR_BEST_EFFORT_STREAM == custom_publisher->stream_id.type){
         uxr_flash_output_streams(&custom_publisher->owner_node->context->session);
       }else{
-        written &= uxr_run_session_until_confirm_delivery(&custom_publisher->owner_node->context->session, 1000);
+        written &= uxr_run_session_until_confirm_delivery(&custom_publisher->owner_node->context->session,
+                                                          TIMEOUT_IN_MS);
       }
     }
     if (!written) {

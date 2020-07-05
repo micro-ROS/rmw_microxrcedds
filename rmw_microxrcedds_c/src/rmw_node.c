@@ -31,6 +31,10 @@
 #include "./types.h"
 #include "./utils.h"
 
+/* Variables definition to fix compiler warnings */
+
+#define TIMEOUT_IN_MS       1000
+
 rmw_node_t * create_node(const char * name, const char * namespace_, size_t domain_id, const rmw_context_t * context)
 {
   if (!context) {
@@ -73,7 +77,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   memcpy((char *)node_handle->namespace_, namespace_, strlen(namespace_) + 1);
 
   node_info->participant_id = uxr_object_id(node_info->context->id_participant++, UXR_PARTICIPANT_ID);
-  uint16_t participant_req;
+  uint16_t participant_req = 0;
 #ifdef MICRO_XRCEDDS_USE_XML
   char participant_xml[RMW_UXRCE_XML_BUFFER_LENGTH];
   if (!build_participant_xml(domain_id, name, participant_xml, sizeof(participant_xml))) {
@@ -100,7 +104,7 @@ rmw_node_t * create_node(const char * name, const char * namespace_, size_t doma
   uint8_t status[1];
   uint16_t requests[] = {participant_req};
 
-  if (!uxr_run_session_until_all_status(&node_info->context->session, 1000, requests, status, 1)) {
+  if (!uxr_run_session_until_all_status(&node_info->context->session, TIMEOUT_IN_MS, requests, status, 1)) {
     uxr_delete_session(&node_info->context->session);
     rmw_uxrce_fini_node_memory(node_handle);
     RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
