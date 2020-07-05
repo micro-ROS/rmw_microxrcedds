@@ -29,6 +29,11 @@
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 
+/* Variables definition to fix compiler warnings */
+
+#define PUBR_MAX_NAME    20
+#define TIMEOUT_IN_MS    1000
+
 rmw_ret_t
 rmw_init_publisher_allocation(
   const rosidl_message_type_support_t * type_support,
@@ -142,7 +147,7 @@ rmw_create_publisher(
     custom_publisher->publisher_id = uxr_object_id(custom_node->context->id_publisher++, UXR_PUBLISHER_ID);
     uint16_t publisher_req;
   #ifdef MICRO_XRCEDDS_USE_XML
-    char publisher_name[20];
+    char publisher_name[PUBR_MAX_NAME];
     generate_name(&custom_publisher->publisher_id, publisher_name, sizeof(publisher_name));
     if (!build_publisher_xml(publisher_name, xml_buffer, sizeof(xml_buffer))) {
       RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");

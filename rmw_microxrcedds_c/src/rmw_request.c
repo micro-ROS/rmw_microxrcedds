@@ -17,6 +17,10 @@
 #include <rmw/rmw.h>
 #include <rmw/error_handling.h>
 
+/* Variables definition to fix compiler warnings */
+
+#define TIMEOUT_IN_MS    100
+
 rmw_ret_t
 rmw_send_request(
   const rmw_client_t * client,
@@ -52,7 +56,7 @@ rmw_send_request(
     return RMW_RET_ERROR;
   }
 
-  uxr_run_session_time(&custom_node->context->session,100);
+  uxr_run_session_time(&custom_node->context->session, TIMEOUT_IN_MS);
 
   return RMW_RET_OK;
 }

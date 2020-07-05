@@ -26,7 +26,7 @@
 
 #include "./callbacks.h"
 
-#ifdef MICRO_XRCEDDS_SERIAL || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
+#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
 #define CLOSE_TRANSPORT(transport) uxr_close_serial_transport(transport)
 #elif defined(MICRO_XRCEDDS_UDP)
 #define CLOSE_TRANSPORT(transport) uxr_close_udp_transport(transport)
@@ -34,6 +34,9 @@
 #define CLOSE_TRANSPORT(transport)
 #endif
 
+/* Variables definition to fix compiler warnings */
+
+#define NANOSEC_TO_SEC 1000000000UL
 
 rmw_ret_t
 rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t allocator)
@@ -77,7 +80,7 @@ rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t all
 
   struct timespec ts;
   clock_gettime(CLOCK_REALTIME, &ts);
-  srand((ts.tv_sec * 1000000000UL ) + ts.tv_nsec);
+  srand((ts.tv_sec * NANOSEC_TO_SEC) + ts.tv_nsec);
 
   do {
     init_options->impl->connection_params.client_key = rand();
@@ -224,7 +227,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
           &context_impl->serial_platform, fd, 0, 1))
         {
           RMW_SET_ERROR_MSG("Can not create an serial connection");
-          return NULL;
+          return (rmw_ret_t) NULL;
         }
       }
     }

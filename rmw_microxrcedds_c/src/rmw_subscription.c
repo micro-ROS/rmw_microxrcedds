@@ -27,6 +27,11 @@
 #include <rmw/types.h>
 #include <rmw/allocators.h>
 
+/* Variables definition to fix compiler warnings */
+
+#define SUB_MAX_NAME    20
+#define TIMEOUT_IN_MS    1000
+
 rmw_ret_t
 rmw_init_subscription_allocation(
   const rosidl_message_type_support_t * type_support,
@@ -146,7 +151,7 @@ rmw_create_subscription(
     custom_subscription->subscriber_id = uxr_object_id(custom_node->context->id_subscriber++, UXR_SUBSCRIBER_ID);
     uint16_t subscriber_req;
 #ifdef MICRO_XRCEDDS_USE_XML
-    char subscriber_name[20];
+    char subscriber_name[SUB_MAX_NAME];
     generate_name(&custom_subscription->subscriber_id, subscriber_name, sizeof(subscriber_name));
     if (!build_subscriber_xml(subscriber_name, xml_buffer, sizeof(xml_buffer))) {
       RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
@@ -165,7 +170,7 @@ rmw_create_subscription(
 
 
     custom_subscription->datareader_id = uxr_object_id(custom_node->context->id_datareader++, UXR_DATAREADER_ID);
-    uint16_t datareader_req;
+    uint16_t datareader_req = 0;
 #ifdef MICRO_XRCEDDS_USE_XML
     if (!build_datareader_xml(topic_name, custom_subscription->type_support_callbacks,
       qos_policies, xml_buffer,
