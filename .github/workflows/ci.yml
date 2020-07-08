@@ -23,13 +23,13 @@ jobs:
             touch src/rosidl_typesupport_microxrcedds/test/COLCON_IGNORE
       
         - name: Build
-          run: source /opt/ros/foxy/setup.bash && colcon build 
+          run: . /opt/ros/foxy/setup.sh && colcon build 
 
         - name: Test
           run: | 
-            source /opt/ros/foxy/setup.bash && source /uros_agent/install/local_setup.bash && ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -v6 &
+            . /opt/ros/foxy/setup.sh && . /uros_agent/install/local_setup.sh && ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -v6 &
             sleep 1 
-            source /opt/ros/foxy/setup.bash && source install/local_setup.bash 
+            . /opt/ros/foxy/setup.sh && . install/local_setup.sh 
             cd build/rmw_microxrcedds/test
             ./test-node
             ./test-publisher
