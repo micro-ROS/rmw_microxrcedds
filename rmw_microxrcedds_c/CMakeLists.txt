@@ -20,7 +20,8 @@ project(rmw_microxrcedds
   VERSION
     ${PACKAGE_VERSION}
   LANGUAGES
-    C)
+    C
+  )
 
 find_program(CLANG_TIDY clang-tidy)
 if(CLANG_TIDY)
@@ -130,14 +131,16 @@ set(SRCS
   src/rmw_wait_set.c
   src/types.c
   src/utils.c
-  src/callbacks.c)
+  src/callbacks.c
+  )
 
 add_library(${PROJECT_NAME}
   ${SRCS})
 
 target_link_libraries(${PROJECT_NAME}
   microcdr
-  microxrcedds_client)
+  microxrcedds_client
+  )
 
 # Type support lock-up mechanism
 find_package(rosidl_typesupport_microxrcedds_c)
@@ -165,7 +168,8 @@ endif()
 
 ament_target_dependencies(${PROJECT_NAME}
   "rcutils"
-  "rmw")
+  "rmw"
+  )
 
 configure_rmw_library(${PROJECT_NAME})
 
@@ -178,7 +182,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
   C_STANDARD
     99
   C_STANDARD_REQUIRED
-    YES)
+    YES
+  )
 
 target_compile_options(${PROJECT_NAME}
   PRIVATE
@@ -188,14 +193,16 @@ target_compile_options(${PROJECT_NAME}
     $<$<C_COMPILER_ID:GNU>:-Werror-implicit-function-declaration>
     $<$<C_COMPILER_ID:GNU>:$<$<VERSION_GREATER:$<C_COMPILER_VERSION>,8.1>:-Wcast-align=strict>>
     $<$<C_COMPILER_ID:GNU>:-Wvla>
-    $<$<C_COMPILER_ID:MSVC>:/Wall>)
+    $<$<C_COMPILER_ID:MSVC>:/Wall>
+  )
 
 ament_export_include_directories(${PROJECT_SOURCE_DIR}/include)
 ament_export_libraries(${PROJECT_NAME})
 
 ament_export_dependencies(
   rcutils
-  rmw)
+  rmw
+  )
 
 if(rosidl_typesupport_microxrcedds_c_FOUND)
   ament_export_dependencies(rosidl_typesupport_microxrcedds_c)
@@ -224,14 +231,16 @@ install(
   FILES
     ${PROJECT_BINARY_DIR}/include/rmw_microxrcedds_c/config.h
   DESTINATION
-    include/rmw_microxrcedds_c)
+    include/rmw_microxrcedds_c
+  )
 
 # Install includes.
 install(
   DIRECTORY
     ${PROJECT_SOURCE_DIR}/include/
   DESTINATION
-    include)
+    include
+  )
 
 # Install library.
 install(
@@ -242,4 +251,5 @@ install(
   LIBRARY DESTINATION
     lib
   RUNTIME DESTINATION
-    bin)
+    bin
+  )
