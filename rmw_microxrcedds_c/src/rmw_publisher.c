@@ -59,6 +59,8 @@ rmw_create_publisher(
   const rmw_qos_profile_t * qos_policies,
   const rmw_publisher_options_t * publisher_options)
 {
+  (void) publisher_options;
+
   EPROS_PRINT_TRACE()
   rmw_publisher_t * rmw_publisher = NULL;
   if (!node) {
@@ -75,7 +77,8 @@ rmw_create_publisher(
     rmw_publisher = (rmw_publisher_t *)rmw_allocate(sizeof(rmw_publisher_t));
     rmw_publisher->data = NULL;
     rmw_publisher->implementation_identifier = rmw_get_implementation_identifier();
-    rmw_publisher->topic_name = (const char *)(rmw_allocate(sizeof(char) * (strlen(topic_name) + 1)));
+    rmw_publisher->topic_name =
+      (const char *)(rmw_allocate(sizeof(char) * (strlen(topic_name) + 1)));
     if (!rmw_publisher->topic_name) {
       RMW_SET_ERROR_MSG("failed to allocate memory");
       goto fail;
@@ -90,14 +93,15 @@ rmw_create_publisher(
 
     // TODO(Borja) micro_xrcedds_id is duplicated in publisher_id and in publisher_gid.data
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)memory_node->data;
+    custom_publisher->rmw_handle = rmw_publisher;
     custom_publisher->owner_node = custom_node;
     custom_publisher->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
     memcpy(&custom_publisher->qos, qos_policies, sizeof(rmw_qos_profile_t));
 
-    custom_publisher->stream_id = 
-      (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT)
-      ? custom_node->context->best_effort_input
-      : custom_node->context->reliable_input;
+    custom_publisher->stream_id =
+      (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+      custom_node->context->best_effort_input :
+      custom_node->context->reliable_input;
 
     const rosidl_message_type_support_t * type_support_xrce = NULL;
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
@@ -107,7 +111,7 @@ rmw_create_publisher(
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE
     if (NULL == type_support_xrce) {
       type_support_xrce = get_message_typesupport_handle(
-      type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
+        type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
     }
 #endif
     if (NULL == type_support_xrce) {
@@ -127,11 +131,13 @@ rmw_create_publisher(
     }
 
     memset(custom_publisher->publisher_gid.data, 0, RMW_GID_STORAGE_SIZE);
-    memcpy(custom_publisher->publisher_gid.data, &custom_publisher->publisher_id,
+    memcpy(
+      custom_publisher->publisher_gid.data, &custom_publisher->publisher_id,
       sizeof(uxrObjectId));
 
-    custom_publisher->topic = create_topic(custom_node, topic_name,
-        custom_publisher->type_support_callbacks, qos_policies);
+    custom_publisher->topic = create_topic(
+      custom_node, topic_name,
+      custom_publisher->type_support_callbacks, qos_policies);
     if (custom_publisher->topic == NULL) {
       goto fail;
     }
@@ -142,8 +148,11 @@ rmw_create_publisher(
     char profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
   #endif
 
-    custom_publisher->publisher_id = uxr_object_id(custom_node->context->id_publisher++, UXR_PUBLISHER_ID);
-    uint16_t publisher_req;
+    custom_publisher->publisher_id = uxr_object_id(
+      custom_node->context->id_publisher++,
+      UXR_PUBLISHER_ID);
+    uint16_t publisher_req = UXR_INVALID_REQUEST_ID;
+
   #ifdef MICRO_XRCEDDS_USE_XML
     char publisher_name[20];
     generate_name(&custom_publisher->publisher_id, publisher_name, sizeof(publisher_name));
@@ -164,11 +173,15 @@ rmw_create_publisher(
       custom_node->participant_id, "", UXR_REPLACE);
   #endif
 
-    custom_publisher->datawriter_id = uxr_object_id(custom_node->context->id_datawriter++, UXR_DATAWRITER_ID);
-    uint16_t datawriter_req;
+    custom_publisher->datawriter_id = uxr_object_id(
+      custom_node->context->id_datawriter++,
+      UXR_DATAWRITER_ID);
+    uint16_t datawriter_req = UXR_INVALID_REQUEST_ID;
+
   #ifdef MICRO_XRCEDDS_USE_XML
-    if (!build_datawriter_xml(topic_name, custom_publisher->type_support_callbacks,
-      qos_policies, xml_buffer, sizeof(xml_buffer)))
+    if (!build_datawriter_xml(
+        topic_name, custom_publisher->type_support_callbacks,
+        qos_policies, xml_buffer, sizeof(xml_buffer)))
     {
       RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
       goto fail;
@@ -196,14 +209,14 @@ rmw_create_publisher(
 
     uint16_t requests[] = {publisher_req, datawriter_req};
     uint8_t status[sizeof(requests) / 2];
-    if (!uxr_run_session_until_all_status(&custom_publisher->owner_node->context->session, 1000, requests,
-      status, sizeof(status)))
+    if (!uxr_run_session_until_all_status(
+        &custom_publisher->owner_node->context->session, 1000, requests,
+        status, sizeof(status)))
     {
       RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
       put_memory(&publisher_memory, &custom_publisher->mem);
       goto fail;
     }
-
   }
   return rmw_publisher;
 
@@ -237,6 +250,8 @@ rmw_publisher_get_actual_qos(
   const rmw_publisher_t * publisher,
   rmw_qos_profile_t * qos)
 {
+  (void) qos;
+
   rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
   qos = &custom_publisher->qos;
 
@@ -288,8 +303,9 @@ rmw_destroy_publisher(
   } else if (!publisher) {
     RMW_SET_ERROR_MSG("publisher handle is null");
     result_ret = RMW_RET_ERROR;
-  } else if (strcmp(publisher->implementation_identifier,  // NOLINT
-    rmw_get_implementation_identifier()) != 0)
+  } else if (strcmp(
+      publisher->implementation_identifier,                // NOLINT
+      rmw_get_implementation_identifier()) != 0)
   {
     RMW_SET_ERROR_MSG("publisher handle not from this implementation");
     result_ret = RMW_RET_ERROR;
@@ -298,17 +314,23 @@ rmw_destroy_publisher(
     result_ret = RMW_RET_ERROR;
   } else {
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
-    uint16_t delete_writer = uxr_buffer_delete_entity(&custom_publisher->owner_node->context->session,
-        custom_publisher->owner_node->context->reliable_output,
-        custom_publisher->datawriter_id);
+
+    destroy_topic(custom_publisher->topic);
+
+    uint16_t delete_writer = uxr_buffer_delete_entity(
+      &custom_publisher->owner_node->context->session,
+      custom_publisher->owner_node->context->reliable_output,
+      custom_publisher->datawriter_id);
     uint16_t delete_publisher = uxr_buffer_delete_entity(
-      &custom_publisher->owner_node->context->session, custom_publisher->owner_node->context->reliable_output,
+      &custom_publisher->owner_node->context->session,
+      custom_publisher->owner_node->context->reliable_output,
       custom_publisher->publisher_id);
 
     uint16_t requests[] = {delete_writer, delete_publisher};
     uint8_t status[sizeof(requests) / 2];
-    if (!uxr_run_session_until_all_status(&custom_publisher->owner_node->context->session, 1000, requests, status,
-      sizeof(status)))
+    if (!uxr_run_session_until_all_status(
+        &custom_publisher->owner_node->context->session, 1000, requests, status,
+        sizeof(status)))
     {
       RMW_SET_ERROR_MSG("unable to remove publisher from the server");
       result_ret = RMW_RET_ERROR;

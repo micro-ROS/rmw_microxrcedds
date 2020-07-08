@@ -64,41 +64,39 @@ rmw_wait(
     timeout = (uint64_t)UXR_TIMEOUT_INF;
   }
 
-  rmw_ret_t ret = RMW_RET_OK;
-
   // Look for the XRCE session
   uxrSession * session = NULL;
 
-  for (size_t i = 0; i < services->service_count && session == NULL; i++){
+  for (size_t i = 0; i < services->service_count && session == NULL; i++) {
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)services->services[i];
     session = &custom_service->owner_node->context->session;
   }
 
-  for (size_t i = 0; i < clients->client_count && session == NULL; i++){
+  for (size_t i = 0; i < clients->client_count && session == NULL; i++) {
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)clients->clients[i];
     session = &custom_client->owner_node->context->session;
-
   }
 
   for (size_t i = 0; i < subscriptions->subscriber_count && session == NULL; ++i) {
-    rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscriptions->subscribers[i];
+    rmw_uxrce_subscription_t * custom_subscription =
+      (rmw_uxrce_subscription_t *)subscriptions->subscribers[i];
     session = &custom_subscription->owner_node->context->session;
   }
 
-  if (session != NULL){
+  if (session != NULL) {
     uxr_run_session_until_timeout(session, timeout);
   }
-  
+
   bool buffered_status = false;
 
   // Check services
   if (services) {
     for (size_t i = 0; i < services->service_count; ++i) {
       rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)services->services[i];
-      
-      if (!custom_service->micro_buffer_in_use){
+
+      if (!custom_service->micro_buffer_in_use) {
         services->services[i] = NULL;
-      }else{
+      } else {
         buffered_status = true;
       }
     }
@@ -108,10 +106,10 @@ rmw_wait(
   if (clients) {
     for (size_t i = 0; i < clients->client_count; ++i) {
       rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)clients->clients[i];
-      
-      if (!custom_client->micro_buffer_in_use){
+
+      if (!custom_client->micro_buffer_in_use) {
         clients->clients[i] = NULL;
-      }else{
+      } else {
         buffered_status = true;
       }
     }
@@ -120,11 +118,12 @@ rmw_wait(
   // Check subscriptions
   if (subscriptions) {
     for (size_t i = 0; i < subscriptions->subscriber_count; ++i) {
-      rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscriptions->subscribers[i];
-      
-      if (!custom_subscription->micro_buffer_in_use){
+      rmw_uxrce_subscription_t * custom_subscription =
+        (rmw_uxrce_subscription_t *)subscriptions->subscribers[i];
+
+      if (!custom_subscription->micro_buffer_in_use) {
         subscriptions->subscribers[i] = NULL;
-      }else{
+      } else {
         buffered_status = true;
       }
     }
@@ -134,9 +133,9 @@ rmw_wait(
   if (guard_conditions) {
     for (size_t i = 0; i < guard_conditions->guard_condition_count; ++i) {
       bool * hasTriggered = (bool *)guard_conditions->guard_conditions[i];
-      if ((*hasTriggered) == false){
+      if ((*hasTriggered) == false) {
         guard_conditions->guard_conditions[i] = NULL;
-      }else{
+      } else {
         *hasTriggered = false;
         buffered_status = true;
       }
@@ -144,6 +143,6 @@ rmw_wait(
   }
 
   EPROS_PRINT_TRACE()
-    
-  return  (buffered_status) ? RMW_RET_OK : RMW_RET_TIMEOUT;
+
+  return (buffered_status) ? RMW_RET_OK : RMW_RET_TIMEOUT;
 }

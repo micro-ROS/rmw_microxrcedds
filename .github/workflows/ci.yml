@@ -1,0 +1,39 @@
+name: CI RMW_MicroXRCEDDS
+
+on:
+    pull_request:
+      branches: [ foxy ]
+
+jobs:
+
+    rmw_microxrcedds_ci:
+        runs-on: ubuntu-20.04
+        container: pablogs9/microros_agent:foxy
+    
+        steps:
+        - uses: actions/checkout@v2
+          with:
+            path: src/rmw-microxrcedds
+
+        - name: Download dependencies
+          run: |
+            git clone -b foxy https://github.com/eProsima/Micro-CDR src/Micro-CDR 
+            git clone -b foxy https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client 
+            git clone -b feature/foxy_migration https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
+            touch src/rosidl_typesupport_microxrcedds/test/COLCON_IGNORE
+      
+        - name: Build
+          run: source /opt/ros/foxy/setup.bash && colcon build 
+
+        - name: Test
+          run: | 
+            source /opt/ros/foxy/setup.bash && source /uros_agent/install/local_setup.bash && ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -v6 &
+            sleep 1 
+            source /opt/ros/foxy/setup.bash && source install/local_setup.bash 
+            cd build/rmw_microxrcedds/test
+            ./test-node
+            ./test-publisher
+            ./test-subscriber
+            ./test-topic
+            ./test-pubsub
+            ./test-rmw

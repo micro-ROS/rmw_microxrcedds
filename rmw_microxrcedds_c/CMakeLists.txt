@@ -73,7 +73,7 @@ elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "udp")
   elseif(${RMW_UXRCE_IPV} STREQUAL "ipv6")
     set(MICRO_XRCEDDS_IPV6 ON)
     set(RMW_UXRCE_DEFAULT_UDP_IP "::1" CACHE STRING "Sets the agent IP address.")
-  endif ()
+  endif()
   set(RMW_UXRCE_DEFAULT_UDP_PORT "8888" CACHE STRING "Sets the agent IP port.")
 elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "custom_serial")
   set(MICRO_XRCEDDS_CUSTOM_SERIAL ON)
@@ -94,8 +94,7 @@ endif()
 
 # Create source files with the define
 configure_file(${PROJECT_SOURCE_DIR}/src/config.h.in
-  ${PROJECT_BINARY_DIR}/include/rmw_microxrcedds_c/config.h
-  )
+  ${PROJECT_BINARY_DIR}/include/rmw_microxrcedds_c/config.h)
 
 set(SRCS
   src/identifiers.c
@@ -136,8 +135,7 @@ set(SRCS
   )
 
 add_library(${PROJECT_NAME}
-  ${SRCS}
-  )
+  ${SRCS})
 
 target_link_libraries(${PROJECT_NAME}
   microcdr
@@ -178,8 +176,7 @@ configure_rmw_library(${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
-  )
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
   C_STANDARD
@@ -209,21 +206,17 @@ ament_export_dependencies(
 
 if(rosidl_typesupport_microxrcedds_c_FOUND)
   ament_export_dependencies(rosidl_typesupport_microxrcedds_c)
-  set(implementations
-    "c:rosidl_typesupport_c:rosidl_typesupport_microxrcedds_c"
-   )
+  set(implementations "c:rosidl_typesupport_c:rosidl_typesupport_microxrcedds_c")
 endif()
 if(rosidl_typesupport_microxrcedds_cpp_FOUND)
   ament_export_dependencies(rosidl_typesupport_microxrcedds_cpp)
   set(implementations
-    ${implementations} 
+    ${implementations}
     "cpp:rosidl_typesupport_cpp:rosidl_typesupport_microxrcedds_cpp"
   )
 endif()
 
-register_rmw_implementation(
-    ${implementations}
-    )
+register_rmw_implementation(${implementations})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
