@@ -103,12 +103,6 @@ rmw_create_service(
       goto fail;
     }
 
-#ifdef MICRO_XRCEDDS_USE_XML
-    char xml_buffer[RMW_UXRCE_XML_BUFFER_LENGTH];
-#elif defined(MICRO_XRCEDDS_USE_REFS)
-    char profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
-#endif
-
     custom_service->service_id = uxr_object_id(custom_node->context->id_replier++, UXR_REPLIER_ID);
 
     memset(custom_service->service_gid.data, 0, RMW_GID_STORAGE_SIZE);
@@ -123,7 +117,7 @@ rmw_create_service(
     generate_name(&custom_service->service_id, service_name_id, sizeof(service_name_id));
     if (!build_service_xml(
         service_name_id, service_name, false,
-        custom_service->type_support_callbacks, qos_policies, xml_buffer, sizeof(xml_buffer)))
+        custom_service->type_support_callbacks, qos_policies, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
     {
       RMW_SET_ERROR_MSG("failed to generate xml request for service creation");
       goto fail;
@@ -131,7 +125,7 @@ rmw_create_service(
     service_req = uxr_buffer_create_replier_xml(
       &custom_node->context->session,
       custom_node->context->reliable_output, custom_service->service_id,
-      custom_node->participant_id, xml_buffer, UXR_REPLACE);
+      custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
     // CHECK IF THIS IS NECESSARY
     // service_req = uxr_buffer_create_replier_ref(&custom_node->context->session,

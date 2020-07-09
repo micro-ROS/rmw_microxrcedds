@@ -104,11 +104,6 @@ rmw_create_client(
       goto fail;
     }
 
-#ifdef MICRO_XRCEDDS_USE_XML
-    char xml_buffer[RMW_UXRCE_XML_BUFFER_LENGTH];
-#elif defined(MICRO_XRCEDDS_USE_REFS)
-    char profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
-#endif
 
     custom_client->client_id =
       uxr_object_id(custom_node->context->id_requester++, UXR_REQUESTER_ID);
@@ -125,7 +120,7 @@ rmw_create_client(
     generate_name(&custom_client->client_id, service_name_id, sizeof(service_name_id));
     if (!build_service_xml(
         service_name_id, service_name, true,
-        custom_client->type_support_callbacks, qos_policies, xml_buffer, sizeof(xml_buffer)))
+        custom_client->type_support_callbacks, qos_policies, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
     {
       RMW_SET_ERROR_MSG("failed to generate xml request for client creation");
       goto fail;
@@ -133,7 +128,7 @@ rmw_create_client(
     client_req = uxr_buffer_create_requester_xml(
       &custom_node->context->session,
       custom_node->context->reliable_output, custom_client->client_id,
-      custom_node->participant_id, xml_buffer, UXR_REPLACE);
+      custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
     // TODO(pablogs9): Is possible to instantiate a replier by ref?
     // client_req = uxr_buffer_create_replier_ref(&custom_node->context->session,

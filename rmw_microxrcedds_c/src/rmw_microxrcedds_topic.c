@@ -48,18 +48,12 @@ create_topic(
   // Generate topic id
   custom_topic->topic_id = uxr_object_id(custom_node->context->id_topic++, UXR_TOPIC_ID);
 
-#ifdef MICRO_XRCEDDS_USE_XML
-  char xml_buffer[RMW_UXRCE_XML_BUFFER_LENGTH];
-#elif defined(MICRO_XRCEDDS_USE_REFS)
-  char profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
-#endif
-
   // Generate request
   uint16_t topic_req;
 #ifdef MICRO_XRCEDDS_USE_XML
   if (!build_topic_xml(
       topic_name, message_type_support_callbacks,
-      qos_policies, xml_buffer, sizeof(xml_buffer)))
+      qos_policies, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
   {
     RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
     rmw_uxrce_fini_topic_memory(custom_topic);
@@ -70,10 +64,10 @@ create_topic(
   topic_req = uxr_buffer_create_topic_xml(
     &custom_node->context->session,
     custom_node->context->reliable_output, custom_topic->topic_id,
-    custom_node->participant_id, xml_buffer, UXR_REPLACE);
+    custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
   (void)qos_policies;
-  if (!build_topic_profile(topic_name, profile_name, sizeof(profile_name))) {
+  if (!build_topic_profile(topic_name, rmw_uxrce_profile_name, sizeof(rmw_uxrce_profile_name))) {
     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
     rmw_uxrce_fini_topic_memory(custom_topic);
     custom_topic = NULL;
@@ -83,7 +77,7 @@ create_topic(
   topic_req = uxr_buffer_create_topic_ref(
     &custom_node->context->session,
     custom_node->context->reliable_output, custom_topic->topic_id,
-    custom_node->participant_id, profile_name, UXR_REPLACE);
+    custom_node->participant_id, rmw_uxrce_profile_name, UXR_REPLACE);
 #endif
 
   // Send the request and wait for response

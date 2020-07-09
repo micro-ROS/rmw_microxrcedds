@@ -204,6 +204,12 @@ typedef struct rmw_uxrce_node_t
 
 // Static memory pools
 
+#ifdef MICRO_XRCEDDS_USE_XML
+  extern char rmw_uxrce_xml_buffer[RMW_UXRCE_XML_BUFFER_LENGTH];
+#elif defined(MICRO_XRCEDDS_USE_REFS)
+  extern char rmw_uxrce_profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
+#endif
+
 extern struct rmw_uxrce_mempool_t session_memory;
 extern rmw_context_impl_t custom_sessions[RMW_UXRCE_MAX_SESSIONS];
 

@@ -142,12 +142,6 @@ rmw_create_publisher(
       goto fail;
     }
 
-  #ifdef MICRO_XRCEDDS_USE_XML
-    char xml_buffer[RMW_UXRCE_XML_BUFFER_LENGTH];
-  #elif defined(MICRO_XRCEDDS_USE_REFS)
-    char profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
-  #endif
-
     custom_publisher->publisher_id = uxr_object_id(
       custom_node->context->id_publisher++,
       UXR_PUBLISHER_ID);
@@ -156,7 +150,7 @@ rmw_create_publisher(
   #ifdef MICRO_XRCEDDS_USE_XML
     char publisher_name[20];
     generate_name(&custom_publisher->publisher_id, publisher_name, sizeof(publisher_name));
-    if (!build_publisher_xml(publisher_name, xml_buffer, sizeof(xml_buffer))) {
+    if (!build_publisher_xml(publisher_name, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer))) {
       RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
       goto fail;
     }
@@ -164,7 +158,7 @@ rmw_create_publisher(
       &custom_publisher->owner_node->context->session,
       custom_node->context->reliable_output,
       custom_publisher->publisher_id,
-      custom_node->participant_id, xml_buffer, UXR_REPLACE);
+      custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
   #elif defined(MICRO_XRCEDDS_USE_REFS)
     publisher_req = uxr_buffer_create_publisher_xml(
       &custom_publisher->owner_node->context->session,
@@ -181,7 +175,7 @@ rmw_create_publisher(
   #ifdef MICRO_XRCEDDS_USE_XML
     if (!build_datawriter_xml(
         topic_name, custom_publisher->type_support_callbacks,
-        qos_policies, xml_buffer, sizeof(xml_buffer)))
+        qos_policies, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
     {
       RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
       goto fail;
@@ -191,9 +185,9 @@ rmw_create_publisher(
       &custom_publisher->owner_node->context->session,
       custom_node->context->reliable_output,
       custom_publisher->datawriter_id,
-      custom_publisher->publisher_id, xml_buffer, UXR_REPLACE);
+      custom_publisher->publisher_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
   #elif defined(MICRO_XRCEDDS_USE_REFS)
-    if (!build_datawriter_profile(topic_name, profile_name, sizeof(profile_name))) {
+    if (!build_datawriter_profile(topic_name, rmw_uxrce_profile_name, sizeof(rmw_uxrce_profile_name))) {
       RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
       goto fail;
     }
@@ -202,7 +196,7 @@ rmw_create_publisher(
       &custom_publisher->owner_node->context->session,
       custom_node->context->reliable_output,
       custom_publisher->datawriter_id,
-      custom_publisher->publisher_id, profile_name, UXR_REPLACE);
+      custom_publisher->publisher_id, rmw_uxrce_profile_name, UXR_REPLACE);
   #endif
 
     rmw_publisher->data = custom_publisher;
