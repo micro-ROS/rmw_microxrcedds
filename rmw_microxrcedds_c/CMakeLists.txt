@@ -23,11 +23,6 @@ project(rmw_microxrcedds
     C
   )
 
-find_program(CLANG_TIDY clang-tidy)
-if(CLANG_TIDY)
-  set(CMAKE_C_CLANG_TIDY clang-tidy -checks=* -extra-arg=-Wno-unknown-warning-option)
-endif()
-
 find_package(ament_cmake_ros REQUIRED)
 find_package(rcutils REQUIRED)
 find_package(rosidl_runtime_c REQUIRED)
