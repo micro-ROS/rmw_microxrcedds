@@ -49,7 +49,7 @@ create_topic(
   custom_topic->topic_id = uxr_object_id(custom_node->context->id_topic++, UXR_TOPIC_ID);
 
   // Generate request
-  uint16_t topic_req;
+  uint16_t topic_req = 0;
 #ifdef MICRO_XRCEDDS_USE_XML
   if (!build_topic_xml(
       topic_name, message_type_support_callbacks,
