@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rosidl_generator_c/message_type_support_struct.h"
+#include "rosidl_runtime_c/message_type_support_struct.h"
 
 #include <vector>
 #include <memory>
 #include <string>
 
 #include "rmw/error_handling.h"
-#include "rmw/node_security_options.h"
 #include "rmw/rmw.h"
 #include "rmw/validate_namespace.h"
 #include "rmw/validate_node_name.h"
@@ -35,8 +34,7 @@ protected:
   {
     RMWBaseTest::SetUp();
 
-    rmw_node_security_options_t security_options;
-    node = rmw_create_node(&test_context, "my_node", "/ns", 0, &security_options);
+    node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
     ASSERT_NE(node, nullptr);
   }
 
@@ -70,14 +68,14 @@ TEST_F(TestSubscription, construction_and_destruction) {
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
-  bool ignore_local_publications = true;
+  rmw_subscription_options_t default_subscription_options = rmw_get_default_subscription_options();
 
   rmw_subscription_t * sub = rmw_create_subscription(
     this->node,
     &dummy_type_support.type_support,
     topic_name,
     &dummy_qos_policies,
-    ignore_local_publications);
+    &default_subscription_options);
   ASSERT_NE(sub, nullptr);
 
   rmw_ret_t ret = rmw_destroy_subscription(this->node, sub);
@@ -92,13 +90,12 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
-  bool ignore_local_publications = true;
-
   std::vector<dummy_type_support_t> dummy_type_supports;
   std::vector<rmw_subscription_t *> subscriptions;
   rmw_ret_t ret;
   rmw_subscription_t * subscription;
 
+  rmw_subscription_options_t default_subscription_options = rmw_get_default_subscription_options();
 
   // Get all available nodes
   {
@@ -115,7 +112,7 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
         &dummy_type_supports.back().type_support,
         dummy_type_supports.back().topic_name.data(),
         &dummy_qos_policies,
-        ignore_local_publications);
+        &default_subscription_options);
       ASSERT_NE(subscription, nullptr);
       subscriptions.push_back(subscription);
     }
@@ -136,7 +133,7 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
       &dummy_type_supports.back().type_support,
       dummy_type_supports.back().topic_name.data(),
       &dummy_qos_policies,
-      ignore_local_publications);
+      &default_subscription_options);
     ASSERT_EQ(subscription, nullptr);
     ASSERT_EQ(CheckErrorState(), true);
   }
@@ -165,7 +162,7 @@ TEST_F(TestSubscription, memory_poll_multiple_topic) {
       &dummy_type_supports.back().type_support,
       dummy_type_supports.back().topic_name.data(),
       &dummy_qos_policies,
-      ignore_local_publications);
+      &default_subscription_options);
     ASSERT_NE(subscription, nullptr);
     subscriptions.push_back(subscription);
   }
@@ -198,7 +195,7 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
-  bool ignore_local_publications = true;
+  rmw_subscription_options_t default_subscription_options = rmw_get_default_subscription_options();
 
   std::vector<rmw_subscription_t *> subscriptions;
   rmw_ret_t ret;
@@ -213,7 +210,7 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
         &dummy_type_support.type_support,
         dummy_type_support.topic_name.data(),
         &dummy_qos_policies,
-        ignore_local_publications);
+        &default_subscription_options);
       ASSERT_NE(subscription, nullptr);
       subscriptions.push_back(subscription);
     }
@@ -227,7 +224,7 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
       &dummy_type_support.type_support,
       dummy_type_support.topic_name.data(),
       &dummy_qos_policies,
-      ignore_local_publications);
+      &default_subscription_options);
     ASSERT_EQ(subscription, nullptr);
     ASSERT_EQ(CheckErrorState(), true);
   }
@@ -249,7 +246,7 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
       &dummy_type_support.type_support,
       dummy_type_support.topic_name.data(),
       &dummy_qos_policies,
-      ignore_local_publications);
+      &default_subscription_options);
     ASSERT_NE(subscription, nullptr);
     subscriptions.push_back(subscription);
   }

@@ -21,14 +21,12 @@ project(rmw_microxrcedds_tests LANGUAGES CXX)
 macro(rmw_test TEST_NAME TEST_SOURCE)
   ament_add_gtest(${TEST_NAME}
     ${TEST_SOURCE}
-    test_utils.cpp
-    )
+    test_utils.cpp)
 
   target_link_libraries(${TEST_NAME}
     microcdr
     microxrcedds_client
-    rmw_microxrcedds
-    )
+    rmw_microxrcedds)
 
   include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/../src)
 
@@ -37,21 +35,15 @@ macro(rmw_test TEST_NAME TEST_SOURCE)
       $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     PRIVATE
       ${PROJECT_SOURCE_DIR}/src
-      $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include/>
-    )
+      $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include/>)
 
   set_target_properties(${TEST_NAME} PROPERTIES
     CXX_STANDARD
       14
     CXX_STANDARD_REQUIRED
-      YES
-    )
+      YES)
 
-  ament_target_dependencies(${TEST_NAME}
-    rmw_microxrcedds
-    rmw
-    rosidl_typesupport_microxrcedds_shared
-    )
+  ament_target_dependencies(${TEST_NAME} rmw)
 endmacro()
 
 rmw_test(test-node        test_node.cpp)

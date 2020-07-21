@@ -33,7 +33,10 @@ rmw_publish(
   } else if (!ros_message) {
     RMW_SET_ERROR_MSG("ros_message pointer is null");
     ret = RMW_RET_ERROR;
-  } else if (strcmp(publisher->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+  } else if (strcmp(
+      publisher->implementation_identifier,
+      rmw_get_implementation_identifier()) != 0)
+  {
     RMW_SET_ERROR_MSG("publisher handle not from this implementation");
     ret = RMW_RET_ERROR;
   } else if (!publisher->data) {
@@ -46,16 +49,18 @@ rmw_publish(
 
     ucdrBuffer mb;
     bool written = false;
-    if (uxr_prepare_output_stream(&custom_publisher->owner_node->context->session,
-      custom_publisher->stream_id, custom_publisher->datawriter_id, &mb,
-      topic_length))
+    if (uxr_prepare_output_stream(
+        &custom_publisher->owner_node->context->session,
+        custom_publisher->stream_id, custom_publisher->datawriter_id, &mb,
+        topic_length))
     {
       written = functions->cdr_serialize(ros_message, &mb);
 
-      if (UXR_BEST_EFFORT_STREAM == custom_publisher->stream_id.type){
+      if (UXR_BEST_EFFORT_STREAM == custom_publisher->stream_id.type) {
         uxr_flash_output_streams(&custom_publisher->owner_node->context->session);
-      }else{
-        written &= uxr_run_session_until_confirm_delivery(&custom_publisher->owner_node->context->session, 1000);
+      } else {
+        written &= uxr_run_session_until_confirm_delivery(
+          &custom_publisher->owner_node->context->session, 1000);
       }
     }
     if (!written) {
@@ -75,6 +80,20 @@ rmw_publish_serialized_message(
   (void) publisher;
   (void) serialized_message;
   (void) allocation;
-  RMW_SET_ERROR_MSG("function not implemeted");
-  return RMW_RET_ERROR;
+  RMW_SET_ERROR_MSG("function not implemented");
+  return RMW_RET_UNSUPPORTED;
+}
+
+rmw_ret_t
+rmw_publish_loaned_message(
+  const rmw_publisher_t * publisher,
+  void * ros_message,
+  rmw_publisher_allocation_t * allocation)
+{
+  (void) publisher;
+  (void) ros_message;
+  (void) allocation;
+
+  RMW_SET_ERROR_MSG("function not implemented");
+  return RMW_RET_UNSUPPORTED;
 }

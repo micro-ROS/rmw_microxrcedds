@@ -40,8 +40,8 @@ void ConfigureDummyTypeSupport(
     [](ucdrBuffer * cdr, void * untyped_ros_message) {
       return true;
     };
-  dummy_type_support->callbacks.get_serialized_size = [](const void *) { return uint32_t(0u); };
-  dummy_type_support->callbacks.max_serialized_size = []() { return size_t(0u); };
+  dummy_type_support->callbacks.get_serialized_size = [](const void *) {return uint32_t(0u);};
+  dummy_type_support->callbacks.max_serialized_size = []() {return size_t(0u);};
 
   dummy_type_support->type_support.typesupport_identifier =
     ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE;
@@ -83,8 +83,7 @@ bool CheckErrorState()
   const rcutils_error_state_t * error_state;
   error_state = rcutils_get_error_state();
 
-  if (nullptr != error_state)
-  {
+  if (nullptr != error_state) {
     ok &= *error_state->file != '\0';
     ok &= error_state->line_number != 0;
     ok &= *error_state->message != '\0';

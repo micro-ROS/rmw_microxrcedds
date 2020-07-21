@@ -32,8 +32,12 @@ struct rmw_uxrce_mempool_t
   size_t size;
 };
 
-void link_next(struct rmw_uxrce_mempool_item_t * current, struct rmw_uxrce_mempool_item_t * next, void * data);
-void link_prev(struct rmw_uxrce_mempool_item_t * previous, struct rmw_uxrce_mempool_item_t * current, void * data);
+void link_next(
+  struct rmw_uxrce_mempool_item_t * current, struct rmw_uxrce_mempool_item_t * next,
+  void * data);
+void link_prev(
+  struct rmw_uxrce_mempool_item_t * previous,
+  struct rmw_uxrce_mempool_item_t * current, void * data);
 void set_mem_pool(struct rmw_uxrce_mempool_t * mem, struct rmw_uxrce_mempool_item_t * first);
 bool has_memory(struct rmw_uxrce_mempool_t * mem);
 struct rmw_uxrce_mempool_item_t * get_memory(struct rmw_uxrce_mempool_t * mem);

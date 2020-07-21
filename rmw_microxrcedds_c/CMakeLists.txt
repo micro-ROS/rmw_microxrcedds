@@ -23,13 +23,9 @@ project(rmw_microxrcedds
     C
   )
 
-find_program(CLANG_TIDY clang-tidy)
-if(CLANG_TIDY)
-  set(CMAKE_C_CLANG_TIDY clang-tidy -checks=* -extra-arg=-Wno-unknown-warning-option)
-endif()
-
 find_package(ament_cmake_ros REQUIRED)
 find_package(rcutils REQUIRED)
+find_package(rosidl_runtime_c REQUIRED)
 
 find_package(microxrcedds_client REQUIRED)
 find_package(microcdr REQUIRED)
@@ -48,6 +44,7 @@ set(RMW_UXRCE_MAX_PUBLISHERS "4" CACHE STRING "This value sets the maximum numbe
 set(RMW_UXRCE_MAX_SUBSCRIPTIONS "4" CACHE STRING "This value sets the maximum number of subscriptions for an application.")
 set(RMW_UXRCE_MAX_SERVICES "4" CACHE STRING "This value sets the maximum number of services for an application.")
 set(RMW_UXRCE_MAX_CLIENTS "4" CACHE STRING "This value sets the maximum number of clients for an application.")
+set(RMW_UXRCE_MAX_TOPICS "-1" CACHE STRING "This value sets the maximum number of topics for an application. If set to -1 RMW_UXRCE_MAX_TOPICS = RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_SUBSCRIPTIONS + RMW_UXRCE_MAX_NODES.")
 set(RMW_UXRCE_NODE_NAME_MAX_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a node name.")
 set(RMW_UXRCE_TOPIC_NAME_MAX_LENGTH "100" CACHE STRING "This value sets the maximum number of characters for a topic name.")
 set(RMW_UXRCE_TYPE_NAME_MAX_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a type name.")
@@ -71,7 +68,7 @@ elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "udp")
   elseif(${RMW_UXRCE_IPV} STREQUAL "ipv6")
     set(MICRO_XRCEDDS_IPV6 ON)
     set(RMW_UXRCE_DEFAULT_UDP_IP "::1" CACHE STRING "Sets the agent IP address.")
-  endif ()
+  endif()
   set(RMW_UXRCE_DEFAULT_UDP_PORT "8888" CACHE STRING "Sets the agent IP port.")
 elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "custom_serial")
   set(MICRO_XRCEDDS_CUSTOM_SERIAL ON)
@@ -92,8 +89,7 @@ endif()
 
 # Create source files with the define
 configure_file(${PROJECT_SOURCE_DIR}/src/config.h.in
-  ${PROJECT_BINARY_DIR}/include/rmw_microxrcedds_c/config.h
-  )
+  ${PROJECT_BINARY_DIR}/include/rmw_microxrcedds_c/config.h)
 
 set(SRCS
   src/identifiers.c
@@ -101,9 +97,11 @@ set(SRCS
   src/rmw_client.c
   src/rmw_compare_gids_equal.c
   src/rmw_count.c
+  src/rmw_event.c
   src/rmw_get_gid_for_publisher.c
   src/rmw_get_implementation_identifier.c
   src/rmw_get_serialization_format.c
+  src/rmw_get_topic_endpoint_info.c
   src/rmw_guard_condition.c
   src/rmw_init.c
   src/rmw_logging.c
@@ -132,8 +130,7 @@ set(SRCS
   )
 
 add_library(${PROJECT_NAME}
-  ${SRCS}
-  )
+  ${SRCS})
 
 target_link_libraries(${PROJECT_NAME}
   microcdr
@@ -174,8 +171,7 @@ configure_rmw_library(${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
-  )
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
   C_STANDARD
@@ -205,21 +201,17 @@ ament_export_dependencies(
 
 if(rosidl_typesupport_microxrcedds_c_FOUND)
   ament_export_dependencies(rosidl_typesupport_microxrcedds_c)
-  set(implementations
-    "c:rosidl_typesupport_c:rosidl_typesupport_microxrcedds_c"
-   )
+  set(implementations "c:rosidl_typesupport_c:rosidl_typesupport_microxrcedds_c")
 endif()
 if(rosidl_typesupport_microxrcedds_cpp_FOUND)
   ament_export_dependencies(rosidl_typesupport_microxrcedds_cpp)
   set(implementations
-    ${implementations} 
+    ${implementations}
     "cpp:rosidl_typesupport_cpp:rosidl_typesupport_microxrcedds_cpp"
   )
 endif()
 
-register_rmw_implementation(
-    ${implementations}
-    )
+register_rmw_implementation(${implementations})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

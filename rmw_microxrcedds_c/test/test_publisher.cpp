@@ -19,7 +19,6 @@
 #include <string>
 
 #include "rmw/error_handling.h"
-#include "rmw/node_security_options.h"
 #include "rmw/rmw.h"
 #include "rmw/validate_namespace.h"
 #include "rmw/validate_node_name.h"
@@ -35,8 +34,7 @@ protected:
   {
     RMWBaseTest::SetUp();
 
-    rmw_node_security_options_t security_options;
-    node = rmw_create_node(&test_context, "my_node", "/ns", 0, &security_options);
+    node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
     ASSERT_NE((void *)node, (void *)NULL);
   }
 
@@ -71,13 +69,16 @@ TEST_F(TestPublisher, construction_and_destruction) {
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
+  rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
+
   bool ignore_local_publications = true;
 
   rmw_publisher_t * pub = rmw_create_publisher(
     this->node,
     &dummy_type_support.type_support,
     topic_name,
-    &dummy_qos_policies);
+    &dummy_qos_policies,
+    &default_publisher_options);
   ASSERT_NE((void *)pub, (void *)NULL);
 
   rmw_ret_t ret = rmw_destroy_publisher(this->node, pub);
@@ -99,6 +100,7 @@ TEST_F(TestPublisher, memory_poll_multiple_topic) {
   rmw_ret_t ret;
   rmw_publisher_t * publisher;
 
+  rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
 
   // Get all available nodes
   {
@@ -116,7 +118,8 @@ TEST_F(TestPublisher, memory_poll_multiple_topic) {
         this->node,
         &dummy_type_supports.back().type_support,
         dummy_type_supports.back().topic_name.data(),
-        &dummy_qos_policies);
+        &dummy_qos_policies,
+        &default_publisher_options);
       ASSERT_NE((void *)publisher, (void *)NULL);
       publishers.push_back(publisher);
     }
@@ -137,7 +140,8 @@ TEST_F(TestPublisher, memory_poll_multiple_topic) {
       this->node,
       &dummy_type_supports.back().type_support,
       dummy_type_supports.back().topic_name.data(),
-      &dummy_qos_policies);
+      &dummy_qos_policies,
+      &default_publisher_options);
     ASSERT_EQ((void *)publisher, (void *)NULL);
     ASSERT_EQ(CheckErrorState(), true);
 
@@ -163,7 +167,8 @@ TEST_F(TestPublisher, memory_poll_multiple_topic) {
       this->node,
       &dummy_type_supports.back().type_support,
       dummy_type_supports.back().topic_name.data(),
-      &dummy_qos_policies);
+      &dummy_qos_policies,
+      &default_publisher_options);
     ASSERT_NE((void *)publisher, (void *)NULL);
     publishers.push_back(publisher);
   }
@@ -202,6 +207,7 @@ TEST_F(TestPublisher, memory_poll_shared_topic) {
   rmw_ret_t ret;
   rmw_publisher_t * publisher;
 
+  rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
 
   // Get all available nodes
   {
@@ -210,7 +216,8 @@ TEST_F(TestPublisher, memory_poll_shared_topic) {
         this->node,
         &dummy_type_support.type_support,
         topic_name,
-        &dummy_qos_policies);
+        &dummy_qos_policies,
+        &default_publisher_options);
       ASSERT_NE((void *)publisher, (void *)NULL);
       publishers.push_back(publisher);
     }
@@ -223,7 +230,8 @@ TEST_F(TestPublisher, memory_poll_shared_topic) {
       this->node,
       &dummy_type_support.type_support,
       topic_name,
-      &dummy_qos_policies);
+      &dummy_qos_policies,
+      &default_publisher_options);
     ASSERT_EQ((void *)publisher, (void *)NULL);
     ASSERT_EQ(CheckErrorState(), true);
 
@@ -241,7 +249,8 @@ TEST_F(TestPublisher, memory_poll_shared_topic) {
       this->node,
       &dummy_type_support.type_support,
       topic_name,
-      &dummy_qos_policies);
+      &dummy_qos_policies,
+      &default_publisher_options);
     ASSERT_NE((void *)publisher, (void *)NULL);
     publishers.push_back(publisher);
   }

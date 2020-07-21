@@ -17,7 +17,6 @@
 #include <string>
 
 #include "rmw/error_handling.h"
-#include "rmw/node_security_options.h"
 #include "rmw/rmw.h"
 #include "rmw/validate_namespace.h"
 #include "rmw/validate_node_name.h"
@@ -34,8 +33,7 @@ protected:
   {
     RMWBaseTest::SetUp();
 
-    rmw_node_security_options_t security_options;
-    node = rmw_create_node(&test_context, "my_node", "/ns", 0, &security_options);
+    node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
     ASSERT_NE((void *)node, (void *)NULL);
   }
 
@@ -76,56 +74,15 @@ TEST_F(TestTopic, construction_and_destruction) {
     &dummy_type_support.callbacks,
     &dummy_qos_policies);
   ASSERT_NE((void *)topic, (void *)NULL);
-  ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 1);
 
-  bool ret = destroy_topic(topic);
-  ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 0);
-  ASSERT_EQ(ret, true);
+  // TODO(pablogs9): Topic must be related to publisher in order to be counted
+  // ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 1);
+
+  rmw_ret_t ret = destroy_topic(topic);
+  // TODO(pablogs9): Topic must be related to publisher in order to be counted
+  // ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 0);
+  ASSERT_EQ(ret, RMW_RET_OK);
 }
-
-
-/*
-   Testing shared creation of a topic
- */
-TEST_F(TestTopic, shared_topic_creation) {
-  dummy_type_support_t dummy_type_support;
-  ConfigureDummyTypeSupport(
-    topic_type,
-    topic_type,
-    package_name,
-    id_gen++,
-    &dummy_type_support);
-
-  rmw_qos_profile_t dummy_qos_policies;
-  ConfigureDefaultQOSPolices(&dummy_qos_policies);
-
-  rmw_uxrce_topic_t * created_topic;
-  rmw_uxrce_topic_t * last_created_topic;
-  for (size_t i = 0; i < attempts; i++) {
-    created_topic = create_topic(
-      reinterpret_cast<struct rmw_uxrce_node_t *>(node->data),
-      topic_name,
-      &dummy_type_support.callbacks,
-      &dummy_qos_policies);
-
-    if (i != 0) {
-      ASSERT_EQ((void *)last_created_topic, (void *)created_topic);
-    } else {
-      ASSERT_NE((void *)created_topic, (void *)NULL);
-    }
-    ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 1);
-
-    last_created_topic = created_topic;
-  }
-
-  for (size_t i = 0; i < attempts; i++) {
-    ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 1);
-    bool ret = destroy_topic(created_topic);
-    ASSERT_EQ(ret, true);
-  }
-  ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 0);
-}
-
 
 /*
    Testing creation multiple topics
@@ -152,15 +109,18 @@ TEST_F(TestTopic, multiple_topic_creation) {
       &dummy_qos_policies);
 
     ASSERT_NE((void *)created_topic, (void *)NULL);
-    ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), i + 1);
+    // TODO(pablogs9): Topic must be related to publisher in order to be counted
+    // ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), i + 1);
 
     created_topics.push_back(created_topic);
   }
 
   for (size_t i = 0; i < created_topics.size(); i++) {
-    ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), attempts - i);
-    bool ret = destroy_topic(created_topics.at(i));
-    ASSERT_EQ(ret, true);
+    // TODO(pablogs9): Topic must be related to publisher in order to be counted
+    // ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), attempts - i);
+    rmw_ret_t ret = destroy_topic(created_topics.at(i));
+    ASSERT_EQ(ret, RMW_RET_OK);
   }
-  ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 0);
+  // TODO(pablogs9): Topic must be related to publisher in order to be counted
+  // ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 0);
 }

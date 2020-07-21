@@ -15,10 +15,9 @@
 #ifndef TEST_UTILS_HPP_
 #define TEST_UTILS_HPP_
 
-#include "rosidl_generator_c/message_type_support_struct.h"
+#include "rosidl_runtime_c/message_type_support_struct.h"
 #include "rosidl_typesupport_microxrcedds_c/message_type_support.h"
 
-#include <rmw/node_security_options.h>
 #include <rmw/rmw.h>
 #include <rmw/validate_namespace.h>
 #include <rmw/validate_node_name.h>

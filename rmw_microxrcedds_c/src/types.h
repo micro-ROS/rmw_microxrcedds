@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMW_MICROXRCEDDS_C__SRC__TYPES_H
-#define RMW_MICROXRCEDDS_C__SRC__TYPES_H
+#ifndef TYPES_H_
+#define TYPES_H_
 
 #include <stddef.h>
 
@@ -21,10 +21,10 @@
 #include <ucdr/microcdr.h>
 #include <uxr/client/client.h>
 
-#include "rosidl_generator_c/message_type_support_struct.h"
+#include "rosidl_runtime_c/message_type_support_struct.h"
 #include "rosidl_typesupport_microxrcedds_c/message_type_support.h"
 
-#include "rosidl_generator_c/service_type_support_struct.h"
+#include "rosidl_runtime_c/service_type_support_struct.h"
 #include "rosidl_typesupport_microxrcedds_c/service_type_support.h"
 
 #include "memory.h"
@@ -42,7 +42,7 @@
 
 struct rmw_uxrce_connection_t
 {
-#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL) 
+#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
   char serial_device[MAX_SERIAL_DEVICE];
 #elif defined(MICRO_XRCEDDS_UDP)
   char agent_address[MAX_IP_LEN];
@@ -93,14 +93,12 @@ struct  rmw_init_options_impl_t
 
 typedef struct rmw_uxrce_topic_t
 {
-  struct rmw_uxrce_topic_t * next_custom_topic;
-  struct rmw_uxrce_topic_t * prev_custom_topic;
+  struct rmw_uxrce_mempool_item_t mem;
 
   uxrObjectId topic_id;
   const message_type_support_callbacks_t * message_type_support_callbacks;
 
   bool sync_with_agent;
-  int32_t usage_account;
   struct rmw_uxrce_node_t * owner_node;
 } rmw_uxrce_topic_t;
 
@@ -175,13 +173,12 @@ typedef struct rmw_uxrce_subscription_t
   struct rmw_uxrce_node_t * owner_node;
   rmw_qos_profile_t qos;
   uxrStreamId stream_id;
-
 } rmw_uxrce_subscription_t;
 
 typedef struct rmw_uxrce_publisher_t
 {
   struct rmw_uxrce_mempool_item_t mem;
-  rmw_publisher_t  * rmw_handle;
+  rmw_publisher_t * rmw_handle;
   uxrObjectId publisher_id;
   uxrObjectId datawriter_id;
   rmw_gid_t publisher_gid;
@@ -189,7 +186,8 @@ typedef struct rmw_uxrce_publisher_t
   const message_type_support_callbacks_t * type_support_callbacks;
 
   struct rmw_uxrce_topic_t * topic;
-  
+
+  rmw_qos_profile_t qos;
   uxrStreamId stream_id;
 
   struct rmw_uxrce_node_t * owner_node;
@@ -198,13 +196,19 @@ typedef struct rmw_uxrce_publisher_t
 typedef struct rmw_uxrce_node_t
 {
   struct rmw_uxrce_mempool_item_t mem;
+  rmw_node_t * rmw_handle;
   struct  rmw_context_impl_t * context;
 
   uxrObjectId participant_id;
-  rmw_uxrce_topic_t * custom_topic_sp;
 } rmw_uxrce_node_t;
 
 // Static memory pools
+
+#ifdef MICRO_XRCEDDS_USE_XML
+  extern char rmw_uxrce_xml_buffer[RMW_UXRCE_XML_BUFFER_LENGTH];
+#elif defined(MICRO_XRCEDDS_USE_REFS)
+  extern char rmw_uxrce_profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
+#endif
 
 extern struct rmw_uxrce_mempool_t session_memory;
 extern rmw_context_impl_t custom_sessions[RMW_UXRCE_MAX_SESSIONS];
@@ -224,14 +228,32 @@ extern rmw_uxrce_service_t custom_services[RMW_UXRCE_MAX_SERVICES];
 extern struct rmw_uxrce_mempool_t client_memory;
 extern rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 
+extern struct rmw_uxrce_mempool_t topics_memory;
+extern rmw_uxrce_topic_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
+
 // Memory init functions
 
-void rmw_uxrce_init_sessions_memory(struct rmw_uxrce_mempool_t * memory, rmw_context_impl_t * sessions, size_t size);
-void rmw_uxrce_init_nodes_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_node_t * nodes, size_t size);
-void rmw_uxrce_init_service_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_service_t * services, size_t size);
-void rmw_uxrce_init_client_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_client_t * clients, size_t size);
-void rmw_uxrce_init_publisher_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_publisher_t * publishers, size_t size);
-void rmw_uxrce_init_subscriber_memory(struct rmw_uxrce_mempool_t * memory, rmw_uxrce_subscription_t * subscribers, size_t size);
+void rmw_uxrce_init_sessions_memory(
+  struct rmw_uxrce_mempool_t * memory,
+  rmw_context_impl_t * sessions, size_t size);
+void rmw_uxrce_init_nodes_memory(
+  struct rmw_uxrce_mempool_t * memory, rmw_uxrce_node_t * nodes,
+  size_t size);
+void rmw_uxrce_init_service_memory(
+  struct rmw_uxrce_mempool_t * memory,
+  rmw_uxrce_service_t * services, size_t size);
+void rmw_uxrce_init_client_memory(
+  struct rmw_uxrce_mempool_t * memory, rmw_uxrce_client_t * clients,
+  size_t size);
+void rmw_uxrce_init_publisher_memory(
+  struct rmw_uxrce_mempool_t * memory,
+  rmw_uxrce_publisher_t * publishers, size_t size);
+void rmw_uxrce_init_subscriber_memory(
+  struct rmw_uxrce_mempool_t * memory,
+  rmw_uxrce_subscription_t * subscribers, size_t size);
+void rmw_uxrce_init_topics_memory(
+  struct rmw_uxrce_mempool_t * memory, rmw_uxrce_topic_t * topics,
+  size_t size);
 
 // Memory management functions
 
@@ -241,5 +263,6 @@ void rmw_uxrce_fini_publisher_memory(rmw_publisher_t * publisher);
 void rmw_uxrce_fini_subscription_memory(rmw_subscription_t * subscriber);
 void rmw_uxrce_fini_client_memory(rmw_client_t * client);
 void rmw_uxrce_fini_service_memory(rmw_service_t * service);
+void rmw_uxrce_fini_topic_memory(rmw_uxrce_topic_t * topic);
 
-#endif  // RMW_MICROXRCEDDS_C__SRC__TYPES_H
+#endif  // TYPES_H_

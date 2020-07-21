@@ -12,33 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rmw/rmw.h>
 #include <rmw/error_handling.h>
+#include <rmw/event.h>
 
 rmw_ret_t
-rmw_get_node_names(
-  const rmw_node_t * node,
-  rcutils_string_array_t * node_names,
-  rcutils_string_array_t * node_namespaces)
+rmw_publisher_event_init(
+  rmw_event_t * rmw_event,
+  const rmw_publisher_t * publisher,
+  rmw_event_type_t event_type)
 {
-  (void) node;
-  (void) node_names;
-  (void) node_namespaces;
+  (void) rmw_event;
+  (void) publisher;
+  (void) event_type;
   RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
-rmw_get_node_names_with_enclaves(
-  const rmw_node_t * node,
-  rcutils_string_array_t * node_names,
-  rcutils_string_array_t * node_namespaces,
-  rcutils_string_array_t * enclaves)
+rmw_subscription_event_init(
+  rmw_event_t * rmw_event,
+  const rmw_subscription_t * subscription,
+  rmw_event_type_t event_type)
 {
-  (void) node;
-  (void) node_names;
-  (void) node_namespaces;
-  (void) enclaves;
+  (void) rmw_event;
+  (void) subscription;
+  (void) event_type;
   RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_UNSUPPORTED;
 }

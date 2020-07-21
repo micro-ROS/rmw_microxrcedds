@@ -56,14 +56,18 @@ rmw_take_with_info(
   }
 
   ucdrBuffer temp_buffer;
-  ucdr_init_buffer(&temp_buffer, custom_subscription->micro_buffer[custom_subscription->history_read_index], 
-                    custom_subscription->micro_buffer_lenght[custom_subscription->history_read_index]);
+  ucdr_init_buffer(
+    &temp_buffer, custom_subscription->micro_buffer[custom_subscription->history_read_index],
+    custom_subscription->micro_buffer_lenght[custom_subscription->history_read_index]);
 
-  bool deserialize_rv = custom_subscription->type_support_callbacks->cdr_deserialize(&temp_buffer, ros_message);
+  bool deserialize_rv = custom_subscription->type_support_callbacks->cdr_deserialize(
+    &temp_buffer,
+    ros_message);
 
-  custom_subscription->history_read_index = (custom_subscription->history_read_index + 1) % RMW_UXRCE_MAX_HISTORY;
-  if (custom_subscription->history_write_index == custom_subscription->history_read_index){
-      custom_subscription->micro_buffer_in_use = false;
+  custom_subscription->history_read_index = (custom_subscription->history_read_index + 1) %
+    RMW_UXRCE_MAX_HISTORY;
+  if (custom_subscription->history_write_index == custom_subscription->history_read_index) {
+    custom_subscription->micro_buffer_in_use = false;
   }
 
   if (taken != NULL) {
@@ -80,6 +84,55 @@ rmw_take_with_info(
 }
 
 rmw_ret_t
+rmw_take_sequence(
+  const rmw_subscription_t * subscription,
+  size_t count,
+  rmw_message_sequence_t * message_sequence,
+  rmw_message_info_sequence_t * message_info_sequence,
+  size_t * taken,
+  rmw_subscription_allocation_t * allocation)
+{
+  bool taken_flag;
+  rmw_ret_t ret = RMW_RET_OK;
+
+  *taken = 0;
+
+  if (strcmp(subscription->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+    RMW_SET_ERROR_MSG("Wrong implementation");
+    return RMW_RET_ERROR;
+  }
+
+  rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
+
+  if (!custom_subscription->micro_buffer_in_use) {
+    return RMW_RET_ERROR;
+  }
+
+  for (size_t i = 0; i < count; i++) {
+    taken_flag = false;
+
+    ret = rmw_take_with_info(
+      subscription,
+      message_sequence->data[*taken],
+      &taken_flag,
+      &message_info_sequence->data[*taken],
+      allocation
+    );
+
+    if (ret != RMW_RET_OK || !taken_flag) {
+      break;
+    }
+
+    (*taken)++;
+  }
+
+  message_sequence->size = *taken;
+  message_info_sequence->size = *taken;
+
+  return ret;
+}
+
+rmw_ret_t
 rmw_take_serialized_message(
   const rmw_subscription_t * subscription,
   rmw_serialized_message_t * serialized_message,
@@ -90,8 +143,8 @@ rmw_take_serialized_message(
   (void) serialized_message;
   (void) taken;
   (void) allocation;
-  RMW_SET_ERROR_MSG("function not implemeted");
-  return RMW_RET_ERROR;
+  RMW_SET_ERROR_MSG("function not implemented");
+  return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -107,8 +160,54 @@ rmw_take_serialized_message_with_info(
   (void) taken;
   (void) message_info;
   (void) allocation;
-  RMW_SET_ERROR_MSG("function not implemeted");
-  return RMW_RET_ERROR;
+  RMW_SET_ERROR_MSG("function not implemented");
+  return RMW_RET_UNSUPPORTED;
+}
+
+rmw_ret_t
+rmw_take_loaned_message(
+  const rmw_subscription_t * subscription,
+  void ** loaned_message,
+  bool * taken,
+  rmw_subscription_allocation_t * allocation)
+{
+  (void) subscription;
+  (void) loaned_message;
+  (void) taken;
+  (void) allocation;
+
+  RMW_SET_ERROR_MSG("function not implemented");
+  return RMW_RET_UNSUPPORTED;
+}
+
+rmw_ret_t
+rmw_take_loaned_message_with_info(
+  const rmw_subscription_t * subscription,
+  void ** loaned_message,
+  bool * taken,
+  rmw_message_info_t * message_info,
+  rmw_subscription_allocation_t * allocation)
+{
+  (void) subscription;
+  (void) loaned_message;
+  (void) taken;
+  (void) message_info;
+  (void) allocation;
+
+  RMW_SET_ERROR_MSG("function not implemented");
+  return RMW_RET_UNSUPPORTED;
+}
+
+rmw_ret_t
+rmw_return_loaned_message_from_subscription(
+  const rmw_subscription_t * subscription,
+  void * loaned_message)
+{
+  (void) subscription;
+  (void) loaned_message;
+
+  RMW_SET_ERROR_MSG("function not implemented");
+  return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -121,5 +220,5 @@ rmw_take_event(
   (void) event_info;
   (void) taken;
   RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_ERROR;
+  return RMW_RET_UNSUPPORTED;
 }

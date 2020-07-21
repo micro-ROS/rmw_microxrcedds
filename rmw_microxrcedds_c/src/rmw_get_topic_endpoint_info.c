@@ -12,33 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rmw/rmw.h>
+#include <rmw/get_topic_endpoint_info.h>
+#include <rmw/types.h>
 #include <rmw/error_handling.h>
 
+#include "identifiers.h"
+
 rmw_ret_t
-rmw_get_node_names(
+rmw_get_publishers_info_by_topic(
   const rmw_node_t * node,
-  rcutils_string_array_t * node_names,
-  rcutils_string_array_t * node_namespaces)
+  rcutils_allocator_t * allocator,
+  const char * topic_name,
+  bool no_mangle,
+  rmw_topic_endpoint_info_array_t * publishers_info)
 {
   (void) node;
-  (void) node_names;
-  (void) node_namespaces;
+  (void) allocator;
+  (void) topic_name;
+  (void) no_mangle;
+  (void) publishers_info;
   RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
-rmw_get_node_names_with_enclaves(
+rmw_get_subscriptions_info_by_topic(
   const rmw_node_t * node,
-  rcutils_string_array_t * node_names,
-  rcutils_string_array_t * node_namespaces,
-  rcutils_string_array_t * enclaves)
+  rcutils_allocator_t * allocator,
+  const char * topic_name,
+  bool no_mangle,
+  rmw_topic_endpoint_info_array_t * subscriptions_info)
 {
   (void) node;
-  (void) node_names;
-  (void) node_namespaces;
-  (void) enclaves;
+  (void) allocator;
+  (void) topic_name;
+  (void) no_mangle;
+  (void) subscriptions_info;
   RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_UNSUPPORTED;
 }

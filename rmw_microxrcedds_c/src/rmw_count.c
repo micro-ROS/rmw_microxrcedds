@@ -24,8 +24,8 @@ rmw_count_publishers(
   (void) node;
   (void) topic_name;
   (void) count;
-  RMW_SET_ERROR_MSG("function not implemeted");
-  return RMW_RET_ERROR;
+  RMW_SET_ERROR_MSG("function not implemented");
+  return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -37,6 +37,6 @@ rmw_count_subscribers(
   (void) node;
   (void) topic_name;
   (void) count;
-  RMW_SET_ERROR_MSG("function not implemeted");
-  return RMW_RET_ERROR;
+  RMW_SET_ERROR_MSG("function not implemented");
+  return RMW_RET_UNSUPPORTED;
 }

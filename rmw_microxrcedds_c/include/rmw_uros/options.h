@@ -10,10 +10,10 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License
+// limitations under the License.
 
-#ifndef RMW_MICROXRCEDDS_C__RMW_UROS_OPTIONS_H
-#define RMW_MICROXRCEDDS_C__RMW_UROS_OPTIONS_H
+#ifndef RMW_UROS__OPTIONS_H_
+#define RMW_UROS__OPTIONS_H_
 
 #include <rmw/ret_types.h>
 #include <rmw/init_options.h>
@@ -28,7 +28,9 @@
  * \return RMW_RET_OK If arguments were valid and set in rmw_init_options.
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
-rmw_ret_t rmw_uros_init_options(int argc, const char* const argv[], rmw_init_options_t* rmw_options);
+rmw_ret_t rmw_uros_init_options(
+  int argc, const char * const argv[],
+  rmw_init_options_t * rmw_options);
 
 /**
  * \brief Fills rmw implementation-specific options with the given parameters.
@@ -38,7 +40,7 @@ rmw_ret_t rmw_uros_init_options(int argc, const char* const argv[], rmw_init_opt
  * \return RMW_RET_OK If arguments were valid and set in rmw_init_options.
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
-rmw_ret_t rmw_uros_options_set_serial_device(const char* dev, rmw_init_options_t* rmw_options);
+rmw_ret_t rmw_uros_options_set_serial_device(const char * dev, rmw_init_options_t * rmw_options);
 
 /**
  * \brief Fills rmw implementation-specific options with the given parameters.
@@ -49,7 +51,9 @@ rmw_ret_t rmw_uros_options_set_serial_device(const char* dev, rmw_init_options_t
  * \return RMW_RET_OK If arguments were valid and set in rmw_init_options.
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
-rmw_ret_t rmw_uros_options_set_udp_address(const char* ip, const char* port, rmw_init_options_t* rmw_options);
+rmw_ret_t rmw_uros_options_set_udp_address(
+  const char * ip, const char * port,
+  rmw_init_options_t * rmw_options);
 
 /**
  * \brief Fills rmw implementation-specific options with the given parameters.
@@ -59,7 +63,7 @@ rmw_ret_t rmw_uros_options_set_udp_address(const char* ip, const char* port, rmw
  * \return RMW_RET_OK If arguments were valid and set in rmw_init_options.
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
-rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_t* rmw_options);
+rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_t * rmw_options);
 
 
-#endif // !RMW_MICROXRCEDDS_C__RMW_UROS_OPTIONS_H
+#endif  // RMW_UROS__OPTIONS_H_

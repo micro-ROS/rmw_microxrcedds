@@ -26,7 +26,13 @@
 
 #include "./callbacks.h"
 
-#ifdef MICRO_XRCEDDS_SERIAL || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
+#ifdef MICRO_XRCEDDS_SERIAL
+#include <stdio.h>
+#include <fcntl.h>
+#include <termios.h>
+#endif
+
+#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
 #define CLOSE_TRANSPORT(transport) uxr_close_serial_transport(transport)
 #elif defined(MICRO_XRCEDDS_UDP)
 #define CLOSE_TRANSPORT(transport) uxr_close_udp_transport(transport)
@@ -49,27 +55,28 @@ rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t all
   init_options->instance_id = 0;
   init_options->implementation_identifier = eprosima_microxrcedds_identifier;
   init_options->allocator = allocator;
+  init_options->enclave = "/";
 
   init_options->impl = allocator.allocate(sizeof(rmw_init_options_impl_t), allocator.state);
 
 #if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
-  if(strlen(RMW_UXRCE_DEFAULT_SERIAL_DEVICE) <= MAX_SERIAL_DEVICE){
+  if (strlen(RMW_UXRCE_DEFAULT_SERIAL_DEVICE) <= MAX_SERIAL_DEVICE) {
     strcpy(init_options->impl->connection_params.serial_device, RMW_UXRCE_DEFAULT_SERIAL_DEVICE);
-  }else{
+  } else {
     RMW_SET_ERROR_MSG("default serial port configuration overflow");
     return RMW_RET_INVALID_ARGUMENT;
   }
 #elif defined(MICRO_XRCEDDS_UDP)
-  if(strlen(RMW_UXRCE_DEFAULT_UDP_IP) <= MAX_IP_LEN){
+  if (strlen(RMW_UXRCE_DEFAULT_UDP_IP) <= MAX_IP_LEN) {
     strcpy(init_options->impl->connection_params.agent_address, RMW_UXRCE_DEFAULT_UDP_IP);
-  }else{
+  } else {
     RMW_SET_ERROR_MSG("default ip configuration overflow");
     return RMW_RET_INVALID_ARGUMENT;
   }
-  
-  if(strlen(RMW_UXRCE_DEFAULT_UDP_PORT) <= MAX_PORT_LEN){
+
+  if (strlen(RMW_UXRCE_DEFAULT_UDP_PORT) <= MAX_PORT_LEN) {
     strcpy(init_options->impl->connection_params.agent_port, RMW_UXRCE_DEFAULT_UDP_PORT);
-  }else{
+  } else {
     RMW_SET_ERROR_MSG("default port configuration overflow");
     return RMW_RET_INVALID_ARGUMENT;
   }
@@ -81,7 +88,7 @@ rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t all
 
   do {
     init_options->impl->connection_params.client_key = rand();
-  } while(init_options->impl->connection_params.client_key == 0);
+  } while (init_options->impl->connection_params.client_key == 0);
 
   return RMW_RET_OK;
 }
@@ -117,7 +124,7 @@ rmw_init_options_fini(rmw_init_options_t * init_options)
     init_options->implementation_identifier,
     eprosima_microxrcedds_identifier,
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
-    
+
   rmw_free(init_options->impl);
 
   *init_options = rmw_get_zero_initialized_init_options();
@@ -149,10 +156,14 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   rmw_context_impl_t * context_impl = (rmw_context_impl_t *)memory_node->data;
 
   #if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
-    strcpy(context_impl->connection_params.serial_device, options->impl->connection_params.serial_device);
+  strcpy(
+    context_impl->connection_params.serial_device,
+    options->impl->connection_params.serial_device);
   #elif defined(MICRO_XRCEDDS_UDP)
-    strcpy(context_impl->connection_params.agent_address, options->impl->connection_params.agent_address);
-    strcpy(context_impl->connection_params.agent_port, options->impl->connection_params.agent_port);
+  strcpy(
+    context_impl->connection_params.agent_address,
+    options->impl->connection_params.agent_address);
+  strcpy(context_impl->connection_params.agent_port, options->impl->connection_params.agent_port);
   #endif
 
   context_impl->connection_params.client_key = options->impl->connection_params.client_key;
@@ -169,10 +180,13 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   context->impl = context_impl;
 
   rmw_uxrce_init_nodes_memory(&node_memory, custom_nodes, RMW_UXRCE_MAX_NODES);
-  rmw_uxrce_init_subscriber_memory(&subscription_memory, custom_subscriptions, RMW_UXRCE_MAX_SUBSCRIPTIONS);
+  rmw_uxrce_init_subscriber_memory(
+    &subscription_memory, custom_subscriptions,
+    RMW_UXRCE_MAX_SUBSCRIPTIONS);
   rmw_uxrce_init_publisher_memory(&publisher_memory, custom_publishers, RMW_UXRCE_MAX_PUBLISHERS);
   rmw_uxrce_init_service_memory(&service_memory, custom_services, RMW_UXRCE_MAX_SERVICES);
   rmw_uxrce_init_client_memory(&client_memory, custom_clients, RMW_UXRCE_MAX_CLIENTS);
+  rmw_uxrce_init_topics_memory(&topics_memory, custom_topics, RMW_UXRCE_MAX_TOPICS_INTERNAL);
 
   // Micro-XRCE-DDS Client initialization
 
@@ -220,11 +234,12 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
       cfsetospeed(&tty_config, B115200);
 
       if (0 == tcsetattr(fd, TCSANOW, &tty_config)) {
-        if (!uxr_init_serial_transport(&context_impl->transport,
-          &context_impl->serial_platform, fd, 0, 1))
+        if (!uxr_init_serial_transport(
+            &context_impl->transport,
+            &context_impl->serial_platform, fd, 0, 1))
         {
           RMW_SET_ERROR_MSG("Can not create an serial connection");
-          return NULL;
+          return RMW_RET_ERROR;
         }
       }
     }
@@ -234,29 +249,39 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 #elif defined(MICRO_XRCEDDS_UDP)
   // TODO(Borja) Think how we are going to select transport to use
   #ifdef MICRO_XRCEDDS_IPV4
-    uxrIpProtocol ip_protocol = UXR_IPv4;
+  uxrIpProtocol ip_protocol = UXR_IPv4;
   #elif defined(MICRO_XRCEDDS_IPV6)
-    uxrIpProtocol ip_protocol = UXR_IPv6;
+  uxrIpProtocol ip_protocol = UXR_IPv6;
   #endif
 
-  if (!uxr_init_udp_transport(&context_impl->transport, &context_impl->udp_platform, ip_protocol, context_impl->connection_params.agent_address, context_impl->connection_params.agent_port)) {
+  if (!uxr_init_udp_transport(
+      &context_impl->transport, &context_impl->udp_platform, ip_protocol,
+      context_impl->connection_params.agent_address, context_impl->connection_params.agent_port))
+  {
     RMW_SET_ERROR_MSG("Can not create an udp connection");
-    return NULL;
+    return RMW_RET_ERROR;
   }
-  printf("UDP mode => ip: %s - port: %s\n", context_impl->connection_params.agent_address, context_impl->connection_params.agent_port);
+  printf(
+    "UDP mode => ip: %s - port: %s\n", context_impl->connection_params.agent_address,
+    context_impl->connection_params.agent_port);
 #elif defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
   int pseudo_fd = 0;
-  if (strlen(options->impl->connection_params.serial_device) > 0){
+  if (strlen(options->impl->connection_params.serial_device) > 0) {
     pseudo_fd = atoi(options->impl->connection_params.serial_device);
   }
-  
-  if (!uxr_init_serial_transport(&context_impl->transport, &context_impl->serial_platform, pseudo_fd, 0, 1)){
+
+  if (!uxr_init_serial_transport(
+      &context_impl->transport, &context_impl->serial_platform,
+      pseudo_fd, 0, 1))
+  {
     RMW_SET_ERROR_MSG("Can not create an custom serial connection");
-    return NULL;
+    return RMW_RET_ERROR;
   }
 #endif
 
-  uxr_init_session(&context_impl->session, &context_impl->transport.comm, context_impl->connection_params.client_key);
+  uxr_init_session(
+    &context_impl->session, &context_impl->transport.comm,
+    context_impl->connection_params.client_key);
 
   uxr_set_topic_callback(&context_impl->session, on_topic, NULL);
   uxr_set_status_callback(&context_impl->session, on_status, NULL);
@@ -267,13 +292,15 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
     &context_impl->session, context_impl->input_reliable_stream_buffer,
     context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY, RMW_UXRCE_STREAM_HISTORY);
   context_impl->reliable_output =
-    uxr_create_output_reliable_stream(&context_impl->session, context_impl->output_reliable_stream_buffer,
-      context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY, RMW_UXRCE_STREAM_HISTORY);
+    uxr_create_output_reliable_stream(
+    &context_impl->session, context_impl->output_reliable_stream_buffer,
+    context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY, RMW_UXRCE_STREAM_HISTORY);
 
   context_impl->best_effort_input = uxr_create_input_best_effort_stream(&context_impl->session);
-  context_impl->best_effort_output = uxr_create_output_best_effort_stream(&context_impl->session,
-      context_impl->output_best_effort_stream_buffer,context_impl->transport.comm.mtu);
-  
+  context_impl->best_effort_output = uxr_create_output_best_effort_stream(
+    &context_impl->session,
+    context_impl->output_best_effort_stream_buffer, context_impl->transport.comm.mtu);
+
 
   if (!uxr_create_session(&context_impl->session)) {
     CLOSE_TRANSPORT(&context_impl->transport);
@@ -293,20 +320,35 @@ rmw_shutdown(rmw_context_t * context)
     context->implementation_identifier,
     eprosima_microxrcedds_identifier,
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
-  // context impl is explicitly supposed to be nullptr for now, see rmw_init's code
-  // RCUTILS_CHECK_ARGUMENT_FOR_NULL(context->impl, RMW_RET_INVALID_ARGUMENT);
-  rmw_context_fini(context);
 
-  *context = rmw_get_zero_initialized_context();
-  return RMW_RET_OK;
+  rmw_ret_t ret = rmw_context_fini(context);
+
+  if (RMW_RET_OK == ret) {
+    *context = rmw_get_zero_initialized_context();
+  }
+
+  return ret;
 }
 
 rmw_ret_t
 rmw_context_fini(rmw_context_t * context)
 {
+  // TODO(pablogs9): Should we manage not closed XRCE sessions?
+  rmw_ret_t ret = RMW_RET_OK;
+
+  struct rmw_uxrce_mempool_item_t * item = node_memory.allocateditems;
+
+  while (item != NULL) {
+    rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)item->data;
+    item = item->next;
+    if (custom_node->context == context->impl) {
+      ret = rmw_destroy_node(custom_node->rmw_handle);
+    }
+  }
+
   uxr_delete_session(&context->impl->session);
   rmw_uxrce_fini_session_memory(context->impl);
   context->impl = NULL;
 
-  return RMW_RET_OK;
+  return ret;
 }
