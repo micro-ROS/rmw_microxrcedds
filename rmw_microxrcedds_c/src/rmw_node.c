@@ -19,11 +19,6 @@
 
 #include <rmw_microxrcedds_c/config.h>
 
-#ifdef MICRO_XRCEDDS_SERIAL
-#include <fcntl.h>  // O_RDWR, O_NOCTTY, O_NONBLOCK
-#include <termios.h>
-#endif
-
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
