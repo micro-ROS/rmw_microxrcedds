@@ -20,7 +20,7 @@ jobs:
           run: |
             git clone -b foxy https://github.com/eProsima/Micro-CDR src/Micro-CDR 
             git clone -b foxy https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client 
-            git clone -b feature/foxy_migration https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
+            git clone -b foxy https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
             touch src/rosidl_typesupport_microxrcedds/test/COLCON_IGNORE
       
         - name: Build
