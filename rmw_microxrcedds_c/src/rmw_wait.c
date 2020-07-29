@@ -84,7 +84,7 @@ rmw_wait(
   }
 
   if (session != NULL) {
-    uxr_run_session_until_timeout(session, timeout);
+    uxr_run_session_until_data(session, timeout);
   }
 
   bool buffered_status = false;
