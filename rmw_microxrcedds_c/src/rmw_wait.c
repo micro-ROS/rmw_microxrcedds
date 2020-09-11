@@ -64,27 +64,23 @@ rmw_wait(
     timeout = (uint64_t)UXR_TIMEOUT_INF;
   }
 
-  // Look for the XRCE session
-  uxrSession * session = NULL;
+  // Run every XRCE session
 
-  for (size_t i = 0; i < services->service_count && session == NULL; i++) {
-    rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)services->services[i];
-    session = &custom_service->owner_node->context->session;
+  uint8_t available_contexts = 0;
+  struct rmw_uxrce_mempool_item_t * item = NULL;
+  
+  item = session_memory.allocateditems;
+  while (item != NULL) {
+    item = item->next;
+    available_contexts++;
   }
 
-  for (size_t i = 0; i < clients->client_count && session == NULL; i++) {
-    rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)clients->clients[i];
-    session = &custom_client->owner_node->context->session;
-  }
-
-  for (size_t i = 0; i < subscriptions->subscriber_count && session == NULL; ++i) {
-    rmw_uxrce_subscription_t * custom_subscription =
-      (rmw_uxrce_subscription_t *)subscriptions->subscribers[i];
-    session = &custom_subscription->owner_node->context->session;
-  }
-
-  if (session != NULL) {
-    uxr_run_session_until_data(session, timeout);
+  uint64_t per_session_timeout = (uint64_t)((float)timeout/(float)available_contexts);
+  item = session_memory.allocateditems;
+  while (item != NULL) {
+    rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
+    uxr_run_session_until_data(&custom_context->session, per_session_timeout);
+    item = item->next;
   }
 
   bool buffered_status = false;
