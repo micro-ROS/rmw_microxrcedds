@@ -121,6 +121,11 @@ TEST_F(TestTopic, multiple_topic_creation) {
     rmw_ret_t ret = destroy_topic(created_topics.at(i));
     ASSERT_EQ(ret, RMW_RET_OK);
   }
+
+  // Destroy an already destroyed topic
+  rmw_ret_t ret = destroy_topic(created_topics.at(0));
+  ASSERT_EQ(ret, RMW_RET_ERROR);
+
   // TODO(pablogs9): Topic must be related to publisher in order to be counted
   // ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 0);
 }

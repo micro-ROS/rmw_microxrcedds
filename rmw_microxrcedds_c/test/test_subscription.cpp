@@ -259,6 +259,11 @@ TEST_F(TestSubscription, memory_poll_shared_topic) {
       ret = rmw_destroy_subscription(this->node, subscription);
       ASSERT_EQ(ret, RMW_RET_OK);
     }
+
+    // Destroy an already detroyed subscriber
+    ret = rmw_destroy_subscription(this->node, subscriptions.at(0));
+    ASSERT_EQ(ret, RMW_RET_ERROR);
+
     subscriptions.clear();
   }
 }

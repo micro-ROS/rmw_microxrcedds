@@ -102,6 +102,11 @@ TEST_F(TestNode, memory_poll) {
     ret = rmw_destroy_node(nodes.at(i));
     ASSERT_EQ(ret, RMW_RET_OK);
   }
+  
+  // Destroy an already detroyed node
+  ret = rmw_destroy_node(nodes.at(0));
+  ASSERT_EQ(ret, RMW_RET_ERROR);
+
   nodes.clear();
 
 }
