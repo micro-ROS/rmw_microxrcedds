@@ -198,7 +198,7 @@ void rmw_uxrce_fini_session_memory(rmw_context_impl_t * session)
 
 void rmw_uxrce_fini_node_memory(rmw_node_t * node)
 {
-  if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+  if (!is_uxrce_rmw_identifier_valid(node->implementation_identifier)) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
     return;
   }
@@ -227,7 +227,7 @@ void rmw_uxrce_fini_node_memory(rmw_node_t * node)
 
 void rmw_uxrce_fini_publisher_memory(rmw_publisher_t * publisher)
 {
-  if (strcmp(publisher->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+  if (!is_uxrce_rmw_identifier_valid(publisher->implementation_identifier)) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
     return;
   }
@@ -251,7 +251,7 @@ void rmw_uxrce_fini_publisher_memory(rmw_publisher_t * publisher)
 
 void rmw_uxrce_fini_subscription_memory(rmw_subscription_t * subscriber)
 {
-  if (strcmp(subscriber->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+  if (!is_uxrce_rmw_identifier_valid(subscriber->implementation_identifier)) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
     return;
   }
@@ -274,7 +274,7 @@ void rmw_uxrce_fini_subscription_memory(rmw_subscription_t * subscriber)
 
 void rmw_uxrce_fini_service_memory(rmw_service_t * service)
 {
-  if (strcmp(service->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+  if (!is_uxrce_rmw_identifier_valid(service->implementation_identifier)) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
     return;
   }
@@ -296,7 +296,7 @@ void rmw_uxrce_fini_service_memory(rmw_service_t * service)
 
 void rmw_uxrce_fini_client_memory(rmw_client_t * client)
 {
-  if (strcmp(client->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+  if (!is_uxrce_rmw_identifier_valid(client->implementation_identifier)) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
     return;
   }

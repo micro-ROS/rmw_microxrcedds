@@ -53,4 +53,6 @@ bool build_topic_profile(const char * topic_name, char profile_name[], size_t bu
 bool build_datawriter_profile(const char * topic_name, char profile_name[], size_t buffer_size);
 bool build_datareader_profile(const char * topic_name, char profile_name[], size_t buffer_size);
 
+
+bool is_uxrce_rmw_identifier_valid(const char * id);
 #endif  // UTILS_H_

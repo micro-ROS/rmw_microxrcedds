@@ -369,3 +369,9 @@ bool build_datareader_profile(const char * topic_name, char profile_name[], size
   ret = (written > 0) && (written < (int)buffer_size);
   return ret;
 }
+
+bool is_uxrce_rmw_identifier_valid(const char * id)
+{
+  return id != NULL &&
+         strcmp(id, rmw_get_implementation_identifier()) == 0;
+}

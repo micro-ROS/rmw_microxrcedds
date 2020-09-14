@@ -263,6 +263,11 @@ TEST_F(TestPublisher, memory_poll_shared_topic) {
       ret = rmw_destroy_publisher(this->node, publisher);
       ASSERT_EQ(ret, RMW_RET_OK);
     }
+
+  // Destroy an already detroyed publisher
+  ret = rmw_destroy_publisher(this->node, publishers.at(0));
+  ASSERT_EQ(ret, RMW_RET_ERROR);
+
     publishers.clear();
   }
 }
