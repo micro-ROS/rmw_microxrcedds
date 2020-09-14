@@ -25,7 +25,7 @@ rmw_send_response(
 {
   EPROS_PRINT_TRACE();
 
-  if (!check_uxrce_rmw_identifier(service->implementation_identifier)) {
+  if (!is_uxrce_rmw_identifier_valid(service->implementation_identifier)) {
     RMW_SET_ERROR_MSG("Wrong implementation");
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
   }
@@ -77,7 +77,7 @@ rmw_take_response(
     *taken = false;
   }
 
-  if (!check_uxrce_rmw_identifier(client->implementation_identifier)) {
+  if (!is_uxrce_rmw_identifier_valid(client->implementation_identifier)) {
     RMW_SET_ERROR_MSG("Wrong implementation");
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
   }

@@ -370,7 +370,7 @@ bool build_datareader_profile(const char * topic_name, char profile_name[], size
   return ret;
 }
 
-bool check_uxrce_rmw_identifier(const char * id)
+bool is_uxrce_rmw_identifier_valid(const char * id)
 {
   return id != NULL &&
          strcmp(id, rmw_get_implementation_identifier()) == 0;

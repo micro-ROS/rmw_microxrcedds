@@ -54,5 +54,5 @@ bool build_datawriter_profile(const char * topic_name, char profile_name[], size
 bool build_datareader_profile(const char * topic_name, char profile_name[], size_t buffer_size);
 
 
-bool check_uxrce_rmw_identifier(const char * id);
+bool is_uxrce_rmw_identifier_valid(const char * id);
 #endif  // UTILS_H_

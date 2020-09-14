@@ -33,7 +33,7 @@ rmw_publish(
   } else if (!ros_message) {
     RMW_SET_ERROR_MSG("ros_message pointer is null");
     ret = RMW_RET_ERROR;
-  } else if (!check_uxrce_rmw_identifier(publisher->implementation_identifier))
+  } else if (!is_uxrce_rmw_identifier_valid(publisher->implementation_identifier))
   {
     RMW_SET_ERROR_MSG("publisher handle not from this implementation");
     ret = RMW_RET_ERROR;
