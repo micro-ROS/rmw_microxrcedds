@@ -148,7 +148,7 @@ rmw_ret_t rmw_destroy_node(rmw_node_t * node)
     return RMW_RET_ERROR;
   }
 
-  if (node->implementation_identifier == NULL || !check_uxrce_rmw_identifier(node->implementation_identifier)) {
+  if (!check_uxrce_rmw_identifier(node->implementation_identifier)) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
     return RMW_RET_ERROR;
   }
