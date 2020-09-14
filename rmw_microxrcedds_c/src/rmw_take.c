@@ -44,7 +44,7 @@ rmw_take_with_info(
     *taken = false;
   }
 
-  if (strcmp(subscription->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+  if (!check_uxrce_rmw_identifier(subscription->implementation_identifier)) {
     RMW_SET_ERROR_MSG("Wrong implementation");
     return RMW_RET_ERROR;
   }
@@ -97,7 +97,7 @@ rmw_take_sequence(
 
   *taken = 0;
 
-  if (strcmp(subscription->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+  if (!check_uxrce_rmw_identifier(subscription->implementation_identifier)) {
     RMW_SET_ERROR_MSG("Wrong implementation");
     return RMW_RET_ERROR;
   }

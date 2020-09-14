@@ -64,7 +64,7 @@ rmw_create_subscription(
     RMW_SET_ERROR_MSG("node handle is null");
   } else if (!type_support) {
     RMW_SET_ERROR_MSG("type support is null");
-  } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+  } else if (!check_uxrce_rmw_identifier(node->implementation_identifier)) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
   } else if (!topic_name || strlen(topic_name) == 0) {
     RMW_SET_ERROR_MSG("subscription topic is null or empty string");
@@ -267,7 +267,7 @@ rmw_destroy_subscription(rmw_node_t * node, rmw_subscription_t * subscription)
   if (!node) {
     RMW_SET_ERROR_MSG("node handle is null");
     result_ret = RMW_RET_ERROR;
-  } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+  } else if (!check_uxrce_rmw_identifier(node->implementation_identifier)) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
     result_ret = RMW_RET_ERROR;
   } else if (!node->data) {
@@ -276,10 +276,7 @@ rmw_destroy_subscription(rmw_node_t * node, rmw_subscription_t * subscription)
   } else if (!subscription) {
     RMW_SET_ERROR_MSG("subscription handle is null");
     result_ret = RMW_RET_ERROR;
-  } else if (strcmp(
-      subscription->implementation_identifier,                // NOLINT
-      rmw_get_implementation_identifier()) != 0)
-  {
+  } else if (!check_uxrce_rmw_identifier(subscription->implementation_identifier)) {
     RMW_SET_ERROR_MSG("subscription handle not from this implementation");
     result_ret = RMW_RET_ERROR;
   } else if (!subscription->data) {

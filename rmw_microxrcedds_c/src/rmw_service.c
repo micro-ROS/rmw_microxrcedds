@@ -40,7 +40,7 @@ rmw_create_service(
     RMW_SET_ERROR_MSG("node handle is null");
   } else if (!type_support) {
     RMW_SET_ERROR_MSG("type support is null");
-  } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+  } else if (!check_uxrce_rmw_identifier(node->implementation_identifier)) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
   } else if (!service_name || strlen(service_name) == 0) {
     RMW_SET_ERROR_MSG("service name is null or empty string");
@@ -180,7 +180,7 @@ rmw_destroy_service(
   if (!node) {
     RMW_SET_ERROR_MSG("node handle is null");
     result_ret = RMW_RET_ERROR;
-  } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+  } else if (!check_uxrce_rmw_identifier(node->implementation_identifier)) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
     result_ret = RMW_RET_ERROR;
   } else if (!node->data) {
@@ -189,10 +189,7 @@ rmw_destroy_service(
   } else if (!service) {
     RMW_SET_ERROR_MSG("service handle is null");
     result_ret = RMW_RET_ERROR;
-  } else if (strcmp(
-      service->implementation_identifier,                // NOLINT
-      rmw_get_implementation_identifier()) != 0)
-  {
+  } else if (!check_uxrce_rmw_identifier(service->implementation_identifier)) {
     RMW_SET_ERROR_MSG("service handle not from this implementation");
     result_ret = RMW_RET_ERROR;
   } else if (!service->data) {

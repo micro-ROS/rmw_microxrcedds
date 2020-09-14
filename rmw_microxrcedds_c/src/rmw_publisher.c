@@ -67,7 +67,7 @@ rmw_create_publisher(
     RMW_SET_ERROR_MSG("node handle is null");
   } else if (!type_support) {
     RMW_SET_ERROR_MSG("type support is null");
-  } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+  } else if (!check_uxrce_rmw_identifier(node->implementation_identifier)) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
   } else if (!topic_name || strlen(topic_name) == 0) {
     RMW_SET_ERROR_MSG("publisher topic is null or empty string");
@@ -288,7 +288,7 @@ rmw_destroy_publisher(
   if (!node) {
     RMW_SET_ERROR_MSG("node handle is null");
     result_ret = RMW_RET_ERROR;
-  } else if (strcmp(node->implementation_identifier, rmw_get_implementation_identifier()) != 0) {
+  } else if (!check_uxrce_rmw_identifier(node->implementation_identifier)) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
     result_ret = RMW_RET_ERROR;
   } else if (!node->data) {
@@ -297,9 +297,7 @@ rmw_destroy_publisher(
   } else if (!publisher) {
     RMW_SET_ERROR_MSG("publisher handle is null");
     result_ret = RMW_RET_ERROR;
-  } else if (strcmp(
-      publisher->implementation_identifier,                // NOLINT
-      rmw_get_implementation_identifier()) != 0)
+  } else if (!check_uxrce_rmw_identifier(publisher->implementation_identifier))
   {
     RMW_SET_ERROR_MSG("publisher handle not from this implementation");
     result_ret = RMW_RET_ERROR;
