@@ -118,40 +118,36 @@ TEST_F(TestPubSub, publish_and_receive) {
 
   ASSERT_EQ(rmw_publish(pub, &ros_message, NULL), RMW_RET_OK);
 
-  void * aux_ptr;
-  do {
-    aux_ptr = sub->data;
-    rmw_subscriptions_t subscriptions;
-    subscriptions.subscribers = &aux_ptr;
-    subscriptions.subscriber_count = 1;
+  rmw_subscriptions_t subscriptions;
+  subscriptions.subscribers = &sub->data;
+  subscriptions.subscriber_count = 1;
 
-    rmw_guard_conditions_t guard_conditions;
-    guard_conditions.guard_condition_count = 0;
+  rmw_guard_conditions_t guard_conditions;
+  guard_conditions.guard_condition_count = 0;
 
-    rmw_services_t services;
-    services.service_count = 0;
+  rmw_services_t services;
+  services.service_count = 0;
 
-    rmw_clients_t clients;
-    clients.client_count = 0;
+  rmw_clients_t clients;
+  clients.client_count = 0;
 
-    rmw_events_t * events = NULL;
-    rmw_wait_set_t * wait_set = NULL;
-    rmw_time_t wait_timeout;
+  rmw_events_t * events = NULL;
+  rmw_wait_set_t * wait_set = NULL;
+  rmw_time_t wait_timeout;
 
+  wait_timeout.sec = 1;
 
-    wait_timeout.sec = 1;
+  rmw_ret_t ret = rmw_wait(
+    &subscriptions,
+    &guard_conditions,
+    &services,
+    &clients,
+    events,
+    wait_set,
+    &wait_timeout
+  );
 
-    // TODO(pablogs9): Ensure here that the wait works the first time with the Micro XRCE-DDS run session until data message update 
-    rmw_ret_t ret = rmw_wait(
-      &subscriptions,
-      &guard_conditions,
-      &services,
-      &clients,
-      events,
-      wait_set,
-      &wait_timeout
-    );
-  } while (aux_ptr == NULL);
+  ASSERT_NE((void *)subscriptions.subscribers[0], (void *)NULL);
 
   rosidl_runtime_c__String read_ros_message;
   char buff[100];
@@ -159,7 +155,7 @@ TEST_F(TestPubSub, publish_and_receive) {
   read_ros_message.capacity = sizeof(buff);
   read_ros_message.size = 0;
 
-  bool taken;
+  bool taken = false;
   ASSERT_EQ(
     rmw_take_with_info(
       sub,
@@ -168,6 +164,7 @@ TEST_F(TestPubSub, publish_and_receive) {
       NULL,
       NULL
     ), RMW_RET_OK);
+  
   ASSERT_EQ(taken, true);
   ASSERT_EQ(strcmp(content, read_ros_message.data), 0);
   ASSERT_EQ(strcmp(ros_message.data, read_ros_message.data), 0);
