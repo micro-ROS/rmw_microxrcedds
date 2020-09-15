@@ -326,6 +326,9 @@ rmw_shutdown(rmw_context_t * context)
     *context = rmw_get_zero_initialized_context();
   }
 
+  rmw_context_impl_t * context_impl = (rmw_context_impl_t *)context->impl;
+  CLOSE_TRANSPORT(&context_impl->transport);
+
   return ret;
 }
 
