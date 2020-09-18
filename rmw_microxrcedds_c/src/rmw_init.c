@@ -319,7 +319,7 @@ rmw_shutdown(rmw_context_t * context)
     context->implementation_identifier,
     eprosima_microxrcedds_identifier,
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
-
+  
   rmw_ret_t ret = rmw_context_fini(context);
 
   if (RMW_RET_OK == ret) {
@@ -347,6 +347,9 @@ rmw_context_fini(rmw_context_t * context)
 
   uxr_delete_session(&context->impl->session);
   rmw_uxrce_fini_session_memory(context->impl);
+
+  CLOSE_TRANSPORT(&context->impl->transport);
+
   context->impl = NULL;
 
   return ret;
