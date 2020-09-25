@@ -18,6 +18,11 @@
 #include <rmw/ret_types.h>
 #include <rmw/init_options.h>
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 /**
  * \brief Parses command line args and fills rmw implementation-specific options.
  * `rmw_init_options allocator` is used to allocate the specific rmw options.
@@ -56,6 +61,16 @@ rmw_ret_t rmw_uros_options_set_udp_address(
   rmw_init_options_t * rmw_options);
 
 /**
+ * \brief Fills rmw implementation-specific options with the autodicovered address of an micro-ROS Agent.
+ *
+ * \param[in,out] rmw_options Updated options with rmw specifics.
+ * \return RMW_RET_OK If arguments were valid and set in rmw_init_options.
+ * \return RMW_RET_TIMEOUT If micro-ROS agent autodiscovery is timeout.
+ * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
+ */
+rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t * rmw_options);
+
+/**
  * \brief Fills rmw implementation-specific options with the given parameters.
  *
  * \param[in] client_key MicroXRCE-DDS client key.
@@ -65,5 +80,8 @@ rmw_ret_t rmw_uros_options_set_udp_address(
  */
 rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_t * rmw_options);
 
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  // RMW_UROS__OPTIONS_H_

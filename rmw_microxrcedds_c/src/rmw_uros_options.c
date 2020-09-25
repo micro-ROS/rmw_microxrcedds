@@ -21,6 +21,8 @@
 #include <rmw/ret_types.h>
 #include <rmw/error_handling.h>
 
+// #include <uxr/client/client.h>
+
 rmw_ret_t rmw_uros_init_options(
   int argc, const char * const argv[],
   rmw_init_options_t * rmw_options)
@@ -113,6 +115,45 @@ rmw_ret_t rmw_uros_options_set_udp_address(
   (void) rmw_options;
 
   RMW_SET_ERROR_MSG("MICRO_XRCEDDS_UDP not set.");
+  return RMW_RET_INVALID_ARGUMENT;
+#endif
+}
+
+bool on_agent_found(const TransportLocator* locator, void* args)
+{
+    rmw_init_options_t * rmw_options = (rmw_init_options_t *) args;
+    uxrIpProtocol ip_protocol;
+    uint16_t port;
+    uxr_locator_to_ip(locator, 
+                      rmw_options->impl->connection_params.agent_address, 
+                      sizeof(rmw_options->impl->connection_params.agent_address), 
+                      &port, 
+                      &ip_protocol);
+    sprintf(rmw_options->impl->connection_params.agent_port, "%d", port);
+    printf("Agent found => ip: %s, port: %d\n", rmw_options->impl->connection_params.agent_address, port);
+    return true;
+}
+
+rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t * rmw_options)
+{
+#if defined(MICRO_XRCEDDS_UDP) && defined(UCLIENT_PROFILE_DISCOVERY)
+  if (NULL == rmw_options) {
+    RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
+    return RMW_RET_INVALID_ARGUMENT;
+  }
+
+  memset(rmw_options->impl->connection_params.agent_address, 0, MAX_IP_LEN);
+  memset(rmw_options->impl->connection_params.agent_port, 0, MAX_PORT_LEN);
+
+  uxr_discovery_agents_default(1, 1000, on_agent_found, (void*) rmw_options);
+
+  return (strlen(rmw_options->impl->connection_params.agent_address) > 0 )? RMW_RET_OK : RMW_RET_TIMEOUT;
+#else
+  (void) ip;
+  (void) port;
+  (void) rmw_options;
+
+  RMW_SET_ERROR_MSG("MICRO_XRCEDDS_UDP or UCLIENT_PROFILE_DISCOVERY not set.");
   return RMW_RET_INVALID_ARGUMENT;
 #endif
 }
