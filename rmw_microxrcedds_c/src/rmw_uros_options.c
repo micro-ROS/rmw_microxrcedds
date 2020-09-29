@@ -121,17 +121,30 @@ rmw_ret_t rmw_uros_options_set_udp_address(
 
 bool on_agent_found(const TransportLocator* locator, void* args)
 {
-    rmw_init_options_t * rmw_options = (rmw_init_options_t *) args;
-    uxrIpProtocol ip_protocol;
-    uint16_t port;
-    uxr_locator_to_ip(locator, 
-                      rmw_options->impl->connection_params.agent_address, 
-                      sizeof(rmw_options->impl->connection_params.agent_address), 
-                      &port, 
-                      &ip_protocol);
-    sprintf(rmw_options->impl->connection_params.agent_port, "%d", port);
-    printf("Agent found => ip: %s, port: %d\n", rmw_options->impl->connection_params.agent_address, port);
-    return true;
+  rmw_init_options_t * rmw_options = (rmw_init_options_t *) args;
+  uxrIpProtocol ip_protocol;
+  char ip[MAX_IP_LEN];
+  char port_str[MAX_PORT_LEN];
+  uint16_t port;
+
+  uxr_locator_to_ip(locator, ip, sizeof(ip), &port, &ip_protocol);
+  sprintf(port_str, "%d", port);
+
+  uxrUDPTransport transport;
+  uxrUDPPlatform udp_platform;
+  if(uxr_init_udp_transport(&transport, &udp_platform, ip_protocol, ip, port_str))
+  {
+    uxrSession session;
+    uxr_init_session(&session, &transport.comm, rmw_options->impl->connection_params.client_key);
+    if(uxr_create_session_retries(&session, 1))
+    {
+      sprintf(rmw_options->impl->connection_params.agent_port, "%d", port);
+      sprintf(rmw_options->impl->connection_params.agent_address, "%s", ip);
+      uxr_delete_session(&session);
+      return true;
+    }
+  }
+  return false;
 }
 
 rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t * rmw_options)
