@@ -21,7 +21,7 @@
 #include <rmw/ret_types.h>
 #include <rmw/error_handling.h>
 
-// #include <uxr/client/client.h>
+#include <uxr/client/client.h>
 
 rmw_ret_t rmw_uros_init_options(
   int argc, const char * const argv[],
@@ -162,8 +162,6 @@ rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t * rmw_options)
 
   return (strlen(rmw_options->impl->connection_params.agent_address) > 0 )? RMW_RET_OK : RMW_RET_TIMEOUT;
 #else
-  (void) ip;
-  (void) port;
   (void) rmw_options;
 
   RMW_SET_ERROR_MSG("MICRO_XRCEDDS_UDP or UCLIENT_PROFILE_DISCOVERY not set.");
