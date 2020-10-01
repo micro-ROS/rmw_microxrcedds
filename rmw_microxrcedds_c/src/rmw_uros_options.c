@@ -119,6 +119,7 @@ rmw_ret_t rmw_uros_options_set_udp_address(
 #endif
 }
 
+#if defined(MICRO_XRCEDDS_UDP) && defined(UCLIENT_PROFILE_DISCOVERY)
 bool on_agent_found(const TransportLocator* locator, void* args)
 {
   rmw_init_options_t * rmw_options = (rmw_init_options_t *) args;
@@ -146,6 +147,7 @@ bool on_agent_found(const TransportLocator* locator, void* args)
   }
   return false;
 }
+#endif
 
 rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t * rmw_options)
 {
