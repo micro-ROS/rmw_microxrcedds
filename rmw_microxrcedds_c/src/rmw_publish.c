@@ -54,7 +54,7 @@ rmw_publish(
     {
       written = functions->cdr_serialize(ros_message, &mb);
 
-      if (UXR_BEST_EFFORT_STREAM == custom_publisher->stream_id.type) {
+      if (written && UXR_BEST_EFFORT_STREAM == custom_publisher->stream_id.type) {
         uxr_flash_output_streams(&custom_publisher->owner_node->context->session);
       } else {
         written &= uxr_run_session_until_confirm_delivery(

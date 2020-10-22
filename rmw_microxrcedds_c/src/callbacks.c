@@ -49,7 +49,7 @@ void on_topic(
     if ((custom_subscription->datareader_id.id == object_id.id) &&
       (custom_subscription->datareader_id.type == object_id.type))
     {
-      custom_subscription->micro_buffer_lenght[custom_subscription->history_write_index] = length;
+      custom_subscription->micro_buffer_length[custom_subscription->history_write_index] = length;
       ucdr_deserialize_array_uint8_t(
         ub,
         custom_subscription->micro_buffer[custom_subscription->history_write_index], length);
@@ -89,7 +89,7 @@ void on_request(
   while (service_item != NULL) {
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service_item->data;
     if (custom_service->request_id == request_id) {
-      custom_service->micro_buffer_lenght[custom_service->history_write_index] = length;
+      custom_service->micro_buffer_length[custom_service->history_write_index] = length;
       ucdr_deserialize_array_uint8_t(
         ub,
         custom_service->micro_buffer[custom_service->history_write_index], length);
@@ -132,7 +132,7 @@ void on_reply(
   while (client_item != NULL) {
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client_item->data;
     if (custom_client->request_id == request_id) {
-      custom_client->micro_buffer_lenght[custom_client->history_write_index] = length;
+      custom_client->micro_buffer_length[custom_client->history_write_index] = length;
       ucdr_deserialize_array_uint8_t(
         ub,
         custom_client->micro_buffer[custom_client->history_write_index], length);

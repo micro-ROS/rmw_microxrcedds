@@ -53,13 +53,13 @@ rmw_send_response(
   uint32_t topic_size = functions->get_serialized_size(ros_response);
 
   ucdrBuffer reply_ub;
-  ucdr_init_buffer(&reply_ub, custom_service->replay_buffer, sizeof(custom_service->replay_buffer));
+  ucdr_init_buffer(&reply_ub, custom_service->reply_buffer, sizeof(custom_service->reply_buffer));
 
   functions->cdr_serialize(ros_response, &reply_ub);
 
   uxr_buffer_reply(
     &custom_node->context->session, custom_service->stream_id,
-    custom_service->service_id, &sample_id, custom_service->replay_buffer, topic_size);
+    custom_service->service_id, &sample_id, custom_service->reply_buffer, topic_size);
 
   return RMW_RET_OK;
 }
@@ -100,7 +100,7 @@ rmw_take_response(
   ucdrBuffer temp_buffer;
   ucdr_init_buffer(
     &temp_buffer, custom_client->micro_buffer[custom_client->history_read_index],
-    custom_client->micro_buffer_lenght[custom_client->history_read_index]);
+    custom_client->micro_buffer_length[custom_client->history_read_index]);
 
   bool deserialize_rv = functions->cdr_deserialize(
     &temp_buffer,

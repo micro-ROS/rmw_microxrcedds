@@ -42,6 +42,7 @@ void set_mem_pool(struct rmw_uxrce_mempool_t * mem, struct rmw_uxrce_mempool_ite
 bool has_memory(struct rmw_uxrce_mempool_t * mem);
 struct rmw_uxrce_mempool_item_t * get_memory(struct rmw_uxrce_mempool_t * mem);
 void put_memory(struct rmw_uxrce_mempool_t * mem, struct rmw_uxrce_mempool_item_t * item);
+bool check_already_freed(struct rmw_uxrce_mempool_t * mem, struct rmw_uxrce_mempool_item_t * item);
 void free_mem_pool(struct rmw_uxrce_mempool_t * mem);
 
 #endif  // MEMORY_H_

@@ -124,13 +124,24 @@ rmw_create_service(
     }
     service_req = uxr_buffer_create_replier_xml(
       &custom_node->context->session,
-      custom_node->context->reliable_output, custom_service->service_id,
-      custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
+      *custom_node->context->entity_creation_output, 
+      custom_service->service_id,
+      custom_node->participant_id, 
+      rmw_uxrce_xml_buffer, 
+      UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
-    // CHECK IF THIS IS NECESSARY
-    // service_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
-    //     custom_node->context->reliable_output, custom_service->subscriber_id,
-    //     custom_node->participant_id, "", UXR_REPLACE);
+    if (!build_replier_profile(service_name, rmw_uxrce_profile_name, sizeof(rmw_uxrce_profile_name))) {
+      RMW_SET_ERROR_MSG("failed to generate ref request for service creation");
+      goto fail;
+    }
+
+    service_req = uxr_buffer_create_replier_ref(
+      &custom_node->context->session,
+      *custom_node->context->entity_creation_output, 
+      custom_client->client_id,
+      custom_node->participant_id, 
+      rmw_uxrce_profile_name, 
+      UXR_REPLACE);
 #endif
 
     rmw_service->data = custom_service;
@@ -141,7 +152,7 @@ rmw_create_service(
         &custom_node->context->session, 1000, requests,
         status, 1))
     {
-      RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
+      RMW_SET_ERROR_MSG("Issues creating Replier Micro XRCE-DDS entities");
       put_memory(&service_memory, &custom_service->mem);
       goto fail;
     }
@@ -159,7 +170,8 @@ rmw_create_service(
 
     custom_service->request_id = uxr_buffer_request_data(
       &custom_node->context->session,
-      custom_node->context->reliable_output, custom_service->service_id,
+      *custom_node->context->entity_creation_output, 
+      custom_service->service_id,
       custom_service->stream_id, &delivery_control);
   }
   return rmw_service;
@@ -200,7 +212,8 @@ rmw_destroy_service(
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
     uint16_t delete_service =
       uxr_buffer_delete_entity(
-      &custom_node->context->session, custom_node->context->reliable_output,
+      &custom_node->context->session, 
+      *custom_node->context->entity_creation_output,
       custom_service->service_id);
 
     uint16_t requests[] = {delete_service};
@@ -209,7 +222,7 @@ rmw_destroy_service(
         &custom_node->context->session, 1000, requests, status,
         sizeof(status)))
     {
-      RMW_SET_ERROR_MSG("unable to remove service from the server");
+      RMW_SET_ERROR_MSG("Unable to remove service from the server");
       result_ret = RMW_RET_ERROR;
     } else {
       rmw_uxrce_fini_service_memory(service);

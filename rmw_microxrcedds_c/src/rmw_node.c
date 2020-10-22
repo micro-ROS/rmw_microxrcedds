@@ -85,8 +85,11 @@ rmw_node_t * create_node(
   participant_req =
     uxr_buffer_create_participant_xml(
     &node_info->context->session,
-    node_info->context->reliable_output,
-    node_info->participant_id, (uint16_t)domain_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
+    *node_info->context->entity_creation_output,
+    node_info->participant_id, 
+    (uint16_t)domain_id, 
+    rmw_uxrce_xml_buffer, 
+    UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
   if (!build_participant_profile(rmw_uxrce_profile_name, sizeof(rmw_uxrce_profile_name))) {
     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
@@ -95,15 +98,24 @@ rmw_node_t * create_node(
   participant_req =
     uxr_buffer_create_participant_ref(
     &node_info->context->session,
-    node_info->context->reliable_output,
-    node_info->participant_id, (uint16_t)domain_id, rmw_uxrce_profile_name, UXR_REPLACE);
+    *custom_node->context->entity_creation_output,
+    node_info->participant_id, 
+    (uint16_t)domain_id, 
+    rmw_uxrce_profile_name, 
+    UXR_REPLACE);
 #endif
+
   uint8_t status[1];
   uint16_t requests[] = {participant_req};
 
-  if (!uxr_run_session_until_all_status(&node_info->context->session, 1000, requests, status, 1)) {
+  if (UXR_BEST_EFFORT_STREAM == node_info->context->entity_creation_output->type)
+  {
+    uxr_flash_output_streams(&node_info->context->session);
+  }
+  else if(!uxr_run_session_until_all_status(&node_info->context->session, 1000, requests, status, 1))
+  {
     rmw_uxrce_fini_node_memory(node_handle);
-    RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
+    RMW_SET_ERROR_MSG("Issues creating Participant Micro XRCE-DDS entities");
     return NULL;
   }
 
@@ -201,14 +213,16 @@ rmw_ret_t rmw_destroy_node(rmw_node_t * node)
 
   uint16_t participant_req = uxr_buffer_delete_entity(
     &custom_node->context->session,
-    custom_node->context->reliable_output,
+    *custom_node->context->entity_creation_output,
     custom_node->participant_id);
   uint8_t status[1];
   uint16_t requests[] = {participant_req};
 
-  if (!uxr_run_session_until_all_status(
-      &custom_node->context->session, 1000, requests, status,
-      1))
+  if (UXR_BEST_EFFORT_STREAM == custom_node->context->entity_creation_output->type)
+  {
+    uxr_flash_output_streams(&custom_node->context->session);
+  }
+  else if(!uxr_run_session_until_all_status(&custom_node->context->session, 1000, requests, status,1))
   {
     ret = RMW_RET_ERROR;
   }

@@ -91,6 +91,18 @@ struct rmw_uxrce_mempool_item_t * get_memory(struct rmw_uxrce_mempool_t * mem)
   return item;
 }
 
+bool check_already_freed(struct rmw_uxrce_mempool_t * mem, struct rmw_uxrce_mempool_item_t * item){
+
+  struct rmw_uxrce_mempool_item_t * i = mem->freeitems;
+  while (i !=  NULL) {
+    if (i == item){
+      return true;
+    }
+    i = i->next;
+  }
+  return false;
+}
+
 void put_memory(struct rmw_uxrce_mempool_t * mem, struct rmw_uxrce_mempool_item_t * item)
 {
   // Gets item from allocated pool
