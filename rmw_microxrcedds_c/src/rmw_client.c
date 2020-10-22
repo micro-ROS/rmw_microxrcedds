@@ -127,13 +127,24 @@ rmw_create_client(
     }
     client_req = uxr_buffer_create_requester_xml(
       &custom_node->context->session,
-      custom_node->context->reliable_output, custom_client->client_id,
-      custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
+      *custom_node->context->entity_creation_output, 
+      custom_client->client_id,
+      custom_node->participant_id, 
+      rmw_uxrce_xml_buffer, 
+      UXR_REPLACE);
 #elif defined(MICRO_XRCEDDS_USE_REFS)
-    // TODO(pablogs9): Is possible to instantiate a replier by ref?
-    // client_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
-    //     custom_node->context->reliable_output, custom_service->subscriber_id,
-    //     custom_node->participant_id, "", UXR_REPLACE);
+    if (!build_requester_profile(service_name, rmw_uxrce_profile_name, sizeof(rmw_uxrce_profile_name))) {
+      RMW_SET_ERROR_MSG("failed to generate ref request for client creation");
+      goto fail;
+    }
+
+    client_req = uxr_buffer_create_requester_ref(
+      &custom_node->context->session,
+      *custom_node->context->entity_creation_output, 
+      custom_client->client_id,
+      custom_node->participant_id, 
+      rmw_uxrce_profile_name, 
+      UXR_REPLACE);
 #endif
 
     rmw_client->data = custom_client;
@@ -144,7 +155,7 @@ rmw_create_client(
         &custom_node->context->session, 1000, requests,
         status, 1))
     {
-      RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
+      RMW_SET_ERROR_MSG("Issues creating Requester Micro XRCE-DDS entities");
       put_memory(&client_memory, &custom_client->mem);
       goto fail;
     }
@@ -162,8 +173,10 @@ rmw_create_client(
 
     custom_client->request_id = uxr_buffer_request_data(
       &custom_node->context->session,
-      custom_node->context->reliable_output, custom_client->client_id,
-      custom_client->stream_id, &delivery_control);
+      *custom_node->context->entity_creation_output,
+      custom_client->client_id,
+      custom_client->stream_id, 
+      &delivery_control);
   }
   return rmw_client;
 
@@ -203,7 +216,8 @@ rmw_destroy_client(
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
     uint16_t delete_client =
       uxr_buffer_delete_entity(
-      &custom_node->context->session, custom_node->context->reliable_output,
+      &custom_node->context->session, 
+      *custom_node->context->entity_creation_output,
       custom_client->client_id);
 
     uint16_t requests[] = {delete_client};
@@ -212,7 +226,7 @@ rmw_destroy_client(
         &custom_node->context->session, 1000, requests, status,
         sizeof(status)))
     {
-      RMW_SET_ERROR_MSG("unable to remove client from the server");
+      RMW_SET_ERROR_MSG("Unable to remove client from the server");
       result_ret = RMW_RET_ERROR;
     } else {
       rmw_uxrce_fini_client_memory(client);

@@ -110,7 +110,7 @@ rmw_take_request(
   ucdrBuffer temp_buffer;
   ucdr_init_buffer(
     &temp_buffer, custom_service->micro_buffer[custom_service->history_read_index],
-    custom_service->micro_buffer_lenght[custom_service->history_read_index]);
+    custom_service->micro_buffer_length[custom_service->history_read_index]);
 
 
   bool deserialize_rv = functions->cdr_deserialize(&temp_buffer, ros_request);

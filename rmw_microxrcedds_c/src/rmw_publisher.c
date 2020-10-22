@@ -99,9 +99,9 @@ rmw_create_publisher(
     memcpy(&custom_publisher->qos, qos_policies, sizeof(rmw_qos_profile_t));
 
     custom_publisher->stream_id =
-      (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
-      custom_node->context->best_effort_input :
-      custom_node->context->reliable_input;
+      (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) || (custom_node->context->entity_creation_output->type == UXR_BEST_EFFORT_STREAM) ?
+      custom_node->context->best_effort_output :
+      custom_node->context->reliable_output;
 
     const rosidl_message_type_support_t * type_support_xrce = NULL;
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
@@ -156,15 +156,17 @@ rmw_create_publisher(
     }
     publisher_req = uxr_buffer_create_publisher_xml(
       &custom_publisher->owner_node->context->session,
-      custom_node->context->reliable_output,
+      *custom_node->context->entity_creation_output,
       custom_publisher->publisher_id,
       custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
   #elif defined(MICRO_XRCEDDS_USE_REFS)
     publisher_req = uxr_buffer_create_publisher_xml(
       &custom_publisher->owner_node->context->session,
-      custom_node->context->reliable_output,
+      *custom_node->context->entity_creation_output,
       custom_publisher->publisher_id,
-      custom_node->participant_id, "", UXR_REPLACE);
+      custom_node->participant_id, 
+      "", 
+      UXR_REPLACE);
   #endif
 
     custom_publisher->datawriter_id = uxr_object_id(
@@ -183,31 +185,40 @@ rmw_create_publisher(
 
     datawriter_req = uxr_buffer_create_datawriter_xml(
       &custom_publisher->owner_node->context->session,
-      custom_node->context->reliable_output,
+      *custom_node->context->entity_creation_output,
       custom_publisher->datawriter_id,
-      custom_publisher->publisher_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
+      custom_publisher->publisher_id, 
+      rmw_uxrce_xml_buffer, 
+      UXR_REPLACE);
   #elif defined(MICRO_XRCEDDS_USE_REFS)
     if (!build_datawriter_profile(topic_name, rmw_uxrce_profile_name, sizeof(rmw_uxrce_profile_name))) {
-      RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
+      RMW_SET_ERROR_MSG("failed to generate ref request datawriter creation");
       goto fail;
     }
 
     datawriter_req = uxr_buffer_create_datawriter_ref(
       &custom_publisher->owner_node->context->session,
-      custom_node->context->reliable_output,
+      *custom_node->context->entity_creation_output,
       custom_publisher->datawriter_id,
-      custom_publisher->publisher_id, rmw_uxrce_profile_name, UXR_REPLACE);
+      custom_publisher->publisher_id, 
+      rmw_uxrce_profile_name, 
+      UXR_REPLACE);
   #endif
 
     rmw_publisher->data = custom_publisher;
 
     uint16_t requests[] = {publisher_req, datawriter_req};
     uint8_t status[sizeof(requests) / 2];
-    if (!uxr_run_session_until_all_status(
-        &custom_publisher->owner_node->context->session, 1000, requests,
-        status, sizeof(status)))
+
+    if (UXR_BEST_EFFORT_STREAM == custom_node->context->entity_creation_output->type)
     {
-      RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
+      uxr_flash_output_streams(&custom_node->context->session);
+    }
+    else if(!uxr_run_session_until_all_status(
+          &custom_publisher->owner_node->context->session, 1000, requests,
+          status, sizeof(status)))
+    {
+      RMW_SET_ERROR_MSG("Issues creating Publisher Micro XRCE-DDS entities");
       put_memory(&publisher_memory, &custom_publisher->mem);
       goto fail;
     }
@@ -311,24 +322,36 @@ rmw_destroy_publisher(
 
     uint16_t delete_writer = uxr_buffer_delete_entity(
       &custom_publisher->owner_node->context->session,
-      custom_publisher->owner_node->context->reliable_output,
+      *custom_publisher->owner_node->context->entity_creation_output,
       custom_publisher->datawriter_id);
     uint16_t delete_publisher = uxr_buffer_delete_entity(
       &custom_publisher->owner_node->context->session,
-      custom_publisher->owner_node->context->reliable_output,
+      *custom_publisher->owner_node->context->entity_creation_output,
       custom_publisher->publisher_id);
 
     uint16_t requests[] = {delete_writer, delete_publisher};
     uint8_t status[sizeof(requests) / 2];
-    if (!uxr_run_session_until_all_status(
-        &custom_publisher->owner_node->context->session, 1000, requests, status,
-        sizeof(status)))
+
+    if (UXR_BEST_EFFORT_STREAM == custom_publisher->owner_node->context->entity_creation_output->type)
     {
-      RMW_SET_ERROR_MSG("unable to remove publisher from the server");
-      result_ret = RMW_RET_ERROR;
-    } else {
+      uxr_flash_output_streams(&custom_publisher->owner_node->context->session);
       rmw_uxrce_fini_publisher_memory(publisher);
       result_ret = RMW_RET_OK;
+    }
+    else
+    {
+      if (!uxr_run_session_until_all_status(
+          &custom_publisher->owner_node->context->session, 1000, requests, status,
+          sizeof(status)))
+      {
+        RMW_SET_ERROR_MSG("Unable to remove publisher from the server");
+        result_ret = RMW_RET_ERROR;
+      } 
+      else 
+      {
+        rmw_uxrce_fini_publisher_memory(publisher);
+        result_ret = RMW_RET_OK;
+      }
     }
   }
 

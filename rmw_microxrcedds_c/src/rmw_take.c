@@ -58,7 +58,7 @@ rmw_take_with_info(
   ucdrBuffer temp_buffer;
   ucdr_init_buffer(
     &temp_buffer, custom_subscription->micro_buffer[custom_subscription->history_read_index],
-    custom_subscription->micro_buffer_lenght[custom_subscription->history_read_index]);
+    custom_subscription->micro_buffer_length[custom_subscription->history_read_index]);
 
   bool deserialize_rv = custom_subscription->type_support_callbacks->cdr_deserialize(
     &temp_buffer,

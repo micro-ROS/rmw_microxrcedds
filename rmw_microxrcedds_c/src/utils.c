@@ -375,3 +375,22 @@ bool is_uxrce_rmw_identifier_valid(const char * id)
   return id != NULL &&
          strcmp(id, rmw_get_implementation_identifier()) == 0;
 }
+bool build_requester_profile(const char * service_name, char profile_name[], size_t buffer_size)
+{
+  const char * const format = "%s___requester";
+  service_name++;
+  bool ret = false;
+  int written = snprintf(profile_name, buffer_size, format, service_name);
+  ret = (written > 0) && (written < (int)buffer_size);
+  return ret;
+}
+
+bool build_replier_profile(const char * service_name, char profile_name[], size_t buffer_size)
+{
+  const char * const format = "%s___replier";
+  service_name++;
+  bool ret = false;
+  int written = snprintf(profile_name, buffer_size, format, service_name);
+  ret = (written > 0) && (written < (int)buffer_size);
+  return ret;
+}

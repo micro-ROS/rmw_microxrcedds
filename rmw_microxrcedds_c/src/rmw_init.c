@@ -33,9 +33,13 @@
 #include <termios.h>
 #endif
 
+#ifdef UCLIENT_BROKERLESS_ENABLE
+#include <uxr/client/brokerless/brokerless.h>
+#endif
+
 #if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
 #define CLOSE_TRANSPORT(transport) uxr_close_serial_transport(transport)
-#elif defined(MICRO_XRCEDDS_UDP)
+#elif defined(MICRO_XRCEDDS_UDP) && !defined(UCLIENT_BROKERLESS_ENABLE)
 #define CLOSE_TRANSPORT(transport) uxr_close_udp_transport(transport)
 #else
 #define CLOSE_TRANSPORT(transport)
@@ -245,8 +249,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   }
   printf("Serial mode => dev: %s\n", context_impl->connection_params.serial_device);
 
-#elif defined(MICRO_XRCEDDS_UDP)
-  // TODO(Borja) Think how we are going to select transport to use
+#elif defined(MICRO_XRCEDDS_UDP) && !defined(UCLIENT_BROKERLESS_ENABLE)
   #ifdef MICRO_XRCEDDS_IPV4
   uxrIpProtocol ip_protocol = UXR_IPv4;
   #elif defined(MICRO_XRCEDDS_IPV6)
@@ -263,6 +266,11 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   printf(
     "UDP mode => ip: %s - port: %s\n", context_impl->connection_params.agent_address,
     context_impl->connection_params.agent_port);
+#elif defined(MICRO_XRCEDDS_UDP) && defined(UCLIENT_BROKERLESS_ENABLE)
+
+  context_impl->transport.comm = brokerless_comm_stub;
+
+  printf("UDP mode => Brokerless P2P\n");
 #elif defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
   int pseudo_fd = 0;
   if (strlen(options->impl->connection_params.serial_device) > 0) {
@@ -289,23 +297,26 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 
   context_impl->reliable_input = uxr_create_input_reliable_stream(
     &context_impl->session, context_impl->input_reliable_stream_buffer,
-    context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY, RMW_UXRCE_STREAM_HISTORY);
-  context_impl->reliable_output =
-    uxr_create_output_reliable_stream(
+    RMW_UXRCE_MAX_BUFFER_SIZE, RMW_UXRCE_STREAM_HISTORY);
+  context_impl->reliable_output = uxr_create_output_reliable_stream(
     &context_impl->session, context_impl->output_reliable_stream_buffer,
-    context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY, RMW_UXRCE_STREAM_HISTORY);
+    RMW_UXRCE_MAX_BUFFER_SIZE, RMW_UXRCE_STREAM_HISTORY);
 
   context_impl->best_effort_input = uxr_create_input_best_effort_stream(&context_impl->session);
   context_impl->best_effort_output = uxr_create_output_best_effort_stream(
     &context_impl->session,
-    context_impl->output_best_effort_stream_buffer, context_impl->transport.comm.mtu);
+    context_impl->output_best_effort_stream_buffer, RMW_UXRCE_MAX_TRANSPORT_MTU);
 
-
+#ifndef UCLIENT_BROKERLESS_ENABLE
+  context_impl->entity_creation_output = &context_impl->reliable_output;
   if (!uxr_create_session(&context_impl->session)) {
     CLOSE_TRANSPORT(&context_impl->transport);
     RMW_SET_ERROR_MSG("failed to create node session on Micro ROS Agent.");
     return RMW_RET_ERROR;
   }
+#else
+  context_impl->entity_creation_output = &context_impl->best_effort_output;
+#endif
 
   return RMW_RET_OK;
 }
