@@ -33,13 +33,13 @@
 #include <termios.h>
 #endif
 
-#ifdef UCLIENT_BROKERLESS_ENABLE
+#ifdef UCLIENT_PROFILE_BROKERLESS
 #include <uxr/client/brokerless/brokerless.h>
 #endif
 
 #if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
 #define CLOSE_TRANSPORT(transport) uxr_close_serial_transport(transport)
-#elif defined(MICRO_XRCEDDS_UDP) && !defined(UCLIENT_BROKERLESS_ENABLE)
+#elif defined(MICRO_XRCEDDS_UDP) && !defined(UCLIENT_PROFILE_BROKERLESS)
 #define CLOSE_TRANSPORT(transport) uxr_close_udp_transport(transport)
 #else
 #define CLOSE_TRANSPORT(transport)
@@ -249,7 +249,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   }
   printf("Serial mode => dev: %s\n", context_impl->connection_params.serial_device);
 
-#elif defined(MICRO_XRCEDDS_UDP) && !defined(UCLIENT_BROKERLESS_ENABLE)
+#elif defined(MICRO_XRCEDDS_UDP) && !defined(UCLIENT_PROFILE_BROKERLESS)
   #ifdef MICRO_XRCEDDS_IPV4
   uxrIpProtocol ip_protocol = UXR_IPv4;
   #elif defined(MICRO_XRCEDDS_IPV6)
@@ -266,7 +266,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   printf(
     "UDP mode => ip: %s - port: %s\n", context_impl->connection_params.agent_address,
     context_impl->connection_params.agent_port);
-#elif defined(MICRO_XRCEDDS_UDP) && defined(UCLIENT_BROKERLESS_ENABLE)
+#elif defined(MICRO_XRCEDDS_UDP) && defined(UCLIENT_PROFILE_BROKERLESS)
 
   context_impl->transport.comm = brokerless_comm_stub;
 
@@ -307,7 +307,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
     &context_impl->session,
     context_impl->output_best_effort_stream_buffer, RMW_UXRCE_MAX_TRANSPORT_MTU);
 
-#ifndef UCLIENT_BROKERLESS_ENABLE
+#ifndef UCLIENT_PROFILE_BROKERLESS
   context_impl->entity_creation_output = &context_impl->reliable_output;
   if (!uxr_create_session(&context_impl->session)) {
     CLOSE_TRANSPORT(&context_impl->transport);
