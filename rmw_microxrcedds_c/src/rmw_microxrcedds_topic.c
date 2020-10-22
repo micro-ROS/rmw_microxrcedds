@@ -107,6 +107,12 @@ rmw_ret_t destroy_topic(rmw_uxrce_topic_t * topic)
 {
   rmw_ret_t result_ret = RMW_RET_OK;
 
+  // TODO (pablogs9): Implement this in all destroy functions;
+  if (check_already_freed(&topics_memory, &topic->mem))
+  {
+    return RMW_RET_ERROR;
+  }
+
   uint16_t delete_topic = uxr_buffer_delete_entity(
     &topic->owner_node->context->session,
     *topic->owner_node->context->entity_creation_output,
