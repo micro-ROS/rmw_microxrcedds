@@ -137,7 +137,7 @@ bool on_agent_found(const TransportLocator* locator, void* args)
   {
     uxrSession session;
     uxr_init_session(&session, &transport.comm, rmw_options->impl->connection_params.client_key);
-    if(uxr_create_session_retries(&session, 1))
+    if(uxr_create_session_retries(&session, 5))
     {
       sprintf(rmw_options->impl->connection_params.agent_port, "%d", port);
       sprintf(rmw_options->impl->connection_params.agent_address, "%s", ip);
