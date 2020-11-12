@@ -22,9 +22,17 @@ rmw_get_service_names_and_types(
   rcutils_allocator_t * allocator,
   rmw_names_and_types_t * service_names_and_types)
 {
+#ifdef RMW_UXRCE_GRAPH
   (void) node;
   (void) allocator;
   (void) service_names_and_types;
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_SET_ERROR_MSG("Function not implemented yet");
   return RMW_RET_UNSUPPORTED;
+#else
+  (void) node;
+  (void) allocator;
+  (void) service_names_and_types;
+  RMW_SET_ERROR_MSG("Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
+  return RMW_RET_UNSUPPORTED;
+#endif  // RMW_UXRCE_GRAPH
 }

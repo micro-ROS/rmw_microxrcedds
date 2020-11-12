@@ -32,6 +32,12 @@ find_package(microcdr REQUIRED)
 
 find_package(rmw REQUIRED)
 
+# RMW profile options
+option(RMW_UXRCE_GRAPH "Allows to perform graph-related operations to the user" ON)
+if(RMW_UXRCE_GRAPH)
+  find_package(micro_ros_msgs REQUIRED)
+endif()
+
 # --- RMW CONFIGURATION ---
 set(RMW_UXRCE_TRANSPORT "udp" CACHE STRING "Sets Micro XRCE-DDS transport to use. (udp | serial | custom)")
 set(RMW_UXRCE_IPV "ipv4" CACHE STRING "Sets Micro XRCE-DDS IP version to use. (ipv4 | ipv6)")
@@ -50,6 +56,7 @@ set(RMW_UXRCE_TOPIC_NAME_MAX_LENGTH "100" CACHE STRING "This value sets the maxi
 set(RMW_UXRCE_TYPE_NAME_MAX_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a type name.")
 set(RMW_UXRCE_XML_BUFFER_LENGTH "600" CACHE STRING "This value sets the maximum number of characters for a XML buffer.")
 set(RMW_UXRCE_REF_BUFFER_LENGTH "100" CACHE STRING "This value sets the maximum number of characters for a reference buffer.")
+set(RMW_UXRCE_GRAPH_MAX_NODES "5" CACHE STRING "This value sets the maximum number of nodes to be stored within the graph database.")
 
 set(RMW_UXRCE_STREAM_HISTORY "4" CACHE STRING "This value sets the number of MTUs to buffer, both input and output. Micro XRCE-DDS client configuration provides their size")
 set(RMW_UXRCE_STREAM_HISTORY_INPUT "" CACHE STRING "This value sets the number of MTUs to input buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_OUTPUT is blank. Micro XRCE-DDS client configuration provides their size")
@@ -138,15 +145,36 @@ set(SRCS
   src/types.c
   src/utils.c
   src/callbacks.c
+  $<$<BOOL:${RMW_UXRCE_GRAPH}>:src/rmw_graph.c>
   )
 
 add_library(${PROJECT_NAME}
   ${SRCS})
 
-target_link_libraries(${PROJECT_NAME}
-  microcdr
-  microxrcedds_client
+if(RMW_UXRCE_GRAPH) #TODO (jamoralp): improve this section
+  add_library(micro_ros_msgs_lib SHARED IMPORTED)
+
+  set_property(
+    TARGET
+      micro_ros_msgs_lib
+    PROPERTY
+      IMPORTED_LOCATION ${micro_ros_msgs_LIBRARIES__rosidl_typesupport_microxrcedds_c})
+
+  target_link_libraries(${PROJECT_NAME}
+    microcdr
+    microxrcedds_client
+    micro_ros_msgs_lib
+    )
+
+  ament_target_dependencies(${PROJECT_NAME}
+    "micro_ros_msgs"
   )
+else()
+  target_link_libraries(${PROJECT_NAME}
+    microcdr
+    microxrcedds_client
+    )
+endif()
 
 # Type support lock-up mechanism
 find_package(rosidl_typesupport_microxrcedds_c)

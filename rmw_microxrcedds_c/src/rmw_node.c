@@ -229,11 +229,18 @@ rmw_node_assert_liveliness(const rmw_node_t * node)
 const rmw_guard_condition_t *
 rmw_node_get_graph_guard_condition(const rmw_node_t * node)
 {
-  (void)node;
-  EPROS_PRINT_TRACE()
-  rmw_guard_condition_t *
-  ret = (rmw_guard_condition_t *)rmw_allocate(sizeof(rmw_guard_condition_t));
-  ret->data = NULL;
+  rmw_guard_condition_t * ret =
+    (rmw_guard_condition_t *)rmw_allocate(sizeof(rmw_guard_condition_t));
+
   ret->implementation_identifier = eprosima_microxrcedds_identifier;
+#ifdef RMW_UXRCE_GRAPH
+  rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
+  rmw_context_impl_t * context = custom_node->context;
+  ret->data = (void *)(&context->graph_info.has_changed);
+#else
+  (void) node;
+  ret->data = NULL;
+#endif  // RMW_UXRCE_GRAPH
+
   return ret;
 }
