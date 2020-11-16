@@ -167,6 +167,17 @@ rmw_create_publisher(
       custom_node->participant_id, "", UXR_REPLACE);
   #endif
 
+    uint16_t requests[] = {publisher_req};
+    uint8_t status[sizeof(requests) / 2];
+    if (!uxr_run_session_until_all_status(
+        &custom_publisher->owner_node->context->session, 1000, requests,
+        status, sizeof(status)))
+    {
+      RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
+      put_memory(&publisher_memory, &custom_publisher->mem);
+      goto fail;
+    }
+
     custom_publisher->datawriter_id = uxr_object_id(
       custom_node->context->id_datawriter++,
       UXR_DATAWRITER_ID);
@@ -201,8 +212,7 @@ rmw_create_publisher(
 
     rmw_publisher->data = custom_publisher;
 
-    uint16_t requests[] = {publisher_req, datawriter_req};
-    uint8_t status[sizeof(requests) / 2];
+    requests[0] = datawriter_req;
     if (!uxr_run_session_until_all_status(
         &custom_publisher->owner_node->context->session, 1000, requests,
         status, sizeof(status)))
