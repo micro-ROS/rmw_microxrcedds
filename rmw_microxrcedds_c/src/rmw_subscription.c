@@ -166,6 +166,16 @@ rmw_create_subscription(
       custom_node->participant_id, "", UXR_REPLACE);
 #endif
 
+    uint16_t requests[] = {subscriber_req};
+    uint8_t status[sizeof(requests) / 2];
+    if (!uxr_run_session_until_all_status(
+        &custom_node->context->session, 1000, requests,
+        status, sizeof(status)))
+    {
+      RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
+      put_memory(&subscription_memory, &custom_subscription->mem);
+      goto fail;
+    }
 
     custom_subscription->datareader_id = uxr_object_id(
       custom_node->context->id_datareader++,
@@ -200,8 +210,7 @@ rmw_create_subscription(
 
     rmw_subscription->data = custom_subscription;
 
-    uint16_t requests[] = {subscriber_req, datareader_req};
-    uint8_t status[sizeof(requests) / 2];
+    requests[0] = datareader_req;
     if (!uxr_run_session_until_all_status(
         &custom_node->context->session, 1000, requests,
         status, sizeof(status)))
