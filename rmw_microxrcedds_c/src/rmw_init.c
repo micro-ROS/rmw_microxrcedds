@@ -144,7 +144,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   context->instance_id = options->instance_id;
   context->implementation_identifier = eprosima_microxrcedds_identifier;
 
-  rmw_uxrce_init_sessions_memory(&session_memory, custom_sessions, RMW_UXRCE_MAX_SESSIONS);
+  rmw_uxrce_init_session_memory(&session_memory, custom_sessions, RMW_UXRCE_MAX_SESSIONS);
 
   struct rmw_uxrce_mempool_item_t * memory_node = get_memory(&session_memory);
   if (!memory_node) {
@@ -178,14 +178,14 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 
   context->impl = context_impl;
 
-  rmw_uxrce_init_nodes_memory(&node_memory, custom_nodes, RMW_UXRCE_MAX_NODES);
-  rmw_uxrce_init_subscriber_memory(
+  rmw_uxrce_init_node_memory(&node_memory, custom_nodes, RMW_UXRCE_MAX_NODES);
+  rmw_uxrce_init_subscription_memory(
     &subscription_memory, custom_subscriptions,
     RMW_UXRCE_MAX_SUBSCRIPTIONS);
   rmw_uxrce_init_publisher_memory(&publisher_memory, custom_publishers, RMW_UXRCE_MAX_PUBLISHERS);
   rmw_uxrce_init_service_memory(&service_memory, custom_services, RMW_UXRCE_MAX_SERVICES);
   rmw_uxrce_init_client_memory(&client_memory, custom_clients, RMW_UXRCE_MAX_CLIENTS);
-  rmw_uxrce_init_topics_memory(&topics_memory, custom_topics, RMW_UXRCE_MAX_TOPICS_INTERNAL);
+  rmw_uxrce_init_topic_memory(&topics_memory, custom_topics, RMW_UXRCE_MAX_TOPICS_INTERNAL);
 
   // Micro-XRCE-DDS Client initialization
 
