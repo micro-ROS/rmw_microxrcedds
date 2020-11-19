@@ -289,11 +289,11 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 
   context_impl->reliable_input = uxr_create_input_reliable_stream(
     &context_impl->session, context_impl->input_reliable_stream_buffer,
-    context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY, RMW_UXRCE_STREAM_HISTORY);
+    context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY_INPUT, RMW_UXRCE_STREAM_HISTORY_INPUT);
   context_impl->reliable_output =
     uxr_create_output_reliable_stream(
     &context_impl->session, context_impl->output_reliable_stream_buffer,
-    context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY, RMW_UXRCE_STREAM_HISTORY);
+    context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY_OUTPUT, RMW_UXRCE_STREAM_HISTORY_OUTPUT);
 
   context_impl->best_effort_input = uxr_create_input_best_effort_stream(&context_impl->session);
   context_impl->best_effort_output = uxr_create_output_best_effort_stream(

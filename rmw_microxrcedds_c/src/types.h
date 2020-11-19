@@ -70,8 +70,8 @@ struct  rmw_context_impl_t
   uxrStreamId best_effort_output;
   uxrStreamId best_effort_input;
 
-  uint8_t input_reliable_stream_buffer[RMW_UXRCE_MAX_BUFFER_SIZE];
-  uint8_t output_reliable_stream_buffer[RMW_UXRCE_MAX_BUFFER_SIZE];
+  uint8_t input_reliable_stream_buffer[RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
+  uint8_t output_reliable_stream_buffer[RMW_UXRCE_MAX_OUTPUT_BUFFER_SIZE];
   uint8_t output_best_effort_stream_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
 
   uint16_t id_participant;
@@ -112,7 +112,7 @@ typedef struct rmw_uxrce_service_t
   uint16_t request_id;
 
   SampleIdentity sample_id[RMW_UXRCE_MAX_HISTORY];
-  uint8_t micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_BUFFER_SIZE];
+  uint8_t micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
   size_t micro_buffer_lenght[RMW_UXRCE_MAX_HISTORY];
 
   uint8_t history_write_index;
@@ -136,7 +136,7 @@ typedef struct rmw_uxrce_client_t
   uint16_t request_id;
 
   int64_t reply_id[RMW_UXRCE_MAX_HISTORY];
-  uint8_t micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_BUFFER_SIZE];
+  uint8_t micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
   size_t micro_buffer_lenght[RMW_UXRCE_MAX_HISTORY];
 
   uint8_t history_write_index;
@@ -159,7 +159,7 @@ typedef struct rmw_uxrce_subscription_t
   rmw_gid_t subscription_gid;
   const message_type_support_callbacks_t * type_support_callbacks;
 
-  uint8_t micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_BUFFER_SIZE];
+  uint8_t micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
   size_t micro_buffer_lenght[RMW_UXRCE_MAX_HISTORY];
 
   uint8_t history_write_index;

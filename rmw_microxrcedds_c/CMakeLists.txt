@@ -32,11 +32,10 @@ find_package(microcdr REQUIRED)
 
 find_package(rmw REQUIRED)
 
-# RMW default configuration
+# --- RMW CONFIGURATION ---
 set(RMW_UXRCE_TRANSPORT "udp" CACHE STRING "Sets Micro XRCE-DDS transport to use. (udp | serial | custom)")
 set(RMW_UXRCE_IPV "ipv4" CACHE STRING "Sets Micro XRCE-DDS IP version to use. (ipv4 | ipv6)")
 set(RMW_UXRCE_CREATION_MODE "xml" CACHE STRING "Sets creation mode in Micro XRCE-DDS. (xml | refs)")
-set(RMW_UXRCE_STREAM_HISTORY "4" CACHE STRING "This value sets the number of MTUs to buffer. Micro XRCE-DDS client configuration provides their size")
 set(RMW_UXRCE_MAX_HISTORY "4" CACHE STRING "This value sets the number of history slots available for RMW subscriptions, requests and replies")
 set(RMW_UXRCE_MAX_SESSIONS "1" CACHE STRING "This value sets the maximum number of Micro XRCE-DDS sessions.")
 set(RMW_UXRCE_MAX_NODES "4" CACHE STRING "This value sets the maximum number of nodes.")
@@ -50,6 +49,17 @@ set(RMW_UXRCE_TOPIC_NAME_MAX_LENGTH "100" CACHE STRING "This value sets the maxi
 set(RMW_UXRCE_TYPE_NAME_MAX_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a type name.")
 set(RMW_UXRCE_XML_BUFFER_LENGTH "600" CACHE STRING "This value sets the maximum number of characters for a XML buffer.")
 set(RMW_UXRCE_REF_BUFFER_LENGTH "100" CACHE STRING "This value sets the maximum number of characters for a reference buffer.")
+
+set(RMW_UXRCE_STREAM_HISTORY "4" CACHE STRING "This value sets the number of MTUs to buffer. Micro XRCE-DDS client configuration provides their size")
+set(RMW_UXRCE_STREAM_HISTORY_INPUT "" CACHE STRING "This value sets the number of MTUs to input buffer. Micro XRCE-DDS client configuration provides their size")
+set(RMW_UXRCE_STREAM_HISTORY_OUTPUT "" CACHE STRING "This value sets the number of MTUs to output buffer. Micro XRCE-DDS client configuration provides their size")
+
+if(RMW_UXRCE_STREAM_HISTORY_INPUT STREQUAL "" OR RMW_UXRCE_STREAM_HISTORY_OUTPUT STREQUAL "")
+  unset(RMW_UXRCE_STREAM_HISTORY_INPUT)
+  unset(RMW_UXRCE_STREAM_HISTORY_OUTPUT)
+else()
+  unset(RMW_UXRCE_STREAM_HISTORY)
+endif()
 
 # Transport handle define macros.
 set(MICRO_XRCEDDS_SERIAL OFF)
