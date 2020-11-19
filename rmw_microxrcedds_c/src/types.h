@@ -53,7 +53,7 @@ struct rmw_uxrce_connection_t
 
 struct  rmw_context_impl_t
 {
-  struct rmw_uxrce_mempool_item_t mem;
+  rmw_uxrce_mempool_item_t mem;
   struct rmw_uxrce_connection_t connection_params;
 
 #if defined(RMW_UXRCE_TRANSPORT_SERIAL) || defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
@@ -95,7 +95,7 @@ struct  rmw_init_options_impl_t
 
 typedef struct rmw_uxrce_topic_t
 {
-  struct rmw_uxrce_mempool_item_t mem;
+  rmw_uxrce_mempool_item_t mem;
 
   uxrObjectId topic_id;
   const message_type_support_callbacks_t * message_type_support_callbacks;
@@ -106,7 +106,7 @@ typedef struct rmw_uxrce_topic_t
 
 typedef struct rmw_uxrce_service_t
 {
-  struct rmw_uxrce_mempool_item_t mem;
+  rmw_uxrce_mempool_item_t mem;
   rmw_service_t * rmw_handle;
   uxrObjectId service_id;
   rmw_gid_t service_gid;
@@ -130,7 +130,7 @@ typedef struct rmw_uxrce_service_t
 
 typedef struct rmw_uxrce_client_t
 {
-  struct rmw_uxrce_mempool_item_t mem;
+  rmw_uxrce_mempool_item_t mem;
   rmw_client_t * rmw_handle;
   uxrObjectId client_id;
   rmw_gid_t client_gid;
@@ -154,7 +154,7 @@ typedef struct rmw_uxrce_client_t
 
 typedef struct rmw_uxrce_subscription_t
 {
-  struct rmw_uxrce_mempool_item_t mem;
+  rmw_uxrce_mempool_item_t mem;
   rmw_subscription_t * rmw_handle;
   uxrObjectId subscriber_id;
   uxrObjectId datareader_id;
@@ -179,7 +179,7 @@ typedef struct rmw_uxrce_subscription_t
 
 typedef struct rmw_uxrce_publisher_t
 {
-  struct rmw_uxrce_mempool_item_t mem;
+  rmw_uxrce_mempool_item_t mem;
   rmw_publisher_t * rmw_handle;
   uxrObjectId publisher_id;
   uxrObjectId datawriter_id;
@@ -197,7 +197,7 @@ typedef struct rmw_uxrce_publisher_t
 
 typedef struct rmw_uxrce_node_t
 {
-  struct rmw_uxrce_mempool_item_t mem;
+  rmw_uxrce_mempool_item_t mem;
   rmw_node_t * rmw_handle;
   struct  rmw_context_impl_t * context;
 
@@ -212,49 +212,49 @@ typedef struct rmw_uxrce_node_t
   extern char rmw_uxrce_profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
 #endif
 
-extern struct rmw_uxrce_mempool_t session_memory;
+extern rmw_uxrce_mempool_t session_memory;
 extern rmw_context_impl_t custom_sessions[RMW_UXRCE_MAX_SESSIONS];
 
-extern struct rmw_uxrce_mempool_t node_memory;
+extern rmw_uxrce_mempool_t node_memory;
 extern rmw_uxrce_node_t custom_nodes[RMW_UXRCE_MAX_NODES];
 
-extern struct rmw_uxrce_mempool_t publisher_memory;
+extern rmw_uxrce_mempool_t publisher_memory;
 extern rmw_uxrce_publisher_t custom_publishers[RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_NODES];
 
-extern struct rmw_uxrce_mempool_t subscription_memory;
+extern rmw_uxrce_mempool_t subscription_memory;
 extern rmw_uxrce_subscription_t custom_subscriptions[RMW_UXRCE_MAX_SUBSCRIPTIONS];
 
-extern struct rmw_uxrce_mempool_t service_memory;
+extern rmw_uxrce_mempool_t service_memory;
 extern rmw_uxrce_service_t custom_services[RMW_UXRCE_MAX_SERVICES];
 
-extern struct rmw_uxrce_mempool_t client_memory;
+extern rmw_uxrce_mempool_t client_memory;
 extern rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 
-extern struct rmw_uxrce_mempool_t topics_memory;
+extern rmw_uxrce_mempool_t topics_memory;
 extern rmw_uxrce_topic_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
 
 // Memory init functions
 
 void rmw_uxrce_init_session_memory(
-  struct rmw_uxrce_mempool_t * memory,
+  rmw_uxrce_mempool_t * memory,
   rmw_context_impl_t * sessions, size_t size);
 void rmw_uxrce_init_node_memory(
-  struct rmw_uxrce_mempool_t * memory, rmw_uxrce_node_t * nodes,
+  rmw_uxrce_mempool_t * memory, rmw_uxrce_node_t * nodes,
   size_t size);
 void rmw_uxrce_init_service_memory(
-  struct rmw_uxrce_mempool_t * memory,
+  rmw_uxrce_mempool_t * memory,
   rmw_uxrce_service_t * services, size_t size);
 void rmw_uxrce_init_client_memory(
-  struct rmw_uxrce_mempool_t * memory, rmw_uxrce_client_t * clients,
+  rmw_uxrce_mempool_t * memory, rmw_uxrce_client_t * clients,
   size_t size);
 void rmw_uxrce_init_publisher_memory(
-  struct rmw_uxrce_mempool_t * memory,
+  rmw_uxrce_mempool_t * memory,
   rmw_uxrce_publisher_t * publishers, size_t size);
 void rmw_uxrce_init_subscription_memory(
-  struct rmw_uxrce_mempool_t * memory,
+  rmw_uxrce_mempool_t * memory,
   rmw_uxrce_subscription_t * subscribers, size_t size);
 void rmw_uxrce_init_topic_memory(
-  struct rmw_uxrce_mempool_t * memory, rmw_uxrce_topic_t * topics,
+  rmw_uxrce_mempool_t * memory, rmw_uxrce_topic_t * topics,
   size_t size);
 
 // Memory management functions

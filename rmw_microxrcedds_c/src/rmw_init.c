@@ -146,7 +146,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 
   rmw_uxrce_init_session_memory(&session_memory, custom_sessions, RMW_UXRCE_MAX_SESSIONS);
 
-  struct rmw_uxrce_mempool_item_t * memory_node = get_memory(&session_memory);
+  rmw_uxrce_mempool_item_t * memory_node = get_memory(&session_memory);
   if (!memory_node) {
     RMW_SET_ERROR_MSG("Not available session memory node");
     return RMW_RET_ERROR;
@@ -335,7 +335,7 @@ rmw_context_fini(rmw_context_t * context)
   // TODO(pablogs9): Should we manage not closed XRCE sessions?
   rmw_ret_t ret = RMW_RET_OK;
 
-  struct rmw_uxrce_mempool_item_t * item = node_memory.allocateditems;
+  rmw_uxrce_mempool_item_t * item = node_memory.allocateditems;
 
   while (item != NULL) {
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)item->data;

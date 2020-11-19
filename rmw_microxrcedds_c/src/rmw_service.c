@@ -61,7 +61,7 @@ rmw_create_service(
     memcpy((void *)rmw_service->service_name, service_name, strlen(service_name) + 1);
 
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
-    struct rmw_uxrce_mempool_item_t * memory_node = get_memory(&service_memory);
+    rmw_uxrce_mempool_item_t * memory_node = get_memory(&service_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
       goto fail;

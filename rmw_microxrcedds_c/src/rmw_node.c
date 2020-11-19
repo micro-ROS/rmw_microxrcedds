@@ -37,7 +37,7 @@ rmw_node_t * create_node(
     return NULL;
   }
 
-  struct rmw_uxrce_mempool_item_t * memory_node = get_memory(&node_memory);
+  rmw_uxrce_mempool_item_t * memory_node = get_memory(&node_memory);
   if (!memory_node) {
     RMW_SET_ERROR_MSG("Not available memory node");
     goto fail;
@@ -161,7 +161,7 @@ rmw_ret_t rmw_destroy_node(rmw_node_t * node)
   rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
   // TODO(Pablo) make sure that other entities are removed from the pools
 
-  struct rmw_uxrce_mempool_item_t * item = NULL;
+  rmw_uxrce_mempool_item_t * item = NULL;
 
   item = publisher_memory.allocateditems;
   while (item != NULL) {

@@ -36,31 +36,31 @@
   char rmw_uxrce_profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
 #endif
 
-struct rmw_uxrce_mempool_t session_memory;
+rmw_uxrce_mempool_t session_memory;
 rmw_context_impl_t custom_sessions[RMW_UXRCE_MAX_SESSIONS];
 static bool session_memory_init = false;
 
-struct rmw_uxrce_mempool_t node_memory;
+rmw_uxrce_mempool_t node_memory;
 rmw_uxrce_node_t custom_nodes[RMW_UXRCE_MAX_NODES];
 static bool node_memory_init = false;
 
-struct rmw_uxrce_mempool_t publisher_memory;
+rmw_uxrce_mempool_t publisher_memory;
 rmw_uxrce_publisher_t custom_publishers[RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_NODES];
 static bool publisher_memory_init = false;
 
-struct rmw_uxrce_mempool_t subscription_memory;
+rmw_uxrce_mempool_t subscription_memory;
 rmw_uxrce_subscription_t custom_subscriptions[RMW_UXRCE_MAX_SUBSCRIPTIONS];
 static bool subscription_memory_init = false;
 
-struct rmw_uxrce_mempool_t service_memory;
+rmw_uxrce_mempool_t service_memory;
 rmw_uxrce_service_t custom_services[RMW_UXRCE_MAX_SERVICES];
 static bool service_memory_init = false;
 
-struct rmw_uxrce_mempool_t client_memory;
+rmw_uxrce_mempool_t client_memory;
 rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 static bool client_memory_init = false;
 
-struct rmw_uxrce_mempool_t topics_memory;
+rmw_uxrce_mempool_t topics_memory;
 rmw_uxrce_topic_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
 static bool topic_memory_init = false;
 
@@ -68,7 +68,7 @@ static bool topic_memory_init = false;
 
 #define RMW_INIT_MEMORY(X)                                                        \
 void rmw_uxrce_init_##X##_memory(                                                 \
-  struct rmw_uxrce_mempool_t * memory,                                            \
+  rmw_uxrce_mempool_t * memory,                                            \
   rmw_uxrce_##X##_t * array, size_t size){                                        \
   if (size > 0 && !X##_memory_init){                                              \
     X##_memory_init = true;                                                       \
