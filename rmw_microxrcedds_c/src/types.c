@@ -38,53 +38,47 @@
 
 rmw_uxrce_mempool_t session_memory;
 rmw_context_impl_t custom_sessions[RMW_UXRCE_MAX_SESSIONS];
-static bool session_memory_init = false;
 
 rmw_uxrce_mempool_t node_memory;
 rmw_uxrce_node_t custom_nodes[RMW_UXRCE_MAX_NODES];
-static bool node_memory_init = false;
 
 rmw_uxrce_mempool_t publisher_memory;
 rmw_uxrce_publisher_t custom_publishers[RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_NODES];
-static bool publisher_memory_init = false;
 
 rmw_uxrce_mempool_t subscription_memory;
 rmw_uxrce_subscription_t custom_subscriptions[RMW_UXRCE_MAX_SUBSCRIPTIONS];
-static bool subscription_memory_init = false;
 
 rmw_uxrce_mempool_t service_memory;
 rmw_uxrce_service_t custom_services[RMW_UXRCE_MAX_SERVICES];
-static bool service_memory_init = false;
 
 rmw_uxrce_mempool_t client_memory;
 rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
-static bool client_memory_init = false;
 
 rmw_uxrce_mempool_t topics_memory;
 rmw_uxrce_topic_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
-static bool topic_memory_init = false;
 
 // Memory init functions
 
-#define RMW_INIT_MEMORY(X)                                                        \
-void rmw_uxrce_init_##X##_memory(                                                 \
-  rmw_uxrce_mempool_t * memory,                                                   \
-  rmw_uxrce_##X##_t * array, size_t size){                                        \
-  if (size > 0 && !X##_memory_init){                                              \
-    X##_memory_init = true;                                                       \
-    memory->element_size = sizeof(*array);                                        \
-    array[0].mem.is_dynamic_memory = false;                                       \
-    link_prev(NULL, &array[0].mem, NULL);                                         \
-    size > 1 ? link_next(&array[0].mem, &array[1].mem, &array[0]) :               \
-               link_next(&array[0].mem, NULL, &array[0]);                         \
-    for (size_t i = 1; i <= size - 1; i++) {                                      \
-      link_prev(&array[i - 1].mem, &array[i].mem, &array[i]);                     \
-      array[i].mem.is_dynamic_memory = false;                                     \
-    }                                                                             \
-    link_next(&array[size - 1].mem, NULL, &array[size - 1]);                      \
-    set_mem_pool(memory, &array[0].mem);                                          \
-  }                                                                               \
-}                                                                                 \
+#define RMW_INIT_MEMORY(X)                        \
+void rmw_uxrce_init_##X##_memory(                 \
+  rmw_uxrce_mempool_t * memory,                   \
+  rmw_uxrce_##X##_t * array,                      \
+  size_t size)                                    \
+{                                                 \
+  if (size > 0 && !memory->is_initialized){       \
+    memory->is_initialized = true;                \
+    memory->element_size = sizeof(*array);        \
+    memory->allocateditems = NULL;                \
+    memory->freeitems = NULL;                     \
+                                                  \
+    for (size_t i = 0; i < size; i++){            \
+      put_memory(memory, &array[i].mem);          \
+      array[i].mem.data = (void*) &array[i];      \
+      array[0].mem.is_dynamic_memory = false;     \
+    }                                             \
+  }                                               \
+}                                                                                         
+
 
 RMW_INIT_MEMORY(service)
 RMW_INIT_MEMORY(client)

@@ -18,55 +18,6 @@
 #include <rmw_microxrcedds_c/config.h>
 #include <rmw/allocators.h>
 
-void link_next(
-  rmw_uxrce_mempool_item_t * current, rmw_uxrce_mempool_item_t * next,
-  void * data)
-{
-  if (current) {
-    current->next = next;
-    if (next) {
-      next->prev = current;
-    }
-    current->data = data;
-  }
-}
-
-void link_prev(
-  rmw_uxrce_mempool_item_t * previous,
-  rmw_uxrce_mempool_item_t * current, void * data)
-{
-  if (current) {
-    current->prev = previous;
-    if (previous) {
-      previous->next = current;
-    }
-    current->data = data;
-  }
-}
-
-void set_mem_pool(rmw_uxrce_mempool_t * mem, rmw_uxrce_mempool_item_t * first)
-{
-  mem->freeitems = first;
-  mem->allocateditems = NULL;
-}
-
-void free_mem_pool(rmw_uxrce_mempool_t * mem)
-{
-  if (mem->allocateditems) {
-    rmw_uxrce_mempool_item_t * old_free_head = mem->freeitems;
-    mem->freeitems = mem->allocateditems;
-    mem->freeitems->prev = NULL;
-    mem->allocateditems = NULL;
-
-    rmw_uxrce_mempool_item_t * free_item = mem->freeitems;
-    while (free_item->next) {
-      free_item = free_item->next;
-    }
-    free_item->next = old_free_head;
-    old_free_head->prev = free_item;
-  }
-}
-
 bool has_memory(rmw_uxrce_mempool_t * mem)
 {
   return mem->freeitems != NULL ? true : false;

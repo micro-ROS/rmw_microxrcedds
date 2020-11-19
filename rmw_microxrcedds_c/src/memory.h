@@ -31,20 +31,13 @@ typedef struct rmw_uxrce_mempool_t
   struct rmw_uxrce_mempool_item_t * allocateditems;
   struct rmw_uxrce_mempool_item_t * freeitems;
 
+  bool is_initialized;
   size_t size;
   size_t element_size;
 } rmw_uxrce_mempool_t;
 
-void link_next(
-  rmw_uxrce_mempool_item_t * current, rmw_uxrce_mempool_item_t * next,
-  void * data);
-void link_prev(
-  rmw_uxrce_mempool_item_t * previous,
-  rmw_uxrce_mempool_item_t * current, void * data);
-void set_mem_pool(rmw_uxrce_mempool_t * mem, rmw_uxrce_mempool_item_t * first);
 bool has_memory(rmw_uxrce_mempool_t * mem);
 rmw_uxrce_mempool_item_t * get_memory(rmw_uxrce_mempool_t * mem);
 void put_memory(rmw_uxrce_mempool_t * mem, rmw_uxrce_mempool_item_t * item);
-void free_mem_pool(rmw_uxrce_mempool_t * mem);
 
 #endif  // MEMORY_H_
