@@ -31,6 +31,7 @@ typedef struct rmw_uxrce_mempool_t
   struct rmw_uxrce_mempool_item_t * freeitems;
 
   size_t size;
+  size_t element_size;
 } rmw_uxrce_mempool_t;
 
 void link_next(

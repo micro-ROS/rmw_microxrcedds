@@ -87,6 +87,16 @@ rmw_uxrce_mempool_item_t * get_memory(rmw_uxrce_mempool_t * mem)
     }
     item->prev = NULL;
     mem->allocateditems = item;
+  }else{
+#ifdef RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS
+    item = rmw_allocate(sizeof(rmw_uxrce_mempool_item_t));
+    item->prev = NULL;
+    item->next = NULL;
+    item->data = (void *) rmw_allocate(mem->element_size);
+    memset(item->data, 0, mem->element_size);
+    put_memory(mem, item);
+    item = get_memory(mem);
+#endif
   }
   return item;
 }
@@ -104,10 +114,6 @@ void put_memory(rmw_uxrce_mempool_t * mem, rmw_uxrce_mempool_item_t * item)
   if (mem->allocateditems == item) {
     mem->allocateditems = item->next;
   }
-
-  // if (mem->freeitems){
-  //     mem->freeitems->prev = NULL;
-  // }
 
   // Puts item in free pool
   item->next = mem->freeitems;

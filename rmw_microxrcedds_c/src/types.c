@@ -68,10 +68,11 @@ static bool topic_memory_init = false;
 
 #define RMW_INIT_MEMORY(X)                                                        \
 void rmw_uxrce_init_##X##_memory(                                                 \
-  rmw_uxrce_mempool_t * memory,                                            \
+  rmw_uxrce_mempool_t * memory,                                                   \
   rmw_uxrce_##X##_t * array, size_t size){                                        \
   if (size > 0 && !X##_memory_init){                                              \
     X##_memory_init = true;                                                       \
+    memory->element_size = sizeof(*array);                                        \
     link_prev(NULL, &array[0].mem, NULL);                                         \
     size > 1 ? link_next(&array[0].mem, &array[1].mem, &array[0]) :               \
                link_next(&array[0].mem, NULL, &array[0]);                         \
