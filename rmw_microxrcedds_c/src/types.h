@@ -30,9 +30,9 @@
 #include "memory.h"
 #include <rmw_microxrcedds_c/config.h>
 
-#ifdef MICRO_XRCEDDS_IPV4
+#ifdef RMW_UXRCE_TRANSPORT_IPV4
   #define MAX_IP_LEN 16
-#elif defined(MICRO_XRCEDDS_IPV6)
+#elif defined(RMW_UXRCE_TRANSPORT_IPV6)
   #define MAX_IP_LEN 39
 #endif
 #define MAX_PORT_LEN 5
@@ -42,9 +42,9 @@
 
 struct rmw_uxrce_connection_t
 {
-#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
+#if defined(RMW_UXRCE_TRANSPORT_SERIAL) || defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
   char serial_device[MAX_SERIAL_DEVICE];
-#elif defined(MICRO_XRCEDDS_UDP)
+#elif defined(RMW_UXRCE_TRANSPORT_UDP)
   char agent_address[MAX_IP_LEN];
   char agent_port[MAX_PORT_LEN];
 #endif
@@ -56,10 +56,10 @@ struct  rmw_context_impl_t
   struct rmw_uxrce_mempool_item_t mem;
   struct rmw_uxrce_connection_t connection_params;
 
-#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
+#if defined(RMW_UXRCE_TRANSPORT_SERIAL) || defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
   uxrSerialTransport transport;
   uxrSerialPlatform serial_platform;
-#elif defined(MICRO_XRCEDDS_UDP)
+#elif defined(RMW_UXRCE_TRANSPORT_UDP)
   uxrUDPTransport transport;
   uxrUDPPlatform udp_platform;
 #endif
@@ -206,9 +206,9 @@ typedef struct rmw_uxrce_node_t
 
 // Static memory pools
 
-#ifdef MICRO_XRCEDDS_USE_XML
+#ifdef RMW_UXRCE_TRANSPORT_USE_XML
   extern char rmw_uxrce_xml_buffer[RMW_UXRCE_XML_BUFFER_LENGTH];
-#elif defined(MICRO_XRCEDDS_USE_REFS)
+#elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
   extern char rmw_uxrce_profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
 #endif
 

@@ -27,15 +27,15 @@
 
 #include "./callbacks.h"
 
-#ifdef MICRO_XRCEDDS_SERIAL
+#ifdef RMW_UXRCE_TRANSPORT_SERIAL
 #include <stdio.h>
 #include <fcntl.h>
 #include <termios.h>
 #endif
 
-#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
+#if defined(RMW_UXRCE_TRANSPORT_SERIAL) || defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
 #define CLOSE_TRANSPORT(transport) uxr_close_serial_transport(transport)
-#elif defined(MICRO_XRCEDDS_UDP)
+#elif defined(RMW_UXRCE_TRANSPORT_UDP)
 #define CLOSE_TRANSPORT(transport) uxr_close_udp_transport(transport)
 #else
 #define CLOSE_TRANSPORT(transport)
@@ -60,14 +60,14 @@ rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t all
 
   init_options->impl = allocator.allocate(sizeof(rmw_init_options_impl_t), allocator.state);
 
-#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
+#if defined(RMW_UXRCE_TRANSPORT_SERIAL) || defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
   if (strlen(RMW_UXRCE_DEFAULT_SERIAL_DEVICE) <= MAX_SERIAL_DEVICE) {
     strcpy(init_options->impl->connection_params.serial_device, RMW_UXRCE_DEFAULT_SERIAL_DEVICE);
   } else {
     RMW_SET_ERROR_MSG("default serial port configuration overflow");
     return RMW_RET_INVALID_ARGUMENT;
   }
-#elif defined(MICRO_XRCEDDS_UDP)
+#elif defined(RMW_UXRCE_TRANSPORT_UDP)
   if (strlen(RMW_UXRCE_DEFAULT_UDP_IP) <= MAX_IP_LEN) {
     strcpy(init_options->impl->connection_params.agent_address, RMW_UXRCE_DEFAULT_UDP_IP);
   } else {
@@ -154,11 +154,11 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 
   rmw_context_impl_t * context_impl = (rmw_context_impl_t *)memory_node->data;
 
-  #if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
+  #if defined(RMW_UXRCE_TRANSPORT_SERIAL) || defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
   strcpy(
     context_impl->connection_params.serial_device,
     options->impl->connection_params.serial_device);
-  #elif defined(MICRO_XRCEDDS_UDP)
+  #elif defined(RMW_UXRCE_TRANSPORT_UDP)
   strcpy(
     context_impl->connection_params.agent_address,
     options->impl->connection_params.agent_address);
@@ -189,7 +189,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 
   // Micro-XRCE-DDS Client initialization
 
-#ifdef MICRO_XRCEDDS_SERIAL
+#ifdef RMW_UXRCE_TRANSPORT_SERIAL
   int fd = open(context->impl->connection_params.serial_device, O_RDWR | O_NOCTTY);
   if (0 < fd) {
     struct termios tty_config;
@@ -245,11 +245,11 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   }
   printf("Serial mode => dev: %s\n", context_impl->connection_params.serial_device);
 
-#elif defined(MICRO_XRCEDDS_UDP)
+#elif defined(RMW_UXRCE_TRANSPORT_UDP)
   // TODO(Borja) Think how we are going to select transport to use
-  #ifdef MICRO_XRCEDDS_IPV4
+  #ifdef RMW_UXRCE_TRANSPORT_IPV4
   uxrIpProtocol ip_protocol = UXR_IPv4;
-  #elif defined(MICRO_XRCEDDS_IPV6)
+  #elif defined(RMW_UXRCE_TRANSPORT_IPV6)
   uxrIpProtocol ip_protocol = UXR_IPv6;
   #endif
 
@@ -263,7 +263,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   printf(
     "UDP mode => ip: %s - port: %s\n", context_impl->connection_params.agent_address,
     context_impl->connection_params.agent_port);
-#elif defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
+#elif defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
   int pseudo_fd = 0;
   if (strlen(options->impl->connection_params.serial_device) > 0) {
     pseudo_fd = atoi(options->impl->connection_params.serial_device);

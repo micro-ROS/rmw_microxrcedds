@@ -36,7 +36,7 @@ rmw_ret_t rmw_uros_init_options(
   // rmw_options->impl = rmw_options->allocator.allocate(
   // sizeof(rmw_init_options_impl_t),
   // rmw_options->allocator.state);
-#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
+#if defined(RMW_UXRCE_TRANSPORT_SERIAL) || defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
   if (argc >= 2) {
     strcpy(rmw_options->impl->connection_params.serial_device, argv[1]);
   } else {
@@ -45,7 +45,7 @@ rmw_ret_t rmw_uros_init_options(
     ret = RMW_RET_INVALID_ARGUMENT;
   }
 
-#elif defined(MICRO_XRCEDDS_UDP)
+#elif defined(RMW_UXRCE_TRANSPORT_UDP)
   if (argc >= 3) {
     strcpy(rmw_options->impl->connection_params.agent_address, argv[1]);
     strcpy(rmw_options->impl->connection_params.agent_port, argv[2]);
@@ -62,7 +62,7 @@ rmw_ret_t rmw_uros_init_options(
 
 rmw_ret_t rmw_uros_options_set_serial_device(const char * dev, rmw_init_options_t * rmw_options)
 {
-#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
+#if defined(RMW_UXRCE_TRANSPORT_SERIAL) || defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
   if (NULL == rmw_options) {
     RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
     return RMW_RET_INVALID_ARGUMENT;
@@ -79,7 +79,7 @@ rmw_ret_t rmw_uros_options_set_serial_device(const char * dev, rmw_init_options_
   (void) dev;
   (void) rmw_options;
 
-  RMW_SET_ERROR_MSG("MICRO_XRCEDDS_SERIAL not set.");
+  RMW_SET_ERROR_MSG("RMW_UXRCE_TRANSPORT_SERIAL not set.");
   return RMW_RET_INVALID_ARGUMENT;
 #endif
 }
@@ -88,7 +88,7 @@ rmw_ret_t rmw_uros_options_set_udp_address(
   const char * ip, const char * port,
   rmw_init_options_t * rmw_options)
 {
-#ifdef MICRO_XRCEDDS_UDP
+#ifdef RMW_UXRCE_TRANSPORT_UDP
   if (NULL == rmw_options) {
     RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
     return RMW_RET_INVALID_ARGUMENT;
@@ -114,12 +114,12 @@ rmw_ret_t rmw_uros_options_set_udp_address(
   (void) port;
   (void) rmw_options;
 
-  RMW_SET_ERROR_MSG("MICRO_XRCEDDS_UDP not set.");
+  RMW_SET_ERROR_MSG("RMW_UXRCE_TRANSPORT_UDP not set.");
   return RMW_RET_INVALID_ARGUMENT;
 #endif
 }
 
-#if defined(MICRO_XRCEDDS_UDP) && defined(UCLIENT_PROFILE_DISCOVERY)
+#if defined(RMW_UXRCE_TRANSPORT_UDP) && defined(UCLIENT_PROFILE_DISCOVERY)
 bool on_agent_found(const TransportLocator* locator, void* args)
 {
   rmw_init_options_t * rmw_options = (rmw_init_options_t *) args;
@@ -151,7 +151,7 @@ bool on_agent_found(const TransportLocator* locator, void* args)
 
 rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t * rmw_options)
 {
-#if defined(MICRO_XRCEDDS_UDP) && defined(UCLIENT_PROFILE_DISCOVERY)
+#if defined(RMW_UXRCE_TRANSPORT_UDP) && defined(UCLIENT_PROFILE_DISCOVERY)
   if (NULL == rmw_options) {
     RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
     return RMW_RET_INVALID_ARGUMENT;
@@ -166,7 +166,7 @@ rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t * rmw_options)
 #else
   (void) rmw_options;
 
-  RMW_SET_ERROR_MSG("MICRO_XRCEDDS_UDP or UCLIENT_PROFILE_DISCOVERY not set.");
+  RMW_SET_ERROR_MSG("RMW_UXRCE_TRANSPORT_UDP or UCLIENT_PROFILE_DISCOVERY not set.");
   return RMW_RET_INVALID_ARGUMENT;
 #endif
 }

@@ -50,7 +50,7 @@ create_topic(
 
   // Generate request
   uint16_t topic_req = 0;
-#ifdef MICRO_XRCEDDS_USE_XML
+#ifdef RMW_UXRCE_TRANSPORT_USE_XML
   if (!build_topic_xml(
       topic_name, message_type_support_callbacks,
       qos_policies, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
@@ -65,7 +65,7 @@ create_topic(
     &custom_node->context->session,
     custom_node->context->reliable_output, custom_topic->topic_id,
     custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
-#elif defined(MICRO_XRCEDDS_USE_REFS)
+#elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
   (void)qos_policies;
   if (!build_topic_profile(topic_name, rmw_uxrce_profile_name, sizeof(rmw_uxrce_profile_name))) {
     RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
