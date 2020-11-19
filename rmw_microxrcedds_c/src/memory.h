@@ -20,6 +20,7 @@
 
 typedef struct rmw_uxrce_mempool_item_t
 {
+  bool is_dynamic_memory;
   struct rmw_uxrce_mempool_item_t * prev;
   struct rmw_uxrce_mempool_item_t * next;
   void * data;

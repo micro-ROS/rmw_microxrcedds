@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "./memory.h"  // NOLINT
+#include <string.h>
 
+#include "./memory.h"  // NOLINT
+#include <rmw_microxrcedds_c/config.h>
+#include <rmw/allocators.h>
 
 void link_next(
   rmw_uxrce_mempool_item_t * current, rmw_uxrce_mempool_item_t * next,
@@ -89,12 +92,14 @@ rmw_uxrce_mempool_item_t * get_memory(rmw_uxrce_mempool_t * mem)
     mem->allocateditems = item;
   }else{
 #ifdef RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS
-    item = rmw_allocate(sizeof(rmw_uxrce_mempool_item_t));
+    item = (rmw_uxrce_mempool_item_t *) rmw_allocate(sizeof(rmw_uxrce_mempool_item_t));
     item->prev = NULL;
     item->next = NULL;
     item->data = (void *) rmw_allocate(mem->element_size);
     memset(item->data, 0, mem->element_size);
+    item->is_dynamic_memory = false; // Allow to put element in free pool the first time
     put_memory(mem, item);
+    item->is_dynamic_memory = true;
     item = get_memory(mem);
 #endif
   }
@@ -114,6 +119,14 @@ void put_memory(rmw_uxrce_mempool_t * mem, rmw_uxrce_mempool_item_t * item)
   if (mem->allocateditems == item) {
     mem->allocateditems = item->next;
   }
+
+#ifdef RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS
+  if (item->is_dynamic_memory) {
+    rmw_free(item->data);
+    rmw_free(item);
+    return;
+  }
+#endif
 
   // Puts item in free pool
   item->next = mem->freeitems;

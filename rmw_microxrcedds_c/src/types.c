@@ -73,11 +73,13 @@ void rmw_uxrce_init_##X##_memory(                                               
   if (size > 0 && !X##_memory_init){                                              \
     X##_memory_init = true;                                                       \
     memory->element_size = sizeof(*array);                                        \
+    array[0].mem.is_dynamic_memory = false;                                       \
     link_prev(NULL, &array[0].mem, NULL);                                         \
     size > 1 ? link_next(&array[0].mem, &array[1].mem, &array[0]) :               \
                link_next(&array[0].mem, NULL, &array[0]);                         \
     for (size_t i = 1; i <= size - 1; i++) {                                      \
       link_prev(&array[i - 1].mem, &array[i].mem, &array[i]);                     \
+      array[i].mem.is_dynamic_memory = false;                                     \
     }                                                                             \
     link_next(&array[size - 1].mem, NULL, &array[size - 1]);                      \
     set_mem_pool(memory, &array[0].mem);                                          \
