@@ -29,14 +29,14 @@ create_topic(
   const message_type_support_callbacks_t * message_type_support_callbacks,
   const rmw_qos_profile_t * qos_policies)
 {
+  rmw_uxrce_topic_t * custom_topic = NULL;
   rmw_uxrce_mempool_item_t * memory_node = get_memory(&topics_memory);
   if (!memory_node) {
     RMW_SET_ERROR_MSG("Not available memory node");
     goto fail;
   }
 
-  rmw_uxrce_topic_t * custom_topic = (rmw_uxrce_topic_t *)memory_node->data;
-
+  custom_topic = (rmw_uxrce_topic_t *)memory_node->data;
 
   // Init
   custom_topic->sync_with_agent = false;
