@@ -182,3 +182,15 @@ rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_
 
   return RMW_RET_OK;
 }
+
+rmw_ret_t rmw_uros_check_agent_status(int timeout_ms)
+{  
+  bool synchronized = true;
+  struct rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
+  while (item != NULL) {
+    rmw_context_impl_t * context = (rmw_context_impl_t *) item->data;
+    synchronized &= uxr_sync_session(&context->session, timeout_ms);
+    item = item->next;
+  }
+  return (synchronized && session_memory.allocateditems != NULL) ? RMW_RET_OK : RMW_RET_ERROR;
+}
