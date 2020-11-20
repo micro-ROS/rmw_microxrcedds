@@ -46,7 +46,7 @@ TEST(rmw_microxrcedds, autodiscover) {
 /*
    Testing rmw agent check.
 */
-TEST(rmw_microxrcedds, agent_chec_status) {
+TEST(rmw_microxrcedds, agent_check_status) {
   rmw_context_t test_context = rmw_get_zero_initialized_context();
   rmw_init_options_t test_options = rmw_get_zero_initialized_init_options();
   ASSERT_EQ(rmw_init_options_init(&test_options, rcutils_get_default_allocator()), RMW_RET_OK);
