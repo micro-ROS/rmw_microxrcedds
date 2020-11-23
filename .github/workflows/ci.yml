@@ -25,8 +25,8 @@ jobs:
 
         - name: Compile typesupport libraries
           run: |
-            colcon build --packages-up-to rosidl_typesupport_microxrcedds_c
-            colcon build --packages-up-to rosidl_typesupport_microxrcedds_cpp
+            . /opt/ros/foxy/setup.sh && colcon build --packages-up-to rosidl_typesupport_microxrcedds_c
+            . /opt/ros/foxy/setup.sh && colcon build --packages-up-to rosidl_typesupport_microxrcedds_cpp
       
         - name: Build
           run: . /opt/ros/foxy/setup.sh && . /uros_ws/install/local_setup.sh && colcon build
