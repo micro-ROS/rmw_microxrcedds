@@ -62,7 +62,7 @@ rmw_create_client(
     memcpy((void *)rmw_client->service_name, service_name, strlen(service_name) + 1);
 
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
-    struct rmw_uxrce_mempool_item_t * memory_node = get_memory(&client_memory);
+    rmw_uxrce_mempool_item_t * memory_node = get_memory(&client_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
       goto fail;
@@ -115,7 +115,7 @@ rmw_create_client(
 
     uint16_t client_req = UXR_INVALID_REQUEST_ID;
 
-#ifdef MICRO_XRCEDDS_USE_XML
+#ifdef RMW_UXRCE_TRANSPORT_USE_XML
     char service_name_id[20];
     generate_name(&custom_client->client_id, service_name_id, sizeof(service_name_id));
     if (!build_service_xml(
@@ -129,7 +129,7 @@ rmw_create_client(
       &custom_node->context->session,
       custom_node->context->reliable_output, custom_client->client_id,
       custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
-#elif defined(MICRO_XRCEDDS_USE_REFS)
+#elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
     // TODO(pablogs9): Is possible to instantiate a replier by ref?
     // client_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
     //     custom_node->context->reliable_output, custom_service->subscriber_id,

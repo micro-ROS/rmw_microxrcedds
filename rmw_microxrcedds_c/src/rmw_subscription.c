@@ -85,13 +85,13 @@ rmw_create_subscription(
     }
 
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
-    struct rmw_uxrce_mempool_item_t * memory_node = get_memory(&subscription_memory);
+    rmw_uxrce_mempool_item_t * memory_node = get_memory(&subscription_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
       goto fail;
     }
 
-    // TODO(Borja) micro_xrcedds_id is duplicated in subscriber_id and in subscription_gid.data
+    // TODO(Borja) RMW_UXRCE_TRANSPORT_id is duplicated in subscriber_id and in subscription_gid.data
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)memory_node->data;
     custom_subscription->rmw_handle = rmw_subscription;
 
@@ -146,7 +146,7 @@ rmw_create_subscription(
       UXR_SUBSCRIBER_ID);
     uint16_t subscriber_req = UXR_INVALID_REQUEST_ID;
 
-#ifdef MICRO_XRCEDDS_USE_XML
+#ifdef RMW_UXRCE_TRANSPORT_USE_XML
     char subscriber_name[20];
     generate_name(&custom_subscription->subscriber_id, subscriber_name, sizeof(subscriber_name));
     if (!build_subscriber_xml(subscriber_name, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer))) {
@@ -157,7 +157,7 @@ rmw_create_subscription(
       &custom_node->context->session,
       custom_node->context->reliable_output, custom_subscription->subscriber_id,
       custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
-#elif defined(MICRO_XRCEDDS_USE_REFS)
+#elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
     // TODO(BORJA)  Publisher by reference does not make sense in
     //              current micro XRCE-DDS implementation.
     subscriber_req = uxr_buffer_create_subscriber_xml(
@@ -182,7 +182,7 @@ rmw_create_subscription(
       UXR_DATAREADER_ID);
     uint16_t datareader_req = UXR_INVALID_REQUEST_ID;
 
-#ifdef MICRO_XRCEDDS_USE_XML
+#ifdef RMW_UXRCE_TRANSPORT_USE_XML
     if (!build_datareader_xml(
         topic_name, custom_subscription->type_support_callbacks,
         qos_policies, rmw_uxrce_xml_buffer,
@@ -196,7 +196,7 @@ rmw_create_subscription(
       &custom_node->context->session,
       custom_node->context->reliable_output, custom_subscription->datareader_id,
       custom_subscription->subscriber_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
-#elif defined(MICRO_XRCEDDS_USE_REFS)
+#elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
     if (!build_datareader_profile(topic_name, rmw_uxrce_profile_name, sizeof(rmw_uxrce_profile_name))) {
       RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
       goto fail;

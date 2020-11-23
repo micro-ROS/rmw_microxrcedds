@@ -61,7 +61,7 @@ rmw_create_service(
     memcpy((void *)rmw_service->service_name, service_name, strlen(service_name) + 1);
 
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
-    struct rmw_uxrce_mempool_item_t * memory_node = get_memory(&service_memory);
+    rmw_uxrce_mempool_item_t * memory_node = get_memory(&service_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
       goto fail;
@@ -112,7 +112,7 @@ rmw_create_service(
 
     uint16_t service_req = UXR_INVALID_REQUEST_ID;
 
-#ifdef MICRO_XRCEDDS_USE_XML
+#ifdef RMW_UXRCE_TRANSPORT_USE_XML
     char service_name_id[20];
     generate_name(&custom_service->service_id, service_name_id, sizeof(service_name_id));
     if (!build_service_xml(
@@ -126,7 +126,7 @@ rmw_create_service(
       &custom_node->context->session,
       custom_node->context->reliable_output, custom_service->service_id,
       custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
-#elif defined(MICRO_XRCEDDS_USE_REFS)
+#elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
     // CHECK IF THIS IS NECESSARY
     // service_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
     //     custom_node->context->reliable_output, custom_service->subscriber_id,

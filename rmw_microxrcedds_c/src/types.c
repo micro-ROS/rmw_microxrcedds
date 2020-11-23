@@ -30,164 +30,63 @@
 
 // Static memory pools
 
-#ifdef MICRO_XRCEDDS_USE_XML
+#ifdef RMW_UXRCE_TRANSPORT_USE_XML
   char rmw_uxrce_xml_buffer[RMW_UXRCE_XML_BUFFER_LENGTH];
-#elif defined(MICRO_XRCEDDS_USE_REFS)
+#elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
   char rmw_uxrce_profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
 #endif
 
-struct rmw_uxrce_mempool_t session_memory;
+rmw_uxrce_mempool_t session_memory;
 rmw_context_impl_t custom_sessions[RMW_UXRCE_MAX_SESSIONS];
-static bool session_memory_init = false;
 
-struct rmw_uxrce_mempool_t node_memory;
+rmw_uxrce_mempool_t node_memory;
 rmw_uxrce_node_t custom_nodes[RMW_UXRCE_MAX_NODES];
-static bool node_memory_init = false;
 
-struct rmw_uxrce_mempool_t publisher_memory;
+rmw_uxrce_mempool_t publisher_memory;
 rmw_uxrce_publisher_t custom_publishers[RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_NODES];
-static bool publisher_memory_init = false;
 
-struct rmw_uxrce_mempool_t subscription_memory;
+rmw_uxrce_mempool_t subscription_memory;
 rmw_uxrce_subscription_t custom_subscriptions[RMW_UXRCE_MAX_SUBSCRIPTIONS];
-static bool subscription_memory_init = false;
 
-struct rmw_uxrce_mempool_t service_memory;
+rmw_uxrce_mempool_t service_memory;
 rmw_uxrce_service_t custom_services[RMW_UXRCE_MAX_SERVICES];
-static bool service_memory_init = false;
 
-struct rmw_uxrce_mempool_t client_memory;
+rmw_uxrce_mempool_t client_memory;
 rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
-static bool client_memory_init = false;
 
-struct rmw_uxrce_mempool_t topics_memory;
+rmw_uxrce_mempool_t topics_memory;
 rmw_uxrce_topic_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
-static bool topic_memory_init = false;
 
 // Memory init functions
 
-void rmw_uxrce_init_service_memory(
-  struct rmw_uxrce_mempool_t * memory,
-  rmw_uxrce_service_t * services, size_t size)
-{
-  if (size > 0 && !service_memory_init) {
-    service_memory_init = true;
-    link_prev(NULL, &services[0].mem, NULL);
-    size > 1 ? link_next(&services[0].mem, &services[1].mem, &services[0]) : link_next(
-      &services[0].mem, NULL, &services[0]);
-    for (unsigned int i = 1; i <= size - 1; i++) {
-      link_prev(&services[i - 1].mem, &services[i].mem, &services[i]);
-    }
-    link_next(&services[size - 1].mem, NULL, &services[size - 1]);
-    set_mem_pool(memory, &services[0].mem);
-  }
-}
+#define RMW_INIT_MEMORY(X)                        \
+void rmw_uxrce_init_##X##_memory(                 \
+  rmw_uxrce_mempool_t * memory,                   \
+  rmw_uxrce_##X##_t * array,                      \
+  size_t size)                                    \
+{                                                 \
+  if (size > 0 && !memory->is_initialized){       \
+    memory->is_initialized = true;                \
+    memory->element_size = sizeof(*array);        \
+    memory->allocateditems = NULL;                \
+    memory->freeitems = NULL;                     \
+                                                  \
+    for (size_t i = 0; i < size; i++){            \
+      put_memory(memory, &array[i].mem);          \
+      array[i].mem.data = (void*) &array[i];      \
+      array[0].mem.is_dynamic_memory = false;     \
+    }                                             \
+  }                                               \
+}                                                                                         
 
-void rmw_uxrce_init_client_memory(
-  struct rmw_uxrce_mempool_t * memory, rmw_uxrce_client_t * clients,
-  size_t size)
-{
-  if (size > 0 && !client_memory_init) {
-    client_memory_init = true;
-    link_prev(NULL, &clients[0].mem, NULL);
-    size > 1 ? link_next(&clients[0].mem, &clients[1].mem, &clients[0]) : link_next(
-      &clients[0].mem, NULL, &clients[0]);
-    for (unsigned int i = 1; i <= size - 1; i++) {
-      link_prev(&clients[i - 1].mem, &clients[i].mem, &clients[i]);
-    }
-    link_next(&clients[size - 1].mem, NULL, &clients[size - 1]);
-    set_mem_pool(memory, &clients[0].mem);
-  }
-}
 
-void rmw_uxrce_init_publisher_memory(
-  struct rmw_uxrce_mempool_t * memory,
-  rmw_uxrce_publisher_t * publishers, size_t size)
-{
-  if (size > 0 && !publisher_memory_init) {
-    publisher_memory_init = true;
-    link_prev(NULL, &publishers[0].mem, NULL);
-    size > 1 ? link_next(&publishers[0].mem, &publishers[1].mem, &publishers[0]) : link_next(
-      &publishers[0].mem, NULL, &publishers[0]);
-    for (unsigned int i = 1; i <= size - 1; i++) {
-      link_prev(&publishers[i - 1].mem, &publishers[i].mem, &publishers[i]);
-    }
-    link_next(&publishers[size - 1].mem, NULL, &publishers[size - 1]);
-    set_mem_pool(memory, &publishers[0].mem);
-  }
-}
-
-void rmw_uxrce_init_subscriber_memory(
-  struct rmw_uxrce_mempool_t * memory,
-  rmw_uxrce_subscription_t * subscribers, size_t size)
-{
-  if (size > 0 && !subscription_memory_init) {
-    subscription_memory_init = true;
-    link_prev(NULL, &subscribers[0].mem, NULL);
-    size > 1 ? link_next(&subscribers[0].mem, &subscribers[1].mem, &subscribers[0]) : link_next(
-      &subscribers[0].mem, NULL, &subscribers[0]);
-    for (unsigned int i = 1; i <= size - 1; i++) {
-      link_prev(&subscribers[i - 1].mem, &subscribers[i].mem, &subscribers[i]);
-    }
-    link_next(&subscribers[size - 1].mem, NULL, &subscribers[size - 1]);
-    set_mem_pool(memory, &subscribers[0].mem);
-  }
-}
-
-void rmw_uxrce_init_nodes_memory(
-  struct rmw_uxrce_mempool_t * memory, rmw_uxrce_node_t * nodes,
-  size_t size)
-{
-  if (size > 0 && !node_memory_init) {
-    node_memory_init = true;
-    link_prev(NULL, &nodes[0].mem, NULL);
-    size > 1 ? link_next(&nodes[0].mem, &nodes[1].mem, &nodes[0]) : link_next(
-      &nodes[0].mem, NULL,
-      &nodes[0]);
-    for (unsigned int i = 1; i <= size - 1; i++) {
-      link_prev(&nodes[i - 1].mem, &nodes[i].mem, &nodes[i]);
-    }
-    link_next(&nodes[size - 1].mem, NULL, &nodes[size - 1]);
-    set_mem_pool(memory, &nodes[0].mem);
-  }
-}
-
-void rmw_uxrce_init_sessions_memory(
-  struct rmw_uxrce_mempool_t * memory,
-  rmw_context_impl_t * sessions, size_t size)
-{
-  if (size > 0 && !session_memory_init) {
-    session_memory_init = true;
-    link_prev(NULL, &sessions[0].mem, NULL);
-    size > 1 ? link_next(&sessions[0].mem, &sessions[1].mem, &sessions[0]) : link_next(
-      &sessions[0].mem, NULL,
-      &sessions[0]);
-    for (unsigned int i = 1; i <= size - 1; i++) {
-      link_prev(&sessions[i - 1].mem, &sessions[i].mem, &sessions[i]);
-    }
-    link_next(&sessions[size - 1].mem, NULL, &sessions[size - 1]);
-    set_mem_pool(memory, &sessions[0].mem);
-  }
-}
-
-void rmw_uxrce_init_topics_memory(
-  struct rmw_uxrce_mempool_t * memory, rmw_uxrce_topic_t * topics,
-  size_t size)
-{
-  if (size > 0 && !topic_memory_init) {
-    topic_memory_init = true;
-    link_prev(NULL, &topics[0].mem, NULL);
-    size > 1 ? link_next(&topics[0].mem, &topics[1].mem, &topics[0]) : link_next(
-      &topics[0].mem, NULL,
-      &topics[0]);
-    for (unsigned int i = 1; i <= size - 1; i++) {
-      link_prev(&topics[i - 1].mem, &topics[i].mem, &topics[i]);
-    }
-    link_next(&topics[size - 1].mem, NULL, &topics[size - 1]);
-    set_mem_pool(memory, &topics[0].mem);
-  }
-}
-
+RMW_INIT_MEMORY(service)
+RMW_INIT_MEMORY(client)
+RMW_INIT_MEMORY(publisher)
+RMW_INIT_MEMORY(subscription)
+RMW_INIT_MEMORY(node)
+RMW_INIT_MEMORY(session)
+RMW_INIT_MEMORY(topic)
 
 // Memory management functions
 

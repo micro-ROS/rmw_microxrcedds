@@ -27,15 +27,15 @@
 
 #include "./callbacks.h"
 
-#ifdef MICRO_XRCEDDS_SERIAL
+#ifdef RMW_UXRCE_TRANSPORT_SERIAL
 #include <stdio.h>
 #include <fcntl.h>
 #include <termios.h>
 #endif
 
-#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
+#if defined(RMW_UXRCE_TRANSPORT_SERIAL) || defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
 #define CLOSE_TRANSPORT(transport) uxr_close_serial_transport(transport)
-#elif defined(MICRO_XRCEDDS_UDP)
+#elif defined(RMW_UXRCE_TRANSPORT_UDP)
 #define CLOSE_TRANSPORT(transport) uxr_close_udp_transport(transport)
 #else
 #define CLOSE_TRANSPORT(transport)
@@ -60,14 +60,14 @@ rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t all
 
   init_options->impl = allocator.allocate(sizeof(rmw_init_options_impl_t), allocator.state);
 
-#if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
+#if defined(RMW_UXRCE_TRANSPORT_SERIAL) || defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
   if (strlen(RMW_UXRCE_DEFAULT_SERIAL_DEVICE) <= MAX_SERIAL_DEVICE) {
     strcpy(init_options->impl->connection_params.serial_device, RMW_UXRCE_DEFAULT_SERIAL_DEVICE);
   } else {
     RMW_SET_ERROR_MSG("default serial port configuration overflow");
     return RMW_RET_INVALID_ARGUMENT;
   }
-#elif defined(MICRO_XRCEDDS_UDP)
+#elif defined(RMW_UXRCE_TRANSPORT_UDP)
   if (strlen(RMW_UXRCE_DEFAULT_UDP_IP) <= MAX_IP_LEN) {
     strcpy(init_options->impl->connection_params.agent_address, RMW_UXRCE_DEFAULT_UDP_IP);
   } else {
@@ -144,9 +144,9 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   context->instance_id = options->instance_id;
   context->implementation_identifier = eprosima_microxrcedds_identifier;
 
-  rmw_uxrce_init_sessions_memory(&session_memory, custom_sessions, RMW_UXRCE_MAX_SESSIONS);
+  rmw_uxrce_init_session_memory(&session_memory, custom_sessions, RMW_UXRCE_MAX_SESSIONS);
 
-  struct rmw_uxrce_mempool_item_t * memory_node = get_memory(&session_memory);
+  rmw_uxrce_mempool_item_t * memory_node = get_memory(&session_memory);
   if (!memory_node) {
     RMW_SET_ERROR_MSG("Not available session memory node");
     return RMW_RET_ERROR;
@@ -154,11 +154,11 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 
   rmw_context_impl_t * context_impl = (rmw_context_impl_t *)memory_node->data;
 
-  #if defined(MICRO_XRCEDDS_SERIAL) || defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
+  #if defined(RMW_UXRCE_TRANSPORT_SERIAL) || defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
   strcpy(
     context_impl->connection_params.serial_device,
     options->impl->connection_params.serial_device);
-  #elif defined(MICRO_XRCEDDS_UDP)
+  #elif defined(RMW_UXRCE_TRANSPORT_UDP)
   strcpy(
     context_impl->connection_params.agent_address,
     options->impl->connection_params.agent_address);
@@ -178,18 +178,18 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 
   context->impl = context_impl;
 
-  rmw_uxrce_init_nodes_memory(&node_memory, custom_nodes, RMW_UXRCE_MAX_NODES);
-  rmw_uxrce_init_subscriber_memory(
+  rmw_uxrce_init_node_memory(&node_memory, custom_nodes, RMW_UXRCE_MAX_NODES);
+  rmw_uxrce_init_subscription_memory(
     &subscription_memory, custom_subscriptions,
     RMW_UXRCE_MAX_SUBSCRIPTIONS);
   rmw_uxrce_init_publisher_memory(&publisher_memory, custom_publishers, RMW_UXRCE_MAX_PUBLISHERS);
   rmw_uxrce_init_service_memory(&service_memory, custom_services, RMW_UXRCE_MAX_SERVICES);
   rmw_uxrce_init_client_memory(&client_memory, custom_clients, RMW_UXRCE_MAX_CLIENTS);
-  rmw_uxrce_init_topics_memory(&topics_memory, custom_topics, RMW_UXRCE_MAX_TOPICS_INTERNAL);
+  rmw_uxrce_init_topic_memory(&topics_memory, custom_topics, RMW_UXRCE_MAX_TOPICS_INTERNAL);
 
   // Micro-XRCE-DDS Client initialization
 
-#ifdef MICRO_XRCEDDS_SERIAL
+#ifdef RMW_UXRCE_TRANSPORT_SERIAL
   int fd = open(context->impl->connection_params.serial_device, O_RDWR | O_NOCTTY);
   if (0 < fd) {
     struct termios tty_config;
@@ -245,11 +245,11 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   }
   printf("Serial mode => dev: %s\n", context_impl->connection_params.serial_device);
 
-#elif defined(MICRO_XRCEDDS_UDP)
+#elif defined(RMW_UXRCE_TRANSPORT_UDP)
   // TODO(Borja) Think how we are going to select transport to use
-  #ifdef MICRO_XRCEDDS_IPV4
+  #ifdef RMW_UXRCE_TRANSPORT_IPV4
   uxrIpProtocol ip_protocol = UXR_IPv4;
-  #elif defined(MICRO_XRCEDDS_IPV6)
+  #elif defined(RMW_UXRCE_TRANSPORT_IPV6)
   uxrIpProtocol ip_protocol = UXR_IPv6;
   #endif
 
@@ -263,7 +263,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   printf(
     "UDP mode => ip: %s - port: %s\n", context_impl->connection_params.agent_address,
     context_impl->connection_params.agent_port);
-#elif defined(MICRO_XRCEDDS_CUSTOM_SERIAL)
+#elif defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
   int pseudo_fd = 0;
   if (strlen(options->impl->connection_params.serial_device) > 0) {
     pseudo_fd = atoi(options->impl->connection_params.serial_device);
@@ -289,11 +289,11 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 
   context_impl->reliable_input = uxr_create_input_reliable_stream(
     &context_impl->session, context_impl->input_reliable_stream_buffer,
-    context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY, RMW_UXRCE_STREAM_HISTORY);
+    context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY_INPUT, RMW_UXRCE_STREAM_HISTORY_INPUT);
   context_impl->reliable_output =
     uxr_create_output_reliable_stream(
     &context_impl->session, context_impl->output_reliable_stream_buffer,
-    context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY, RMW_UXRCE_STREAM_HISTORY);
+    context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY_OUTPUT, RMW_UXRCE_STREAM_HISTORY_OUTPUT);
 
   context_impl->best_effort_input = uxr_create_input_best_effort_stream(&context_impl->session);
   context_impl->best_effort_output = uxr_create_output_best_effort_stream(
@@ -335,7 +335,7 @@ rmw_context_fini(rmw_context_t * context)
   // TODO(pablogs9): Should we manage not closed XRCE sessions?
   rmw_ret_t ret = RMW_RET_OK;
 
-  struct rmw_uxrce_mempool_item_t * item = node_memory.allocateditems;
+  rmw_uxrce_mempool_item_t * item = node_memory.allocateditems;
 
   while (item != NULL) {
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)item->data;

@@ -12,66 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <string.h>
+
 #include "./memory.h"  // NOLINT
+#include <rmw_microxrcedds_c/config.h>
+#include <rmw/allocators.h>
 
-
-void link_next(
-  struct rmw_uxrce_mempool_item_t * current, struct rmw_uxrce_mempool_item_t * next,
-  void * data)
-{
-  if (current) {
-    current->next = next;
-    if (next) {
-      next->prev = current;
-    }
-    current->data = data;
-  }
-}
-
-void link_prev(
-  struct rmw_uxrce_mempool_item_t * previous,
-  struct rmw_uxrce_mempool_item_t * current, void * data)
-{
-  if (current) {
-    current->prev = previous;
-    if (previous) {
-      previous->next = current;
-    }
-    current->data = data;
-  }
-}
-
-void set_mem_pool(struct rmw_uxrce_mempool_t * mem, struct rmw_uxrce_mempool_item_t * first)
-{
-  mem->freeitems = first;
-  mem->allocateditems = NULL;
-}
-
-void free_mem_pool(struct rmw_uxrce_mempool_t * mem)
-{
-  if (mem->allocateditems) {
-    struct rmw_uxrce_mempool_item_t * old_free_head = mem->freeitems;
-    mem->freeitems = mem->allocateditems;
-    mem->freeitems->prev = NULL;
-    mem->allocateditems = NULL;
-
-    struct rmw_uxrce_mempool_item_t * free_item = mem->freeitems;
-    while (free_item->next) {
-      free_item = free_item->next;
-    }
-    free_item->next = old_free_head;
-    old_free_head->prev = free_item;
-  }
-}
-
-bool has_memory(struct rmw_uxrce_mempool_t * mem)
+bool has_memory(rmw_uxrce_mempool_t * mem)
 {
   return mem->freeitems != NULL ? true : false;
 }
 
-struct rmw_uxrce_mempool_item_t * get_memory(struct rmw_uxrce_mempool_t * mem)
+rmw_uxrce_mempool_item_t * get_memory(rmw_uxrce_mempool_t * mem)
 {
-  struct rmw_uxrce_mempool_item_t * item = NULL;
+  rmw_uxrce_mempool_item_t * item = NULL;
   if (has_memory(mem)) {
     // Gets item from free pool
     item = mem->freeitems;
@@ -87,11 +41,23 @@ struct rmw_uxrce_mempool_item_t * get_memory(struct rmw_uxrce_mempool_t * mem)
     }
     item->prev = NULL;
     mem->allocateditems = item;
+  }else{
+#ifdef RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS
+    item = (rmw_uxrce_mempool_item_t *) rmw_allocate(sizeof(rmw_uxrce_mempool_item_t));
+    item->prev = NULL;
+    item->next = NULL;
+    item->data = (void *) rmw_allocate(mem->element_size);
+    memset(item->data, 0, mem->element_size);
+    item->is_dynamic_memory = false; // Allow to put element in free pool the first time
+    put_memory(mem, item);
+    item->is_dynamic_memory = true;
+    item = get_memory(mem);
+#endif
   }
   return item;
 }
 
-void put_memory(struct rmw_uxrce_mempool_t * mem, struct rmw_uxrce_mempool_item_t * item)
+void put_memory(rmw_uxrce_mempool_t * mem, rmw_uxrce_mempool_item_t * item)
 {
   // Gets item from allocated pool
   if (item->prev) {
@@ -105,9 +71,13 @@ void put_memory(struct rmw_uxrce_mempool_t * mem, struct rmw_uxrce_mempool_item_
     mem->allocateditems = item->next;
   }
 
-  // if (mem->freeitems){
-  //     mem->freeitems->prev = NULL;
-  // }
+#ifdef RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS
+  if (item->is_dynamic_memory) {
+    rmw_free(item->data);
+    rmw_free(item);
+    return;
+  }
+#endif
 
   // Puts item in free pool
   item->next = mem->freeitems;

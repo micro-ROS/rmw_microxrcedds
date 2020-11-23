@@ -67,7 +67,7 @@ rmw_wait(
   // Run every XRCE session
 
   uint8_t available_contexts = 0;
-  struct rmw_uxrce_mempool_item_t * item = NULL;
+  rmw_uxrce_mempool_item_t * item = NULL;
   
   item = session_memory.allocateditems;
   while (item != NULL) {

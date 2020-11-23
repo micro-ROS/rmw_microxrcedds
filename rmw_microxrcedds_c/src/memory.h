@@ -18,30 +18,26 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-struct rmw_uxrce_mempool_item_t
+typedef struct rmw_uxrce_mempool_item_t
 {
+  bool is_dynamic_memory;
   struct rmw_uxrce_mempool_item_t * prev;
   struct rmw_uxrce_mempool_item_t * next;
   void * data;
-};
-struct rmw_uxrce_mempool_t
+} rmw_uxrce_mempool_item_t;
+
+typedef struct rmw_uxrce_mempool_t
 {
   struct rmw_uxrce_mempool_item_t * allocateditems;
   struct rmw_uxrce_mempool_item_t * freeitems;
 
+  bool is_initialized;
   size_t size;
-};
+  size_t element_size;
+} rmw_uxrce_mempool_t;
 
-void link_next(
-  struct rmw_uxrce_mempool_item_t * current, struct rmw_uxrce_mempool_item_t * next,
-  void * data);
-void link_prev(
-  struct rmw_uxrce_mempool_item_t * previous,
-  struct rmw_uxrce_mempool_item_t * current, void * data);
-void set_mem_pool(struct rmw_uxrce_mempool_t * mem, struct rmw_uxrce_mempool_item_t * first);
-bool has_memory(struct rmw_uxrce_mempool_t * mem);
-struct rmw_uxrce_mempool_item_t * get_memory(struct rmw_uxrce_mempool_t * mem);
-void put_memory(struct rmw_uxrce_mempool_t * mem, struct rmw_uxrce_mempool_item_t * item);
-void free_mem_pool(struct rmw_uxrce_mempool_t * mem);
+bool has_memory(rmw_uxrce_mempool_t * mem);
+rmw_uxrce_mempool_item_t * get_memory(rmw_uxrce_mempool_t * mem);
+void put_memory(rmw_uxrce_mempool_t * mem, rmw_uxrce_mempool_item_t * item);
 
 #endif  // MEMORY_H_

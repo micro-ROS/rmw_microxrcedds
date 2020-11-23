@@ -85,13 +85,13 @@ rmw_create_publisher(
     }
 
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
-    struct rmw_uxrce_mempool_item_t * memory_node = get_memory(&publisher_memory);
+    rmw_uxrce_mempool_item_t * memory_node = get_memory(&publisher_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
       goto fail;
     }
 
-    // TODO(Borja) micro_xrcedds_id is duplicated in publisher_id and in publisher_gid.data
+    // TODO(Borja) RMW_UXRCE_TRANSPORT_id is duplicated in publisher_id and in publisher_gid.data
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)memory_node->data;
     custom_publisher->rmw_handle = rmw_publisher;
     custom_publisher->owner_node = custom_node;
@@ -147,7 +147,7 @@ rmw_create_publisher(
       UXR_PUBLISHER_ID);
     uint16_t publisher_req = UXR_INVALID_REQUEST_ID;
 
-  #ifdef MICRO_XRCEDDS_USE_XML
+  #ifdef RMW_UXRCE_TRANSPORT_USE_XML
     char publisher_name[20];
     generate_name(&custom_publisher->publisher_id, publisher_name, sizeof(publisher_name));
     if (!build_publisher_xml(publisher_name, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer))) {
@@ -159,7 +159,7 @@ rmw_create_publisher(
       custom_node->context->reliable_output,
       custom_publisher->publisher_id,
       custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
-  #elif defined(MICRO_XRCEDDS_USE_REFS)
+  #elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
     publisher_req = uxr_buffer_create_publisher_xml(
       &custom_publisher->owner_node->context->session,
       custom_node->context->reliable_output,
@@ -183,7 +183,7 @@ rmw_create_publisher(
       UXR_DATAWRITER_ID);
     uint16_t datawriter_req = UXR_INVALID_REQUEST_ID;
 
-  #ifdef MICRO_XRCEDDS_USE_XML
+  #ifdef RMW_UXRCE_TRANSPORT_USE_XML
     if (!build_datawriter_xml(
         topic_name, custom_publisher->type_support_callbacks,
         qos_policies, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
@@ -197,7 +197,7 @@ rmw_create_publisher(
       custom_node->context->reliable_output,
       custom_publisher->datawriter_id,
       custom_publisher->publisher_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
-  #elif defined(MICRO_XRCEDDS_USE_REFS)
+  #elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
     if (!build_datawriter_profile(topic_name, rmw_uxrce_profile_name, sizeof(rmw_uxrce_profile_name))) {
       RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
       goto fail;

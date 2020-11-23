@@ -42,7 +42,7 @@ void on_topic(
   (void)stream_id;
   (void)args;
 
-  struct rmw_uxrce_mempool_item_t * subscription_item = subscription_memory.allocateditems;
+  rmw_uxrce_mempool_item_t * subscription_item = subscription_memory.allocateditems;
   while (subscription_item != NULL) {
     rmw_uxrce_subscription_t * custom_subscription =
       (rmw_uxrce_subscription_t *)subscription_item->data;
@@ -85,7 +85,7 @@ void on_request(
   (void)object_id;
   (void)args;
 
-  struct rmw_uxrce_mempool_item_t * service_item = service_memory.allocateditems;
+  rmw_uxrce_mempool_item_t * service_item = service_memory.allocateditems;
   while (service_item != NULL) {
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service_item->data;
     if (custom_service->request_id == request_id) {
@@ -128,7 +128,7 @@ void on_reply(
   (void)object_id;
   (void)args;
 
-  struct rmw_uxrce_mempool_item_t * client_item = client_memory.allocateditems;
+  rmw_uxrce_mempool_item_t * client_item = client_memory.allocateditems;
   while (client_item != NULL) {
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client_item->data;
     if (custom_client->request_id == request_id) {
