@@ -51,9 +51,9 @@ set(RMW_UXRCE_TYPE_NAME_MAX_LENGTH "128" CACHE STRING "This value sets the maxim
 set(RMW_UXRCE_XML_BUFFER_LENGTH "600" CACHE STRING "This value sets the maximum number of characters for a XML buffer.")
 set(RMW_UXRCE_REF_BUFFER_LENGTH "100" CACHE STRING "This value sets the maximum number of characters for a reference buffer.")
 
-set(RMW_UXRCE_STREAM_HISTORY "4" CACHE STRING "This value sets the number of MTUs to buffer. Micro XRCE-DDS client configuration provides their size")
-set(RMW_UXRCE_STREAM_HISTORY_INPUT "" CACHE STRING "This value sets the number of MTUs to input buffer. Micro XRCE-DDS client configuration provides their size")
-set(RMW_UXRCE_STREAM_HISTORY_OUTPUT "" CACHE STRING "This value sets the number of MTUs to output buffer. Micro XRCE-DDS client configuration provides their size")
+set(RMW_UXRCE_STREAM_HISTORY "4" CACHE STRING "This value sets the number of MTUs to buffer, both input and output. Micro XRCE-DDS client configuration provides their size")
+set(RMW_UXRCE_STREAM_HISTORY_INPUT "" CACHE STRING "This value sets the number of MTUs to input buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_OUTPUT is blank. Micro XRCE-DDS client configuration provides their size")
+set(RMW_UXRCE_STREAM_HISTORY_OUTPUT "" CACHE STRING "This value sets the number of MTUs to output buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_INPUT is blank. Micro XRCE-DDS client configuration provides their size")
 
 if(RMW_UXRCE_STREAM_HISTORY_INPUT STREQUAL "" OR RMW_UXRCE_STREAM_HISTORY_OUTPUT STREQUAL "")
   unset(RMW_UXRCE_STREAM_HISTORY_INPUT)
