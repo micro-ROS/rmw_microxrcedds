@@ -52,7 +52,7 @@ typedef struct rmw_graph_info_t
   uxrObjectId datareader_id;
   uint16_t subscription_request;
 
-  uint8_t micro_buffer[RMW_UXRCE_MAX_BUFFER_SIZE];
+  uint8_t micro_buffer[RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
   size_t micro_buffer_length;
 
   const rosidl_message_type_support_t * graph_type_support;
