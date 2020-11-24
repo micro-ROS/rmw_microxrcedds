@@ -14,6 +14,11 @@
 
 #include "utils.h"
 #include "rmw_microxrcedds_topic.h"
+#include <rmw_microxrcedds_c/config.h>
+
+#ifdef RMW_UXRCE_GRAPH
+#include <rmw/get_topic_endpoint_info.h>
+#endif  // RMW_UXRCE_GRAPH
 
 #ifdef HAVE_C_TYPESUPPORT
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>
@@ -83,6 +88,7 @@ rmw_create_subscription(
       RMW_SET_ERROR_MSG("failed to allocate memory");
       goto fail;
     }
+    strcpy((char *)rmw_subscription->topic_name, topic_name);
 
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     rmw_uxrce_mempool_item_t * memory_node = get_memory(&subscription_memory);
@@ -249,10 +255,40 @@ rmw_subscription_count_matched_publishers(
   const rmw_subscription_t * subscription,
   size_t * publisher_count)
 {
+#ifdef RMW_UXRCE_GRAPH
+  rmw_ret_t ret = RMW_RET_OK;
+  const char * topic_name = subscription->topic_name;
+  rcutils_allocator_t allocator = rcutils_get_default_allocator();
+
+  rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
+  const rmw_node_t * node = custom_subscription->owner_node->rmw_handle;
+
+  rmw_topic_endpoint_info_array_t publishers_info =
+    rmw_get_zero_initialized_topic_endpoint_info_array();
+
+  if (RMW_RET_OK != rmw_get_publishers_info_by_topic(
+      node,
+      &allocator,
+      topic_name,
+      false,
+      &publishers_info)) {
+    ret = RMW_RET_ERROR;
+    goto sub_count_pub_fail;
+  } else {
+    *publisher_count = publishers_info.size;
+  }
+
+sub_count_pub_fail:
+  if (RMW_RET_OK != rmw_topic_endpoint_info_array_fini(&publishers_info, &allocator)) {
+    ret = RMW_RET_ERROR;
+  }
+  return ret;
+#else
   (void) subscription;
   (void) publisher_count;
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_SET_ERROR_MSG("Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
+#endif  // RMW_UXRCE_GRAPH
 }
 
 rmw_ret_t
