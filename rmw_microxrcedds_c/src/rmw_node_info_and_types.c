@@ -23,7 +23,7 @@
 #include "./identifiers.h"
 #include "./rmw_graph.h"
 
-rmw_ret_t
+static rmw_ret_t
 __rmw_get_entity_names_and_types_by_node(
   const uint8_t kind,
   const rmw_node_t * node,

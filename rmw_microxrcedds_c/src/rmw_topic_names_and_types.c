@@ -48,11 +48,12 @@ rmw_get_topic_names_and_types(
   rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)(node->data);
   rmw_graph_info_t * graph_info = &custom_node->context->graph_info;
 
+  rmw_ret_t ret = RMW_RET_OK;
+
   if (!graph_info->initialized) {
-    return RMW_RET_OK;
+    return ret;
   }
 
-  rmw_ret_t ret = RMW_RET_OK;
   micro_ros_msgs__msg__Graph * graph_data = micro_ros_msgs__msg__Graph__create();
 
   if (RMW_RET_OK != rmw_graph_fill_data_from_buffer(graph_info, graph_data)) {
@@ -64,7 +65,6 @@ rmw_get_topic_names_and_types(
   for (size_t i = 0; i < graph_data->nodes.size; ++i) {
     micro_ros_msgs__msg__Node * node = &graph_data->nodes.data[i];
     size_t entities_size = node->entities.size;
-
 
     for (size_t j = 0; j < entities_size; ++j) {
       micro_ros_msgs__msg__Entity * entity = &node->entities.data[j];

@@ -102,15 +102,6 @@ rmw_get_node_names_with_enclaves(
   rcutils_string_array_t * node_namespaces,
   rcutils_string_array_t * enclaves)
 {
-#ifdef RMW_UXRCE_GRAPH
   (void) enclaves; // TODO(jamoralp): what is this used for?
   return rmw_get_node_names(node, node_names, node_namespaces);
-#else
-  (void) node;
-  (void) node_names;
-  (void) node_namespaces;
-  (void) enclaves;
-  RMW_SET_ERROR_MSG("Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
-  return RMW_RET_UNSUPPORTED;
-#endif  // RMW_UXRCE_GRAPH
 }
