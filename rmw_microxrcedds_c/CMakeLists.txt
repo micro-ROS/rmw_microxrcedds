@@ -33,7 +33,7 @@ find_package(microcdr REQUIRED)
 find_package(rmw REQUIRED)
 
 # RMW profile options
-option(RMW_UXRCE_GRAPH "Allows to perform graph-related operations to the user" ON)
+option(RMW_UXRCE_GRAPH "Allows to perform graph-related operations to the user" OFF)
 if(RMW_UXRCE_GRAPH)
   find_package(micro_ros_msgs REQUIRED)
 endif()
@@ -150,7 +150,7 @@ set(SRCS
 add_library(${PROJECT_NAME}
   ${SRCS})
 
-if(RMW_UXRCE_GRAPH) #TODO (jamoralp): improve this section
+if(RMW_UXRCE_GRAPH)
   add_library(micro_ros_msgs_lib SHARED IMPORTED)
 
   set_property(

@@ -25,8 +25,12 @@
 
 #include "./types.h"
 #include "./identifiers.h"
-#include "./rmw_graph.h"
 
+#ifdef RMW_UXRCE_GRAPH
+#include "./rmw_graph.h"
+#endif  // RMW_UXRCE_GRAPH
+
+#ifdef RMW_UXRCE_GRAPH
 static rmw_endpoint_type_t
 __endpoint_kind_to_endpoint_type(
   const uint8_t kind)
@@ -60,7 +64,6 @@ __rmw_get_endpoint_info_by_topic(
   bool no_mangle,
   rmw_topic_endpoint_info_array_t * endpoints_info)
 {
-#ifdef RMW_UXRCE_GRAPH
   (void)no_mangle; // TODO (jamoralp): what is this used for?
   // Perform RMW checks
   RMW_CHECK_ARGUMENT_FOR_NULL(node, RMW_RET_INVALID_ARGUMENT);
@@ -167,16 +170,8 @@ __rmw_get_endpoint_info_by_topic(
 fini:
   micro_ros_msgs__msg__Graph__destroy(graph_data);
   return ret;
-#else
-  (void) node;
-  (void) allocator;
-  (void) topic_name;
-  (void) no_mangle;
-  (void) endpoints_info;
-  RMW_SET_ERROR_MSG("Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
-  return RMW_RET_UNSUPPORTED;
-#endif  // RMW_UXRCE_GRAPH
 }
+#endif  // RMW_UXRCE_GRAPH
 
 rmw_ret_t
 rmw_get_publishers_info_by_topic(
@@ -186,6 +181,7 @@ rmw_get_publishers_info_by_topic(
   bool no_mangle,
   rmw_topic_endpoint_info_array_t * publishers_info)
 {
+#ifdef RMW_UXRCE_GRAPH
   return __rmw_get_endpoint_info_by_topic(
     micro_ros_msgs__msg__Entity__PUBLISHER,
     node,
@@ -193,6 +189,15 @@ rmw_get_publishers_info_by_topic(
     topic_name,
     no_mangle,
     publishers_info);
+#else
+  (void) node;
+  (void) allocator;
+  (void) topic_name;
+  (void) no_mangle;
+  (void) publishers_info;
+  RMW_SET_ERROR_MSG("Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
+  return RMW_RET_UNSUPPORTED;
+#endif  // RMW_UXRCE_GRAPH
 }
 
 rmw_ret_t
@@ -203,6 +208,7 @@ rmw_get_subscriptions_info_by_topic(
   bool no_mangle,
   rmw_topic_endpoint_info_array_t * subscriptions_info)
 {
+#ifdef RMW_UXRCE_GRAPH
   return __rmw_get_endpoint_info_by_topic(
     micro_ros_msgs__msg__Entity__SUBSCRIBER,
     node,
@@ -210,4 +216,13 @@ rmw_get_subscriptions_info_by_topic(
     topic_name,
     no_mangle,
     subscriptions_info);
+#else
+  (void) node;
+  (void) allocator;
+  (void) topic_name;
+  (void) no_mangle;
+  (void) subscriptions_info;
+  RMW_SET_ERROR_MSG("Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
+  return RMW_RET_UNSUPPORTED;
+#endif  // RMW_UXRCE_GRAPH
 }

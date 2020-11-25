@@ -21,8 +21,12 @@
 
 #include "./types.h"
 #include "./identifiers.h"
-#include "./rmw_graph.h"
 
+#ifdef RMW_UXRCE_GRAPH
+#include "./rmw_graph.h"
+#endif  // RMW_UXRCE_GRAPH
+
+#ifdef RMW_UXRCE_GRAPH
 static rmw_ret_t
 __rmw_count_entities(
   uint8_t kind,
@@ -30,7 +34,6 @@ __rmw_count_entities(
   const char * topic_name,
   size_t * count)
 {
-#ifdef RMW_UXRCE_GRAPH
   // Perform RMW checks
   RMW_CHECK_ARGUMENT_FOR_NULL(node, RMW_RET_INVALID_ARGUMENT);
   RMW_CHECK_TYPE_IDENTIFIERS_MATCH(node, node->implementation_identifier,
@@ -74,6 +77,21 @@ __rmw_count_entities(
 fini:
   micro_ros_msgs__msg__Graph__destroy(graph_data);
   return ret;
+}
+#endif  // RMW_UXRCE_GRAPH
+
+rmw_ret_t
+rmw_count_publishers(
+  const rmw_node_t * node,
+  const char * topic_name,
+  size_t * count)
+{
+#ifdef RMW_UXRCE_GRAPH
+  return __rmw_count_entities(
+    micro_ros_msgs__msg__Entity__PUBLISHER,
+    node,
+    topic_name,
+    count);
 #else
   (void) node;
   (void) topic_name;
@@ -84,27 +102,22 @@ fini:
 }
 
 rmw_ret_t
-rmw_count_publishers(
-  const rmw_node_t * node,
-  const char * topic_name,
-  size_t * count)
-{
-  return __rmw_count_entities(
-    micro_ros_msgs__msg__Entity__PUBLISHER,
-    node,
-    topic_name,
-    count);
-}
-
-rmw_ret_t
 rmw_count_subscribers(
   const rmw_node_t * node,
   const char * topic_name,
   size_t * count)
 {
+#ifdef RMW_UXRCE_GRAPH
   return __rmw_count_entities(
     micro_ros_msgs__msg__Entity__SUBSCRIBER,
     node,
     topic_name,
     count);
+#else
+  (void) node;
+  (void) topic_name;
+  (void) count;
+  RMW_SET_ERROR_MSG("Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
+  return RMW_RET_UNSUPPORTED;
+#endif  // RMW_UXRCE_GRAPH
 }

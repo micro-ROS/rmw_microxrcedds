@@ -21,8 +21,12 @@
 
 #include "./types.h"
 #include "./identifiers.h"
-#include "./rmw_graph.h"
 
+#ifdef RMW_UXRCE_GRAPH
+#include "./rmw_graph.h"
+#endif  // RMW_UXRCE_GRAPH
+
+#ifdef RMW_UXRCE_GRAPH
 static rmw_ret_t
 __rmw_get_entity_names_and_types_by_node(
   const uint8_t kind,
@@ -33,7 +37,6 @@ __rmw_get_entity_names_and_types_by_node(
   bool demangle,
   rmw_names_and_types_t * topic_names_and_types)
 {
-#ifdef RMW_UXRCE_GRAPH
   (void)demangle; // TODO(jamoralp): what to use this for?
 
   RMW_CHECK_ARGUMENT_FOR_NULL(node, RMW_RET_INVALID_ARGUMENT);
@@ -134,6 +137,27 @@ __rmw_get_entity_names_and_types_by_node(
 fini:
   micro_ros_msgs__msg__Graph__destroy(graph_data);
   return ret;
+}
+#endif  // RMW_UXRCE_GRAPH
+
+rmw_ret_t
+rmw_get_publisher_names_and_types_by_node(
+  const rmw_node_t * node,
+  rcutils_allocator_t * allocator,
+  const char * node_name,
+  const char * node_namespace,
+  bool demangle,
+  rmw_names_and_types_t * topic_names_and_types)
+{
+#ifdef RMW_UXRCE_GRAPH
+  return __rmw_get_entity_names_and_types_by_node(
+    micro_ros_msgs__msg__Entity__PUBLISHER,
+    node,
+    allocator,
+    node_name,
+    node_namespace,
+    demangle,
+    topic_names_and_types);
 #else
   (void) node;
   (void) allocator;
@@ -147,25 +171,6 @@ fini:
 }
 
 rmw_ret_t
-rmw_get_publisher_names_and_types_by_node(
-  const rmw_node_t * node,
-  rcutils_allocator_t * allocator,
-  const char * node_name,
-  const char * node_namespace,
-  bool demangle,
-  rmw_names_and_types_t * topic_names_and_types)
-{
-  return __rmw_get_entity_names_and_types_by_node(
-    micro_ros_msgs__msg__Entity__PUBLISHER,
-    node,
-    allocator,
-    node_name,
-    node_namespace,
-    demangle,
-    topic_names_and_types);
-}
-
-rmw_ret_t
 rmw_get_subscriber_names_and_types_by_node(
   const rmw_node_t * node,
   rcutils_allocator_t * allocator,
@@ -174,6 +179,7 @@ rmw_get_subscriber_names_and_types_by_node(
   bool demangle,
   rmw_names_and_types_t * topic_names_and_types)
 {
+#ifdef RMW_UXRCE_GRAPH
   return __rmw_get_entity_names_and_types_by_node(
     micro_ros_msgs__msg__Entity__SUBSCRIBER,
     node,
@@ -182,6 +188,16 @@ rmw_get_subscriber_names_and_types_by_node(
     node_namespace,
     demangle,
     topic_names_and_types);
+#else
+  (void) node;
+  (void) allocator;
+  (void) node_name;
+  (void) node_namespace;
+  (void) demangle;
+  (void) topic_names_and_types;
+  RMW_SET_ERROR_MSG("Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
+  return RMW_RET_UNSUPPORTED;
+#endif  // RMW_UXRCE_GRAPH
 }
 
 rmw_ret_t
@@ -192,6 +208,7 @@ rmw_get_service_names_and_types_by_node(
   const char * node_namespace,
   rmw_names_and_types_t * service_names_and_types)
 {
+#ifdef RMW_UXRCE_GRAPH
   return __rmw_get_entity_names_and_types_by_node(
     micro_ros_msgs__msg__Entity__SERVICE_SERVER,
     node,
@@ -200,6 +217,15 @@ rmw_get_service_names_and_types_by_node(
     node_namespace,
     false,
     service_names_and_types);
+#else
+  (void) node;
+  (void) allocator;
+  (void) node_name;
+  (void) node_namespace;
+  (void) service_names_and_types;
+  RMW_SET_ERROR_MSG("Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
+  return RMW_RET_UNSUPPORTED;
+#endif  // RMW_UXRCE_GRAPH
 }
 
 rmw_ret_t
@@ -210,6 +236,7 @@ rmw_get_client_names_and_types_by_node(
   const char * node_namespace,
   rmw_names_and_types_t * service_names_and_types)
 {
+#ifdef RMW_UXRCE_GRAPH
   return __rmw_get_entity_names_and_types_by_node(
     micro_ros_msgs__msg__Entity__SERVICE_CLIENT,
     node,
@@ -218,4 +245,13 @@ rmw_get_client_names_and_types_by_node(
     node_namespace,
     false,
     service_names_and_types);
+#else
+  (void) node;
+  (void) allocator;
+  (void) node_name;
+  (void) node_namespace;
+  (void) service_names_and_types;
+  RMW_SET_ERROR_MSG("Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
+  return RMW_RET_UNSUPPORTED;
+#endif  // RMW_UXRCE_GRAPH
 }

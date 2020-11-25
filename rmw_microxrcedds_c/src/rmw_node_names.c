@@ -23,7 +23,10 @@
 
 #include "./types.h"
 #include "./identifiers.h"
+
+#ifdef RMW_UXRCE_GRAPH
 #include "./rmw_graph.h"
+#endif  // RMW_UXRCE_GRAPH
 
 rmw_ret_t
 rmw_get_node_names(
