@@ -31,7 +31,7 @@ rmw_send_request(
   }
 
   rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
-  rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)custom_client->owner_node;
+  rmw_uxrce_node_t * custom_node = custom_client->owner_node;
 
   const rosidl_message_type_support_t * req_members =
     custom_client->type_support_callbacks->request_members_();
@@ -56,7 +56,12 @@ rmw_send_request(
     return RMW_RET_ERROR;
   }
 
-  uxr_run_session_time(&custom_node->context->session, 100);
+  if (UXR_BEST_EFFORT_STREAM == custom_client->stream_id.type) {
+    uxr_flash_output_streams(&custom_node->context->session);
+  } else {
+    uxr_run_session_until_confirm_delivery(
+      &custom_node->context->session, RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT);
+  }
 
   return RMW_RET_OK;
 }

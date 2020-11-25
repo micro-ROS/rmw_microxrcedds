@@ -58,7 +58,7 @@ rmw_publish(
         uxr_flash_output_streams(&custom_publisher->owner_node->context->session);
       } else {
         written &= uxr_run_session_until_confirm_delivery(
-          &custom_publisher->owner_node->context->session, 1000);
+          &custom_publisher->owner_node->context->session, RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT);
       }
     }
     if (!written) {

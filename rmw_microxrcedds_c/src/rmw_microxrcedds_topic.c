@@ -81,13 +81,9 @@ create_topic(
 #endif
 
   // Send the request and wait for response
-  uint8_t status;
-  custom_topic->sync_with_agent =
-    uxr_run_session_until_all_status(
-    &custom_node->context->session, 1000, &topic_req,
-    &status, 1);
+  custom_topic->sync_with_agent = run_xrce_session(custom_node->context, topic_req);
+
   if (!custom_topic->sync_with_agent) {
-    RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
     rmw_uxrce_fini_topic_memory(custom_topic);
     custom_topic = NULL;
     goto fail;
@@ -106,11 +102,9 @@ rmw_ret_t destroy_topic(rmw_uxrce_topic_t * topic)
     topic->owner_node->context->reliable_output,
     topic->topic_id);
 
-  uint16_t requests[] = {delete_topic};
-  uint8_t status[1];
-  if (!uxr_run_session_until_all_status(
-      &topic->owner_node->context->session, 1000, requests,
-      status, 1))
+  rmw_uxrce_node_t * custom_node = topic->owner_node;
+
+  if (!run_xrce_session(custom_node->context, delete_topic))
   {
     RMW_SET_ERROR_MSG("unable to remove topic from the server");
     result_ret = RMW_RET_ERROR;

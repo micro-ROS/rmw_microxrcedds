@@ -172,13 +172,8 @@ rmw_create_subscription(
       custom_node->participant_id, "", UXR_REPLACE);
 #endif
 
-    uint16_t requests[] = {subscriber_req};
-    uint8_t status[sizeof(requests) / 2];
-    if (!uxr_run_session_until_all_status(
-        &custom_node->context->session, 1000, requests,
-        status, sizeof(status)))
+    if (!run_xrce_session(custom_node->context, subscriber_req))
     {
-      RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
       put_memory(&subscription_memory, &custom_subscription->mem);
       goto fail;
     }
@@ -214,17 +209,14 @@ rmw_create_subscription(
       custom_subscription->subscriber_id, rmw_uxrce_profile_name, UXR_REPLACE);
 #endif
 
-    rmw_subscription->data = custom_subscription;
-
-    requests[0] = datareader_req;
-    if (!uxr_run_session_until_all_status(
-        &custom_node->context->session, 1000, requests,
-        status, sizeof(status)))
+    if (!run_xrce_session(custom_node->context, datareader_req))
     {
       RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
       put_memory(&subscription_memory, &custom_subscription->mem);
       goto fail;
     }
+
+    rmw_subscription->data = custom_subscription;
 
     uxrDeliveryControl delivery_control;
     delivery_control.max_samples = UXR_MAX_SAMPLES_UNLIMITED;
@@ -329,6 +321,7 @@ rmw_destroy_subscription(rmw_node_t * node, rmw_subscription_t * subscription)
     result_ret = RMW_RET_ERROR;
   } else {
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
+    rmw_uxrce_node_t * custom_node = custom_subscription->owner_node;
 
     destroy_topic(custom_subscription->topic);
 
@@ -343,18 +336,14 @@ rmw_destroy_subscription(rmw_node_t * node, rmw_subscription_t * subscription)
       custom_subscription->owner_node->context->reliable_output,
       custom_subscription->subscriber_id);
 
-    uint16_t requests[] = {delete_datareader, delete_subscriber};
-    uint8_t status[sizeof(requests) / 2];
-    if (!uxr_run_session_until_all_status(
-        &custom_subscription->owner_node->context->session, 1000, requests, status,
-        sizeof(status)))
+    bool ret = run_xrce_session(custom_node->context, delete_datareader);
+    ret &= run_xrce_session(custom_node->context, delete_subscriber);
+    if (!ret)
     {
       RMW_SET_ERROR_MSG("unable to remove publisher from the server");
       result_ret = RMW_RET_ERROR;
-    } else {
-      rmw_uxrce_fini_subscription_memory(subscription);
-      result_ret = RMW_RET_OK;
     }
+    rmw_uxrce_fini_subscription_memory(subscription);
   }
 
   return result_ret;

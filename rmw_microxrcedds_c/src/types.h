@@ -70,7 +70,7 @@ struct rmw_uxrce_connection_t
   uint32_t client_key;
 };
 
-struct rmw_context_impl_t
+typedef struct rmw_context_impl_t
 {
   rmw_uxrce_mempool_item_t mem;
   struct rmw_uxrce_connection_t connection_params;
@@ -94,6 +94,8 @@ struct rmw_context_impl_t
   uxrStreamId best_effort_output;
   uxrStreamId best_effort_input;
 
+  uxrStreamId * creation_destroy_stream;
+
   uint8_t input_reliable_stream_buffer[RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
   uint8_t output_reliable_stream_buffer[RMW_UXRCE_MAX_OUTPUT_BUFFER_SIZE];
   uint8_t output_best_effort_stream_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
@@ -106,7 +108,7 @@ struct rmw_context_impl_t
   uint16_t id_datareader;
   uint16_t id_requester;
   uint16_t id_replier;
-};
+} rmw_context_impl_t;
 
 typedef struct rmw_context_impl_t rmw_uxrce_session_t;
 
@@ -223,7 +225,7 @@ typedef struct rmw_uxrce_node_t
 {
   rmw_uxrce_mempool_item_t mem;
   rmw_node_t * rmw_handle;
-  struct  rmw_context_impl_t * context;
+  rmw_context_impl_t * context;
 
   uxrObjectId participant_id;
 } rmw_uxrce_node_t;
