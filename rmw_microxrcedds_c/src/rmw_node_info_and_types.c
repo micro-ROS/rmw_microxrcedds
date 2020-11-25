@@ -192,13 +192,14 @@ rmw_get_service_names_and_types_by_node(
   const char * node_namespace,
   rmw_names_and_types_t * service_names_and_types)
 {
-  (void) node;
-  (void) allocator;
-  (void) node_name;
-  (void) node_namespace;
-  (void) service_names_and_types;
-  RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_UNSUPPORTED;
+  return __rmw_get_entity_names_and_types_by_node(
+    micro_ros_msgs__msg__Entity__SERVICE_SERVER,
+    node,
+    allocator,
+    node_name,
+    node_namespace,
+    false,
+    service_names_and_types);
 }
 
 rmw_ret_t
@@ -209,11 +210,12 @@ rmw_get_client_names_and_types_by_node(
   const char * node_namespace,
   rmw_names_and_types_t * service_names_and_types)
 {
-  (void) node;
-  (void) allocator;
-  (void) node_name;
-  (void) node_namespace;
-  (void) service_names_and_types;
-  RMW_SET_ERROR_MSG("function not implemented");
-  return RMW_RET_UNSUPPORTED;
+  return __rmw_get_entity_names_and_types_by_node(
+    micro_ros_msgs__msg__Entity__SERVICE_CLIENT,
+    node,
+    allocator,
+    node_name,
+    node_namespace,
+    false,
+    service_names_and_types);
 }
