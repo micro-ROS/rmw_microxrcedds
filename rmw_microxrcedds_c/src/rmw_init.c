@@ -181,6 +181,9 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   context_impl->id_requester = 0;
   context_impl->id_replier = 0;
 
+  context_impl->graph_guard_condition.implementation_identifier = eprosima_microxrcedds_identifier;
+  context_impl->graph_guard_condition.data = NULL;
+
   context->impl = context_impl;
 
   rmw_uxrce_init_node_memory(&node_memory, custom_nodes, RMW_UXRCE_MAX_NODES);

@@ -87,6 +87,7 @@ struct rmw_context_impl_t
 #ifdef RMW_UXRCE_GRAPH
   rmw_graph_info_t graph_info;
 #endif
+  rmw_guard_condition_t graph_guard_condition;
 
   uxrStreamId reliable_input;
   uxrStreamId reliable_output;

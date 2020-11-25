@@ -159,21 +159,16 @@ if(RMW_UXRCE_GRAPH)
     PROPERTY
       IMPORTED_LOCATION ${micro_ros_msgs_LIBRARIES__rosidl_typesupport_microxrcedds_c})
 
-  target_link_libraries(${PROJECT_NAME}
-    microcdr
-    microxrcedds_client
-    micro_ros_msgs_lib
-    )
-
   ament_target_dependencies(${PROJECT_NAME}
     "micro_ros_msgs"
   )
-else()
-  target_link_libraries(${PROJECT_NAME}
-    microcdr
-    microxrcedds_client
-    )
 endif()
+
+target_link_libraries(${PROJECT_NAME}
+  microcdr
+  microxrcedds_client
+  $<$<BOOL:${RMW_UXRCE_GRAPH}>:micro_ros_msgs_lib>
+)
 
 # Type support lock-up mechanism
 find_package(rosidl_typesupport_microxrcedds_c)
