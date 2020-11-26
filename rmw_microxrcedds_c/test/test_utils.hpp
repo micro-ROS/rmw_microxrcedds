@@ -16,7 +16,10 @@
 #define TEST_UTILS_HPP_
 
 #include "rosidl_runtime_c/message_type_support_struct.h"
+#include "rosidl_runtime_c/service_type_support_struct.h"
+
 #include "rosidl_typesupport_microxrcedds_c/message_type_support.h"
+#include "rosidl_typesupport_microxrcedds_c/service_type_support.h"
 
 #include <rmw/rmw.h>
 #include <rmw/validate_namespace.h>
@@ -35,12 +38,30 @@ typedef struct
   std::string message_namespace;
 } dummy_type_support_t;
 
+typedef struct
+{
+  rosidl_service_type_support_t type_support;
+  service_type_support_callbacks_t callbacks;
+  dummy_type_support_t request_memebers;
+  dummy_type_support_t response_members;
+  std::string service_name;
+  std::string type_name;
+  std::string message_namespace;
+} dummy_service_type_support_t;
+
 void ConfigureDummyTypeSupport(
   const char * type_name,
   const char * topic_name,
   const char * message_namespace,
   size_t id,
   dummy_type_support_t * dummy_type_support);
+
+void ConfigureDummyServiceTypeSupport(
+  const char * type_name,
+  const char * service_name,
+  const char * message_namespace,
+  size_t id,
+  dummy_service_type_support_t * dummy_type_support);
 
 
 void ConfigureDefaultQOSPolices(rmw_qos_profile_t * dummy_qos_policies);
