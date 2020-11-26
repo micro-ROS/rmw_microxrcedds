@@ -27,7 +27,7 @@
 #include "rmw_base_test.hpp"
 #include "test_utils.hpp"
 
-class TestService : public RMWBaseTest
+class TestClient : public RMWBaseTest
 {
 protected:
   void SetUp() override
@@ -53,9 +53,9 @@ protected:
 };
 
 /*
-   Testing service construction and destruction.
+   Testing client construction and destruction.
  */
-TEST_F(TestService, construction_and_destruction) {
+TEST_F(TestClient, construction_and_destruction) {
   dummy_service_type_support_t dummy_type_support;
   ConfigureDummyServiceTypeSupport(
     service_type,
@@ -67,34 +67,34 @@ TEST_F(TestService, construction_and_destruction) {
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
-  rmw_service_t * serv = rmw_create_service(
+  rmw_client_t * client = rmw_create_client(
     this->node,
     &dummy_type_support.type_support,
     service_name,
     &dummy_qos_policies);
 
-  ASSERT_NE((void *)serv, (void *)NULL);
+  ASSERT_NE((void *)client, (void *)NULL);
 
-  rmw_ret_t ret = rmw_destroy_service(node, serv);
+  rmw_ret_t ret = rmw_destroy_client(node, client);
   ASSERT_EQ(ret, RMW_RET_OK);
 }
 
 
 /*
-   Testing node memory poll for services
+   Testing node memory poll for clients
  */
-TEST_F(TestService, memory_poll_multiple_services) {
+TEST_F(TestClient, memory_poll_multiple_clients) {
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
   std::vector<dummy_service_type_support_t> dummy_type_supports;
-  std::vector<rmw_service_t *> services;
+  std::vector<rmw_client_t *> clients;
   rmw_ret_t ret;
-  rmw_service_t * service;
+  rmw_client_t * client;
 
   // Get all available nodes
   {
-    for (size_t i = 0; i < RMW_UXRCE_MAX_SERVICES; i++) {
+    for (size_t i = 0; i < RMW_UXRCE_MAX_CLIENTS; i++) {
       dummy_type_supports.push_back(dummy_service_type_support_t());
       ConfigureDummyServiceTypeSupport(
         service_type,
@@ -103,14 +103,14 @@ TEST_F(TestService, memory_poll_multiple_services) {
         id_gen++,
         &dummy_type_supports.back());
 
-      service = rmw_create_service(
+      client = rmw_create_client(
         this->node,
         &dummy_type_supports.back().type_support,
         service_name,
         &dummy_qos_policies);
 
-      ASSERT_NE((void *)service, (void *)NULL);
-      services.push_back(service);
+      ASSERT_NE((void *)client, (void *)NULL);
+      clients.push_back(client);
     }
   }
 
@@ -125,19 +125,19 @@ TEST_F(TestService, memory_poll_multiple_services) {
       id_gen++,
       &dummy_type_supports.back());
 
-    service = rmw_create_service(
+    client = rmw_create_client(
       this->node,
       &dummy_type_supports.back().type_support,
       service_name,
       &dummy_qos_policies);
 
-    ASSERT_EQ((void *)service, (void *)NULL);
+    ASSERT_EQ((void *)client, (void *)NULL);
     ASSERT_EQ(CheckErrorState(), true);
 
     // Relese one
-    service = services.back();
-    services.pop_back();
-    ret = rmw_destroy_service(this->node, service);
+    client = clients.back();
+    clients.pop_back();
+    ret = rmw_destroy_client(this->node, client);
     ASSERT_EQ(ret, RMW_RET_OK);
   }
 
@@ -151,24 +151,24 @@ TEST_F(TestService, memory_poll_multiple_services) {
       id_gen++,
       &dummy_type_supports.back());
 
-    service = rmw_create_service(
+    client = rmw_create_client(
       this->node,
       &dummy_type_supports.back().type_support,
       service_name,
       &dummy_qos_policies);
-    ASSERT_NE((void *)service, (void *)NULL);
-    services.push_back(service);
+    ASSERT_NE((void *)client, (void *)NULL);
+    clients.push_back(client);
   }
 
 
   // Release all
   {
-    for (size_t i = 0; i < services.size(); i++) {
-      service = services.at(i);
-      ret = rmw_destroy_service(this->node, service);
+    for (size_t i = 0; i < clients.size(); i++) {
+      client = clients.at(i);
+      ret = rmw_destroy_client(this->node, client);
       ASSERT_EQ(ret, RMW_RET_OK);
     }
-    services.clear();
+    clients.clear();
   }
 }
 
