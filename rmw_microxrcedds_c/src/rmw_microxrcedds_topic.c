@@ -106,7 +106,6 @@ rmw_ret_t destroy_topic(rmw_uxrce_topic_t * topic)
 
   if (!run_xrce_session(custom_node->context, delete_topic))
   {
-    RMW_SET_ERROR_MSG("unable to remove topic from the server");
     result_ret = RMW_RET_ERROR;
   } else {
     rmw_uxrce_fini_topic_memory(topic);
