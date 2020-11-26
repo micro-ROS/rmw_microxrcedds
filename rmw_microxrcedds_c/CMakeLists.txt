@@ -32,6 +32,12 @@ find_package(microcdr REQUIRED)
 
 find_package(rmw REQUIRED)
 
+# RMW profile options
+option(RMW_UXRCE_GRAPH "Allows to perform graph-related operations to the user" OFF)
+if(RMW_UXRCE_GRAPH)
+  find_package(micro_ros_msgs REQUIRED)
+endif()
+
 # --- RMW CONFIGURATION ---
 set(RMW_UXRCE_TRANSPORT "udp" CACHE STRING "Sets Micro XRCE-DDS transport to use. (udp | serial | custom)")
 set(RMW_UXRCE_IPV "ipv4" CACHE STRING "Sets Micro XRCE-DDS IP version to use. (ipv4 | ipv6)")
@@ -138,15 +144,31 @@ set(SRCS
   src/types.c
   src/utils.c
   src/callbacks.c
+  $<$<BOOL:${RMW_UXRCE_GRAPH}>:src/rmw_graph.c>
   )
 
 add_library(${PROJECT_NAME}
   ${SRCS})
 
+if(RMW_UXRCE_GRAPH)
+  add_library(micro_ros_msgs_lib SHARED IMPORTED)
+
+  set_property(
+    TARGET
+      micro_ros_msgs_lib
+    PROPERTY
+      IMPORTED_LOCATION ${micro_ros_msgs_LIBRARIES__rosidl_typesupport_microxrcedds_c})
+
+  ament_target_dependencies(${PROJECT_NAME}
+    "micro_ros_msgs"
+  )
+endif()
+
 target_link_libraries(${PROJECT_NAME}
   microcdr
   microxrcedds_client
-  )
+  $<$<BOOL:${RMW_UXRCE_GRAPH}>:micro_ros_msgs_lib>
+)
 
 # Type support lock-up mechanism
 find_package(rosidl_typesupport_microxrcedds_c)

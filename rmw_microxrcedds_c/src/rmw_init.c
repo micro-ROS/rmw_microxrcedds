@@ -15,6 +15,7 @@
 #include <time.h>
 
 #include "./types.h"
+#include "./utils.h"
 #include "./rmw_microxrcedds_c/rmw_c_macros.h"
 #include "./rmw_node.h"
 #include "./identifiers.h"
@@ -26,6 +27,10 @@
 #include <uxr/client/util/time.h>
 
 #include "./callbacks.h"
+
+#ifdef RMW_UXRCE_GRAPH
+#include "./rmw_graph.h"
+#endif  // RMW_UXRCE_GRAPH
 
 #ifdef RMW_UXRCE_TRANSPORT_SERIAL
 #include <stdio.h>
@@ -176,6 +181,9 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   context_impl->id_requester = 0;
   context_impl->id_replier = 0;
 
+  context_impl->graph_guard_condition.implementation_identifier = eprosima_microxrcedds_identifier;
+  context_impl->graph_guard_condition.data = NULL;
+
   context->impl = context_impl;
 
   rmw_uxrce_init_node_memory(&node_memory, custom_nodes, RMW_UXRCE_MAX_NODES);
@@ -282,7 +290,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
     &context_impl->session, &context_impl->transport.comm,
     context_impl->connection_params.client_key);
 
-  uxr_set_topic_callback(&context_impl->session, on_topic, NULL);
+  uxr_set_topic_callback(&context_impl->session, on_topic, (void *)(context_impl));
   uxr_set_status_callback(&context_impl->session, on_status, NULL);
   uxr_set_request_callback(&context_impl->session, on_request, NULL);
   uxr_set_reply_callback(&context_impl->session, on_reply, NULL);
@@ -307,6 +315,14 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
     return RMW_RET_ERROR;
   }
 
+#ifdef RMW_UXRCE_GRAPH
+  // Create graph manager information
+  if (RMW_RET_OK != rmw_graph_init(context_impl, &context_impl->graph_info)) {
+    uxr_delete_session(&context_impl->session);
+    return RMW_RET_ERROR;
+  }
+#endif  // RMW_UXRCE_GRAPH
+
   return RMW_RET_OK;
 }
 
@@ -319,7 +335,7 @@ rmw_shutdown(rmw_context_t * context)
     context->implementation_identifier,
     eprosima_microxrcedds_identifier,
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
-  
+
   rmw_ret_t ret = rmw_context_fini(context);
 
   if (RMW_RET_OK == ret) {

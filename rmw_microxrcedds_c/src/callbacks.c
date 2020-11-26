@@ -40,7 +40,24 @@ void on_topic(
   (void)session;
   (void)request_id;
   (void)stream_id;
+
+#ifdef RMW_UXRCE_GRAPH
+  rmw_context_impl_t * context_impl = (rmw_context_impl_t *)(args);
+  rmw_graph_info_t * graph_info = &context_impl->graph_info;
+
+  if (object_id.id == graph_info->datareader_id.id &&
+      object_id.type == graph_info->datareader_id.type)
+  {
+    graph_info->micro_buffer_length = (size_t)length;
+    ucdr_deserialize_array_uint8_t(ub, graph_info->micro_buffer, length);
+    graph_info->initialized = true;
+    graph_info->has_changed = true;
+    return;
+  }
+
+#else
   (void)args;
+#endif  // RMW_UXRCE_GRAPH
 
   rmw_uxrce_mempool_item_t * subscription_item = subscription_memory.allocateditems;
   while (subscription_item != NULL) {

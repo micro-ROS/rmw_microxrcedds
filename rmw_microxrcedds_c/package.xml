@@ -19,6 +19,9 @@
   <depend>rmw</depend>
   <depend>rosidl_typesupport_microxrcedds_c</depend>
   <depend>rosidl_typesupport_microxrcedds_cpp</depend>
+  <!--TODO(jamoralp): we might want to compile micro_ros_msgs as a conditioned external project
+    to the existence of RMW_UXRCE_GRAPH flag. If so, remove this dependency.-->
+  <depend>micro_ros_msgs</depend>
 
   <test_depend>ament_cmake_gtest</test_depend>
   <test_depend>ament_lint_auto</test_depend>

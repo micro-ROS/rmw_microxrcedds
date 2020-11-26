@@ -39,6 +39,25 @@
 #define MAX_SERIAL_DEVICE 50
 
 // RMW specific definitions
+#ifdef RMW_UXRCE_GRAPH
+typedef struct rmw_graph_info_t
+{
+  bool initialized;
+  bool has_changed;
+  rmw_context_impl_t * context;
+
+  uxrObjectId participant_id;
+  uxrObjectId subscriber_id;
+  uxrObjectId topic_id;
+  uxrObjectId datareader_id;
+  uint16_t subscription_request;
+
+  uint8_t micro_buffer[RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
+  size_t micro_buffer_length;
+
+  const rosidl_message_type_support_t * graph_type_support;
+} rmw_graph_info_t;
+#endif  // RMW_UXRCE_GRAPH
 
 struct rmw_uxrce_connection_t
 {
@@ -51,7 +70,7 @@ struct rmw_uxrce_connection_t
   uint32_t client_key;
 };
 
-struct  rmw_context_impl_t
+struct rmw_context_impl_t
 {
   rmw_uxrce_mempool_item_t mem;
   struct rmw_uxrce_connection_t connection_params;
@@ -64,6 +83,11 @@ struct  rmw_context_impl_t
   uxrUDPPlatform udp_platform;
 #endif
   uxrSession session;
+
+#ifdef RMW_UXRCE_GRAPH
+  rmw_graph_info_t graph_info;
+#endif
+  rmw_guard_condition_t graph_guard_condition;
 
   uxrStreamId reliable_input;
   uxrStreamId reliable_output;
