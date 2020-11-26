@@ -92,10 +92,8 @@ rmw_take_request(
 
   // Conversion from SampleIdentity to rmw_request_id_t
   request_header->request_id.sequence_number =
-    (((int64_t) custom_service->sample_id[custom_service->history_read_index].sequence_number.high)
-    <<
-    32) |
-    custom_service->sample_id[custom_service->history_read_index].sequence_number.low;
+    (((int64_t) custom_service->sample_id[custom_service->history_read_index].sequence_number.high) << 32) 
+    | custom_service->sample_id[custom_service->history_read_index].sequence_number.low;
   request_header->request_id.writer_guid[0] =
     (int8_t) custom_service->sample_id[custom_service->history_read_index].writer_guid.entityId.
     entityKind;

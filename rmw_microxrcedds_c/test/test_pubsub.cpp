@@ -136,6 +136,7 @@ TEST_F(TestPubSub, publish_and_receive) {
   rmw_time_t wait_timeout;
 
   wait_timeout.sec = 1;
+  wait_timeout.nsec = 1;
 
   rmw_ret_t ret = rmw_wait(
     &subscriptions,

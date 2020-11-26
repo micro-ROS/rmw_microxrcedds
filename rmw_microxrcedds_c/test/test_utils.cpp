@@ -71,7 +71,7 @@ void ConfigureDummyServiceTypeSupport(
     dummy_type_support->service_name.data(),
     dummy_type_support->message_namespace.data(),
     0,
-    &dummy_type_support->request_memebers);
+    &dummy_type_support->request_members);
 
   ConfigureDummyTypeSupport(
     dummy_type_support->type_name.data(),  

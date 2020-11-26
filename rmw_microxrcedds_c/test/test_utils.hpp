@@ -42,7 +42,7 @@ typedef struct
 {
   rosidl_service_type_support_t type_support;
   service_type_support_callbacks_t callbacks;
-  dummy_type_support_t request_memebers;
+  dummy_type_support_t request_members;
   dummy_type_support_t response_members;
   std::string service_name;
   std::string type_name;
