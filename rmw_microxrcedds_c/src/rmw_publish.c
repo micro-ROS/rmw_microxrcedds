@@ -18,6 +18,10 @@
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 
+void flush_session(uxrSession* session){
+    uxr_run_session_until_confirm_delivery(session, 1000);
+}
+
 rmw_ret_t
 rmw_publish(
   const rmw_publisher_t * publisher,
@@ -50,7 +54,11 @@ rmw_publish(
     if (uxr_prepare_output_stream(
         &custom_publisher->owner_node->context->session,
         custom_publisher->stream_id, custom_publisher->datawriter_id, &mb,
-        topic_length))
+        topic_length) ||
+        uxr_prepare_output_stream_fragmented(
+        &custom_publisher->owner_node->context->session,
+        custom_publisher->stream_id, custom_publisher->datawriter_id, &mb,
+        topic_length, flush_session))
     {
       written = functions->cdr_serialize(ros_message, &mb);
 

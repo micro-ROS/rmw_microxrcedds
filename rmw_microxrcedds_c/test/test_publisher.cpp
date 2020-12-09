@@ -27,6 +27,8 @@
 #include "rmw_base_test.hpp"
 #include "test_utils.hpp"
 
+#include "rosidl_runtime_c/string.h"
+
 class TestPublisher : public RMWBaseTest
 {
 protected:
@@ -271,3 +273,86 @@ TEST_F(TestPublisher, memory_poll_shared_topic) {
     publishers.clear();
   }
 }
+
+/*
+   Testing continous fragment mode
+ */
+
+TEST_F(TestPublisher, continous_fragment_mode) {
+  dummy_type_support_t dummy_type_support;
+  ConfigureDummyTypeSupport(
+    topic_type,
+    topic_type,
+    message_namespace,
+    id_gen++,
+    &dummy_type_support);
+
+  dummy_type_support.callbacks.cdr_serialize =
+    [](const void * untyped_ros_message, ucdrBuffer * cdr) -> bool {
+      bool ret;
+      const rosidl_runtime_c__String * ros_message =
+        reinterpret_cast<const rosidl_runtime_c__String *>(untyped_ros_message);
+      ret = ucdr_serialize_string(cdr, ros_message->data);
+      return ret;
+    };
+    
+  dummy_type_support.callbacks.get_serialized_size = [](const void *) {return uint32_t(30000u);};
+
+  rmw_qos_profile_t dummy_qos_policies;
+  ConfigureDefaultQOSPolices(&dummy_qos_policies);
+
+  rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
+
+  bool ignore_local_publications = true;
+
+  rmw_publisher_t * pub = rmw_create_publisher(
+    this->node,
+    &dummy_type_support.type_support,
+    topic_name,
+    &dummy_qos_policies,
+    &default_publisher_options);
+  ASSERT_NE((void *)pub, (void *)NULL);
+
+  char content[30000];
+  memset(content, 'A', sizeof(content));
+  content[sizeof(content)-1] = '\0';
+  rosidl_runtime_c__String ros_message;
+  ros_message.data = content;
+  ros_message.capacity = strlen(ros_message.data);
+  ros_message.size = ros_message.capacity;
+  rmw_ret_t ret = rmw_publish(pub, &ros_message, NULL);
+  ASSERT_EQ(ret, RMW_RET_OK);
+
+  rmw_subscriptions_t subscriptions;
+  subscriptions.subscriber_count = 0;
+
+  rmw_guard_conditions_t guard_conditions;
+  guard_conditions.guard_condition_count = 0;
+
+  rmw_services_t services;
+  services.service_count = 0;
+
+  rmw_clients_t clients;
+  clients.client_count = 0;
+
+  rmw_events_t * events = NULL;
+  rmw_wait_set_t * wait_set = NULL;
+  rmw_time_t wait_timeout;
+
+  wait_timeout.sec = 0;
+  wait_timeout.nsec = 10000;
+
+  ret = rmw_wait(
+    &subscriptions,
+    &guard_conditions,
+    &services,
+    &clients,
+    events,
+    wait_set,
+    &wait_timeout
+  );
+
+  ret = rmw_destroy_publisher(this->node, pub);
+  ASSERT_EQ(ret, RMW_RET_OK);
+}
+
