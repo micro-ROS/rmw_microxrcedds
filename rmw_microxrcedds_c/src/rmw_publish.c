@@ -18,6 +18,11 @@
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 
+#include <rmw_uros/options.h>
+
+extern rmw_uros_continous_serialization_size cs_cb_size;
+extern rmw_uros_continous_serialization cs_cb_serialization;
+
 bool flush_session(uxrSession* session){
     return uxr_run_session_until_confirm_delivery(session, 1000);
 }
@@ -48,6 +53,8 @@ rmw_publish(
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
     const message_type_support_callbacks_t * functions = custom_publisher->type_support_callbacks;
     uint32_t topic_length = functions->get_serialized_size(ros_message);
+    
+    if(cs_cb_size){cs_cb_size(&topic_length);}
 
     ucdrBuffer mb;
     bool written = false;
@@ -61,6 +68,7 @@ rmw_publish(
         topic_length, flush_session))
     {
       written = functions->cdr_serialize(ros_message, &mb);
+      if(cs_cb_serialization){cs_cb_serialization(&mb);}
 
       if (UXR_BEST_EFFORT_STREAM == custom_publisher->stream_id.type) {
         uxr_flash_output_streams(&custom_publisher->owner_node->context->session);

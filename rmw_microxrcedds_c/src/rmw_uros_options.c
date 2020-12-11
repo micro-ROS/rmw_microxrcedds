@@ -17,6 +17,7 @@
 #include "types.h"
 
 #include <rmw_microxrcedds_c/config.h>
+#include <rmw/rmw.h>
 #include <rmw/allocators.h>
 #include <rmw/ret_types.h>
 #include <rmw/error_handling.h>
@@ -193,4 +194,13 @@ rmw_ret_t rmw_uros_check_agent_status(int timeout_ms)
     item = item->next;
   }
   return (synchronized && session_memory.allocateditems != NULL) ? RMW_RET_OK : RMW_RET_ERROR;
+}
+
+rmw_uros_continous_serialization_size cs_cb_size = NULL;
+rmw_uros_continous_serialization cs_cb_serialization = NULL;
+
+void rmw_uros_set_continous_serialization_callbacks(rmw_uros_continous_serialization_size size, rmw_uros_continous_serialization cb)
+{  
+  cs_cb_size = size;
+  cs_cb_serialization = cb;
 }
