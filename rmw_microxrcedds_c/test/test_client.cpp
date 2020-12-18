@@ -134,7 +134,7 @@ TEST_F(TestClient, memory_poll_multiple_clients) {
     ASSERT_EQ((void *)client, (void *)NULL);
     ASSERT_EQ(CheckErrorState(), true);
 
-    // Relese one
+    // Release one
     client = clients.back();
     clients.pop_back();
     ret = rmw_destroy_client(this->node, client);
