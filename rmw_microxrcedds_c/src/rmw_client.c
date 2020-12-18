@@ -140,7 +140,6 @@ rmw_create_client(
 
     if (!run_xrce_session(custom_node->context, client_req))
     {
-      RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
       put_memory(&client_memory, &custom_client->mem);
       goto fail;
     }
@@ -204,7 +203,6 @@ rmw_destroy_client(
 
     if (!run_xrce_session(custom_node->context, delete_client))
     {
-      RMW_SET_ERROR_MSG("unable to remove client from the server");
       result_ret = RMW_RET_ERROR;
     } else {
       rmw_uxrce_fini_client_memory(client);

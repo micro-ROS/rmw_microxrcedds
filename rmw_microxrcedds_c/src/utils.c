@@ -35,7 +35,7 @@ bool run_xrce_session(rmw_context_impl_t * context, uint16_t requests){
     if (!uxr_run_session_until_all_status(&context->session, 
           RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT, 
           &requests, &status, 1)) {
-      RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
+      RMW_SET_ERROR_MSG("Issues running micro XRCE-DDS session");
       return false;
     }
   }
