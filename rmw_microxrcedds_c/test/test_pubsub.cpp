@@ -88,7 +88,7 @@ TEST_F(TestPubSub, publish_and_receive) {
   bool ignore_local_publications = true;
 
   rmw_node_t * node_pub;
-  node_pub = rmw_create_node(&test_context, "pub_node", "/ns", 0, false);
+  node_pub = rmw_create_node(&test_context, "pub_node", "/ns");
   ASSERT_NE((void *)node_pub, (void *)NULL);
 
   rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
@@ -98,7 +98,7 @@ TEST_F(TestPubSub, publish_and_receive) {
   ASSERT_NE((void *)pub, (void *)NULL);
 
   rmw_node_t * node_sub;
-  node_sub = rmw_create_node(&test_context, "sub_node", "/ns", 0, false);
+  node_sub = rmw_create_node(&test_context, "sub_node", "/ns");
   ASSERT_NE((void *)node_sub, (void *)NULL);
 
   rmw_subscription_options_t default_subscription_options = rmw_get_default_subscription_options();
