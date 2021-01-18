@@ -308,6 +308,9 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
     &context_impl->session,
     context_impl->output_best_effort_stream_buffer, context_impl->transport.comm.mtu);
 
+  context_impl->creation_destroy_stream = (RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT > 0) ? 
+    &context_impl->reliable_output :
+    &context_impl->best_effort_output;
 
   if (!uxr_create_session(&context_impl->session)) {
     CLOSE_TRANSPORT(&context_impl->transport);

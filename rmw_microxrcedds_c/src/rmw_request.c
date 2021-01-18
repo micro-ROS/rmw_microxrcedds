@@ -31,7 +31,7 @@ rmw_send_request(
   }
 
   rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
-  rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)custom_client->owner_node;
+  rmw_uxrce_node_t * custom_node = custom_client->owner_node;
 
   const rosidl_message_type_support_t * req_members =
     custom_client->type_support_callbacks->request_members_();
@@ -56,7 +56,12 @@ rmw_send_request(
     return RMW_RET_ERROR;
   }
 
-  uxr_run_session_time(&custom_node->context->session, 100);
+  if (UXR_BEST_EFFORT_STREAM == custom_client->stream_id.type) {
+    uxr_flash_output_streams(&custom_node->context->session);
+  } else {
+    uxr_run_session_until_confirm_delivery(
+      &custom_node->context->session, RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT);
+  }
 
   return RMW_RET_OK;
 }
@@ -87,10 +92,8 @@ rmw_take_request(
 
   // Conversion from SampleIdentity to rmw_request_id_t
   request_header->request_id.sequence_number =
-    (((int64_t) custom_service->sample_id[custom_service->history_read_index].sequence_number.high)
-    <<
-    32) |
-    custom_service->sample_id[custom_service->history_read_index].sequence_number.low;
+    (((int64_t) custom_service->sample_id[custom_service->history_read_index].sequence_number.high) << 32) 
+    | custom_service->sample_id[custom_service->history_read_index].sequence_number.low;
   request_header->request_id.writer_guid[0] =
     (int8_t) custom_service->sample_id[custom_service->history_read_index].writer_guid.entityId.
     entityKind;

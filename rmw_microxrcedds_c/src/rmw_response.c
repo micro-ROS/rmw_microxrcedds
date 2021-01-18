@@ -31,7 +31,7 @@ rmw_send_response(
   }
 
   rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
-  rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)custom_service->owner_node;
+  rmw_uxrce_node_t * custom_node = custom_service->owner_node;
 
   // Conversion from rmw_request_id_t to SampleIdentity
   SampleIdentity sample_id;

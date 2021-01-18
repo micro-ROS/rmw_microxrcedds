@@ -23,6 +23,8 @@
 // (Borja) decide wat to do with this macro.
 #define EPROS_PRINT_TRACE() ;  // printf("func %s, in file %s:%d\n", __func__, __FILE__, __LINE__);
 
+bool run_xrce_session(rmw_context_impl_t * context, uint16_t requests);
+
 int generate_name(const uxrObjectId * id, char name[], size_t buffer_size);
 size_t generate_type_name(
   const message_type_support_callbacks_t * members, char type_name[],

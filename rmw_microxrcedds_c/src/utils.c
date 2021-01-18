@@ -15,12 +15,32 @@
 #include "./utils.h"  // NOLINT
 #include "./types.h"
 
+#include <rmw/error_handling.h>
+
 static const char ros_topic_prefix[] = "rt";
 static const char ros_request_prefix[] = "rq";
 static const char ros_reply_prefix[] = "rr";
 static const char ros_request_subfix[] = "Request";
 static const char ros_reply_subfix[] = "Reply";
 
+bool run_xrce_session(rmw_context_impl_t * context, uint16_t requests){
+  if (context->creation_destroy_stream->type == UXR_BEST_EFFORT_STREAM)
+  {
+    uxr_flash_output_streams(&context->session);
+  } 
+  else 
+  {
+    // This only handles one request at time
+    uint8_t status;
+    if (!uxr_run_session_until_all_status(&context->session, 
+          RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT, 
+          &requests, &status, 1)) {
+      RMW_SET_ERROR_MSG("Issues running micro XRCE-DDS session");
+      return false;
+    }
+  }
+  return true;
+}
 
 int build_participant_xml(
   size_t domain_id, const char * participant_name, char xml[],

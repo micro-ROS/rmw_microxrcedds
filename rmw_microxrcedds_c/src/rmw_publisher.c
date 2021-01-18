@@ -173,16 +173,13 @@ rmw_create_publisher(
       custom_node->participant_id, "", UXR_REPLACE);
   #endif
 
-    uint16_t requests[] = {publisher_req};
-    uint8_t status[sizeof(requests) / 2];
-    if (!uxr_run_session_until_all_status(
-        &custom_publisher->owner_node->context->session, 1000, requests,
-        status, sizeof(status)))
+    if (!run_xrce_session(custom_node->context, publisher_req))
     {
-      RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
       put_memory(&publisher_memory, &custom_publisher->mem);
       goto fail;
     }
+
+    rmw_publisher->data = custom_publisher;
 
     custom_publisher->datawriter_id = uxr_object_id(
       custom_node->context->id_datawriter++,
@@ -216,14 +213,8 @@ rmw_create_publisher(
       custom_publisher->publisher_id, rmw_uxrce_profile_name, UXR_REPLACE);
   #endif
 
-    rmw_publisher->data = custom_publisher;
-
-    requests[0] = datawriter_req;
-    if (!uxr_run_session_until_all_status(
-        &custom_publisher->owner_node->context->session, 1000, requests,
-        status, sizeof(status)))
+    if (!run_xrce_session(custom_node->context, datawriter_req))
     {
-      RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
       put_memory(&publisher_memory, &custom_publisher->mem);
       goto fail;
     }
@@ -352,6 +343,7 @@ rmw_destroy_publisher(
     result_ret = RMW_RET_ERROR;
   } else {
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
+    rmw_uxrce_node_t * custom_node = custom_publisher->owner_node;
 
     destroy_topic(custom_publisher->topic);
 
@@ -363,19 +355,15 @@ rmw_destroy_publisher(
       &custom_publisher->owner_node->context->session,
       custom_publisher->owner_node->context->reliable_output,
       custom_publisher->publisher_id);
-
-    uint16_t requests[] = {delete_writer, delete_publisher};
-    uint8_t status[sizeof(requests) / 2];
-    if (!uxr_run_session_until_all_status(
-        &custom_publisher->owner_node->context->session, 1000, requests, status,
-        sizeof(status)))
+    
+    bool ret = run_xrce_session(custom_node->context, delete_writer);
+    ret &= run_xrce_session(custom_node->context, delete_publisher);
+    if (!ret)
     {
-      RMW_SET_ERROR_MSG("unable to remove publisher from the server");
       result_ret = RMW_RET_ERROR;
-    } else {
-      rmw_uxrce_fini_publisher_memory(publisher);
-      result_ret = RMW_RET_OK;
     }
+    
+    rmw_uxrce_fini_publisher_memory(publisher);
   }
 
   return result_ret;

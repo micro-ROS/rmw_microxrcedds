@@ -98,12 +98,10 @@ rmw_node_t * create_node(
     node_info->context->reliable_output,
     node_info->participant_id, (uint16_t)domain_id, rmw_uxrce_profile_name, UXR_REPLACE);
 #endif
-  uint8_t status[1];
-  uint16_t requests[] = {participant_req};
 
-  if (!uxr_run_session_until_all_status(&node_info->context->session, 1000, requests, status, 1)) {
+  if (!run_xrce_session(node_info->context, participant_req)) 
+  {
     rmw_uxrce_fini_node_memory(node_handle);
-    RMW_SET_ERROR_MSG("Issues creating micro XRCE-DDS entities");
     return NULL;
   }
 
@@ -199,16 +197,12 @@ rmw_ret_t rmw_destroy_node(rmw_node_t * node)
     }
   }
 
-  uint16_t participant_req = uxr_buffer_delete_entity(
+  uint16_t delete_participant = uxr_buffer_delete_entity(
     &custom_node->context->session,
     custom_node->context->reliable_output,
     custom_node->participant_id);
-  uint8_t status[1];
-  uint16_t requests[] = {participant_req};
 
-  if (!uxr_run_session_until_all_status(
-      &custom_node->context->session, 1000, requests, status,
-      1))
+  if (!run_xrce_session(custom_node->context, delete_participant))
   {
     ret = RMW_RET_ERROR;
   }

@@ -38,3 +38,6 @@ jobs:
             ./test-topic
             ./test-pubsub
             ./test-rmw
+            ./test-client
+            ./test-service
+            ./test-reqres
