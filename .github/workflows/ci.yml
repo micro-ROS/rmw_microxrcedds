@@ -8,7 +8,7 @@ on:
 jobs:
     rmw_microxrcedds_ci:
         runs-on: ubuntu-20.04
-        container: microros/micro-ros-agent:foxy
+        container: microros/micro-ros-agent:rolling
     
         steps:
         - uses: actions/checkout@v2
@@ -19,17 +19,17 @@ jobs:
           run: |
             git clone -b foxy https://github.com/eProsima/Micro-CDR src/Micro-CDR 
             git clone -b foxy https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client 
-            git clone -b foxy https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
+            git clone -b main https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
             touch src/rosidl_typesupport_microxrcedds/test/COLCON_IGNORE
 
         - name: Build
-          run: . /opt/ros/foxy/setup.sh && colcon build --cmake-args "-DBUILD_SHARED_LIBS=ON"
+          run: . /opt/ros/$ROS_DISTRO/setup.sh && colcon build --cmake-args "-DBUILD_SHARED_LIBS=ON"
 
         - name: Test
           run: | 
-            . /opt/ros/foxy/setup.sh && . /uros_ws/install/local_setup.sh && ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v6 &
+            . /opt/ros/$ROS_DISTRO/setup.sh && . /uros_ws/install/local_setup.sh && ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v6 &
             sleep 1 
-            . /opt/ros/foxy/setup.sh && . install/local_setup.sh 
+            . /opt/ros/$ROS_DISTRO/setup.sh && . install/local_setup.sh 
             cd build/rmw_microxrcedds/test
             ./test-node
             ./test-publisher
