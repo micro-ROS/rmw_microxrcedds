@@ -41,3 +41,10 @@ jobs:
             ./test-client
             ./test-service
             ./test-reqres
+        
+        - name: Style
+          run: | 
+            wget https://github.com/ament/ament_lint/blob/master/ament_uncrustify/ament_uncrustify/configuration/ament_code_style.cfg
+            cd src/rmw-microxrcedds
+            find . \( -name "*.cpp" -o -name "*.c" -o -name "*.h" \) -exec uncrustify -c ../../ament_code_style.cfg --check {} +
+            # find . \( -name "*.cpp" -o -name "*.c" -o -name "*.h" \) -exec uncrustify -c ../../ament_code_style.cfg --replace --no-backup {} +
