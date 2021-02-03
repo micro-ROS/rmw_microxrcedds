@@ -34,8 +34,8 @@ extern "C"
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
 rmw_ret_t rmw_uros_init_options(
-  int argc, const char * const argv[],
-  rmw_init_options_t * rmw_options);
+   int argc, const char *const argv[],
+   rmw_init_options_t *rmw_options);
 
 /**
  * \brief Fills rmw implementation-specific options with the given parameters.
@@ -45,7 +45,7 @@ rmw_ret_t rmw_uros_init_options(
  * \return RMW_RET_OK If arguments were valid and set in rmw_init_options.
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
-rmw_ret_t rmw_uros_options_set_serial_device(const char * dev, rmw_init_options_t * rmw_options);
+rmw_ret_t rmw_uros_options_set_serial_device(const char *dev, rmw_init_options_t *rmw_options);
 
 /**
  * \brief Fills rmw implementation-specific options with the given parameters.
@@ -57,8 +57,8 @@ rmw_ret_t rmw_uros_options_set_serial_device(const char * dev, rmw_init_options_
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
 rmw_ret_t rmw_uros_options_set_udp_address(
-  const char * ip, const char * port,
-  rmw_init_options_t * rmw_options);
+   const char *ip, const char *port,
+   rmw_init_options_t *rmw_options);
 
 /**
  * \brief Fills rmw implementation-specific options with the autodicovered address of an micro-ROS Agent.
@@ -68,7 +68,7 @@ rmw_ret_t rmw_uros_options_set_udp_address(
  * \return RMW_RET_TIMEOUT If micro-ROS agent autodiscovery is timeout.
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
-rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t * rmw_options);
+rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t *rmw_options);
 
 /**
  * \brief Fills rmw implementation-specific options with the given parameters.
@@ -78,7 +78,7 @@ rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t * rmw_options);
  * \return RMW_RET_OK If arguments were valid and set in rmw_init_options.
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
-rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_t * rmw_options);
+rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_t *rmw_options);
 
 /**
  * \brief Check if micro-ROS Agent answers to micro-ROS client
