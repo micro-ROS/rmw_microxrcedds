@@ -28,6 +28,7 @@
 #include "test_utils.hpp"
 
 #include "rosidl_runtime_c/string.h"
+#include <rmw_uros/options.h>
 
 class TestPublisher : public RMWBaseTest
 {
@@ -275,8 +276,8 @@ TEST_F(TestPublisher, memory_poll_shared_topic) {
 }
 
 /*
-   Testing continous fragment mode
- */
+   Testing continous fragment mode without setting the custom callbacks
+*/
 
 TEST_F(TestPublisher, continous_fragment_mode) {
   dummy_type_support_t dummy_type_support;
@@ -323,34 +324,71 @@ TEST_F(TestPublisher, continous_fragment_mode) {
   rmw_ret_t ret = rmw_publish(pub, &ros_message, NULL);
   ASSERT_EQ(ret, RMW_RET_OK);
 
-  rmw_subscriptions_t subscriptions;
-  subscriptions.subscriber_count = 0;
+  ret = rmw_destroy_publisher(this->node, pub);
+  ASSERT_EQ(ret, RMW_RET_OK);
+}
 
-  rmw_guard_conditions_t guard_conditions;
-  guard_conditions.guard_condition_count = 0;
+/*
+   Testing continous fragment mode with setting the custom callbacks
+*/
 
-  rmw_services_t services;
-  services.service_count = 0;
+extern "C" void uros_continous_serialization_size(uint32_t * topic_length){
+  *topic_length += 10000;
+}
 
-  rmw_clients_t clients;
-  clients.client_count = 0;
+extern "C" void uros_continous_serialization(ucdrBuffer * ucdr){
+  for (size_t i = 0; i < 10000; i++)
+  {
+    ucdr_serialize_char(ucdr, 'B');
+  }
+}
 
-  rmw_events_t * events = NULL;
-  rmw_wait_set_t * wait_set = NULL;
-  rmw_time_t wait_timeout;
+TEST_F(TestPublisher, continous_fragment_mode_with_callbacks) {
+  dummy_type_support_t dummy_type_support;
+  ConfigureDummyTypeSupport(
+    topic_type,
+    topic_type,
+    message_namespace,
+    id_gen++,
+    &dummy_type_support);
 
-  wait_timeout.sec = 0;
-  wait_timeout.nsec = 10000;
+  dummy_type_support.callbacks.cdr_serialize =
+    [](const void * untyped_ros_message, ucdrBuffer * cdr) -> bool {
+      bool ret;
+      const rosidl_runtime_c__String * ros_message =
+        reinterpret_cast<const rosidl_runtime_c__String *>(untyped_ros_message);
+      ret = ucdr_serialize_string(cdr, ros_message->data);
+      return ret;
+    };
+    
+  dummy_type_support.callbacks.get_serialized_size = [](const void *) {return uint32_t(10u);};
 
-  ret = rmw_wait(
-    &subscriptions,
-    &guard_conditions,
-    &services,
-    &clients,
-    events,
-    wait_set,
-    &wait_timeout
-  );
+  rmw_qos_profile_t dummy_qos_policies;
+  ConfigureDefaultQOSPolices(&dummy_qos_policies);
+
+  rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
+
+  bool ignore_local_publications = true;
+
+  rmw_publisher_t * pub = rmw_create_publisher(
+    this->node,
+    &dummy_type_support.type_support,
+    topic_name,
+    &dummy_qos_policies,
+    &default_publisher_options);
+  ASSERT_NE((void *)pub, (void *)NULL);
+
+  rmw_uros_set_continous_serialization_callbacks(uros_continous_serialization_size, uros_continous_serialization);
+
+  char content[10];
+  memset(content, 'A', sizeof(content));
+  content[sizeof(content)-1] = '\0';
+  rosidl_runtime_c__String ros_message;
+  ros_message.data = content;
+  ros_message.capacity = strlen(ros_message.data);
+  ros_message.size = ros_message.capacity;
+  rmw_ret_t ret = rmw_publish(pub, &ros_message, NULL);
+  ASSERT_EQ(ret, RMW_RET_OK);
 
   ret = rmw_destroy_publisher(this->node, pub);
   ASSERT_EQ(ret, RMW_RET_OK);
