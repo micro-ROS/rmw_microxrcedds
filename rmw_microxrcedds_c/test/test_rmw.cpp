@@ -44,17 +44,17 @@ TEST(rmw_microxrcedds, autodiscover) {
 }
 
 /*
-   Testing rmw agent check.
+   Testing rmw agent ping.
 */
-TEST(rmw_microxrcedds, agent_check_status) {
+TEST(rmw_microxrcedds, agent_ping) {
   rmw_context_t test_context = rmw_get_zero_initialized_context();
   rmw_init_options_t test_options = rmw_get_zero_initialized_init_options();
   ASSERT_EQ(rmw_init_options_init(&test_options, rcutils_get_default_allocator()), RMW_RET_OK);
   ASSERT_EQ(rmw_init(&test_options, &test_context), RMW_RET_OK);
 
-  ASSERT_EQ(rmw_uros_check_agent_status(100), RMW_RET_OK);
+  ASSERT_EQ(rmw_uros_ping_agent(100, 1), RMW_RET_OK);
 
   ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
 
-  ASSERT_EQ(rmw_uros_check_agent_status(100), RMW_RET_ERROR);
+  ASSERT_EQ(rmw_uros_ping_agent(100, 1), RMW_RET_OK);
 }
