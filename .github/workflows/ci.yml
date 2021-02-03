@@ -44,8 +44,6 @@ jobs:
         
         - name: Style
           run: | 
-            apt update && apt install wget
-            wget https://github.com/ament/ament_lint/blob/master/ament_uncrustify/ament_uncrustify/configuration/ament_code_style.cfg
             cd src/rmw-microxrcedds
-            find . \( -name "*.cpp" -o -name "*.c" -o -name "*.h" \) -exec uncrustify -c ../../ament_code_style.cfg --check {} +
-            # find . \( -name "*.cpp" -o -name "*.c" -o -name "*.h" \) -exec uncrustify -c ../../ament_code_style.cfg --replace --no-backup {} +
+            find . \( -name "*.cpp" -o -name "*.c" -o -name "*.h" \) -exec uncrustify -c uncrustify.cfg --check {} +
+            # find . \( -name "*.cpp" -o -name "*.c" -o -name "*.h" \) -exec uncrustify -c uncrustify.cfg --replace --no-backup {} +
