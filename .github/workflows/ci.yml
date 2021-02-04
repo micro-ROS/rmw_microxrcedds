@@ -6,7 +6,6 @@ on:
         - '**'
 
 jobs:
-
     rmw_microxrcedds_ci:
         runs-on: ubuntu-20.04
         container: microros/micro-ros-agent:foxy
