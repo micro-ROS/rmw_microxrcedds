@@ -6,7 +6,7 @@ on:
 
 jobs:
     run_uncrustify:
-      if: contains(github.event.comment.html_url, '/pull/') && contains(github.event.comment.body, 'fix the style')
+      if: contains(github.event.comment.html_url, '/pull/') && contains(github.event.comment.body, 'Marie Kondo')
       runs-on: ubuntu-latest
       steps:
         - uses: xt0rted/pull-request-comment-branch@v1
