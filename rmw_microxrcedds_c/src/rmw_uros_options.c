@@ -204,6 +204,7 @@ void rmw_uros_set_continous_serialization_callbacks(
   custom_publisher->cs_cb_size = size_cb;
   custom_publisher->cs_cb_serialization = serialization_cb;
 }
+
 #ifdef RMW_UXRCE_TRANSPORT_CUSTOM
 rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
 

@@ -21,8 +21,6 @@
 #include <rmw_microxrcedds_c/config.h>
 #include <uxr/client/client.h>
 
-#include <ucdr/microcdr.h>
-
 #if defined(__cplusplus)
 extern "C"
 {
