@@ -21,8 +21,8 @@ jobs:
         - name: Style
           run: | 
             cd repo
-            apt update
-            apt install uncrustify
+            sudo apt update
+            sudo apt install uncrustify
             # find . \( -name "*.cpp" -o -name "*.c" -o -name "*.h" -o -name "*.hpp" \) -exec uncrustify -c uncrustify.cfg --check {} +
             find . \( -name "*.cpp" -o -name "*.c" -o -name "*.h" -o -name "*.hpp" \) -exec uncrustify -c uncrustify.cfg --replace --no-backup {} +
             git config user.name "GitHub Actions Bot"
