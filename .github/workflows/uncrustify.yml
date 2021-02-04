@@ -2,7 +2,7 @@ name: Uncrustify
 
 on:
     issue_comment:
-      types: [created]
+      # types: [created]
 
 jobs:
     run_uncrustify:
