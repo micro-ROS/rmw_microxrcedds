@@ -110,7 +110,7 @@ TEST_F(TestReqRes, publish_and_receive) {
   // CREATE ENTITIES
 
   rmw_node_t * node_res;
-  node_res = rmw_create_node(&test_context, "node_res", "/ns", 0, false);
+  node_res = rmw_create_node(&test_context, "node_res", "/ns");
   ASSERT_NE((void *)node_res, (void *)NULL);
 
   rmw_service_t * serv = rmw_create_service(
@@ -122,7 +122,7 @@ TEST_F(TestReqRes, publish_and_receive) {
   ASSERT_NE((void *)serv, (void *)NULL);
 
   rmw_node_t * node_req;
-  node_req = rmw_create_node(&test_context, "node_req", "/ns", 0, false);
+  node_req = rmw_create_node(&test_context, "node_req", "/ns");
   ASSERT_NE((void *)node_req, (void *)NULL);
 
   rmw_client_t * client = rmw_create_client(
@@ -169,15 +169,16 @@ TEST_F(TestReqRes, publish_and_receive) {
   wait_timeout.sec = 1;
   wait_timeout.nsec = 1;
 
-  rmw_ret_t ret = rmw_wait(
-    &subscriptions,
-    &guard_conditions,
-    &services,
-    &clients,
-    events,
-    wait_set,
-    &wait_timeout
-  );
+  ASSERT_EQ(
+    rmw_wait(
+      &subscriptions,
+      &guard_conditions,
+      &services,
+      &clients,
+      events,
+      wait_set,
+      &wait_timeout
+    ), RMW_RET_OK);
 
   ASSERT_NE((void *)services.services[0], (void *)NULL);
 
@@ -227,7 +228,8 @@ TEST_F(TestReqRes, publish_and_receive) {
   wait_timeout.sec = 1;
   wait_timeout.nsec = 1;
 
-  ret = rmw_wait(
+  ASSERT_EQ(
+  rmw_wait(
     &subscriptions,
     &guard_conditions,
     &services,
@@ -235,7 +237,7 @@ TEST_F(TestReqRes, publish_and_receive) {
     events,
     wait_set,
     &wait_timeout
-  );
+  ), RMW_RET_OK);
 
   ASSERT_NE((void *)clients.clients[0], (void *)NULL);
 

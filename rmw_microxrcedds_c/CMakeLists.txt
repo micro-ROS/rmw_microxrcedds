@@ -73,9 +73,9 @@ endif()
 # Transport handle define macros.
 set(RMW_UXRCE_TRANSPORT_SERIAL OFF)
 set(RMW_UXRCE_TRANSPORT_UDP OFF)
-set(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL OFF)
 set(RMW_UXRCE_TRANSPORT_IPV4 OFF)
 set(RMW_UXRCE_TRANSPORT_IPV6 OFF)
+set(RMW_UXRCE_TRANSPORT_CUSTOM OFF)
 if(${RMW_UXRCE_TRANSPORT} STREQUAL "serial")
   set(RMW_UXRCE_TRANSPORT_SERIAL ON)
   set(RMW_UXRCE_DEFAULT_SERIAL_DEVICE "/dev/ttyAMA0" CACHE STRING "Sets the agent serial port.")
@@ -89,8 +89,8 @@ elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "udp")
     set(RMW_UXRCE_DEFAULT_UDP_IP "::1" CACHE STRING "Sets the agent IP address.")
   endif()
   set(RMW_UXRCE_DEFAULT_UDP_PORT "8888" CACHE STRING "Sets the agent IP port.")
-elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "custom_serial")
-  set(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL ON)
+elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "custom")
+  set(RMW_UXRCE_TRANSPORT_CUSTOM ON)
 else()
   message(FATAL_ERROR "Transport not supported. Use \"serial\", \"udp\", \"custom\"")
 endif()
@@ -226,12 +226,13 @@ target_compile_options(${PROJECT_NAME}
     $<$<C_COMPILER_ID:MSVC>:/Wall>
   )
 
-ament_export_include_directories(${PROJECT_SOURCE_DIR}/include)
+ament_export_include_directories(${CMAKE_INSTALL_PREFIX}/include)
 ament_export_libraries(${PROJECT_NAME})
 
 ament_export_dependencies(
   rcutils
   rmw
+  microxrcedds_client
   )
 
 if(rosidl_typesupport_microxrcedds_c_FOUND)
@@ -249,6 +250,10 @@ endif()
 register_rmw_implementation(${implementations})
 
 if(BUILD_TESTING)
+  # Pedantic in CI 
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
+
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
   add_subdirectory(test)
@@ -256,20 +261,20 @@ endif()
 
 ament_package()
 
-# Install config.h file.
-install(
-  FILES
-    ${PROJECT_BINARY_DIR}/include/rmw_microxrcedds_c/config.h
-  DESTINATION
-    include/rmw_microxrcedds_c
-  )
-
 # Install includes.
 install(
   DIRECTORY
     ${PROJECT_SOURCE_DIR}/include/
   DESTINATION
     include
+  )
+
+# Install config.h file.
+install(
+  FILES
+    ${PROJECT_BINARY_DIR}/include/rmw_microxrcedds_c/config.h
+  DESTINATION
+    include/rmw_microxrcedds_c
   )
 
 # Install library.

@@ -21,6 +21,10 @@
 #include <ucdr/microcdr.h>
 #include <uxr/client/client.h>
 
+#ifdef RMW_UXRCE_TRANSPORT_CUSTOM
+#include <uxr/client/profile/transport/custom/custom_transport.h>
+#endif //RMW_UXRCE_TRANSPORT_CUSTOM
+
 #include "rosidl_runtime_c/message_type_support_struct.h"
 #include "rosidl_typesupport_microxrcedds_c/message_type_support.h"
 
@@ -30,14 +34,6 @@
 #include "memory.h"
 #include <rmw_microxrcedds_c/config.h>
 #include <rmw_uros/options.h>
-
-#ifdef RMW_UXRCE_TRANSPORT_IPV4
-  #define MAX_IP_LEN 16
-#elif defined(RMW_UXRCE_TRANSPORT_IPV6)
-  #define MAX_IP_LEN 39
-#endif
-#define MAX_PORT_LEN 5
-#define MAX_SERIAL_DEVICE 50
 
 // RMW specific definitions
 #ifdef RMW_UXRCE_GRAPH
@@ -60,26 +56,20 @@ typedef struct rmw_graph_info_t
 } rmw_graph_info_t;
 #endif  // RMW_UXRCE_GRAPH
 
-struct rmw_uxrce_connection_t
-{
-#if defined(RMW_UXRCE_TRANSPORT_SERIAL) || defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
-  char serial_device[MAX_SERIAL_DEVICE];
-#elif defined(RMW_UXRCE_TRANSPORT_UDP)
-  char agent_address[MAX_IP_LEN];
-  char agent_port[MAX_PORT_LEN];
-#endif
-  uint32_t client_key;
-};
-
 typedef struct rmw_context_impl_t
 {
   rmw_uxrce_mempool_item_t mem;
-  struct rmw_uxrce_connection_t connection_params;
 
-#if defined(RMW_UXRCE_TRANSPORT_SERIAL) || defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
+#if defined(RMW_UXRCE_TRANSPORT_SERIAL)
   uxrSerialTransport transport;
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
   uxrUDPTransport transport;
+<<<<<<< foxy
+=======
+  uxrUDPPlatform udp_platform;
+#elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
+  uxrCustomTransport transport;
+>>>>>>> Initial
 #endif
   uxrSession session;
 
@@ -113,7 +103,7 @@ typedef struct rmw_context_impl_t rmw_uxrce_session_t;
 
 struct  rmw_init_options_impl_t
 {
-  struct rmw_uxrce_connection_t connection_params;
+  struct rmw_uxrce_transport_params_t transport_params;
 };
 
 // ROS2 entities definitions
