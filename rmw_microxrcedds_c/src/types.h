@@ -77,10 +77,8 @@ typedef struct rmw_context_impl_t
 
 #if defined(RMW_UXRCE_TRANSPORT_SERIAL) || defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
   uxrSerialTransport transport;
-  uxrSerialPlatform serial_platform;
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
   uxrUDPTransport transport;
-  uxrUDPPlatform udp_platform;
 #endif
   uxrSession session;
 
