@@ -208,7 +208,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   // Micro-XRCE-DDS Client initialization
 
 #ifdef RMW_UXRCE_TRANSPORT_SERIAL
-  int fd = open(context->impl->transport_params.serial_device, O_RDWR | O_NOCTTY);
+  int fd = open(options->impl->transport_params.serial_device, O_RDWR | O_NOCTTY);
   if (0 < fd) {
     struct termios tty_config;
     memset(&tty_config, 0, sizeof(tty_config));
