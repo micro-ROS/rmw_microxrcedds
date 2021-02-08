@@ -196,11 +196,12 @@ rmw_ret_t rmw_uros_check_agent_status(int timeout_ms)
   return (synchronized && session_memory.allocateditems != NULL) ? RMW_RET_OK : RMW_RET_ERROR;
 }
 
-rmw_uros_continous_serialization_size cs_cb_size = NULL;
-rmw_uros_continous_serialization cs_cb_serialization = NULL;
-
-void rmw_uros_set_continous_serialization_callbacks(rmw_uros_continous_serialization_size size, rmw_uros_continous_serialization cb)
+void rmw_uros_set_continous_serialization_callbacks(
+  rmw_publisher_t * publisher,
+  rmw_uros_continous_serialization_size size_cb, 
+  rmw_uros_continous_serialization serialization_cb)
 {  
-  cs_cb_size = size;
-  cs_cb_serialization = cb;
+  rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
+  custom_publisher->cs_cb_size = size_cb;
+  custom_publisher->cs_cb_serialization = serialization_cb;
 }

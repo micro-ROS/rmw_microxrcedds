@@ -378,7 +378,10 @@ TEST_F(TestPublisher, continous_fragment_mode_with_callbacks) {
     &default_publisher_options);
   ASSERT_NE((void *)pub, (void *)NULL);
 
-  rmw_uros_set_continous_serialization_callbacks(uros_continous_serialization_size, uros_continous_serialization);
+  rmw_uros_set_continous_serialization_callbacks(
+    pub,
+    uros_continous_serialization_size, 
+    uros_continous_serialization);
 
   char content[10];
   memset(content, 'A', sizeof(content));

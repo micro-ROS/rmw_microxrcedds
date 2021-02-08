@@ -15,6 +15,7 @@
 #ifndef RMW_UROS__OPTIONS_H_
 #define RMW_UROS__OPTIONS_H_
 
+#include <rmw/rmw.h>
 #include <rmw/ret_types.h>
 #include <rmw/init_options.h>
 
@@ -92,16 +93,20 @@ rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_
 rmw_ret_t rmw_uros_check_agent_status(int timeout_ms);
 
 /**
- * \brief Sets the callback functions for continous serialization
+ * \brief Sets the callback functions for continous serialization for a publisher
  *
- * \param[in] TODO 
- * \param[in] TODO 
+ * \param[in] publisher publisher where continous serialization is being configured
+ * \param[in] size_cb callback that should modify the total serialization size 
+ * \param[in] serialization_cb callback that should serialize the user part of the message 
  */
 
 typedef void (*rmw_uros_continous_serialization_size)(uint32_t * topic_length);
 typedef void (*rmw_uros_continous_serialization)(ucdrBuffer * ucdr);
 
-void rmw_uros_set_continous_serialization_callbacks(rmw_uros_continous_serialization_size size, rmw_uros_continous_serialization cb);
+void rmw_uros_set_continous_serialization_callbacks(
+  rmw_publisher_t * publisher,
+  rmw_uros_continous_serialization_size size_cb, 
+  rmw_uros_continous_serialization serialization_cb);
 
 #if defined(__cplusplus)
 }
