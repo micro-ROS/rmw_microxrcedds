@@ -20,81 +20,81 @@
 
 bool has_memory(rmw_uxrce_mempool_t* mem)
 {
-   return(mem->freeitems != NULL ? true : false);
+    return(mem->freeitems != NULL ? true : false);
 }
 
 rmw_uxrce_mempool_item_t* get_memory(rmw_uxrce_mempool_t* mem)
 {
-   rmw_uxrce_mempool_item_t* item = NULL;
+    rmw_uxrce_mempool_item_t* item = NULL;
 
-   if (has_memory(mem))
-   {
-      // Gets item from free pool
-      item           = mem->freeitems;
-      mem->freeitems = item->next;
-      if (mem->freeitems)
-      {
-         mem->freeitems->prev = NULL;
-      }
+    if (has_memory(mem))
+    {
+        // Gets item from free pool
+        item           = mem->freeitems;
+        mem->freeitems = item->next;
+        if (mem->freeitems)
+        {
+            mem->freeitems->prev = NULL;
+        }
 
-      // Puts item in allocated pool
-      item->next = mem->allocateditems;
-      if (item->next)
-      {
-         item->next->prev = item;
-      }
-      item->prev          = NULL;
-      mem->allocateditems = item;
-   }
-   else
-   {
+        // Puts item in allocated pool
+        item->next = mem->allocateditems;
+        if (item->next)
+        {
+            item->next->prev = item;
+        }
+        item->prev          = NULL;
+        mem->allocateditems = item;
+    }
+    else
+    {
 #ifdef RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS
-      item       = (rmw_uxrce_mempool_item_t*)rmw_allocate(sizeof(rmw_uxrce_mempool_item_t));
-      item->prev = NULL;
-      item->next = NULL;
-      item->data = (void*)rmw_allocate(mem->element_size);
-      memset(item->data, 0, mem->element_size);
-      item->is_dynamic_memory = false; // Allow to put element in free pool the first time
-      put_memory(mem, item);
-      item->is_dynamic_memory = true;
-      item = get_memory(mem);
+        item       = (rmw_uxrce_mempool_item_t*)rmw_allocate(sizeof(rmw_uxrce_mempool_item_t));
+        item->prev = NULL;
+        item->next = NULL;
+        item->data = (void*)rmw_allocate(mem->element_size);
+        memset(item->data, 0, mem->element_size);
+        item->is_dynamic_memory = false; // Allow to put element in free pool the first time
+        put_memory(mem, item);
+        item->is_dynamic_memory = true;
+        item = get_memory(mem);
 #endif
-   }
-   return(item);
+    }
+    return(item);
 }
 
 void put_memory(rmw_uxrce_mempool_t* mem, rmw_uxrce_mempool_item_t* item)
 {
-   // Gets item from allocated pool
-   if (item->prev)
-   {
-      item->prev->next = item->next;
-   }
-   if (item->next)
-   {
-      item->next->prev = item->prev;
-   }
+    // Gets item from allocated pool
+    if (item->prev)
+    {
+        item->prev->next = item->next;
+    }
+    if (item->next)
+    {
+        item->next->prev = item->prev;
+    }
 
-   if (mem->allocateditems == item)
-   {
-      mem->allocateditems = item->next;
-   }
+    if (mem->allocateditems == item)
+    {
+        mem->allocateditems = item->next;
+    }
 
 #ifdef RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS
-   if (item->is_dynamic_memory)
-   {
-      rmw_free(item->data);
-      rmw_free(item);
-      return;
-   }
+    if (item->is_dynamic_memory)
+    {
+        rmw_free(item->data);
+        rmw_free(item);
+        return;
+    }
 #endif
 
-   // Puts item in free pool
-   item->next = mem->freeitems;
-   if (item->next)
-   {
-      item->next->prev = item;
-   }
-   item->prev     = NULL;
-   mem->freeitems = item;
+    // Puts item in free pool
+    item->next = mem->freeitems;
+    if (item->next)
+    {
+        item->next->prev = item;
+    }
+    item->prev     = NULL;
+    mem->freeitems = item;
 }

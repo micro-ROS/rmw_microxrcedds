@@ -38,19 +38,19 @@ extern "C"
 typedef struct rmw_uxrce_transport_params_t
 {
 #if defined(RMW_UXRCE_TRANSPORT_SERIAL)
-   char              serial_device[MAX_SERIAL_DEVICE];
+    char              serial_device[MAX_SERIAL_DEVICE];
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
-   char              agent_address[MAX_IP_LEN];
-   char              agent_port[MAX_PORT_LEN];
+    char              agent_address[MAX_IP_LEN];
+    char              agent_port[MAX_PORT_LEN];
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
-   bool              framing;
-   void*             args;
-   open_custom_func  open_cb;
-   close_custom_func close_cb;
-   write_custom_func write_cb;
-   read_custom_func  read_cb;
+    bool              framing;
+    void*             args;
+    open_custom_func  open_cb;
+    close_custom_func close_cb;
+    write_custom_func write_cb;
+    read_custom_func  read_cb;
 #endif
-   uint32_t          client_key;
+    uint32_t          client_key;
 } rmw_uxrce_transport_params_t;
 
 /**
@@ -64,8 +64,8 @@ typedef struct rmw_uxrce_transport_params_t
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
 rmw_ret_t rmw_uros_init_options(
-   int argc, const char* const argv[],
-   rmw_init_options_t* rmw_options);
+    int argc, const char* const argv[],
+    rmw_init_options_t* rmw_options);
 
 /**
  * \brief Fills rmw implementation-specific options with the given parameters.
@@ -87,8 +87,8 @@ rmw_ret_t rmw_uros_options_set_serial_device(const char* dev, rmw_init_options_t
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
 rmw_ret_t rmw_uros_options_set_udp_address(
-   const char* ip, const char* port,
-   rmw_init_options_t* rmw_options);
+    const char* ip, const char* port,
+    rmw_init_options_t* rmw_options);
 
 /**
  * \brief Fills rmw implementation-specific options with the autodicovered address of an micro-ROS Agent.
@@ -133,9 +133,9 @@ typedef void (* rmw_uros_continous_serialization_size)(uint32_t* topic_length);
 typedef void (* rmw_uros_continous_serialization)(ucdrBuffer* ucdr);
 
 void rmw_uros_set_continous_serialization_callbacks(
-   rmw_publisher_t* publisher,
-   rmw_uros_continous_serialization_size size_cb,
-   rmw_uros_continous_serialization serialization_cb);
+    rmw_publisher_t* publisher,
+    rmw_uros_continous_serialization_size size_cb,
+    rmw_uros_continous_serialization serialization_cb);
 
 #ifdef RMW_UXRCE_TRANSPORT_CUSTOM
 extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
@@ -153,12 +153,12 @@ extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
  * \return RMW_RET_ERROR If invalid.
  */
 rmw_ret_t rmw_uros_set_custom_transport(
-   bool framing,
-   void* args,
-   open_custom_func open_cb,
-   close_custom_func close_cb,
-   write_custom_func write_cb,
-   read_custom_func read_cb);
+    bool framing,
+    void* args,
+    open_custom_func open_cb,
+    close_custom_func close_cb,
+    write_custom_func write_cb,
+    read_custom_func read_cb);
 
 #endif //RMW_UXRCE_TRANSPORT_CUSTOM
 
