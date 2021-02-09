@@ -18,6 +18,8 @@
 #include <rmw/rmw.h>
 #include <rmw/ret_types.h>
 #include <rmw/init_options.h>
+#include <rmw_microxrcedds_c/config.h>
+#include <uxr/client/client.h>
 
 #include <ucdr/microcdr.h>
 
@@ -25,6 +27,32 @@
 extern "C"
 {
 #endif
+
+#ifdef RMW_UXRCE_TRANSPORT_IPV4
+  #define MAX_IP_LEN 16
+#elif defined(RMW_UXRCE_TRANSPORT_IPV6)
+  #define MAX_IP_LEN 39
+#endif
+#define MAX_PORT_LEN 5
+#define MAX_SERIAL_DEVICE 50
+
+typedef struct rmw_uxrce_transport_params_t
+{
+#if defined(RMW_UXRCE_TRANSPORT_SERIAL)
+  char serial_device[MAX_SERIAL_DEVICE];
+#elif defined(RMW_UXRCE_TRANSPORT_UDP)
+  char agent_address[MAX_IP_LEN];
+  char agent_port[MAX_PORT_LEN];
+#elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
+  bool framing;
+  void * args;
+  open_custom_func open_cb;
+  close_custom_func close_cb;
+  write_custom_func write_cb;
+  read_custom_func read_cb;
+#endif
+  uint32_t client_key;
+} rmw_uxrce_transport_params_t;
 
 /**
  * \brief Parses command line args and fills rmw implementation-specific options.
@@ -107,6 +135,29 @@ void rmw_uros_set_continous_serialization_callbacks(
   rmw_publisher_t * publisher,
   rmw_uros_continous_serialization_size size_cb, 
   rmw_uros_continous_serialization serialization_cb);
+#ifdef RMW_UXRCE_TRANSPORT_CUSTOM
+extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
+
+/**
+ * \brief Check if micro-ROS Agent answers to micro-ROS client
+ *
+ * \param[in] framing Enable XRCE framing.
+ * \param[in] args Arguments for open function.
+ * \param[in] open_cb Open transport callback.
+ * \param[in] close_cb Close transport callback.
+ * \param[in] write_cb Write transport callback.
+ * \param[in] read_cb Read transport callback.
+ * \return RMW_RET_OK If correct.
+ * \return RMW_RET_ERROR If invalid.
+ */
+rmw_ret_t rmw_uros_set_custom_transport(
+  bool framing,
+  void * args,
+  open_custom_func open_cb,
+  close_custom_func close_cb,
+  write_custom_func write_cb,
+  read_custom_func read_cb);
+#endif //RMW_UXRCE_TRANSPORT_CUSTOM
 
 #if defined(__cplusplus)
 }

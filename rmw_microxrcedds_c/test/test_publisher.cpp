@@ -74,8 +74,6 @@ TEST_F(TestPublisher, construction_and_destruction) {
 
   rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
 
-  bool ignore_local_publications = true;
-
   rmw_publisher_t * pub = rmw_create_publisher(
     this->node,
     &dummy_type_support.type_support,
@@ -95,8 +93,6 @@ TEST_F(TestPublisher, construction_and_destruction) {
 TEST_F(TestPublisher, memory_poll_multiple_topic) {
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
-
-  bool ignore_local_publications = true;
 
   std::vector<dummy_type_support_t> dummy_type_supports;
   std::vector<rmw_publisher_t *> publishers;
@@ -204,8 +200,6 @@ TEST_F(TestPublisher, memory_poll_shared_topic) {
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
-  bool ignore_local_publications = true;
-
   std::vector<rmw_publisher_t *> publishers;
   rmw_ret_t ret;
   rmw_publisher_t * publisher;
@@ -304,8 +298,6 @@ TEST_F(TestPublisher, continous_fragment_mode) {
 
   rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
 
-  bool ignore_local_publications = true;
-
   rmw_publisher_t * pub = rmw_create_publisher(
     this->node,
     &dummy_type_support.type_support,
@@ -367,8 +359,6 @@ TEST_F(TestPublisher, continous_fragment_mode_with_callbacks) {
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
   rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
-
-  bool ignore_local_publications = true;
 
   rmw_publisher_t * pub = rmw_create_publisher(
     this->node,

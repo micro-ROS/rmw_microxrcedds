@@ -169,15 +169,16 @@ TEST_F(TestReqRes, publish_and_receive) {
   wait_timeout.sec = 1;
   wait_timeout.nsec = 1;
 
-  rmw_ret_t ret = rmw_wait(
-    &subscriptions,
-    &guard_conditions,
-    &services,
-    &clients,
-    events,
-    wait_set,
-    &wait_timeout
-  );
+  ASSERT_EQ(
+    rmw_wait(
+      &subscriptions,
+      &guard_conditions,
+      &services,
+      &clients,
+      events,
+      wait_set,
+      &wait_timeout
+    ), RMW_RET_OK);
 
   ASSERT_NE((void *)services.services[0], (void *)NULL);
 
@@ -227,7 +228,8 @@ TEST_F(TestReqRes, publish_and_receive) {
   wait_timeout.sec = 1;
   wait_timeout.nsec = 1;
 
-  ret = rmw_wait(
+  ASSERT_EQ(
+  rmw_wait(
     &subscriptions,
     &guard_conditions,
     &services,
@@ -235,7 +237,7 @@ TEST_F(TestReqRes, publish_and_receive) {
     events,
     wait_set,
     &wait_timeout
-  );
+  ), RMW_RET_OK);
 
   ASSERT_NE((void *)clients.clients[0], (void *)NULL);
 

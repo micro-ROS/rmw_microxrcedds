@@ -85,8 +85,6 @@ TEST_F(TestPubSub, publish_and_receive) {
   rmw_qos_profile_t dummy_qos_policies;
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
-  bool ignore_local_publications = true;
-
   rmw_node_t * node_pub;
   node_pub = rmw_create_node(&test_context, "pub_node", "/ns", 0, false);
   ASSERT_NE((void *)node_pub, (void *)NULL);
@@ -138,15 +136,16 @@ TEST_F(TestPubSub, publish_and_receive) {
   wait_timeout.sec = 1;
   wait_timeout.nsec = 1;
 
-  rmw_ret_t ret = rmw_wait(
-    &subscriptions,
-    &guard_conditions,
-    &services,
-    &clients,
-    events,
-    wait_set,
-    &wait_timeout
-  );
+  ASSERT_EQ(
+    rmw_wait(
+      &subscriptions,
+      &guard_conditions,
+      &services,
+      &clients,
+      events,
+      wait_set,
+      &wait_timeout
+    ), RMW_RET_OK);
 
   ASSERT_NE((void *)subscriptions.subscribers[0], (void *)NULL);
 
