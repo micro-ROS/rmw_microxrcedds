@@ -91,9 +91,9 @@ TEST_F(TestPubSub, publish_and_receive)
     rmw_qos_profile_t dummy_qos_policies;
     ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
-    rmw_node_t* node_pub;
-    node_pub = rmw_create_node(&test_context, "pub_node", "/ns", 0, false);
-    ASSERT_NE((void*)node_pub, (void*)NULL);
+   rmw_node_t* node_pub;
+   node_pub = rmw_create_node(&test_context,  "pub_node",  "/ns");
+   ASSERT_NE((void*)node_pub, (void*)NULL);
 
     rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
     rmw_publisher_t*        pub = rmw_create_publisher(
@@ -101,9 +101,9 @@ TEST_F(TestPubSub, publish_and_receive)
         topic_name, &dummy_qos_policies, &default_publisher_options);
     ASSERT_NE((void*)pub, (void*)NULL);
 
-    rmw_node_t* node_sub;
-    node_sub = rmw_create_node(&test_context, "sub_node", "/ns", 0, false);
-    ASSERT_NE((void*)node_sub, (void*)NULL);
+   rmw_node_t* node_sub;
+   node_sub = rmw_create_node(&test_context,  "sub_node",  "/ns");
+   ASSERT_NE((void*)node_sub, (void*)NULL);
 
     rmw_subscription_options_t default_subscription_options = rmw_get_default_subscription_options();
 

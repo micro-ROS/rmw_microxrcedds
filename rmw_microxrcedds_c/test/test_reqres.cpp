@@ -115,9 +115,9 @@ TEST_F(TestReqRes, publish_and_receive)
 
     // CREATE ENTITIES
 
-    rmw_node_t* node_res;
-    node_res = rmw_create_node(&test_context, "node_res", "/ns", 0, false);
-    ASSERT_NE((void*)node_res, (void*)NULL);
+   rmw_node_t* node_res;
+   node_res = rmw_create_node(&test_context,  "node_res",  "/ns");
+   ASSERT_NE((void*)node_res, (void*)NULL);
 
     rmw_service_t* serv = rmw_create_service(
         node_res,
@@ -127,9 +127,9 @@ TEST_F(TestReqRes, publish_and_receive)
 
     ASSERT_NE((void*)serv, (void*)NULL);
 
-    rmw_node_t* node_req;
-    node_req = rmw_create_node(&test_context, "node_req", "/ns", 0, false);
-    ASSERT_NE((void*)node_req, (void*)NULL);
+   rmw_node_t* node_req;
+   node_req = rmw_create_node(&test_context,  "node_req",  "/ns");
+   ASSERT_NE((void*)node_req, (void*)NULL);
 
     rmw_client_t* client = rmw_create_client(
         node_req,
