@@ -18,8 +18,8 @@
 #include <rmw/rmw.h>
 #include <rmw/ret_types.h>
 #include <rmw/init_options.h>
+#include <uxr/client/profile/transport/custom/custom_transport.h>
 #include <rmw_microxrcedds_c/config.h>
-#include <uxr/client/client.h>
 
 #if defined(__cplusplus)
 extern "C"

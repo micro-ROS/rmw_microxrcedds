@@ -146,6 +146,7 @@ set(SRCS
   src/types.c
   src/utils.c
   src/callbacks.c
+  src/rmw_uxrce_transports.c
   $<$<BOOL:${RMW_UXRCE_GRAPH}>:src/rmw_graph.c>
   )
 
@@ -199,6 +200,7 @@ endif()
 ament_target_dependencies(${PROJECT_NAME}
   "rcutils"
   "rmw"
+  "microxrcedds_client"
   )
 
 configure_rmw_library(${PROJECT_NAME})
@@ -227,6 +229,7 @@ target_compile_options(${PROJECT_NAME}
   )
 
 ament_export_include_directories(${CMAKE_INSTALL_PREFIX}/include)
+ament_export_include_directories(${microxrcedds_client_INCLUDE_DIR})
 ament_export_libraries(${PROJECT_NAME})
 
 ament_export_dependencies(

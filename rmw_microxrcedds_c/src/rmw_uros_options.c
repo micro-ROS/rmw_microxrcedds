@@ -22,6 +22,8 @@
 #include <rmw/ret_types.h>
 #include <rmw/error_handling.h>
 
+#include "./rmw_uxrce_transports.h"
+
 #include <uxr/client/client.h>
 #include <uxr/client/util/ping.h>
 
@@ -186,101 +188,35 @@ rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_
 
 rmw_ret_t rmw_uros_ping_agent(const int timeout_ms, const uint8_t attempts)
 {
-  bool success = true;
-  if (!session_memory.is_initialized) {
-    /* Init transport for performing the ping request */
+    bool success = false;
+
+    if (NULL == session_memory.allocateditems) {
 #ifdef RMW_UXRCE_TRANSPORT_SERIAL
-    uxrSerialTransport transport;
-    uxrSerialPlatform platform;
+        uxrSerialTransport transport;
+#elif defined(RMW_UXRCE_TRANSPORT_UDP)
+        uxrUDPTransport transport;
+#elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
+        uxrCustomTransport transport;
+#endif
+        rmw_ret_t ret = rmw_uxrce_transport_init(NULL, NULL, (void *)&transport);
 
-    int fd = open(RMW_UXRCE_DEFAULT_SERIAL_DEVICE, O_RDWR | O_NOCTTY);
-    if (success = (0 < fd)) {
-      struct termios tty_config;
-      memset(&tty_config, 0, sizeof(tty_config));
-      if (success = (0 == tcgetattr(fd, &tty_config))) {
-        /* Setting CONTROL OPTIONS. */
-        tty_config.c_cflag |= CREAD;          // Enable read.
-        tty_config.c_cflag |= CLOCAL;         // Set local mode.
-        tty_config.c_cflag &= ~PARENB;        // Disable parity.
-        tty_config.c_cflag &= ~CSTOPB;        // Set one stop bit.
-        tty_config.c_cflag &= ~CSIZE;         // Mask the character size bits.
-        tty_config.c_cflag |= CS8;            // Set 8 data bits.
-        tty_config.c_cflag &= ~CRTSCTS;       // Disable hardware flow control.
-
-        /* Setting LOCAL OPTIONS. */
-        tty_config.c_lflag &= ~ICANON;        // Set non-canonical input.
-        tty_config.c_lflag &= ~ECHO;          // Disable echoing of input characters.
-        tty_config.c_lflag &= ~ECHOE;         // Disable echoing the erase character.
-        tty_config.c_lflag &= ~ISIG;          // Disable SIGINTR, SIGSUSP, SIGDSUSP
-                                              // and SIGQUIT signals.
-
-        /* Setting INPUT OPTIONS. */
-        tty_config.c_iflag &= ~IXON;          // Disable output software flow control.
-        tty_config.c_iflag &= ~IXOFF;         // Disable input software flow control.
-        tty_config.c_iflag &= ~INPCK;         // Disable parity check.
-        tty_config.c_iflag &= ~ISTRIP;        // Disable strip parity bits.
-        tty_config.c_iflag &= ~IGNBRK;        // No ignore break condition.
-        tty_config.c_iflag &= ~IGNCR;         // No ignore carrier return.
-        tty_config.c_iflag &= ~INLCR;         // No map NL to CR.
-        tty_config.c_iflag &= ~ICRNL;         // No map CR to NL.
-
-        /* Setting OUTPUT OPTIONS. */
-        tty_config.c_oflag &= ~OPOST;         // Set raw output.
-
-        /* Setting OUTPUT CHARACTERS. */
-        tty_config.c_cc[VMIN] = 34;
-        tty_config.c_cc[VTIME] = 10;
-
-        /* Setting BAUD RATE. */
-        cfsetispeed(&tty_config, B115200);
-        cfsetospeed(&tty_config, B115200);
-
-        if (success = (0 == tcsetattr(fd, TCSANOW, &tty_config))) {
-          success = uxr_init_serial_transport(
-            &transport, &platform, fd, 0, 1);
+        if (RMW_RET_OK != ret) {
+            return ret;
         }
-      }
-    }
-#elif defined(RMW_UXRCE_TRANSPORT_UDP)
-  #ifdef RMW_UXRCE_TRANSPORT_IPV4
-    uxrIpProtocol ip_protocol = UXR_IPv4;
-  #elif defined(RMW_UXRCE_TRANSPORT_IPV6)
-    uxrIpProtocol ip_protocol = UXR_IPv6;
-  #endif
-    uxrUDPTransport transport;
-    uxrUDPPlatform platform;
-    success = uxr_init_udp_transport(
-        &transport, &platform, ip_protocol,
-        RMW_UXRCE_DEFAULT_UDP_IP,
-        RMW_UXRCE_DEFAULT_UDP_PORT);
-#elif defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
-    uxrSerialTransport transport;
-    uxrSerialPlatform platform;
 
-    int pseudo_fd = atoi(RMW_UXRCE_DEFAULT_SERIAL_DEVICE);
-    success = uxr_init_serial_transport(
-        &transport, &platform, pseudo_fd, 0, 1);
-#endif
-    if (success) {
-      success = uxr_ping_agent_attempts(&transport.comm, timeout_ms, attempts);
+        success = uxr_ping_agent_attempts(&transport.comm, timeout_ms, attempts);
+        CLOSE_TRANSPORT(&transport);
     } else {
-      RMW_SET_ERROR_MSG("Error while initializing transport for ping attempt");
-      return RMW_RET_ERROR;
+        rmw_uxrce_mempool_item_t* item = session_memory.allocateditems;
+        do {
+            rmw_context_impl_t* context = (rmw_context_impl_t *)item->data;
+
+            success = uxr_ping_agent_attempts(&context->transport.comm, timeout_ms, attempts);
+            item = item->next;
+        } while (NULL != item && !success);
     }
-#if defined(RMW_UXRCE_TRANSPORT_SERIAL) || defined(RMW_UXRCE_TRANSPORT_CUSTOM_SERIAL)
-    uxr_close_serial_transport(&transport);
-#elif defined(RMW_UXRCE_TRANSPORT_UDP)
-    uxr_close_udp_transport(&transport);
-#endif
-  } else {
-    rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
-    do {
-      rmw_context_impl_t * context = (rmw_context_impl_t *)item->data;
-      success = uxr_ping_agent_attempts(&context->transport.comm, timeout_ms, attempts);
-      item = item->next;
-    } while (NULL != item && !success);
-  }
-  return (success ? RMW_RET_OK : RMW_RET_ERROR);
+
+    return (success ? RMW_RET_OK : RMW_RET_ERROR);
 }
 
 void rmw_uros_set_continous_serialization_callbacks(
