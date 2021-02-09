@@ -29,7 +29,6 @@
 
 #include "memory.h"
 #include <rmw_microxrcedds_c/config.h>
-#include <rmw_uros/options.h>
 
 #ifdef RMW_UXRCE_TRANSPORT_IPV4
   #define MAX_IP_LEN 16
@@ -213,9 +212,6 @@ typedef struct rmw_uxrce_publisher_t
   rmw_gid_t publisher_gid;
 
   const message_type_support_callbacks_t * type_support_callbacks;
-
-  rmw_uros_continous_serialization_size cs_cb_size;
-  rmw_uros_continous_serialization cs_cb_serialization;
 
   struct rmw_uxrce_topic_t * topic;
 

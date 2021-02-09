@@ -18,12 +18,6 @@
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 
-#include <rmw_uros/options.h>
-
-bool flush_session(uxrSession* session){
-    return uxr_run_session_until_confirm_delivery(session, 1000);
-}
-
 rmw_ret_t
 rmw_publish(
   const rmw_publisher_t * publisher,
@@ -50,22 +44,15 @@ rmw_publish(
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
     const message_type_support_callbacks_t * functions = custom_publisher->type_support_callbacks;
     uint32_t topic_length = functions->get_serialized_size(ros_message);
-    
-    if(custom_publisher->cs_cb_size){custom_publisher->cs_cb_size(&topic_length);}
 
     ucdrBuffer mb;
     bool written = false;
     if (uxr_prepare_output_stream(
         &custom_publisher->owner_node->context->session,
         custom_publisher->stream_id, custom_publisher->datawriter_id, &mb,
-        topic_length) ||
-        uxr_prepare_output_stream_fragmented(
-        &custom_publisher->owner_node->context->session,
-        custom_publisher->stream_id, custom_publisher->datawriter_id, &mb,
-        topic_length, flush_session))
+        topic_length))
     {
       written = functions->cdr_serialize(ros_message, &mb);
-      if(custom_publisher->cs_cb_serialization){custom_publisher->cs_cb_serialization(&mb);}
 
       if (UXR_BEST_EFFORT_STREAM == custom_publisher->stream_id.type) {
         uxr_flash_output_streams(&custom_publisher->owner_node->context->session);

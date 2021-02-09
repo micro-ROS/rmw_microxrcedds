@@ -108,10 +108,7 @@ rmw_create_publisher(
       (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
       custom_node->context->best_effort_input :
       custom_node->context->reliable_input;
-    
-    custom_publisher->cs_cb_size = NULL;
-    custom_publisher->cs_cb_serialization = NULL;
-    
+
     const rosidl_message_type_support_t * type_support_xrce = NULL;
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
     type_support_xrce = get_message_typesupport_handle(
