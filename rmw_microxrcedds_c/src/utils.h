@@ -21,40 +21,41 @@
 
 
 // (Borja) decide wat to do with this macro.
-#define EPROS_PRINT_TRACE() ;  // printf("func %s, in file %s:%d\n", __func__, __FILE__, __LINE__);
+#define EPROS_PRINT_TRACE()    ; // printf("func %s, in file %s:%d\n", __func__, __FILE__, __LINE__);
 
-bool run_xrce_session(rmw_context_impl_t * context, uint16_t requests);
+bool run_xrce_session(rmw_context_impl_t *context, uint16_t requests);
 
-int generate_name(const uxrObjectId * id, char name[], size_t buffer_size);
+int generate_name(const uxrObjectId *id, char name[], size_t buffer_size);
 size_t generate_type_name(
-  const message_type_support_callbacks_t * members, char type_name[],
-  size_t buffer_size);
+   const message_type_support_callbacks_t *members, char type_name[],
+   size_t buffer_size);
 
 int build_service_xml(
-  const char * service_name_id, const char * service_name, bool requester,
-  const service_type_support_callbacks_t * members,
-  const rmw_qos_profile_t * qos_policies, char xml[], size_t buffer_size);
+   const char *service_name_id, const char *service_name, bool requester,
+   const service_type_support_callbacks_t *members,
+   const rmw_qos_profile_t *qos_policies, char xml[], size_t buffer_size);
 
 int build_participant_xml(
-  size_t domain_id, const char * participant_name, char xml[],
-  size_t buffer_size);
-int build_publisher_xml(const char * publisher_name, char xml[], size_t buffer_size);
-int build_subscriber_xml(const char * subscriber_name, char xml[], size_t buffer_size);
+   size_t domain_id, const char *participant_name, char xml[],
+   size_t buffer_size);
+int build_publisher_xml(const char *publisher_name, char xml[], size_t buffer_size);
+int build_subscriber_xml(const char *subscriber_name, char xml[], size_t buffer_size);
 int build_topic_xml(
-  const char * topic_name, const message_type_support_callbacks_t * members,
-  const rmw_qos_profile_t * qos_policies, char xml[], size_t buffer_size);
+   const char *topic_name, const message_type_support_callbacks_t *members,
+   const rmw_qos_profile_t *qos_policies, char xml[], size_t buffer_size);
 int build_datawriter_xml(
-  const char * topic_name, const message_type_support_callbacks_t * members,
-  const rmw_qos_profile_t * qos_policies, char xml[], size_t buffer_size);
+   const char *topic_name, const message_type_support_callbacks_t *members,
+   const rmw_qos_profile_t *qos_policies, char xml[], size_t buffer_size);
 int build_datareader_xml(
-  const char * topic_name, const message_type_support_callbacks_t * members,
-  const rmw_qos_profile_t * qos_policies, char xml[], size_t buffer_size);
+   const char *topic_name, const message_type_support_callbacks_t *members,
+   const rmw_qos_profile_t *qos_policies, char xml[], size_t buffer_size);
 
 bool build_participant_profile(char profile_name[], size_t buffer_size);
-bool build_topic_profile(const char * topic_name, char profile_name[], size_t buffer_size);
-bool build_datawriter_profile(const char * topic_name, char profile_name[], size_t buffer_size);
-bool build_datareader_profile(const char * topic_name, char profile_name[], size_t buffer_size);
+bool build_topic_profile(const char *topic_name, char profile_name[], size_t buffer_size);
+bool build_datawriter_profile(const char *topic_name, char profile_name[], size_t buffer_size);
+bool build_datareader_profile(const char *topic_name, char profile_name[], size_t buffer_size);
 
 
-bool is_uxrce_rmw_identifier_valid(const char * id);
+bool is_uxrce_rmw_identifier_valid(const char *id);
+
 #endif  // UTILS_H_

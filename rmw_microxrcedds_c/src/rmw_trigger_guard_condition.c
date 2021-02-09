@@ -19,20 +19,25 @@
 #include <rmw/error_handling.h>
 
 rmw_ret_t
-rmw_trigger_guard_condition(const rmw_guard_condition_t * guard_condition)
+rmw_trigger_guard_condition(const rmw_guard_condition_t *guard_condition)
 {
-  EPROS_PRINT_TRACE()
-  rmw_ret_t ret = RMW_RET_OK;
-  if (!guard_condition) {
-    RMW_SET_ERROR_MSG("guard condition pointer is null");
-    ret = RMW_RET_ERROR;
-  } else if (!is_uxrce_rmw_identifier_valid(guard_condition->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("guard condition handle not from this implementation");
-    ret = RMW_RET_ERROR;
-  } else {
-    bool * hasTriggered = (bool *)guard_condition->data;
-    *hasTriggered = true;
-  }
+   EPROS_PRINT_TRACE()
+   rmw_ret_t ret = RMW_RET_OK;
+   if (!guard_condition)
+   {
+      RMW_SET_ERROR_MSG("guard condition pointer is null");
+      ret = RMW_RET_ERROR;
+   }
+   else if (!is_uxrce_rmw_identifier_valid(guard_condition->implementation_identifier))
+   {
+      RMW_SET_ERROR_MSG("guard condition handle not from this implementation");
+      ret = RMW_RET_ERROR;
+   }
+   else
+   {
+      bool *hasTriggered = (bool *)guard_condition->data;
+      *hasTriggered = true;
+   }
 
-  return ret;
+   return(ret);
 }
