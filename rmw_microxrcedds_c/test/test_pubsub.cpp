@@ -36,9 +36,9 @@ class TestPubSub : public RMWBaseTest
 protected:
    size_t id_gen = 0;
 
-   const char *topic_type        = "topic_type";
-   const char *topic_name        = "topic_name";
-   const char *message_namespace = "package_name";
+   const char* topic_type        = "topic_type";
+   const char* topic_name        = "topic_name";
+   const char* message_namespace = "package_name";
 };
 
 /*
@@ -56,19 +56,19 @@ TEST_F(TestPubSub, publish_and_receive)
       &dummy_type_support);
 
    dummy_type_support.callbacks.cdr_serialize =
-      [](const void *untyped_ros_message, ucdrBuffer *cdr) -> bool {
+      [](const void* untyped_ros_message, ucdrBuffer* cdr) -> bool {
          bool ret;
-         const rosidl_runtime_c__String *ros_message =
-            reinterpret_cast <const rosidl_runtime_c__String *>(untyped_ros_message);
+         const rosidl_runtime_c__String* ros_message =
+            reinterpret_cast <const rosidl_runtime_c__String*>(untyped_ros_message);
 
          ret = ucdr_serialize_string(cdr, ros_message->data);
          return(ret);
       };
    dummy_type_support.callbacks.cdr_deserialize =
-      [](ucdrBuffer *cdr, void *untyped_ros_message) -> bool {
+      [](ucdrBuffer* cdr, void* untyped_ros_message) -> bool {
          bool ret;
-         rosidl_runtime_c__String *ros_message =
-            reinterpret_cast <rosidl_runtime_c__String *>(untyped_ros_message);
+         rosidl_runtime_c__String* ros_message =
+            reinterpret_cast <rosidl_runtime_c__String*>(untyped_ros_message);
 
          ret = ucdr_deserialize_string(cdr, ros_message->data, ros_message->capacity);
          if (ret)
@@ -78,9 +78,9 @@ TEST_F(TestPubSub, publish_and_receive)
          return(ret);
       };
    dummy_type_support.callbacks.get_serialized_size =
-      [](const void *untyped_ros_message) -> uint32_t {
-         const rosidl_runtime_c__String *ros_message =
-            reinterpret_cast <const rosidl_runtime_c__String *>(untyped_ros_message);
+      [](const void* untyped_ros_message) -> uint32_t {
+         const rosidl_runtime_c__String* ros_message =
+            reinterpret_cast <const rosidl_runtime_c__String*>(untyped_ros_message);
 
          return(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + ros_message->size + 8);
       };
@@ -91,26 +91,26 @@ TEST_F(TestPubSub, publish_and_receive)
    rmw_qos_profile_t dummy_qos_policies;
    ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
-   rmw_node_t *node_pub;
+   rmw_node_t* node_pub;
    node_pub = rmw_create_node(&test_context, "pub_node", "/ns", 0, false);
-   ASSERT_NE((void *)node_pub, (void *)NULL);
+   ASSERT_NE((void*)node_pub, (void*)NULL);
 
    rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
-   rmw_publisher_t *       pub = rmw_create_publisher(
+   rmw_publisher_t*        pub = rmw_create_publisher(
       node_pub, &dummy_type_support.type_support,
       topic_name, &dummy_qos_policies, &default_publisher_options);
-   ASSERT_NE((void *)pub, (void *)NULL);
+   ASSERT_NE((void*)pub, (void*)NULL);
 
-   rmw_node_t *node_sub;
+   rmw_node_t* node_sub;
    node_sub = rmw_create_node(&test_context, "sub_node", "/ns", 0, false);
-   ASSERT_NE((void *)node_sub, (void *)NULL);
+   ASSERT_NE((void*)node_sub, (void*)NULL);
 
    rmw_subscription_options_t default_subscription_options = rmw_get_default_subscription_options();
 
-   rmw_subscription_t *sub = rmw_create_subscription(
+   rmw_subscription_t* sub = rmw_create_subscription(
       node_sub, &dummy_type_support.type_support,
       topic_name, &dummy_qos_policies, &default_subscription_options);
-   ASSERT_NE((void *)sub, (void *)NULL);
+   ASSERT_NE((void*)sub, (void*)NULL);
 
    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
@@ -135,8 +135,8 @@ TEST_F(TestPubSub, publish_and_receive)
    rmw_clients_t clients;
    clients.client_count = 0;
 
-   rmw_events_t *  events   = NULL;
-   rmw_wait_set_t *wait_set = NULL;
+   rmw_events_t*   events   = NULL;
+   rmw_wait_set_t* wait_set = NULL;
    rmw_time_t      wait_timeout;
 
    wait_timeout.sec  = 1;
@@ -153,7 +153,7 @@ TEST_F(TestPubSub, publish_and_receive)
          &wait_timeout
          ), RMW_RET_OK);
 
-   ASSERT_NE((void *)subscriptions.subscribers[0], (void *)NULL);
+   ASSERT_NE((void*)subscriptions.subscribers[0], (void*)NULL);
 
    rosidl_runtime_c__String read_ros_message;
    char buff[100];

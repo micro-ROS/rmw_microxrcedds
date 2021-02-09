@@ -28,8 +28,8 @@
 #include <uxr/client/util/ping.h>
 
 rmw_ret_t rmw_uros_init_options(
-   int argc, const char *const argv[],
-   rmw_init_options_t *rmw_options)
+   int argc, const char* const argv[],
+   rmw_init_options_t* rmw_options)
 {
    if (NULL == rmw_options)
    {
@@ -70,7 +70,7 @@ rmw_ret_t rmw_uros_init_options(
    return(ret);
 }
 
-rmw_ret_t rmw_uros_options_set_serial_device(const char *dev, rmw_init_options_t *rmw_options)
+rmw_ret_t rmw_uros_options_set_serial_device(const char* dev, rmw_init_options_t* rmw_options)
 {
 #if defined(RMW_UXRCE_TRANSPORT_SERIAL)
    if (NULL == rmw_options)
@@ -99,8 +99,8 @@ rmw_ret_t rmw_uros_options_set_serial_device(const char *dev, rmw_init_options_t
 }
 
 rmw_ret_t rmw_uros_options_set_udp_address(
-   const char *ip, const char *port,
-   rmw_init_options_t *rmw_options)
+   const char* ip, const char* port,
+   rmw_init_options_t* rmw_options)
 {
 #ifdef RMW_UXRCE_TRANSPORT_UDP
    if (NULL == rmw_options)
@@ -141,9 +141,9 @@ rmw_ret_t rmw_uros_options_set_udp_address(
 }
 
 #if defined(RMW_UXRCE_TRANSPORT_UDP) && defined(UCLIENT_PROFILE_DISCOVERY)
-bool on_agent_found(const TransportLocator *locator, void *args)
+bool on_agent_found(const TransportLocator* locator, void* args)
 {
-   rmw_init_options_t *rmw_options = (rmw_init_options_t *)args;
+   rmw_init_options_t* rmw_options = (rmw_init_options_t*)args;
    uxrIpProtocol       ip_protocol;
    char     ip[MAX_IP_LEN];
    char     port_str[MAX_PORT_LEN];
@@ -170,7 +170,7 @@ bool on_agent_found(const TransportLocator *locator, void *args)
 
 #endif
 
-rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t *rmw_options)
+rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t* rmw_options)
 {
 #if defined(RMW_UXRCE_TRANSPORT_UDP) && defined(UCLIENT_PROFILE_DISCOVERY)
    if (NULL == rmw_options)
@@ -182,7 +182,7 @@ rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t *rmw_options)
    memset(rmw_options->impl->transport_params.agent_address, 0, MAX_IP_LEN);
    memset(rmw_options->impl->transport_params.agent_port, 0, MAX_PORT_LEN);
 
-   uxr_discovery_agents_default(1, 1000, on_agent_found, (void *)rmw_options);
+   uxr_discovery_agents_default(1, 1000, on_agent_found, (void*)rmw_options);
 
    return((strlen(rmw_options->impl->transport_params.agent_address) > 0) ? RMW_RET_OK : RMW_RET_TIMEOUT);
 #else
@@ -193,7 +193,7 @@ rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t *rmw_options)
 #endif
 }
 
-rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_t *rmw_options)
+rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_t* rmw_options)
 {
    if (NULL == rmw_options)
    {
@@ -219,7 +219,7 @@ rmw_ret_t rmw_uros_ping_agent(const int timeout_ms, const uint8_t attempts)
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
       uxrCustomTransport transport;
 #endif
-      rmw_ret_t ret = rmw_uxrce_transport_init(NULL, NULL, (void *)&transport);
+      rmw_ret_t ret = rmw_uxrce_transport_init(NULL, NULL, (void*)&transport);
 
       if (RMW_RET_OK != ret)
       {
@@ -231,10 +231,10 @@ rmw_ret_t rmw_uros_ping_agent(const int timeout_ms, const uint8_t attempts)
    }
    else
    {
-      rmw_uxrce_mempool_item_t *item = session_memory.allocateditems;
+      rmw_uxrce_mempool_item_t* item = session_memory.allocateditems;
       do
       {
-         rmw_context_impl_t *context = (rmw_context_impl_t *)item->data;
+         rmw_context_impl_t* context = (rmw_context_impl_t*)item->data;
 
          success = uxr_ping_agent_attempts(&context->transport.comm, timeout_ms, attempts);
          item    = item->next;
@@ -245,11 +245,11 @@ rmw_ret_t rmw_uros_ping_agent(const int timeout_ms, const uint8_t attempts)
 }
 
 void rmw_uros_set_continous_serialization_callbacks(
-   rmw_publisher_t *publisher,
+   rmw_publisher_t* publisher,
    rmw_uros_continous_serialization_size size_cb,
    rmw_uros_continous_serialization serialization_cb)
 {
-   rmw_uxrce_publisher_t *custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
+   rmw_uxrce_publisher_t* custom_publisher = (rmw_uxrce_publisher_t*)publisher->data;
 
    custom_publisher->cs_cb_size          = size_cb;
    custom_publisher->cs_cb_serialization = serialization_cb;
@@ -260,7 +260,7 @@ rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
 
 rmw_ret_t rmw_uros_set_custom_transport(
    bool framing,
-   void *args,
+   void* args,
    open_custom_func open_cb,
    close_custom_func close_cb,
    write_custom_func write_cb,

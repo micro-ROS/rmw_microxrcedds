@@ -26,11 +26,11 @@
 #include "./types.h"
 #include "./utils.h"
 
-rmw_node_t *create_node(
-   const char *name, const char *namespace_, size_t domain_id,
-   const rmw_context_t *context)
+rmw_node_t* create_node(
+   const char* name, const char* namespace_, size_t domain_id,
+   const rmw_context_t* context)
 {
-   rmw_node_t *node_handle = NULL;
+   rmw_node_t* node_handle = NULL;
 
    if (!context)
    {
@@ -38,14 +38,14 @@ rmw_node_t *create_node(
       return(NULL);
    }
 
-   rmw_uxrce_mempool_item_t *memory_node = get_memory(&node_memory);
+   rmw_uxrce_mempool_item_t* memory_node = get_memory(&node_memory);
    if (!memory_node)
    {
       RMW_SET_ERROR_MSG("Not available memory node");
       goto fail;
    }
 
-   rmw_uxrce_node_t *node_info = (rmw_uxrce_node_t *)memory_node->data;
+   rmw_uxrce_node_t* node_info = (rmw_uxrce_node_t*)memory_node->data;
 
    node_info->context = context->impl;
 
@@ -60,14 +60,14 @@ rmw_node_t *create_node(
 
    node_handle->implementation_identifier = rmw_get_implementation_identifier();
    node_handle->data = node_info;
-   node_handle->name = (const char *)(rmw_allocate(sizeof(char) * (strlen(name) + 1)));
+   node_handle->name = (const char*)(rmw_allocate(sizeof(char) * (strlen(name) + 1)));
    if (!node_handle->name)
    {
       RMW_SET_ERROR_MSG("failed to allocate memory");
       rmw_uxrce_fini_node_memory(node_handle);
       return(NULL);
    }
-   memcpy((char *)node_handle->name, name, strlen(name) + 1);
+   memcpy((char*)node_handle->name, name, strlen(name) + 1);
 
    node_handle->namespace_ = rmw_allocate(sizeof(char) * (strlen(namespace_) + 1));
    if (!node_handle->namespace_)
@@ -76,7 +76,7 @@ rmw_node_t *create_node(
       rmw_uxrce_fini_node_memory(node_handle);
       return(NULL);
    }
-   memcpy((char *)node_handle->namespace_, namespace_, strlen(namespace_) + 1);
+   memcpy((char*)node_handle->namespace_, namespace_, strlen(namespace_) + 1);
 
    node_info->participant_id =
       uxr_object_id(node_info->context->id_participant++, UXR_PARTICIPANT_ID);
@@ -123,11 +123,11 @@ fail:
    return(node_handle);
 }
 
-rmw_node_t *
+rmw_node_t*
 rmw_create_node(
-   rmw_context_t *context,
-   const char *name,
-   const char *namespace_,
+   rmw_context_t* context,
+   const char* name,
+   const char* namespace_,
    size_t domain_id,
    bool localhost_only)
 {
@@ -150,7 +150,7 @@ rmw_create_node(
    return(rmw_node);
 }
 
-rmw_ret_t rmw_destroy_node(rmw_node_t *node)
+rmw_ret_t rmw_destroy_node(rmw_node_t* node)
 {
    EPROS_PRINT_TRACE()
    rmw_ret_t ret = RMW_RET_OK;
@@ -172,15 +172,15 @@ rmw_ret_t rmw_destroy_node(rmw_node_t *node)
       return(RMW_RET_ERROR);
    }
 
-   rmw_uxrce_node_t *custom_node = (rmw_uxrce_node_t *)node->data;
+   rmw_uxrce_node_t* custom_node = (rmw_uxrce_node_t*)node->data;
    // TODO(Pablo) make sure that other entities are removed from the pools
 
-   rmw_uxrce_mempool_item_t *item = NULL;
+   rmw_uxrce_mempool_item_t* item = NULL;
 
    item = publisher_memory.allocateditems;
    while (item != NULL)
    {
-      rmw_uxrce_publisher_t *custom_publisher = (rmw_uxrce_publisher_t *)item->data;
+      rmw_uxrce_publisher_t* custom_publisher = (rmw_uxrce_publisher_t*)item->data;
       item = item->next;
       if (custom_publisher->owner_node == custom_node)
       {
@@ -191,7 +191,7 @@ rmw_ret_t rmw_destroy_node(rmw_node_t *node)
    item = subscription_memory.allocateditems;
    while (item != NULL)
    {
-      rmw_uxrce_subscription_t *custom_subscription = (rmw_uxrce_subscription_t *)item->data;
+      rmw_uxrce_subscription_t* custom_subscription = (rmw_uxrce_subscription_t*)item->data;
       item = item->next;
       if (custom_subscription->owner_node == custom_node)
       {
@@ -202,7 +202,7 @@ rmw_ret_t rmw_destroy_node(rmw_node_t *node)
    item = service_memory.allocateditems;
    while (item != NULL)
    {
-      rmw_uxrce_service_t *custom_service = (rmw_uxrce_service_t *)item->data;
+      rmw_uxrce_service_t* custom_service = (rmw_uxrce_service_t*)item->data;
       item = item->next;
       if (custom_service->owner_node == custom_node)
       {
@@ -213,7 +213,7 @@ rmw_ret_t rmw_destroy_node(rmw_node_t *node)
    item = client_memory.allocateditems;
    while (item != NULL)
    {
-      rmw_uxrce_client_t *custom_client = (rmw_uxrce_client_t *)item->data;
+      rmw_uxrce_client_t* custom_client = (rmw_uxrce_client_t*)item->data;
       item = item->next;
       if (custom_client->owner_node == custom_node)
       {
@@ -237,25 +237,25 @@ rmw_ret_t rmw_destroy_node(rmw_node_t *node)
 }
 
 rmw_ret_t
-rmw_node_assert_liveliness(const rmw_node_t *node)
+rmw_node_assert_liveliness(const rmw_node_t* node)
 {
    (void)node;
    RMW_SET_ERROR_MSG("function not implemented");
    return(RMW_RET_UNSUPPORTED);
 }
 
-const rmw_guard_condition_t *
-rmw_node_get_graph_guard_condition(const rmw_node_t *node)
+const rmw_guard_condition_t*
+rmw_node_get_graph_guard_condition(const rmw_node_t* node)
 {
-   rmw_uxrce_node_t *     custom_node           = (rmw_uxrce_node_t *)node->data;
-   rmw_context_impl_t *   context               = custom_node->context;
-   rmw_guard_condition_t *graph_guard_condition =
+   rmw_uxrce_node_t*      custom_node           = (rmw_uxrce_node_t*)node->data;
+   rmw_context_impl_t*    context               = custom_node->context;
+   rmw_guard_condition_t* graph_guard_condition =
       &context->graph_guard_condition;
 
 #ifdef RMW_UXRCE_GRAPH
    if (NULL == graph_guard_condition->data)
    {
-      graph_guard_condition->data = (void *)(&context->graph_info.has_changed);
+      graph_guard_condition->data = (void*)(&context->graph_info.has_changed);
    }
 #endif  // RMW_UXRCE_GRAPH
 

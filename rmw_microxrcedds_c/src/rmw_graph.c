@@ -22,8 +22,8 @@
 #include <micro_ros_msgs/msg/detail/graph__rosidl_typesupport_microxrcedds_c.h>
 
 rmw_ret_t rmw_graph_init(
-   rmw_context_impl_t *context,
-   rmw_graph_info_t *graph_info)
+   rmw_context_impl_t* context,
+   rmw_graph_info_t* graph_info)
 {
    rmw_ret_t ret = RMW_RET_OK;
 
@@ -42,7 +42,7 @@ rmw_ret_t rmw_graph_init(
    graph_info->participant_id =
       uxr_object_id(context->id_participant++, UXR_PARTICIPANT_ID);
    size_t      microros_domain_id     = 0; // TODO(jamoralp): shall this Domain ID be configurabe, user wise?
-   const char *graph_participant_name = "microros_graph";
+   const char* graph_participant_name = "microros_graph";
 
    if (!build_participant_xml(microros_domain_id, graph_participant_name,
                               rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
@@ -88,7 +88,7 @@ rmw_ret_t rmw_graph_init(
       graph_info->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
 
    graph_info->datareader_id = uxr_object_id(context->id_datareader++, UXR_DATAREADER_ID);
-   const char *graph_topic_name = "ros_to_microros_graph";
+   const char* graph_topic_name = "ros_to_microros_graph";
    graph_info->graph_type_support =
       rosidl_typesupport_microxrcedds_c__get_message_type_support_handle__micro_ros_msgs__msg__Graph();
 
@@ -96,7 +96,7 @@ rmw_ret_t rmw_graph_init(
    graph_info->topic_id = uxr_object_id(context->id_topic++, UXR_TOPIC_ID);
    if (!build_topic_xml(
           graph_topic_name,
-          (message_type_support_callbacks_t *)(graph_info->graph_type_support->data),
+          (message_type_support_callbacks_t*)(graph_info->graph_type_support->data),
           &graph_subscription_qos_policies, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
    {
       RMW_SET_ERROR_MSG("Failed to generate xml request for graph topic creation");
@@ -111,7 +111,7 @@ rmw_ret_t rmw_graph_init(
    // Create graph datareader request
    if (!build_datareader_xml(
           graph_topic_name,
-          (message_type_support_callbacks_t *)(graph_info->graph_type_support->data),
+          (message_type_support_callbacks_t*)(graph_info->graph_type_support->data),
           &graph_subscription_qos_policies, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
    {
       RMW_SET_ERROR_MSG("Failed to generate xml request for graph datareader creation");
@@ -161,8 +161,8 @@ end:
    }
 
 rmw_ret_t rmw_graph_fill_data_from_buffer(
-   rmw_graph_info_t *graph_info,
-   micro_ros_msgs__msg__Graph *graph_data)
+   rmw_graph_info_t* graph_info,
+   micro_ros_msgs__msg__Graph* graph_data)
 {
    rmw_ret_t  ret = RMW_RET_OK;
    ucdrBuffer temp_buffer;
@@ -176,7 +176,7 @@ rmw_ret_t rmw_graph_fill_data_from_buffer(
    micro_ros_msgs__msg__Node__Sequence__init(&graph_data->nodes, nodes_size);
    for (size_t i = 0; i < nodes_size && (ret == RMW_RET_OK); ++i)
    {
-      micro_ros_msgs__msg__Node *node = &graph_data->nodes.data[i];
+      micro_ros_msgs__msg__Node* node = &graph_data->nodes.data[i];
       char temp_string[256];
       memset(temp_string, 0, sizeof(temp_string));
 
@@ -199,7 +199,7 @@ rmw_ret_t rmw_graph_fill_data_from_buffer(
       micro_ros_msgs__msg__Entity__Sequence__init(&node->entities, entities_size);
       for (size_t j = 0; j < entities_size && (ret == RMW_RET_OK); ++j)
       {
-         micro_ros_msgs__msg__Entity *entity = &node->entities.data[j];
+         micro_ros_msgs__msg__Entity* entity = &node->entities.data[j];
 
          // Deserialize entity type
          UCDR_DESERIALIZE_AND_CHECK_RETVAL(ret, ucdr_deserialize_uint8_t, &temp_buffer, &entity->entity_type);

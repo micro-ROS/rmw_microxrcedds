@@ -22,15 +22,15 @@
 #include "./utils.h"
 
 
-rmw_uxrce_topic_t *
+rmw_uxrce_topic_t*
 create_topic(
-   struct rmw_uxrce_node_t *custom_node,
-   const char *topic_name,
-   const message_type_support_callbacks_t *message_type_support_callbacks,
-   const rmw_qos_profile_t *qos_policies)
+   struct rmw_uxrce_node_t* custom_node,
+   const char* topic_name,
+   const message_type_support_callbacks_t* message_type_support_callbacks,
+   const rmw_qos_profile_t* qos_policies)
 {
-   rmw_uxrce_topic_t *       custom_topic = NULL;
-   rmw_uxrce_mempool_item_t *memory_node  = get_memory(&topics_memory);
+   rmw_uxrce_topic_t*        custom_topic = NULL;
+   rmw_uxrce_mempool_item_t* memory_node  = get_memory(&topics_memory);
 
    if (!memory_node)
    {
@@ -38,7 +38,7 @@ create_topic(
       goto fail;
    }
 
-   custom_topic = (rmw_uxrce_topic_t *)memory_node->data;
+   custom_topic = (rmw_uxrce_topic_t*)memory_node->data;
 
    // Init
    custom_topic->sync_with_agent = false;
@@ -97,7 +97,7 @@ fail:
    return(custom_topic);
 }
 
-rmw_ret_t destroy_topic(rmw_uxrce_topic_t *topic)
+rmw_ret_t destroy_topic(rmw_uxrce_topic_t* topic)
 {
    rmw_ret_t result_ret = RMW_RET_OK;
 
@@ -106,7 +106,7 @@ rmw_ret_t destroy_topic(rmw_uxrce_topic_t *topic)
       topic->owner_node->context->reliable_output,
       topic->topic_id);
 
-   rmw_uxrce_node_t *custom_node = topic->owner_node;
+   rmw_uxrce_node_t* custom_node = topic->owner_node;
 
    if (!run_xrce_session(custom_node->context, delete_topic))
    {
@@ -120,15 +120,15 @@ rmw_ret_t destroy_topic(rmw_uxrce_topic_t *topic)
    return(result_ret);
 }
 
-size_t topic_count(rmw_uxrce_node_t *custom_node)
+size_t topic_count(rmw_uxrce_node_t* custom_node)
 {
    size_t count = 0;
-   rmw_uxrce_mempool_item_t *item = NULL;
+   rmw_uxrce_mempool_item_t* item = NULL;
 
    item = publisher_memory.allocateditems;
    while (item != NULL)
    {
-      rmw_uxrce_publisher_t *custom_publisher = (rmw_uxrce_publisher_t *)item->data;
+      rmw_uxrce_publisher_t* custom_publisher = (rmw_uxrce_publisher_t*)item->data;
       item = item->next;
       if (custom_publisher->owner_node == custom_node && custom_publisher->topic != NULL)
       {
@@ -139,7 +139,7 @@ size_t topic_count(rmw_uxrce_node_t *custom_node)
    item = subscription_memory.allocateditems;
    while (item != NULL)
    {
-      rmw_uxrce_subscription_t *custom_subscription = (rmw_uxrce_subscription_t *)item->data;
+      rmw_uxrce_subscription_t* custom_subscription = (rmw_uxrce_subscription_t*)item->data;
       item = item->next;
       if (custom_subscription->owner_node == custom_node && custom_subscription->topic != NULL)
       {

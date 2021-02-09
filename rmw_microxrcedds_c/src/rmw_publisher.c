@@ -36,9 +36,9 @@
 
 rmw_ret_t
 rmw_init_publisher_allocation(
-   const rosidl_message_type_support_t *type_support,
-   const rosidl_runtime_c__Sequence__bound *message_bounds,
-   rmw_publisher_allocation_t *allocation)
+   const rosidl_message_type_support_t* type_support,
+   const rosidl_runtime_c__Sequence__bound* message_bounds,
+   rmw_publisher_allocation_t* allocation)
 {
    (void)type_support;
    (void)message_bounds;
@@ -49,20 +49,20 @@ rmw_init_publisher_allocation(
 
 rmw_ret_t
 rmw_fini_publisher_allocation(
-   rmw_publisher_allocation_t *allocation)
+   rmw_publisher_allocation_t* allocation)
 {
    (void)allocation;
    RMW_SET_ERROR_MSG("function not implemented");
    return(RMW_RET_UNSUPPORTED);
 }
 
-rmw_publisher_t *
+rmw_publisher_t*
 rmw_create_publisher(
-   const rmw_node_t *node,
-   const rosidl_message_type_support_t *type_support,
-   const char *topic_name,
-   const rmw_qos_profile_t *qos_policies,
-   const rmw_publisher_options_t *publisher_options)
+   const rmw_node_t* node,
+   const rosidl_message_type_support_t* type_support,
+   const char* topic_name,
+   const rmw_qos_profile_t* qos_policies,
+   const rmw_publisher_options_t* publisher_options)
 {
    (void)publisher_options;
 
@@ -90,20 +90,20 @@ rmw_create_publisher(
    }
    else
    {
-      rmw_publisher       = (rmw_publisher_t *)rmw_allocate(sizeof(rmw_publisher_t));
+      rmw_publisher       = (rmw_publisher_t*)rmw_allocate(sizeof(rmw_publisher_t));
       rmw_publisher->data = NULL;
       rmw_publisher->implementation_identifier = rmw_get_implementation_identifier();
       rmw_publisher->topic_name =
-         (const char *)(rmw_allocate(sizeof(char) * (strlen(topic_name) + 1)));
+         (const char*)(rmw_allocate(sizeof(char) * (strlen(topic_name) + 1)));
       if (!rmw_publisher->topic_name)
       {
          RMW_SET_ERROR_MSG("failed to allocate memory");
          goto fail;
       }
-      strcpy((char *)rmw_publisher->topic_name, topic_name);
+      strcpy((char*)rmw_publisher->topic_name, topic_name);
 
-      rmw_uxrce_node_t *        custom_node = (rmw_uxrce_node_t *)node->data;
-      rmw_uxrce_mempool_item_t *memory_node = get_memory(&publisher_memory);
+      rmw_uxrce_node_t*         custom_node = (rmw_uxrce_node_t*)node->data;
+      rmw_uxrce_mempool_item_t* memory_node = get_memory(&publisher_memory);
       if (!memory_node)
       {
          RMW_SET_ERROR_MSG("Not available memory node");
@@ -111,7 +111,7 @@ rmw_create_publisher(
       }
 
       // TODO(Borja) RMW_UXRCE_TRANSPORT_id is duplicated in publisher_id and in publisher_gid.data
-      rmw_uxrce_publisher_t *custom_publisher = (rmw_uxrce_publisher_t *)memory_node->data;
+      rmw_uxrce_publisher_t* custom_publisher = (rmw_uxrce_publisher_t*)memory_node->data;
       custom_publisher->rmw_handle = rmw_publisher;
       custom_publisher->owner_node = custom_node;
       custom_publisher->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
@@ -125,7 +125,7 @@ rmw_create_publisher(
       custom_publisher->cs_cb_size          = NULL;
       custom_publisher->cs_cb_serialization = NULL;
 
-      const rosidl_message_type_support_t *type_support_xrce = NULL;
+      const rosidl_message_type_support_t* type_support_xrce = NULL;
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
       type_support_xrce = get_message_typesupport_handle(
          type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
@@ -144,7 +144,7 @@ rmw_create_publisher(
       }
 
       custom_publisher->type_support_callbacks =
-         (const message_type_support_callbacks_t *)type_support_xrce->data;
+         (const message_type_support_callbacks_t*)type_support_xrce->data;
 
       if (custom_publisher->type_support_callbacks == NULL)
       {
@@ -253,16 +253,16 @@ fail:
 
 rmw_ret_t
 rmw_publisher_count_matched_subscriptions(
-   const rmw_publisher_t *publisher,
-   size_t *subscription_count)
+   const rmw_publisher_t* publisher,
+   size_t* subscription_count)
 {
 #ifdef RMW_UXRCE_GRAPH
    rmw_ret_t           ret        = RMW_RET_OK;
-   const char *        topic_name = publisher->topic_name;
+   const char*         topic_name = publisher->topic_name;
    rcutils_allocator_t allocator  = rcutils_get_default_allocator();
 
-   rmw_uxrce_publisher_t *custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
-   const rmw_node_t *     node             = custom_publisher->owner_node->rmw_handle;
+   rmw_uxrce_publisher_t* custom_publisher = (rmw_uxrce_publisher_t*)publisher->data;
+   const rmw_node_t*      node             = custom_publisher->owner_node->rmw_handle;
 
    rmw_topic_endpoint_info_array_t subscriptions_info =
       rmw_get_zero_initialized_topic_endpoint_info_array();
@@ -297,7 +297,7 @@ pub_count_sub_fail:
 }
 
 rmw_ret_t
-rmw_publisher_assert_liveliness(const rmw_publisher_t *publisher)
+rmw_publisher_assert_liveliness(const rmw_publisher_t* publisher)
 {
    (void)publisher;
    RMW_SET_ERROR_MSG("function not implemented");
@@ -306,12 +306,12 @@ rmw_publisher_assert_liveliness(const rmw_publisher_t *publisher)
 
 rmw_ret_t
 rmw_publisher_get_actual_qos(
-   const rmw_publisher_t *publisher,
-   rmw_qos_profile_t *qos)
+   const rmw_publisher_t* publisher,
+   rmw_qos_profile_t* qos)
 {
    (void)qos;
 
-   rmw_uxrce_publisher_t *custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
+   rmw_uxrce_publisher_t* custom_publisher = (rmw_uxrce_publisher_t*)publisher->data;
    qos = &custom_publisher->qos;
 
    return(RMW_RET_OK);
@@ -319,9 +319,9 @@ rmw_publisher_get_actual_qos(
 
 rmw_ret_t
 rmw_borrow_loaned_message(
-   const rmw_publisher_t *publisher,
-   const rosidl_message_type_support_t *type_support,
-   void **ros_message)
+   const rmw_publisher_t* publisher,
+   const rosidl_message_type_support_t* type_support,
+   void** ros_message)
 {
    (void)publisher;
    (void)type_support;
@@ -333,8 +333,8 @@ rmw_borrow_loaned_message(
 
 rmw_ret_t
 rmw_return_loaned_message_from_publisher(
-   const rmw_publisher_t *publisher,
-   void *loaned_message)
+   const rmw_publisher_t* publisher,
+   void* loaned_message)
 {
    (void)publisher;
    (void)loaned_message;
@@ -345,8 +345,8 @@ rmw_return_loaned_message_from_publisher(
 
 rmw_ret_t
 rmw_destroy_publisher(
-   rmw_node_t *node,
-   rmw_publisher_t *publisher)
+   rmw_node_t* node,
+   rmw_publisher_t* publisher)
 {
    EPROS_PRINT_TRACE()
    rmw_ret_t result_ret = RMW_RET_OK;
@@ -382,8 +382,8 @@ rmw_destroy_publisher(
    }
    else
    {
-      rmw_uxrce_publisher_t *custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
-      rmw_uxrce_node_t *     custom_node      = custom_publisher->owner_node;
+      rmw_uxrce_publisher_t* custom_publisher = (rmw_uxrce_publisher_t*)publisher->data;
+      rmw_uxrce_node_t*      custom_node      = custom_publisher->owner_node;
 
       destroy_topic(custom_publisher->topic);
 

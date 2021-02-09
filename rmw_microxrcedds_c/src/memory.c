@@ -18,14 +18,14 @@
 #include <rmw_microxrcedds_c/config.h>
 #include <rmw/allocators.h>
 
-bool has_memory(rmw_uxrce_mempool_t *mem)
+bool has_memory(rmw_uxrce_mempool_t* mem)
 {
    return(mem->freeitems != NULL ? true : false);
 }
 
-rmw_uxrce_mempool_item_t *get_memory(rmw_uxrce_mempool_t *mem)
+rmw_uxrce_mempool_item_t* get_memory(rmw_uxrce_mempool_t* mem)
 {
-   rmw_uxrce_mempool_item_t *item = NULL;
+   rmw_uxrce_mempool_item_t* item = NULL;
 
    if (has_memory(mem))
    {
@@ -49,10 +49,10 @@ rmw_uxrce_mempool_item_t *get_memory(rmw_uxrce_mempool_t *mem)
    else
    {
 #ifdef RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS
-      item       = (rmw_uxrce_mempool_item_t *)rmw_allocate(sizeof(rmw_uxrce_mempool_item_t));
+      item       = (rmw_uxrce_mempool_item_t*)rmw_allocate(sizeof(rmw_uxrce_mempool_item_t));
       item->prev = NULL;
       item->next = NULL;
-      item->data = (void *)rmw_allocate(mem->element_size);
+      item->data = (void*)rmw_allocate(mem->element_size);
       memset(item->data, 0, mem->element_size);
       item->is_dynamic_memory = false; // Allow to put element in free pool the first time
       put_memory(mem, item);
@@ -63,7 +63,7 @@ rmw_uxrce_mempool_item_t *get_memory(rmw_uxrce_mempool_t *mem)
    return(item);
 }
 
-void put_memory(rmw_uxrce_mempool_t *mem, rmw_uxrce_mempool_item_t *item)
+void put_memory(rmw_uxrce_mempool_t* mem, rmw_uxrce_mempool_item_t* item)
 {
    // Gets item from allocated pool
    if (item->prev)

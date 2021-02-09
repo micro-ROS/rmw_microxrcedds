@@ -62,11 +62,11 @@ __endpoint_kind_to_endpoint_type(
 static rmw_ret_t
 __rmw_get_endpoint_info_by_topic(
    const uint8_t kind,
-   const rmw_node_t *node,
-   rcutils_allocator_t *allocator,
-   const char *topic_name,
+   const rmw_node_t* node,
+   rcutils_allocator_t* allocator,
+   const char* topic_name,
    bool no_mangle,
-   rmw_topic_endpoint_info_array_t *endpoints_info)
+   rmw_topic_endpoint_info_array_t* endpoints_info)
 {
    (void)no_mangle; // TODO (jamoralp): what is this used for?
    // Perform RMW checks
@@ -82,8 +82,8 @@ __rmw_get_endpoint_info_by_topic(
    }
 
    // Get micro_ros_msgs/msg/Graph instance
-   rmw_uxrce_node_t *custom_node = (rmw_uxrce_node_t *)(node->data);
-   rmw_graph_info_t *graph_info  = &custom_node->context->graph_info;
+   rmw_uxrce_node_t* custom_node = (rmw_uxrce_node_t*)(node->data);
+   rmw_graph_info_t* graph_info  = &custom_node->context->graph_info;
 
    rmw_ret_t ret = RMW_RET_OK;
 
@@ -92,7 +92,7 @@ __rmw_get_endpoint_info_by_topic(
       return(ret);
    }
 
-   micro_ros_msgs__msg__Graph *graph_data = micro_ros_msgs__msg__Graph__create();
+   micro_ros_msgs__msg__Graph* graph_data = micro_ros_msgs__msg__Graph__create();
 
    if (RMW_RET_OK != rmw_graph_fill_data_from_buffer(graph_info, graph_data))
    {
@@ -103,12 +103,12 @@ __rmw_get_endpoint_info_by_topic(
    // Look for given topic
    for (size_t i = 0; i < graph_data->nodes.size; ++i)
    {
-      micro_ros_msgs__msg__Node *node = &graph_data->nodes.data[i];
+      micro_ros_msgs__msg__Node* node = &graph_data->nodes.data[i];
       size_t entities_size            = node->entities.size;
 
       for (size_t j = 0; j < entities_size; ++j)
       {
-         micro_ros_msgs__msg__Entity *entity = &node->entities.data[j];
+         micro_ros_msgs__msg__Entity* entity = &node->entities.data[j];
 
          if (0 == strcmp(topic_name, entity->name.data) &&
              kind == entity->entity_type)
@@ -135,7 +135,7 @@ __rmw_get_endpoint_info_by_topic(
 
             // Retrieve endpoint information
             // Node name
-            rmw_topic_endpoint_info_t *endpoint_info =
+            rmw_topic_endpoint_info_t* endpoint_info =
                &endpoints_info->info_array[current_position];
             endpoint_info->node_name = allocator->zero_allocate(
                strlen(node->node_name.data) + 1,
@@ -194,11 +194,11 @@ fini:
 
 rmw_ret_t
 rmw_get_publishers_info_by_topic(
-   const rmw_node_t *node,
-   rcutils_allocator_t *allocator,
-   const char *topic_name,
+   const rmw_node_t* node,
+   rcutils_allocator_t* allocator,
+   const char* topic_name,
    bool no_mangle,
-   rmw_topic_endpoint_info_array_t *publishers_info)
+   rmw_topic_endpoint_info_array_t* publishers_info)
 {
 #ifdef RMW_UXRCE_GRAPH
    return(__rmw_get_endpoint_info_by_topic(
@@ -221,11 +221,11 @@ rmw_get_publishers_info_by_topic(
 
 rmw_ret_t
 rmw_get_subscriptions_info_by_topic(
-   const rmw_node_t *node,
-   rcutils_allocator_t *allocator,
-   const char *topic_name,
+   const rmw_node_t* node,
+   rcutils_allocator_t* allocator,
+   const char* topic_name,
    bool no_mangle,
-   rmw_topic_endpoint_info_array_t *subscriptions_info)
+   rmw_topic_endpoint_info_array_t* subscriptions_info)
 {
 #ifdef RMW_UXRCE_GRAPH
    return(__rmw_get_endpoint_info_by_topic(

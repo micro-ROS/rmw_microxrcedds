@@ -44,7 +44,7 @@ typedef struct rmw_uxrce_transport_params_t
    char              agent_port[MAX_PORT_LEN];
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
    bool              framing;
-   void *            args;
+   void*             args;
    open_custom_func  open_cb;
    close_custom_func close_cb;
    write_custom_func write_cb;
@@ -64,8 +64,8 @@ typedef struct rmw_uxrce_transport_params_t
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
 rmw_ret_t rmw_uros_init_options(
-   int argc, const char *const argv[],
-   rmw_init_options_t *rmw_options);
+   int argc, const char* const argv[],
+   rmw_init_options_t* rmw_options);
 
 /**
  * \brief Fills rmw implementation-specific options with the given parameters.
@@ -75,7 +75,7 @@ rmw_ret_t rmw_uros_init_options(
  * \return RMW_RET_OK If arguments were valid and set in rmw_init_options.
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
-rmw_ret_t rmw_uros_options_set_serial_device(const char *dev, rmw_init_options_t *rmw_options);
+rmw_ret_t rmw_uros_options_set_serial_device(const char* dev, rmw_init_options_t* rmw_options);
 
 /**
  * \brief Fills rmw implementation-specific options with the given parameters.
@@ -87,8 +87,8 @@ rmw_ret_t rmw_uros_options_set_serial_device(const char *dev, rmw_init_options_t
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
 rmw_ret_t rmw_uros_options_set_udp_address(
-   const char *ip, const char *port,
-   rmw_init_options_t *rmw_options);
+   const char* ip, const char* port,
+   rmw_init_options_t* rmw_options);
 
 /**
  * \brief Fills rmw implementation-specific options with the autodicovered address of an micro-ROS Agent.
@@ -98,7 +98,7 @@ rmw_ret_t rmw_uros_options_set_udp_address(
  * \return RMW_RET_TIMEOUT If micro-ROS agent autodiscovery is timeout.
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
-rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t *rmw_options);
+rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t* rmw_options);
 
 /**
  * \brief Fills rmw implementation-specific options with the given parameters.
@@ -108,7 +108,7 @@ rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t *rmw_options);
  * \return RMW_RET_OK If arguments were valid and set in rmw_init_options.
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
-rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_t *rmw_options);
+rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_t* rmw_options);
 
 /**
  * \brief Check if micro-ROS Agent is up and running.
@@ -129,11 +129,11 @@ rmw_ret_t rmw_uros_ping_agent(const int timeout_ms, const uint8_t attempts);
  * \param[in] serialization_cb callback that should serialize the user part of the message
  */
 
-typedef void (*rmw_uros_continous_serialization_size)(uint32_t *topic_length);
-typedef void (*rmw_uros_continous_serialization)(ucdrBuffer *ucdr);
+typedef void (* rmw_uros_continous_serialization_size)(uint32_t* topic_length);
+typedef void (* rmw_uros_continous_serialization)(ucdrBuffer* ucdr);
 
 void rmw_uros_set_continous_serialization_callbacks(
-   rmw_publisher_t *publisher,
+   rmw_publisher_t* publisher,
    rmw_uros_continous_serialization_size size_cb,
    rmw_uros_continous_serialization serialization_cb);
 
@@ -154,7 +154,7 @@ extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
  */
 rmw_ret_t rmw_uros_set_custom_transport(
    bool framing,
-   void *args,
+   void* args,
    open_custom_func open_cb,
    close_custom_func close_cb,
    write_custom_func write_cb,

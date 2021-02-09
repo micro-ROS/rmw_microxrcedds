@@ -28,9 +28,9 @@
 
 rmw_ret_t
 rmw_get_service_names_and_types(
-   const rmw_node_t *node,
-   rcutils_allocator_t *allocator,
-   rmw_names_and_types_t *service_names_and_types)
+   const rmw_node_t* node,
+   rcutils_allocator_t* allocator,
+   rmw_names_and_types_t* service_names_and_types)
 {
 #ifdef RMW_UXRCE_GRAPH
    // Perform RMW checks
@@ -46,8 +46,8 @@ rmw_get_service_names_and_types(
    }
 
    // Get micro_ros_msgs/msg/Graph instance
-   rmw_uxrce_node_t *custom_node = (rmw_uxrce_node_t *)(node->data);
-   rmw_graph_info_t *graph_info  = &custom_node->context->graph_info;
+   rmw_uxrce_node_t* custom_node = (rmw_uxrce_node_t*)(node->data);
+   rmw_graph_info_t* graph_info  = &custom_node->context->graph_info;
 
    rmw_ret_t ret = RMW_RET_OK;
 
@@ -56,7 +56,7 @@ rmw_get_service_names_and_types(
       return(ret);
    }
 
-   micro_ros_msgs__msg__Graph *graph_data = micro_ros_msgs__msg__Graph__create();
+   micro_ros_msgs__msg__Graph* graph_data = micro_ros_msgs__msg__Graph__create();
 
    if (RMW_RET_OK != rmw_graph_fill_data_from_buffer(graph_info, graph_data))
    {
@@ -67,12 +67,12 @@ rmw_get_service_names_and_types(
    // Initialize names_and_types structure according to Graph size
    for (size_t i = 0; i < graph_data->nodes.size; ++i)
    {
-      micro_ros_msgs__msg__Node *node = &graph_data->nodes.data[i];
+      micro_ros_msgs__msg__Node* node = &graph_data->nodes.data[i];
       size_t entities_size            = node->entities.size;
 
       for (size_t j = 0; j < entities_size; ++j)
       {
-         micro_ros_msgs__msg__Entity *entity = &node->entities.data[j];
+         micro_ros_msgs__msg__Entity* entity = &node->entities.data[j];
 
          switch (entity->entity_type)
          {

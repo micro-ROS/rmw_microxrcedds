@@ -50,21 +50,21 @@ typedef struct
 } dummy_service_type_support_t;
 
 void ConfigureDummyTypeSupport(
-   const char *type_name,
-   const char *topic_name,
-   const char *message_namespace,
+   const char* type_name,
+   const char* topic_name,
+   const char* message_namespace,
    size_t id,
-   dummy_type_support_t *dummy_type_support);
+   dummy_type_support_t* dummy_type_support);
 
 void ConfigureDummyServiceTypeSupport(
-   const char *type_name,
-   const char *service_name,
-   const char *message_namespace,
+   const char* type_name,
+   const char* service_name,
+   const char* message_namespace,
    size_t id,
-   dummy_service_type_support_t *dummy_type_support);
+   dummy_service_type_support_t* dummy_type_support);
 
 
-void ConfigureDefaultQOSPolices(rmw_qos_profile_t *dummy_qos_policies);
+void ConfigureDefaultQOSPolices(rmw_qos_profile_t* dummy_qos_policies);
 
 
 bool CheckErrorState();

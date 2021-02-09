@@ -30,12 +30,12 @@
 static rmw_ret_t
 __rmw_get_entity_names_and_types_by_node(
    const uint8_t kind,
-   const rmw_node_t *node,
-   rcutils_allocator_t *allocator,
-   const char *node_name,
-   const char *node_namespace,
+   const rmw_node_t* node,
+   rcutils_allocator_t* allocator,
+   const char* node_name,
+   const char* node_namespace,
    bool demangle,
-   rmw_names_and_types_t *topic_names_and_types)
+   rmw_names_and_types_t* topic_names_and_types)
 {
    (void)demangle; // TODO(jamoralp): what to use this for?
 
@@ -51,8 +51,8 @@ __rmw_get_entity_names_and_types_by_node(
    }
 
    // Get micro_ros_msgs/msg/Graph instance
-   rmw_uxrce_node_t *custom_node = (rmw_uxrce_node_t *)(node->data);
-   rmw_graph_info_t *graph_info  = &custom_node->context->graph_info;
+   rmw_uxrce_node_t* custom_node = (rmw_uxrce_node_t*)(node->data);
+   rmw_graph_info_t* graph_info  = &custom_node->context->graph_info;
 
    if (!graph_info->initialized)
    {
@@ -60,7 +60,7 @@ __rmw_get_entity_names_and_types_by_node(
    }
 
    rmw_ret_t ret = RMW_RET_OK;
-   micro_ros_msgs__msg__Graph *graph_data = micro_ros_msgs__msg__Graph__create();
+   micro_ros_msgs__msg__Graph* graph_data = micro_ros_msgs__msg__Graph__create();
 
    if (RMW_RET_OK != rmw_graph_fill_data_from_buffer(graph_info, graph_data))
    {
@@ -71,7 +71,7 @@ __rmw_get_entity_names_and_types_by_node(
    // Look for given node name and namespace within the graph information
    for (size_t i = 0; i < graph_data->nodes.size; ++i)
    {
-      micro_ros_msgs__msg__Node *node = &graph_data->nodes.data[i];
+      micro_ros_msgs__msg__Node* node = &graph_data->nodes.data[i];
       if (0 == strcmp(node_name, node->node_name.data) &&
           0 == strcmp(node_namespace, node->node_namespace.data))
       {
@@ -79,7 +79,7 @@ __rmw_get_entity_names_and_types_by_node(
          size_t entities_size = node->entities.size;
          for (size_t j = 0; j < entities_size; ++j)
          {
-            micro_ros_msgs__msg__Entity *entity = &node->entities.data[j];
+            micro_ros_msgs__msg__Entity* entity = &node->entities.data[j];
             if (kind == entity->entity_type)
             {
                // Make space for the new publisher name
@@ -160,12 +160,12 @@ fini:
 
 rmw_ret_t
 rmw_get_publisher_names_and_types_by_node(
-   const rmw_node_t *node,
-   rcutils_allocator_t *allocator,
-   const char *node_name,
-   const char *node_namespace,
+   const rmw_node_t* node,
+   rcutils_allocator_t* allocator,
+   const char* node_name,
+   const char* node_namespace,
    bool demangle,
-   rmw_names_and_types_t *topic_names_and_types)
+   rmw_names_and_types_t* topic_names_and_types)
 {
 #ifdef RMW_UXRCE_GRAPH
    return(__rmw_get_entity_names_and_types_by_node(
@@ -190,12 +190,12 @@ rmw_get_publisher_names_and_types_by_node(
 
 rmw_ret_t
 rmw_get_subscriber_names_and_types_by_node(
-   const rmw_node_t *node,
-   rcutils_allocator_t *allocator,
-   const char *node_name,
-   const char *node_namespace,
+   const rmw_node_t* node,
+   rcutils_allocator_t* allocator,
+   const char* node_name,
+   const char* node_namespace,
    bool demangle,
-   rmw_names_and_types_t *topic_names_and_types)
+   rmw_names_and_types_t* topic_names_and_types)
 {
 #ifdef RMW_UXRCE_GRAPH
    return(__rmw_get_entity_names_and_types_by_node(
@@ -220,11 +220,11 @@ rmw_get_subscriber_names_and_types_by_node(
 
 rmw_ret_t
 rmw_get_service_names_and_types_by_node(
-   const rmw_node_t *node,
-   rcutils_allocator_t *allocator,
-   const char *node_name,
-   const char *node_namespace,
-   rmw_names_and_types_t *service_names_and_types)
+   const rmw_node_t* node,
+   rcutils_allocator_t* allocator,
+   const char* node_name,
+   const char* node_namespace,
+   rmw_names_and_types_t* service_names_and_types)
 {
 #ifdef RMW_UXRCE_GRAPH
    return(__rmw_get_entity_names_and_types_by_node(
@@ -248,11 +248,11 @@ rmw_get_service_names_and_types_by_node(
 
 rmw_ret_t
 rmw_get_client_names_and_types_by_node(
-   const rmw_node_t *node,
-   rcutils_allocator_t *allocator,
-   const char *node_name,
-   const char *node_namespace,
-   rmw_names_and_types_t *service_names_and_types)
+   const rmw_node_t* node,
+   rcutils_allocator_t* allocator,
+   const char* node_name,
+   const char* node_namespace,
+   rmw_names_and_types_t* service_names_and_types)
 {
 #ifdef RMW_UXRCE_GRAPH
    return(__rmw_get_entity_names_and_types_by_node(

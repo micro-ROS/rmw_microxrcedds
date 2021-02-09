@@ -38,7 +38,7 @@ protected:
       RMWBaseTest::SetUp();
 
       node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
-      ASSERT_NE((void *)node, (void *)NULL);
+      ASSERT_NE((void*)node, (void*)NULL);
    }
 
    void TearDown() override
@@ -47,11 +47,11 @@ protected:
       RMWBaseTest::TearDown();
    }
 
-   rmw_node_t *node;
+   rmw_node_t* node;
 
-   const char *topic_type        = "topic_type";
-   const char *topic_name        = "topic_name";
-   const char *message_namespace = "package_name";
+   const char* topic_type        = "topic_type";
+   const char* topic_name        = "topic_name";
+   const char* message_namespace = "package_name";
 
    size_t id_gen = 0;
 };
@@ -76,13 +76,13 @@ TEST_F(TestPublisher, construction_and_destruction)
 
    rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
 
-   rmw_publisher_t *pub = rmw_create_publisher(
+   rmw_publisher_t* pub = rmw_create_publisher(
       this->node,
       &dummy_type_support.type_support,
       topic_name,
       &dummy_qos_policies,
       &default_publisher_options);
-   ASSERT_NE((void *)pub, (void *)NULL);
+   ASSERT_NE((void*)pub, (void*)NULL);
 
    rmw_ret_t ret = rmw_destroy_publisher(this->node, pub);
    ASSERT_EQ(ret, RMW_RET_OK);
@@ -99,9 +99,9 @@ TEST_F(TestPublisher, memory_poll_multiple_topic)
    ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
    std::vector <dummy_type_support_t> dummy_type_supports;
-   std::vector <rmw_publisher_t *>    publishers;
+   std::vector <rmw_publisher_t*>     publishers;
    rmw_ret_t        ret;
-   rmw_publisher_t *publisher;
+   rmw_publisher_t* publisher;
 
    rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
 
@@ -124,7 +124,7 @@ TEST_F(TestPublisher, memory_poll_multiple_topic)
             dummy_type_supports.back().topic_name.data(),
             &dummy_qos_policies,
             &default_publisher_options);
-         ASSERT_NE((void *)publisher, (void *)NULL);
+         ASSERT_NE((void*)publisher, (void*)NULL);
          publishers.push_back(publisher);
       }
    }
@@ -146,7 +146,7 @@ TEST_F(TestPublisher, memory_poll_multiple_topic)
          dummy_type_supports.back().topic_name.data(),
          &dummy_qos_policies,
          &default_publisher_options);
-      ASSERT_EQ((void *)publisher, (void *)NULL);
+      ASSERT_EQ((void*)publisher, (void*)NULL);
       ASSERT_EQ(CheckErrorState(), true);
 
       // Relese one
@@ -173,7 +173,7 @@ TEST_F(TestPublisher, memory_poll_multiple_topic)
          dummy_type_supports.back().topic_name.data(),
          &dummy_qos_policies,
          &default_publisher_options);
-      ASSERT_NE((void *)publisher, (void *)NULL);
+      ASSERT_NE((void*)publisher, (void*)NULL);
       publishers.push_back(publisher);
    }
 
@@ -208,9 +208,9 @@ TEST_F(TestPublisher, memory_poll_shared_topic)
    rmw_qos_profile_t dummy_qos_policies;
    ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
-   std::vector <rmw_publisher_t *> publishers;
+   std::vector <rmw_publisher_t*> publishers;
    rmw_ret_t        ret;
-   rmw_publisher_t *publisher;
+   rmw_publisher_t* publisher;
 
    rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
 
@@ -224,7 +224,7 @@ TEST_F(TestPublisher, memory_poll_shared_topic)
             topic_name,
             &dummy_qos_policies,
             &default_publisher_options);
-         ASSERT_NE((void *)publisher, (void *)NULL);
+         ASSERT_NE((void*)publisher, (void*)NULL);
          publishers.push_back(publisher);
       }
    }
@@ -238,7 +238,7 @@ TEST_F(TestPublisher, memory_poll_shared_topic)
          topic_name,
          &dummy_qos_policies,
          &default_publisher_options);
-      ASSERT_EQ((void *)publisher, (void *)NULL);
+      ASSERT_EQ((void*)publisher, (void*)NULL);
       ASSERT_EQ(CheckErrorState(), true);
 
       // Relese one
@@ -257,7 +257,7 @@ TEST_F(TestPublisher, memory_poll_shared_topic)
          topic_name,
          &dummy_qos_policies,
          &default_publisher_options);
-      ASSERT_NE((void *)publisher, (void *)NULL);
+      ASSERT_NE((void*)publisher, (void*)NULL);
       publishers.push_back(publisher);
    }
 
@@ -295,16 +295,16 @@ TEST_F(TestPublisher, continous_fragment_mode)
       &dummy_type_support);
 
    dummy_type_support.callbacks.cdr_serialize =
-      [](const void *untyped_ros_message, ucdrBuffer *cdr) -> bool {
+      [](const void* untyped_ros_message, ucdrBuffer* cdr) -> bool {
          bool ret;
-         const rosidl_runtime_c__String *ros_message =
-            reinterpret_cast <const rosidl_runtime_c__String *>(untyped_ros_message);
+         const rosidl_runtime_c__String* ros_message =
+            reinterpret_cast <const rosidl_runtime_c__String*>(untyped_ros_message);
 
          ret = ucdr_serialize_string(cdr, ros_message->data);
          return(ret);
       };
 
-   dummy_type_support.callbacks.get_serialized_size = [](const void *) {
+   dummy_type_support.callbacks.get_serialized_size = [](const void*) {
                                                          return(uint32_t(30000u));
                                                       };
 
@@ -313,13 +313,13 @@ TEST_F(TestPublisher, continous_fragment_mode)
 
    rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
 
-   rmw_publisher_t *pub = rmw_create_publisher(
+   rmw_publisher_t* pub = rmw_create_publisher(
       this->node,
       &dummy_type_support.type_support,
       topic_name,
       &dummy_qos_policies,
       &default_publisher_options);
-   ASSERT_NE((void *)pub, (void *)NULL);
+   ASSERT_NE((void*)pub, (void*)NULL);
 
    char content[30000];
    memset(content, 'A', sizeof(content));
@@ -339,12 +339,12 @@ TEST_F(TestPublisher, continous_fragment_mode)
  * Testing continous fragment mode with setting the custom callbacks
  */
 
-extern "C" void uros_continous_serialization_size(uint32_t *topic_length)
+extern "C" void uros_continous_serialization_size(uint32_t* topic_length)
 {
    *topic_length += 10000;
 }
 
-extern "C" void uros_continous_serialization(ucdrBuffer *ucdr)
+extern "C" void uros_continous_serialization(ucdrBuffer* ucdr)
 {
    for (size_t i = 0; i < 10000; i++)
    {
@@ -364,16 +364,16 @@ TEST_F(TestPublisher, continous_fragment_mode_with_callbacks)
       &dummy_type_support);
 
    dummy_type_support.callbacks.cdr_serialize =
-      [](const void *untyped_ros_message, ucdrBuffer *cdr) -> bool {
+      [](const void* untyped_ros_message, ucdrBuffer* cdr) -> bool {
          bool ret;
-         const rosidl_runtime_c__String *ros_message =
-            reinterpret_cast <const rosidl_runtime_c__String *>(untyped_ros_message);
+         const rosidl_runtime_c__String* ros_message =
+            reinterpret_cast <const rosidl_runtime_c__String*>(untyped_ros_message);
 
          ret = ucdr_serialize_string(cdr, ros_message->data);
          return(ret);
       };
 
-   dummy_type_support.callbacks.get_serialized_size = [](const void *) {
+   dummy_type_support.callbacks.get_serialized_size = [](const void*) {
                                                          return(uint32_t(10u));
                                                       };
 
@@ -382,13 +382,13 @@ TEST_F(TestPublisher, continous_fragment_mode_with_callbacks)
 
    rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
 
-   rmw_publisher_t *pub = rmw_create_publisher(
+   rmw_publisher_t* pub = rmw_create_publisher(
       this->node,
       &dummy_type_support.type_support,
       topic_name,
       &dummy_qos_policies,
       &default_publisher_options);
-   ASSERT_NE((void *)pub, (void *)NULL);
+   ASSERT_NE((void*)pub, (void*)NULL);
 
    rmw_uros_set_continous_serialization_callbacks(
       pub,

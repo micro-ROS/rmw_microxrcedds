@@ -15,11 +15,11 @@
 #include "./callbacks.h"
 
 void on_status(
-   struct uxrSession *session,
+   struct uxrSession* session,
    uxrObjectId object_id,
    uint16_t request_id,
    uint8_t status,
-   void *args)
+   void* args)
 {
    (void)session;
    (void)object_id;
@@ -29,21 +29,21 @@ void on_status(
 }
 
 void on_topic(
-   struct uxrSession *session,
+   struct uxrSession* session,
    uxrObjectId object_id,
    uint16_t request_id,
    uxrStreamId stream_id,
-   struct ucdrBuffer *ub,
+   struct ucdrBuffer* ub,
    uint16_t length,
-   void *args)
+   void* args)
 {
    (void)session;
    (void)request_id;
    (void)stream_id;
 
 #ifdef RMW_UXRCE_GRAPH
-   rmw_context_impl_t *context_impl = (rmw_context_impl_t *)(args);
-   rmw_graph_info_t *  graph_info   = &context_impl->graph_info;
+   rmw_context_impl_t* context_impl = (rmw_context_impl_t*)(args);
+   rmw_graph_info_t*   graph_info   = &context_impl->graph_info;
 
    if (object_id.id == graph_info->datareader_id.id &&
        object_id.type == graph_info->datareader_id.type)
@@ -58,11 +58,11 @@ void on_topic(
    (void)args;
 #endif  // RMW_UXRCE_GRAPH
 
-   rmw_uxrce_mempool_item_t *subscription_item = subscription_memory.allocateditems;
+   rmw_uxrce_mempool_item_t* subscription_item = subscription_memory.allocateditems;
    while (subscription_item != NULL)
    {
-      rmw_uxrce_subscription_t *custom_subscription =
-         (rmw_uxrce_subscription_t *)subscription_item->data;
+      rmw_uxrce_subscription_t* custom_subscription =
+         (rmw_uxrce_subscription_t*)subscription_item->data;
       if ((custom_subscription->datareader_id.id == object_id.id) &&
           (custom_subscription->datareader_id.type == object_id.type))
       {
@@ -90,22 +90,22 @@ void on_topic(
 }
 
 void on_request(
-   struct uxrSession *session,
+   struct uxrSession* session,
    uxrObjectId object_id,
    uint16_t request_id,
-   SampleIdentity *sample_id,
-   struct ucdrBuffer *ub,
+   SampleIdentity* sample_id,
+   struct ucdrBuffer* ub,
    uint16_t length,
-   void *args)
+   void* args)
 {
    (void)session;
    (void)object_id;
    (void)args;
 
-   rmw_uxrce_mempool_item_t *service_item = service_memory.allocateditems;
+   rmw_uxrce_mempool_item_t* service_item = service_memory.allocateditems;
    while (service_item != NULL)
    {
-      rmw_uxrce_service_t *custom_service = (rmw_uxrce_service_t *)service_item->data;
+      rmw_uxrce_service_t* custom_service = (rmw_uxrce_service_t*)service_item->data;
       if (custom_service->request_id == request_id)
       {
          custom_service->micro_buffer_lenght[custom_service->history_write_index] = length;
@@ -135,22 +135,22 @@ void on_request(
 }
 
 void on_reply(
-   struct uxrSession *session,
+   struct uxrSession* session,
    uxrObjectId object_id,
    uint16_t request_id,
    uint16_t reply_id,
-   struct ucdrBuffer *ub,
+   struct ucdrBuffer* ub,
    uint16_t length,
-   void *args)
+   void* args)
 {
    (void)session;
    (void)object_id;
    (void)args;
 
-   rmw_uxrce_mempool_item_t *client_item = client_memory.allocateditems;
+   rmw_uxrce_mempool_item_t* client_item = client_memory.allocateditems;
    while (client_item != NULL)
    {
-      rmw_uxrce_client_t *custom_client = (rmw_uxrce_client_t *)client_item->data;
+      rmw_uxrce_client_t* custom_client = (rmw_uxrce_client_t*)client_item->data;
       if (custom_client->request_id == request_id)
       {
          custom_client->micro_buffer_lenght[custom_client->history_write_index] = length;

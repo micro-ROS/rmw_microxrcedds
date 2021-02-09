@@ -35,7 +35,7 @@ protected:
       RMWBaseTest::SetUp();
 
       node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
-      ASSERT_NE((void *)node, (void *)NULL);
+      ASSERT_NE((void*)node, (void*)NULL);
    }
 
    void TearDown() override
@@ -44,10 +44,10 @@ protected:
       RMWBaseTest::TearDown();
    }
 
-   rmw_node_t *node;
+   rmw_node_t* node;
 
-   const char *service_type = "service_type";
-   const char *service_name = "service_name";
+   const char* service_type = "service_type";
+   const char* service_name = "service_name";
 
    size_t id_gen = 0;
 };
@@ -69,13 +69,13 @@ TEST_F(TestClient, construction_and_destruction)
    rmw_qos_profile_t dummy_qos_policies;
    ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
-   rmw_client_t *client = rmw_create_client(
+   rmw_client_t* client = rmw_create_client(
       this->node,
       &dummy_type_support.type_support,
       service_name,
       &dummy_qos_policies);
 
-   ASSERT_NE((void *)client, (void *)NULL);
+   ASSERT_NE((void*)client, (void*)NULL);
 
    rmw_ret_t ret = rmw_destroy_client(node, client);
    ASSERT_EQ(ret, RMW_RET_OK);
@@ -92,9 +92,9 @@ TEST_F(TestClient, memory_poll_multiple_clients)
    ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
    std::vector <dummy_service_type_support_t> dummy_type_supports;
-   std::vector <rmw_client_t *> clients;
+   std::vector <rmw_client_t*> clients;
    rmw_ret_t     ret;
-   rmw_client_t *client;
+   rmw_client_t* client;
 
    // Get all available nodes
    {
@@ -114,7 +114,7 @@ TEST_F(TestClient, memory_poll_multiple_clients)
             service_name,
             &dummy_qos_policies);
 
-         ASSERT_NE((void *)client, (void *)NULL);
+         ASSERT_NE((void*)client, (void*)NULL);
          clients.push_back(client);
       }
    }
@@ -136,7 +136,7 @@ TEST_F(TestClient, memory_poll_multiple_clients)
          service_name,
          &dummy_qos_policies);
 
-      ASSERT_EQ((void *)client, (void *)NULL);
+      ASSERT_EQ((void*)client, (void*)NULL);
       ASSERT_EQ(CheckErrorState(), true);
 
       // Release one
@@ -161,7 +161,7 @@ TEST_F(TestClient, memory_poll_multiple_clients)
          &dummy_type_supports.back().type_support,
          service_name,
          &dummy_qos_policies);
-      ASSERT_NE((void *)client, (void *)NULL);
+      ASSERT_NE((void*)client, (void*)NULL);
       clients.push_back(client);
    }
 

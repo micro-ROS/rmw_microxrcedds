@@ -34,12 +34,12 @@
 
 dummy_service_type_support_t dummy_type_support;
 
-const rosidl_message_type_support_t *get_request_members()
+const rosidl_message_type_support_t* get_request_members()
 {
    return(&dummy_type_support.request_members.type_support);
 };
 
-const rosidl_message_type_support_t *get_response_members()
+const rosidl_message_type_support_t* get_response_members()
 {
    return(&dummy_type_support.response_members.type_support);
 };
@@ -50,9 +50,9 @@ protected:
    size_t id_gen = 0;
 
 
-   const char *service_type      = "topic_type";
-   const char *service_name      = "topic_name";
-   const char *message_namespace = "package_name";
+   const char* service_type      = "topic_type";
+   const char* service_name      = "topic_name";
+   const char* message_namespace = "package_name";
 };
 
 /*
@@ -73,19 +73,19 @@ TEST_F(TestReqRes, publish_and_receive)
    dummy_type_support.callbacks.request_members_  = get_response_members;
 
    dummy_type_support.request_members.callbacks.cdr_serialize =
-      [](const void *untyped_service_req_message, ucdrBuffer *cdr) -> bool {
+      [](const void* untyped_service_req_message, ucdrBuffer* cdr) -> bool {
          bool ret;
-         const rosidl_runtime_c__String *service_req_message =
-            reinterpret_cast <const rosidl_runtime_c__String *>(untyped_service_req_message);
+         const rosidl_runtime_c__String* service_req_message =
+            reinterpret_cast <const rosidl_runtime_c__String*>(untyped_service_req_message);
 
          ret = ucdr_serialize_string(cdr, service_req_message->data);
          return(ret);
       };
    dummy_type_support.request_members.callbacks.cdr_deserialize =
-      [](ucdrBuffer *cdr, void *untyped_service_req_message) -> bool {
+      [](ucdrBuffer* cdr, void* untyped_service_req_message) -> bool {
          bool ret;
-         rosidl_runtime_c__String *service_req_message =
-            reinterpret_cast <rosidl_runtime_c__String *>(untyped_service_req_message);
+         rosidl_runtime_c__String* service_req_message =
+            reinterpret_cast <rosidl_runtime_c__String*>(untyped_service_req_message);
 
          ret = ucdr_deserialize_string(cdr, service_req_message->data, service_req_message->capacity);
          if (ret)
@@ -95,9 +95,9 @@ TEST_F(TestReqRes, publish_and_receive)
          return(ret);
       };
    dummy_type_support.request_members.callbacks.get_serialized_size =
-      [](const void *untyped_service_req_message) -> uint32_t {
-         const rosidl_runtime_c__String *service_req_message =
-            reinterpret_cast <const rosidl_runtime_c__String *>(untyped_service_req_message);
+      [](const void* untyped_service_req_message) -> uint32_t {
+         const rosidl_runtime_c__String* service_req_message =
+            reinterpret_cast <const rosidl_runtime_c__String*>(untyped_service_req_message);
 
          return(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + service_req_message->size + 8);
       };
@@ -115,29 +115,29 @@ TEST_F(TestReqRes, publish_and_receive)
 
    // CREATE ENTITIES
 
-   rmw_node_t *node_res;
+   rmw_node_t* node_res;
    node_res = rmw_create_node(&test_context, "node_res", "/ns", 0, false);
-   ASSERT_NE((void *)node_res, (void *)NULL);
+   ASSERT_NE((void*)node_res, (void*)NULL);
 
-   rmw_service_t *serv = rmw_create_service(
+   rmw_service_t* serv = rmw_create_service(
       node_res,
       &dummy_type_support.type_support,
       service_name,
       &dummy_qos_policies);
 
-   ASSERT_NE((void *)serv, (void *)NULL);
+   ASSERT_NE((void*)serv, (void*)NULL);
 
-   rmw_node_t *node_req;
+   rmw_node_t* node_req;
    node_req = rmw_create_node(&test_context, "node_req", "/ns", 0, false);
-   ASSERT_NE((void *)node_req, (void *)NULL);
+   ASSERT_NE((void*)node_req, (void*)NULL);
 
-   rmw_client_t *client = rmw_create_client(
+   rmw_client_t* client = rmw_create_client(
       node_req,
       &dummy_type_support.type_support,
       service_name,
       &dummy_qos_policies);
 
-   ASSERT_NE((void *)client, (void *)NULL);
+   ASSERT_NE((void*)client, (void*)NULL);
 
    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
@@ -168,8 +168,8 @@ TEST_F(TestReqRes, publish_and_receive)
    rmw_clients_t clients;
    clients.client_count = 0;
 
-   rmw_events_t *  events   = NULL;
-   rmw_wait_set_t *wait_set = NULL;
+   rmw_events_t*   events   = NULL;
+   rmw_wait_set_t* wait_set = NULL;
    rmw_time_t      wait_timeout;
 
    wait_timeout.sec  = 1;
@@ -186,7 +186,7 @@ TEST_F(TestReqRes, publish_and_receive)
          &wait_timeout
          ), RMW_RET_OK);
 
-   ASSERT_NE((void *)services.services[0], (void *)NULL);
+   ASSERT_NE((void*)services.services[0], (void*)NULL);
 
    rosidl_runtime_c__String read_service_req_message;
    char buff_req[100];
@@ -245,7 +245,7 @@ TEST_F(TestReqRes, publish_and_receive)
          &wait_timeout
          ), RMW_RET_OK);
 
-   ASSERT_NE((void *)clients.clients[0], (void *)NULL);
+   ASSERT_NE((void*)clients.clients[0], (void*)NULL);
 
    rosidl_runtime_c__String read_service_res_message;
    char buff_res[100];

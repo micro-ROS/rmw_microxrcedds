@@ -34,7 +34,7 @@ protected:
       RMWBaseTest::SetUp();
 
       node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
-      ASSERT_NE((void *)node, (void *)NULL);
+      ASSERT_NE((void*)node, (void*)NULL);
    }
 
    void TearDown() override
@@ -43,13 +43,13 @@ protected:
       RMWBaseTest::TearDown();
    }
 
-   rmw_node_t *node;
+   rmw_node_t* node;
    const size_t attempts = 10;
    size_t id_gen         = 0;
 
-   const char *topic_type   = "topic_type";
-   const char *topic_name   = "topic_name";
-   const char *package_name = "package_name";
+   const char* topic_type   = "topic_type";
+   const char* topic_name   = "topic_name";
+   const char* package_name = "package_name";
 };
 
 
@@ -70,12 +70,12 @@ TEST_F(TestTopic, construction_and_destruction)
    rmw_qos_profile_t dummy_qos_policies;
    ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
-   rmw_uxrce_topic_t *topic = create_topic(
-      reinterpret_cast <struct rmw_uxrce_node_t *>(node->data),
+   rmw_uxrce_topic_t* topic = create_topic(
+      reinterpret_cast <struct rmw_uxrce_node_t*>(node->data),
       package_name,
       &dummy_type_support.callbacks,
       &dummy_qos_policies);
-   ASSERT_NE((void *)topic, (void *)NULL);
+   ASSERT_NE((void*)topic, (void*)NULL);
 
    // TODO(pablogs9): Topic must be related to publisher in order to be counted
    // ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), 1);
@@ -95,7 +95,7 @@ TEST_F(TestTopic, multiple_topic_creation)
 
    ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
-   std::vector <rmw_uxrce_topic_t *>  created_topics;
+   std::vector <rmw_uxrce_topic_t*>   created_topics;
    std::vector <dummy_type_support_t> dummy_type_supports;
    for (size_t i = 0; i < attempts; i++)
    {
@@ -107,13 +107,13 @@ TEST_F(TestTopic, multiple_topic_creation)
          id_gen++,
          &dummy_type_supports.back());
 
-      rmw_uxrce_topic_t *created_topic = create_topic(
-         reinterpret_cast <struct rmw_uxrce_node_t *>(node->data),
+      rmw_uxrce_topic_t* created_topic = create_topic(
+         reinterpret_cast <struct rmw_uxrce_node_t*>(node->data),
          dummy_type_supports.back().topic_name.data(),
          &dummy_type_supports.back().callbacks,
          &dummy_qos_policies);
 
-      ASSERT_NE((void *)created_topic, (void *)NULL);
+      ASSERT_NE((void*)created_topic, (void*)NULL);
       // TODO(pablogs9): Topic must be related to publisher in order to be counted
       // ASSERT_EQ(topic_count(reinterpret_cast<struct rmw_uxrce_node_t *>(node->data)), i + 1);
 

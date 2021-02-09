@@ -35,7 +35,7 @@ class TestNode : public RMWBaseTest
 TEST_F(TestNode, construction_and_destruction)
 {
    // Success creation
-   rmw_node_t *node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
+   rmw_node_t* node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
 
    ASSERT_NE(node, nullptr);
    rmw_ret_t ret = rmw_destroy_node(node);
@@ -59,9 +59,9 @@ TEST_F(TestNode, construction_and_destruction)
  */
 TEST_F(TestNode, memory_poll)
 {
-   std::vector <rmw_node_t *> nodes;
+   std::vector <rmw_node_t*> nodes;
    rmw_ret_t   ret;
-   rmw_node_t *node;
+   rmw_node_t* node;
 
    // Get all available nodes
    for (size_t i = 0; i < RMW_UXRCE_MAX_NODES; i++)

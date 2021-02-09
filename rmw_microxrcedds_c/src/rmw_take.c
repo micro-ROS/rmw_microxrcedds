@@ -19,21 +19,21 @@
 
 rmw_ret_t
 rmw_take(
-   const rmw_subscription_t *subscription,
-   void *ros_message,
-   bool *taken,
-   rmw_subscription_allocation_t *allocation)
+   const rmw_subscription_t* subscription,
+   void* ros_message,
+   bool* taken,
+   rmw_subscription_allocation_t* allocation)
 {
    return(rmw_take_with_info(subscription, ros_message, taken, NULL, allocation));
 }
 
 rmw_ret_t
 rmw_take_with_info(
-   const rmw_subscription_t *subscription,
-   void *ros_message,
-   bool *taken,
-   rmw_message_info_t *message_info,
-   rmw_subscription_allocation_t *allocation)
+   const rmw_subscription_t* subscription,
+   void* ros_message,
+   bool* taken,
+   rmw_message_info_t* message_info,
+   rmw_subscription_allocation_t* allocation)
 {
    (void)message_info;
    (void)allocation;
@@ -51,7 +51,7 @@ rmw_take_with_info(
       return(RMW_RET_ERROR);
    }
 
-   rmw_uxrce_subscription_t *custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
+   rmw_uxrce_subscription_t* custom_subscription = (rmw_uxrce_subscription_t*)subscription->data;
 
    if (!custom_subscription->micro_buffer_in_use)
    {
@@ -91,12 +91,12 @@ rmw_take_with_info(
 
 rmw_ret_t
 rmw_take_sequence(
-   const rmw_subscription_t *subscription,
+   const rmw_subscription_t* subscription,
    size_t count,
-   rmw_message_sequence_t *message_sequence,
-   rmw_message_info_sequence_t *message_info_sequence,
-   size_t *taken,
-   rmw_subscription_allocation_t *allocation)
+   rmw_message_sequence_t* message_sequence,
+   rmw_message_info_sequence_t* message_info_sequence,
+   size_t* taken,
+   rmw_subscription_allocation_t* allocation)
 {
    bool      taken_flag;
    rmw_ret_t ret = RMW_RET_OK;
@@ -109,7 +109,7 @@ rmw_take_sequence(
       return(RMW_RET_ERROR);
    }
 
-   rmw_uxrce_subscription_t *custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
+   rmw_uxrce_subscription_t* custom_subscription = (rmw_uxrce_subscription_t*)subscription->data;
 
    if (!custom_subscription->micro_buffer_in_use)
    {
@@ -144,10 +144,10 @@ rmw_take_sequence(
 
 rmw_ret_t
 rmw_take_serialized_message(
-   const rmw_subscription_t *subscription,
-   rmw_serialized_message_t *serialized_message,
-   bool *taken,
-   rmw_subscription_allocation_t *allocation)
+   const rmw_subscription_t* subscription,
+   rmw_serialized_message_t* serialized_message,
+   bool* taken,
+   rmw_subscription_allocation_t* allocation)
 {
    (void)subscription;
    (void)serialized_message;
@@ -159,11 +159,11 @@ rmw_take_serialized_message(
 
 rmw_ret_t
 rmw_take_serialized_message_with_info(
-   const rmw_subscription_t *subscription,
-   rmw_serialized_message_t *serialized_message,
-   bool *taken,
-   rmw_message_info_t *message_info,
-   rmw_subscription_allocation_t *allocation)
+   const rmw_subscription_t* subscription,
+   rmw_serialized_message_t* serialized_message,
+   bool* taken,
+   rmw_message_info_t* message_info,
+   rmw_subscription_allocation_t* allocation)
 {
    (void)subscription;
    (void)serialized_message;
@@ -176,10 +176,10 @@ rmw_take_serialized_message_with_info(
 
 rmw_ret_t
 rmw_take_loaned_message(
-   const rmw_subscription_t *subscription,
-   void **loaned_message,
-   bool *taken,
-   rmw_subscription_allocation_t *allocation)
+   const rmw_subscription_t* subscription,
+   void** loaned_message,
+   bool* taken,
+   rmw_subscription_allocation_t* allocation)
 {
    (void)subscription;
    (void)loaned_message;
@@ -192,11 +192,11 @@ rmw_take_loaned_message(
 
 rmw_ret_t
 rmw_take_loaned_message_with_info(
-   const rmw_subscription_t *subscription,
-   void **loaned_message,
-   bool *taken,
-   rmw_message_info_t *message_info,
-   rmw_subscription_allocation_t *allocation)
+   const rmw_subscription_t* subscription,
+   void** loaned_message,
+   bool* taken,
+   rmw_message_info_t* message_info,
+   rmw_subscription_allocation_t* allocation)
 {
    (void)subscription;
    (void)loaned_message;
@@ -210,8 +210,8 @@ rmw_take_loaned_message_with_info(
 
 rmw_ret_t
 rmw_return_loaned_message_from_subscription(
-   const rmw_subscription_t *subscription,
-   void *loaned_message)
+   const rmw_subscription_t* subscription,
+   void* loaned_message)
 {
    (void)subscription;
    (void)loaned_message;
@@ -222,9 +222,9 @@ rmw_return_loaned_message_from_subscription(
 
 rmw_ret_t
 rmw_take_event(
-   const rmw_events_t *event_handle,
-   void *event_info,
-   bool *taken)
+   const rmw_events_t* event_handle,
+   void* event_info,
+   bool* taken)
 {
    (void)event_handle;
    (void)event_info;

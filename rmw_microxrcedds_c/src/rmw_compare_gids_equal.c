@@ -17,9 +17,9 @@
 
 rmw_ret_t
 rmw_compare_gids_equal(
-   const rmw_gid_t *gid1,
-   const rmw_gid_t *gid2,
-   bool *result)
+   const rmw_gid_t* gid1,
+   const rmw_gid_t* gid2,
+   bool* result)
 {
    // Check
    RMW_CHECK_ARGUMENT_FOR_NULL(gid1, RMW_RET_INVALID_ARGUMENT);

@@ -23,7 +23,7 @@ static const char ros_reply_prefix[]   = "rr";
 static const char ros_request_subfix[] = "Request";
 static const char ros_reply_subfix[]   = "Reply";
 
-bool run_xrce_session(rmw_context_impl_t *context, uint16_t requests)
+bool run_xrce_session(rmw_context_impl_t* context, uint16_t requests)
 {
    if (context->creation_destroy_stream->type == UXR_BEST_EFFORT_STREAM)
    {
@@ -45,7 +45,7 @@ bool run_xrce_session(rmw_context_impl_t *context, uint16_t requests)
 }
 
 int build_participant_xml(
-   size_t domain_id, const char *participant_name, char xml[],
+   size_t domain_id, const char* participant_name, char xml[],
    size_t buffer_size)
 {
    (void)domain_id;
@@ -68,9 +68,9 @@ int build_participant_xml(
 }
 
 int build_service_xml(
-   const char *service_name_id, const char *service_name, bool requester,
-   const service_type_support_callbacks_t *members,
-   const rmw_qos_profile_t *qos_policies, char xml[], size_t buffer_size)
+   const char* service_name_id, const char* service_name, bool requester,
+   const service_type_support_callbacks_t* members,
+   const rmw_qos_profile_t* qos_policies, char xml[], size_t buffer_size)
 {
    int ret;
 
@@ -85,13 +85,13 @@ int build_service_xml(
                                 "</dds>";
 
    // Retrive request and response types
-   const rosidl_message_type_support_t *req_members = members->request_members_();
-   const rosidl_message_type_support_t *res_members = members->response_members_();
+   const rosidl_message_type_support_t* req_members = members->request_members_();
+   const rosidl_message_type_support_t* res_members = members->response_members_();
 
-   const message_type_support_callbacks_t *req_callbacks =
-      (const message_type_support_callbacks_t *)req_members->data;
-   const message_type_support_callbacks_t *res_callbacks =
-      (const message_type_support_callbacks_t *)res_members->data;
+   const message_type_support_callbacks_t* req_callbacks =
+      (const message_type_support_callbacks_t*)req_members->data;
+   const message_type_support_callbacks_t* res_callbacks =
+      (const message_type_support_callbacks_t*)res_members->data;
 
 
    static char req_type_name_buffer[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
@@ -161,7 +161,7 @@ int build_service_xml(
    return(ret);
 }
 
-int build_publisher_xml(const char *publisher_name, char xml[], size_t buffer_size)
+int build_publisher_xml(const char* publisher_name, char xml[], size_t buffer_size)
 {
    (void)publisher_name;
    (void)buffer_size;
@@ -171,7 +171,7 @@ int build_publisher_xml(const char *publisher_name, char xml[], size_t buffer_si
    return(1);
 }
 
-int build_subscriber_xml(const char *subscriber_name, char xml[], size_t buffer_size)
+int build_subscriber_xml(const char* subscriber_name, char xml[], size_t buffer_size)
 {
    (void)subscriber_name;
    (void)buffer_size;
@@ -181,7 +181,7 @@ int build_subscriber_xml(const char *subscriber_name, char xml[], size_t buffer_
    return(1);
 }
 
-int generate_name(const uxrObjectId *id, char name[], size_t buffer_size)
+int generate_name(const uxrObjectId* id, char name[], size_t buffer_size)
 {
    static const char format[] = "%hu_%hi";
 
@@ -196,12 +196,12 @@ int generate_name(const uxrObjectId *id, char name[], size_t buffer_size)
 }
 
 size_t generate_type_name(
-   const message_type_support_callbacks_t *members, char type_name[],
+   const message_type_support_callbacks_t* members, char type_name[],
    size_t buffer_size)
 {
-   static const char *sep            = "::";
-   static const char *protocol       = "dds";
-   static const char *suffix         = "_";
+   static const char* sep            = "::";
+   static const char* protocol       = "dds";
+   static const char* suffix         = "_";
    size_t             ret            = 0;
    size_t             full_name_size = strlen(protocol) + strlen(suffix) + strlen(sep) + strlen(
       members->message_name_) + strlen(suffix) +
@@ -228,8 +228,8 @@ size_t generate_type_name(
 }
 
 int build_topic_xml(
-   const char *topic_name, const message_type_support_callbacks_t *members,
-   const rmw_qos_profile_t *qos_policies, char xml[], size_t buffer_size)
+   const char* topic_name, const message_type_support_callbacks_t* members,
+   const rmw_qos_profile_t* qos_policies, char xml[], size_t buffer_size)
 {
    static const char format[] =
       "<dds>"
@@ -277,8 +277,8 @@ int build_topic_xml(
 }
 
 int build_xml(
-   const char *format, const char *topic_name, const message_type_support_callbacks_t *members,
-   const rmw_qos_profile_t *qos_policies, char xml[], size_t buffer_size)
+   const char* format, const char* topic_name, const message_type_support_callbacks_t* members,
+   const rmw_qos_profile_t* qos_policies, char xml[], size_t buffer_size)
 {
    int         ret = 0;
    static char type_name_buffer[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
@@ -326,8 +326,8 @@ int build_xml(
 }
 
 int build_datawriter_xml(
-   const char *topic_name, const message_type_support_callbacks_t *members,
-   const rmw_qos_profile_t *qos_policies, char xml[], size_t buffer_size)
+   const char* topic_name, const message_type_support_callbacks_t* members,
+   const rmw_qos_profile_t* qos_policies, char xml[], size_t buffer_size)
 {
    static const char format[] =
       "<dds>"
@@ -353,8 +353,8 @@ int build_datawriter_xml(
 }
 
 int build_datareader_xml(
-   const char *topic_name, const message_type_support_callbacks_t *members,
-   const rmw_qos_profile_t *qos_policies, char xml[], size_t buffer_size)
+   const char* topic_name, const message_type_support_callbacks_t* members,
+   const rmw_qos_profile_t* qos_policies, char xml[], size_t buffer_size)
 {
    static const char format[] =
       "<dds>"
@@ -392,9 +392,9 @@ bool build_participant_profile(char profile_name[], size_t buffer_size)
    return(ret);
 }
 
-bool build_topic_profile(const char *topic_name, char profile_name[], size_t buffer_size)
+bool build_topic_profile(const char* topic_name, char profile_name[], size_t buffer_size)
 {
-   const char *const format = "%s__t";
+   const char* const format = "%s__t";
 
    topic_name++;
    bool ret     = false;
@@ -403,9 +403,9 @@ bool build_topic_profile(const char *topic_name, char profile_name[], size_t buf
    return(ret);
 }
 
-bool build_datawriter_profile(const char *topic_name, char profile_name[], size_t buffer_size)
+bool build_datawriter_profile(const char* topic_name, char profile_name[], size_t buffer_size)
 {
-   const char *const format = "%s__dw";
+   const char* const format = "%s__dw";
 
    topic_name++;
    bool ret     = false;
@@ -414,9 +414,9 @@ bool build_datawriter_profile(const char *topic_name, char profile_name[], size_
    return(ret);
 }
 
-bool build_datareader_profile(const char *topic_name, char profile_name[], size_t buffer_size)
+bool build_datareader_profile(const char* topic_name, char profile_name[], size_t buffer_size)
 {
-   const char *const format = "%s__dr";
+   const char* const format = "%s__dr";
 
    topic_name++;
    bool ret     = false;
@@ -425,7 +425,7 @@ bool build_datareader_profile(const char *topic_name, char profile_name[], size_
    return(ret);
 }
 
-bool is_uxrce_rmw_identifier_valid(const char *id)
+bool is_uxrce_rmw_identifier_valid(const char* id)
 {
    return(id != NULL &&
           strcmp(id, rmw_get_implementation_identifier()) == 0);

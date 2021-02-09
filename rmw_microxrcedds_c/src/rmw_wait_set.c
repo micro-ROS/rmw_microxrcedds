@@ -18,21 +18,21 @@
 #include <rmw/error_handling.h>
 #include <rmw/allocators.h>
 
-rmw_wait_set_t *
-rmw_create_wait_set(rmw_context_t *context, size_t max_conditions)
+rmw_wait_set_t*
+rmw_create_wait_set(rmw_context_t* context, size_t max_conditions)
 {
    (void)context;
    (void)max_conditions;
    EPROS_PRINT_TRACE()
 
-   rmw_wait_set_t * rmw_wait_set = (rmw_wait_set_t *)rmw_allocate(
+   rmw_wait_set_t * rmw_wait_set = (rmw_wait_set_t*)rmw_allocate(
       sizeof(rmw_wait_set_t));
 
    return(rmw_wait_set);
 }
 
 rmw_ret_t
-rmw_destroy_wait_set(rmw_wait_set_t *wait_set)
+rmw_destroy_wait_set(rmw_wait_set_t* wait_set)
 {
    EPROS_PRINT_TRACE()
 

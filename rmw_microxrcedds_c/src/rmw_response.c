@@ -19,9 +19,9 @@
 
 rmw_ret_t
 rmw_send_response(
-   const rmw_service_t *service,
-   rmw_request_id_t *request_header,
-   void *ros_response)
+   const rmw_service_t* service,
+   rmw_request_id_t* request_header,
+   void* ros_response)
 {
    EPROS_PRINT_TRACE();
 
@@ -31,8 +31,8 @@ rmw_send_response(
       return(RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
    }
 
-   rmw_uxrce_service_t *custom_service = (rmw_uxrce_service_t *)service->data;
-   rmw_uxrce_node_t *   custom_node    = custom_service->owner_node;
+   rmw_uxrce_service_t* custom_service = (rmw_uxrce_service_t*)service->data;
+   rmw_uxrce_node_t*    custom_node    = custom_service->owner_node;
 
    // Conversion from rmw_request_id_t to SampleIdentity
    SampleIdentity sample_id;
@@ -46,10 +46,10 @@ rmw_send_response(
       sample_id.writer_guid.guidPrefix.data, &request_header->writer_guid[4],
       sizeof(sample_id.writer_guid.guidPrefix.data));
 
-   const rosidl_message_type_support_t *res_members =
+   const rosidl_message_type_support_t* res_members =
       custom_service->type_support_callbacks->response_members_();
-   const message_type_support_callbacks_t *functions =
-      (const message_type_support_callbacks_t *)res_members->data;
+   const message_type_support_callbacks_t* functions =
+      (const message_type_support_callbacks_t*)res_members->data;
 
    uint32_t topic_size = functions->get_serialized_size(ros_response);
 
@@ -67,10 +67,10 @@ rmw_send_response(
 
 rmw_ret_t
 rmw_take_response(
-   const rmw_client_t *client,
-   rmw_service_info_t *request_header,
-   void *ros_response,
-   bool *taken)
+   const rmw_client_t* client,
+   rmw_service_info_t* request_header,
+   void* ros_response,
+   bool* taken)
 {
    EPROS_PRINT_TRACE();
 
@@ -85,7 +85,7 @@ rmw_take_response(
       return(RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
    }
 
-   rmw_uxrce_client_t *custom_client = (rmw_uxrce_client_t *)client->data;
+   rmw_uxrce_client_t* custom_client = (rmw_uxrce_client_t*)client->data;
 
    if (!custom_client->micro_buffer_in_use)
    {
@@ -95,10 +95,10 @@ rmw_take_response(
    request_header->request_id.sequence_number =
       custom_client->reply_id[custom_client->history_read_index];
 
-   const rosidl_message_type_support_t *res_members =
+   const rosidl_message_type_support_t* res_members =
       custom_client->type_support_callbacks->response_members_();
-   const message_type_support_callbacks_t *functions =
-      (const message_type_support_callbacks_t *)res_members->data;
+   const message_type_support_callbacks_t* functions =
+      (const message_type_support_callbacks_t*)res_members->data;
 
 
    ucdrBuffer temp_buffer;

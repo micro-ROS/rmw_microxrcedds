@@ -44,11 +44,11 @@ protected:
       RMWBaseTest::TearDown();
    }
 
-   rmw_node_t *node;
+   rmw_node_t* node;
 
-   const char *topic_type        = "topic_type";
-   const char *topic_name        = "topic_name";
-   const char *message_namespace = "package_name";
+   const char* topic_type        = "topic_type";
+   const char* topic_name        = "topic_name";
+   const char* message_namespace = "package_name";
 
    size_t id_gen = 0;
 };
@@ -72,7 +72,7 @@ TEST_F(TestSubscription, construction_and_destruction)
 
    rmw_subscription_options_t default_subscription_options = rmw_get_default_subscription_options();
 
-   rmw_subscription_t *sub = rmw_create_subscription(
+   rmw_subscription_t* sub = rmw_create_subscription(
       this->node,
       &dummy_type_support.type_support,
       topic_name,
@@ -95,9 +95,9 @@ TEST_F(TestSubscription, memory_poll_multiple_topic)
    ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
    std::vector <dummy_type_support_t> dummy_type_supports;
-   std::vector <rmw_subscription_t *> subscriptions;
+   std::vector <rmw_subscription_t*>  subscriptions;
    rmw_ret_t           ret;
-   rmw_subscription_t *subscription;
+   rmw_subscription_t* subscription;
 
    rmw_subscription_options_t default_subscription_options = rmw_get_default_subscription_options();
 
@@ -205,9 +205,9 @@ TEST_F(TestSubscription, memory_poll_shared_topic)
 
    rmw_subscription_options_t default_subscription_options = rmw_get_default_subscription_options();
 
-   std::vector <rmw_subscription_t *> subscriptions;
+   std::vector <rmw_subscription_t*> subscriptions;
    rmw_ret_t           ret;
-   rmw_subscription_t *subscription;
+   rmw_subscription_t* subscription;
 
 
    // Get all available nodes

@@ -27,12 +27,12 @@
 
 #include "./utils.h"
 
-rmw_client_t *
+rmw_client_t*
 rmw_create_client(
-   const rmw_node_t *node,
-   const rosidl_service_type_support_t *type_support,
-   const char *service_name,
-   const rmw_qos_profile_t *qos_policies)
+   const rmw_node_t* node,
+   const rosidl_service_type_support_t* type_support,
+   const char* service_name,
+   const rmw_qos_profile_t* qos_policies)
 {
    EPROS_PRINT_TRACE()
    rmw_client_t * rmw_client = NULL;
@@ -58,30 +58,30 @@ rmw_create_client(
    }
    else
    {
-      rmw_client = (rmw_client_t *)rmw_allocate(
+      rmw_client = (rmw_client_t*)rmw_allocate(
          sizeof(rmw_client_t));
       rmw_client->data = NULL;
       rmw_client->implementation_identifier = rmw_get_implementation_identifier();
 
-      rmw_client->service_name = (const char *)(rmw_allocate(
-                                                   sizeof(char) * (strlen(
-                                                                      service_name) + 1)));
+      rmw_client->service_name = (const char*)(rmw_allocate(
+                                                  sizeof(char) * (strlen(
+                                                                     service_name) + 1)));
       if (!rmw_client->service_name)
       {
          RMW_SET_ERROR_MSG("failed to allocate memory");
          goto fail;
       }
-      memcpy((void *)rmw_client->service_name, service_name, strlen(service_name) + 1);
+      memcpy((void*)rmw_client->service_name, service_name, strlen(service_name) + 1);
 
-      rmw_uxrce_node_t *        custom_node = (rmw_uxrce_node_t *)node->data;
-      rmw_uxrce_mempool_item_t *memory_node = get_memory(&client_memory);
+      rmw_uxrce_node_t*         custom_node = (rmw_uxrce_node_t*)node->data;
+      rmw_uxrce_mempool_item_t* memory_node = get_memory(&client_memory);
       if (!memory_node)
       {
          RMW_SET_ERROR_MSG("Not available memory node");
          goto fail;
       }
 
-      rmw_uxrce_client_t *custom_client = (rmw_uxrce_client_t *)memory_node->data;
+      rmw_uxrce_client_t* custom_client = (rmw_uxrce_client_t*)memory_node->data;
       custom_client->rmw_handle = rmw_client;
 
       custom_client->owner_node = custom_node;
@@ -90,7 +90,7 @@ rmw_create_client(
       custom_client->history_write_index = 0;
       custom_client->history_read_index  = 0;
 
-      const rosidl_service_type_support_t *type_support_xrce = NULL;
+      const rosidl_service_type_support_t* type_support_xrce = NULL;
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
       type_support_xrce = get_service_typesupport_handle(
          type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
@@ -109,7 +109,7 @@ rmw_create_client(
       }
 
       custom_client->type_support_callbacks =
-         (const service_type_support_callbacks_t *)type_support_xrce->data;
+         (const service_type_support_callbacks_t*)type_support_xrce->data;
 
       if (custom_client->type_support_callbacks == NULL)
       {
@@ -188,8 +188,8 @@ fail:
 
 rmw_ret_t
 rmw_destroy_client(
-   rmw_node_t *node,
-   rmw_client_t *client)
+   rmw_node_t* node,
+   rmw_client_t* client)
 {
    EPROS_PRINT_TRACE()
    rmw_ret_t result_ret = RMW_RET_OK;
@@ -225,8 +225,8 @@ rmw_destroy_client(
    }
    else
    {
-      rmw_uxrce_node_t *  custom_node   = (rmw_uxrce_node_t *)node->data;
-      rmw_uxrce_client_t *custom_client = (rmw_uxrce_client_t *)client->data;
+      rmw_uxrce_node_t*   custom_node   = (rmw_uxrce_node_t*)node->data;
+      rmw_uxrce_client_t* custom_client = (rmw_uxrce_client_t*)client->data;
       uint16_t            delete_client =
          uxr_buffer_delete_entity(
             &custom_node->context->session, custom_node->context->reliable_output,

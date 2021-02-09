@@ -47,9 +47,9 @@
  *          if some argument was not initialized as expected.
  */
 rmw_ret_t rmw_uxrce_transport_init(
-   rmw_context_impl_t *context,
-   rmw_init_options_impl_t *init_options,
-   void *transport);
+   rmw_context_impl_t* context,
+   rmw_init_options_impl_t* init_options,
+   void* transport);
 
 /**
  * @brief   Helper macros for closing an open micro XRCE-DDS transport.

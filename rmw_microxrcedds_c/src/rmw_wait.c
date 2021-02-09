@@ -22,13 +22,13 @@
 
 rmw_ret_t
 rmw_wait(
-   rmw_subscriptions_t *subscriptions,
-   rmw_guard_conditions_t *guard_conditions,
-   rmw_services_t *services,
-   rmw_clients_t *clients,
-   rmw_events_t *events,
-   rmw_wait_set_t *wait_set,
-   const rmw_time_t *wait_timeout)
+   rmw_subscriptions_t* subscriptions,
+   rmw_guard_conditions_t* guard_conditions,
+   rmw_services_t* services,
+   rmw_clients_t* clients,
+   rmw_events_t* events,
+   rmw_wait_set_t* wait_set,
+   const rmw_time_t* wait_timeout)
 {
    (void)services;
    (void)clients;
@@ -77,7 +77,7 @@ rmw_wait(
    // Run every XRCE session
 
    uint8_t available_contexts     = 0;
-   rmw_uxrce_mempool_item_t *item = NULL;
+   rmw_uxrce_mempool_item_t* item = NULL;
 
    item = session_memory.allocateditems;
    while (item != NULL)
@@ -90,7 +90,7 @@ rmw_wait(
    item = session_memory.allocateditems;
    while (item != NULL)
    {
-      rmw_context_impl_t *custom_context = (rmw_context_impl_t *)item->data;
+      rmw_context_impl_t* custom_context = (rmw_context_impl_t*)item->data;
       uxr_run_session_until_data(&custom_context->session, per_session_timeout);
       item = item->next;
    }
@@ -102,7 +102,7 @@ rmw_wait(
    {
       for (size_t i = 0; i < services->service_count; ++i)
       {
-         rmw_uxrce_service_t *custom_service = (rmw_uxrce_service_t *)services->services[i];
+         rmw_uxrce_service_t* custom_service = (rmw_uxrce_service_t*)services->services[i];
 
          if (!custom_service->micro_buffer_in_use)
          {
@@ -120,7 +120,7 @@ rmw_wait(
    {
       for (size_t i = 0; i < clients->client_count; ++i)
       {
-         rmw_uxrce_client_t *custom_client = (rmw_uxrce_client_t *)clients->clients[i];
+         rmw_uxrce_client_t* custom_client = (rmw_uxrce_client_t*)clients->clients[i];
 
          if (!custom_client->micro_buffer_in_use)
          {
@@ -138,8 +138,8 @@ rmw_wait(
    {
       for (size_t i = 0; i < subscriptions->subscriber_count; ++i)
       {
-         rmw_uxrce_subscription_t *custom_subscription =
-            (rmw_uxrce_subscription_t *)subscriptions->subscribers[i];
+         rmw_uxrce_subscription_t* custom_subscription =
+            (rmw_uxrce_subscription_t*)subscriptions->subscribers[i];
 
          if (!custom_subscription->micro_buffer_in_use)
          {
@@ -157,7 +157,7 @@ rmw_wait(
    {
       for (size_t i = 0; i < guard_conditions->guard_condition_count; ++i)
       {
-         bool *hasTriggered = (bool *)guard_conditions->guard_conditions[i];
+         bool* hasTriggered = (bool*)guard_conditions->guard_conditions[i];
          if ((*hasTriggered) == false)
          {
             guard_conditions->guard_conditions[i] = NULL;

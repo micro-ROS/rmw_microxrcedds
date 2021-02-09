@@ -36,7 +36,7 @@
 #endif  // RMW_UXRCE_GRAPH
 
 rmw_ret_t
-rmw_init_options_init(rmw_init_options_t *init_options, rcutils_allocator_t allocator)
+rmw_init_options_init(rmw_init_options_t* init_options, rcutils_allocator_t allocator)
 {
    RMW_CHECK_ARGUMENT_FOR_NULL(init_options, RMW_RET_INVALID_ARGUMENT);
    RCUTILS_CHECK_ALLOCATOR(&allocator, return RMW_RET_INVALID_ARGUMENT);
@@ -105,7 +105,7 @@ rmw_init_options_init(rmw_init_options_t *init_options, rcutils_allocator_t allo
 }
 
 rmw_ret_t
-rmw_init_options_copy(const rmw_init_options_t *src, rmw_init_options_t *dst)
+rmw_init_options_copy(const rmw_init_options_t* src, rmw_init_options_t* dst)
 {
    RMW_CHECK_ARGUMENT_FOR_NULL(src, RMW_RET_INVALID_ARGUMENT);
    RMW_CHECK_ARGUMENT_FOR_NULL(dst, RMW_RET_INVALID_ARGUMENT);
@@ -128,7 +128,7 @@ rmw_init_options_copy(const rmw_init_options_t *src, rmw_init_options_t *dst)
 }
 
 rmw_ret_t
-rmw_init_options_fini(rmw_init_options_t *init_options)
+rmw_init_options_fini(rmw_init_options_t* init_options)
 {
    RMW_CHECK_ARGUMENT_FOR_NULL(init_options, RMW_RET_INVALID_ARGUMENT);
    RCUTILS_CHECK_ALLOCATOR(&(init_options->allocator), return RMW_RET_INVALID_ARGUMENT);
@@ -145,7 +145,7 @@ rmw_init_options_fini(rmw_init_options_t *init_options)
 }
 
 rmw_ret_t
-rmw_init(const rmw_init_options_t *options, rmw_context_t *context)
+rmw_init(const rmw_init_options_t* options, rmw_context_t* context)
 {
    RCUTILS_CHECK_ARGUMENT_FOR_NULL(options, RMW_RET_INVALID_ARGUMENT);
    RCUTILS_CHECK_ARGUMENT_FOR_NULL(context, RMW_RET_INVALID_ARGUMENT);
@@ -160,7 +160,7 @@ rmw_init(const rmw_init_options_t *options, rmw_context_t *context)
 
    rmw_uxrce_init_session_memory(&session_memory, custom_sessions, RMW_UXRCE_MAX_SESSIONS);
 
-   rmw_uxrce_mempool_item_t *memory_node = get_memory(&session_memory);
+   rmw_uxrce_mempool_item_t* memory_node = get_memory(&session_memory);
    if (!memory_node)
    {
       RMW_SET_ERROR_MSG("Not available session memory node");
@@ -168,7 +168,7 @@ rmw_init(const rmw_init_options_t *options, rmw_context_t *context)
       return(RMW_RET_ERROR);
    }
 
-   rmw_context_impl_t *context_impl = (rmw_context_impl_t *)memory_node->data;
+   rmw_context_impl_t* context_impl = (rmw_context_impl_t*)memory_node->data;
 
   #if defined(RMW_UXRCE_TRANSPORT_CUSTOM)
    uxr_set_custom_transport_callbacks(&context_impl->transport,
@@ -214,7 +214,7 @@ rmw_init(const rmw_init_options_t *options, rmw_context_t *context)
       &context_impl->session, &context_impl->transport.comm,
       options->impl->transport_params.client_key);
 
-   uxr_set_topic_callback(&context_impl->session, on_topic, (void *)(context_impl));
+   uxr_set_topic_callback(&context_impl->session, on_topic, (void*)(context_impl));
    uxr_set_status_callback(&context_impl->session, on_status, NULL);
    uxr_set_request_callback(&context_impl->session, on_request, NULL);
    uxr_set_reply_callback(&context_impl->session, on_reply, NULL);
@@ -256,7 +256,7 @@ rmw_init(const rmw_init_options_t *options, rmw_context_t *context)
 }
 
 rmw_ret_t
-rmw_shutdown(rmw_context_t *context)
+rmw_shutdown(rmw_context_t* context)
 {
    RCUTILS_CHECK_ARGUMENT_FOR_NULL(context, RMW_RET_INVALID_ARGUMENT);
    RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
@@ -276,16 +276,16 @@ rmw_shutdown(rmw_context_t *context)
 }
 
 rmw_ret_t
-rmw_context_fini(rmw_context_t *context)
+rmw_context_fini(rmw_context_t* context)
 {
    // TODO(pablogs9): Should we manage not closed XRCE sessions?
    rmw_ret_t ret = RMW_RET_OK;
 
-   rmw_uxrce_mempool_item_t *item = node_memory.allocateditems;
+   rmw_uxrce_mempool_item_t* item = node_memory.allocateditems;
 
    while (item != NULL)
    {
-      rmw_uxrce_node_t *custom_node = (rmw_uxrce_node_t *)item->data;
+      rmw_uxrce_node_t* custom_node = (rmw_uxrce_node_t*)item->data;
       item = item->next;
       if (custom_node->context == context->impl)
       {

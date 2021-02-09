@@ -15,7 +15,7 @@
 #include "identifiers.h"
 #include "utils.h"
 
-const char *
+const char*
 rmw_get_serialization_format()
 {
    return(eprosima_microxrcedds_serialization_format);

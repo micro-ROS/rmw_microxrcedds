@@ -19,37 +19,37 @@
 #include <rmw_microxrcedds_c/config.h>
 
 void on_status(
-   struct uxrSession *session,
+   struct uxrSession* session,
    uxrObjectId object_id,
    uint16_t request_id,
    uint8_t status,
-   void *args);
+   void* args);
 
 void on_topic(
-   struct uxrSession *session,
+   struct uxrSession* session,
    uxrObjectId object_id,
    uint16_t request_id,
    uxrStreamId stream_id,
-   struct ucdrBuffer *ub,
+   struct ucdrBuffer* ub,
    uint16_t length,
-   void *args);
+   void* args);
 
 void on_request(
-   struct uxrSession *session,
+   struct uxrSession* session,
    uxrObjectId object_id,
    uint16_t request_id,
-   SampleIdentity *sample_id,
-   struct ucdrBuffer *ub,
+   SampleIdentity* sample_id,
+   struct ucdrBuffer* ub,
    uint16_t length,
-   void *args);
+   void* args);
 
 void on_reply(
-   struct uxrSession *session,
+   struct uxrSession* session,
    uxrObjectId object_id,
    uint16_t request_id,
    uint16_t reply_id,
-   struct ucdrBuffer *ub,
+   struct ucdrBuffer* ub,
    uint16_t length,
-   void *args);
+   void* args);
 
 #endif  // CALLBACKS_H_

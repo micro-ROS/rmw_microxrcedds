@@ -34,9 +34,9 @@
 
 rmw_ret_t
 rmw_init_subscription_allocation(
-   const rosidl_message_type_support_t *type_support,
-   const rosidl_runtime_c__Sequence__bound *message_bounds,
-   rmw_subscription_allocation_t *allocation)
+   const rosidl_message_type_support_t* type_support,
+   const rosidl_runtime_c__Sequence__bound* message_bounds,
+   rmw_subscription_allocation_t* allocation)
 {
    (void)type_support;
    (void)message_bounds;
@@ -46,20 +46,20 @@ rmw_init_subscription_allocation(
 }
 
 rmw_ret_t
-rmw_fini_subscription_allocation(rmw_subscription_allocation_t *allocation)
+rmw_fini_subscription_allocation(rmw_subscription_allocation_t* allocation)
 {
    (void)allocation;
    RMW_SET_ERROR_MSG("function not implemented");
    return(RMW_RET_UNSUPPORTED);
 }
 
-rmw_subscription_t *
+rmw_subscription_t*
 rmw_create_subscription(
-   const rmw_node_t *node,
-   const rosidl_message_type_support_t *type_support,
-   const char *topic_name,
-   const rmw_qos_profile_t *qos_policies,
-   const rmw_subscription_options_t *subscription_options)
+   const rmw_node_t* node,
+   const rosidl_message_type_support_t* type_support,
+   const char* topic_name,
+   const rmw_qos_profile_t* qos_policies,
+   const rmw_subscription_options_t* subscription_options)
 {
    (void)subscription_options;
 
@@ -89,21 +89,21 @@ rmw_create_subscription(
    }
    else
    {
-      rmw_subscription = (rmw_subscription_t *)rmw_allocate(
+      rmw_subscription = (rmw_subscription_t*)rmw_allocate(
          sizeof(rmw_subscription_t));
       rmw_subscription->data = NULL;
       rmw_subscription->implementation_identifier = rmw_get_implementation_identifier();
       rmw_subscription->topic_name =
-         (const char *)(rmw_allocate(sizeof(char) * (strlen(topic_name) + 1)));
+         (const char*)(rmw_allocate(sizeof(char) * (strlen(topic_name) + 1)));
       if (!rmw_subscription->topic_name)
       {
          RMW_SET_ERROR_MSG("failed to allocate memory");
          goto fail;
       }
-      strcpy((char *)rmw_subscription->topic_name, topic_name);
+      strcpy((char*)rmw_subscription->topic_name, topic_name);
 
-      rmw_uxrce_node_t *        custom_node = (rmw_uxrce_node_t *)node->data;
-      rmw_uxrce_mempool_item_t *memory_node = get_memory(&subscription_memory);
+      rmw_uxrce_node_t*         custom_node = (rmw_uxrce_node_t*)node->data;
+      rmw_uxrce_mempool_item_t* memory_node = get_memory(&subscription_memory);
       if (!memory_node)
       {
          RMW_SET_ERROR_MSG("Not available memory node");
@@ -111,7 +111,7 @@ rmw_create_subscription(
       }
 
       // TODO(Borja) RMW_UXRCE_TRANSPORT_id is duplicated in subscriber_id and in subscription_gid.data
-      rmw_uxrce_subscription_t *custom_subscription = (rmw_uxrce_subscription_t *)memory_node->data;
+      rmw_uxrce_subscription_t* custom_subscription = (rmw_uxrce_subscription_t*)memory_node->data;
       custom_subscription->rmw_handle = rmw_subscription;
 
       custom_subscription->owner_node = custom_node;
@@ -120,7 +120,7 @@ rmw_create_subscription(
       custom_subscription->micro_buffer_in_use = false;
       memcpy(&custom_subscription->qos, qos_policies, sizeof(rmw_qos_profile_t));
 
-      const rosidl_message_type_support_t *type_support_xrce = NULL;
+      const rosidl_message_type_support_t* type_support_xrce = NULL;
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
       type_support_xrce = get_message_typesupport_handle(
          type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
@@ -139,7 +139,7 @@ rmw_create_subscription(
       }
 
       custom_subscription->type_support_callbacks =
-         (const message_type_support_callbacks_t *)type_support_xrce->data;
+         (const message_type_support_callbacks_t*)type_support_xrce->data;
 
       if (custom_subscription->type_support_callbacks == NULL)
       {
@@ -265,16 +265,16 @@ fail:
 
 rmw_ret_t
 rmw_subscription_count_matched_publishers(
-   const rmw_subscription_t *subscription,
-   size_t *publisher_count)
+   const rmw_subscription_t* subscription,
+   size_t* publisher_count)
 {
 #ifdef RMW_UXRCE_GRAPH
    rmw_ret_t           ret        = RMW_RET_OK;
-   const char *        topic_name = subscription->topic_name;
+   const char*         topic_name = subscription->topic_name;
    rcutils_allocator_t allocator  = rcutils_get_default_allocator();
 
-   rmw_uxrce_subscription_t *custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
-   const rmw_node_t *        node = custom_subscription->owner_node->rmw_handle;
+   rmw_uxrce_subscription_t* custom_subscription = (rmw_uxrce_subscription_t*)subscription->data;
+   const rmw_node_t*         node = custom_subscription->owner_node->rmw_handle;
 
    rmw_topic_endpoint_info_array_t publishers_info =
       rmw_get_zero_initialized_topic_endpoint_info_array();
@@ -310,19 +310,19 @@ sub_count_pub_fail:
 
 rmw_ret_t
 rmw_subscription_get_actual_qos(
-   const rmw_subscription_t *subscription,
-   rmw_qos_profile_t *qos)
+   const rmw_subscription_t* subscription,
+   rmw_qos_profile_t* qos)
 {
    (void)qos;
 
-   rmw_uxrce_subscription_t *custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
+   rmw_uxrce_subscription_t* custom_subscription = (rmw_uxrce_subscription_t*)subscription->data;
    qos = &custom_subscription->qos;
 
    return(RMW_RET_OK);
 }
 
 rmw_ret_t
-rmw_destroy_subscription(rmw_node_t *node, rmw_subscription_t *subscription)
+rmw_destroy_subscription(rmw_node_t* node, rmw_subscription_t* subscription)
 {
    EPROS_PRINT_TRACE()
    rmw_ret_t result_ret = RMW_RET_OK;
@@ -358,8 +358,8 @@ rmw_destroy_subscription(rmw_node_t *node, rmw_subscription_t *subscription)
    }
    else
    {
-      rmw_uxrce_subscription_t *custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
-      rmw_uxrce_node_t *        custom_node         = custom_subscription->owner_node;
+      rmw_uxrce_subscription_t* custom_subscription = (rmw_uxrce_subscription_t*)subscription->data;
+      rmw_uxrce_node_t*         custom_node         = custom_subscription->owner_node;
 
       destroy_topic(custom_subscription->topic);
 

@@ -16,12 +16,12 @@
 #include <rmw/error_handling.h>
 
 rmw_ret_t rmw_uxrce_transport_init(
-   rmw_context_impl_t *context_impl,
-   rmw_init_options_impl_t *init_options_impl,
-   void *transport)
+   rmw_context_impl_t* context_impl,
+   rmw_init_options_impl_t* init_options_impl,
+   void* transport)
 {
 #ifdef RMW_UXRCE_TRANSPORT_SERIAL
-   const char *serial_device = (NULL == context_impl)
+   const char* serial_device = (NULL == context_impl)
                                ? RMW_UXRCE_DEFAULT_SERIAL_DEVICE
                                : init_options_impl->transport_params.serial_device;
 
@@ -79,8 +79,8 @@ rmw_ret_t rmw_uxrce_transport_init(
          return(RMW_RET_ERROR);
       }
 
-      uxrSerialTransport *serial_transport = (NULL == context_impl)
-                                             ? (uxrSerialTransport *)transport
+      uxrSerialTransport* serial_transport = (NULL == context_impl)
+                                             ? (uxrSerialTransport*)transport
                                              : &context_impl->transport;
 
       if (!uxr_init_serial_transport(serial_transport, fd, 0, 1))
@@ -103,13 +103,13 @@ rmw_ret_t rmw_uxrce_transport_init(
    uxrIpProtocol ip_protocol = UXR_IPv6;
 #endif
 
-   uxrUDPTransport *udp_transport = (NULL == context_impl)
-                                    ? (uxrUDPTransport *)transport
+   uxrUDPTransport* udp_transport = (NULL == context_impl)
+                                    ? (uxrUDPTransport*)transport
                                     : &context_impl->transport;
-   const char *agent_ip = (NULL == context_impl)
+   const char* agent_ip = (NULL == context_impl)
                           ? RMW_UXRCE_DEFAULT_UDP_IP
                           : init_options_impl->transport_params.agent_address;
-   const char *agent_port = (NULL == context_impl)
+   const char* agent_port = (NULL == context_impl)
                             ? RMW_UXRCE_DEFAULT_UDP_PORT
                             : init_options_impl->transport_params.agent_port;
 
@@ -121,10 +121,10 @@ rmw_ret_t rmw_uxrce_transport_init(
    printf("micro-ROS transport: connected using UDP mode, ip: '%s', port: '%s'\n",
           agent_ip, agent_port);
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
-   uxrCustomTransport *custom_transport = (NULL == context_impl)
-                                          ? (uxrCustomTransport *)transport
+   uxrCustomTransport* custom_transport = (NULL == context_impl)
+                                          ? (uxrCustomTransport*)transport
                                           : &context_impl->transport;
-   void *args = init_options_impl->transport_params.args;
+   void* args = init_options_impl->transport_params.args;
 
    if (!uxr_init_custom_transport(custom_transport, args))
    {

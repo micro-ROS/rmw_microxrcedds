@@ -20,16 +20,16 @@
 
 #include <rmw_uros/options.h>
 
-bool flush_session(uxrSession *session)
+bool flush_session(uxrSession* session)
 {
    return(uxr_run_session_until_confirm_delivery(session, 1000));
 }
 
 rmw_ret_t
 rmw_publish(
-   const rmw_publisher_t *publisher,
-   const void *ros_message,
-   rmw_publisher_allocation_t *allocation)
+   const rmw_publisher_t* publisher,
+   const void* ros_message,
+   rmw_publisher_allocation_t* allocation)
 {
    (void)allocation;
    EPROS_PRINT_TRACE()
@@ -56,8 +56,8 @@ rmw_publish(
    }
    else
    {
-      rmw_uxrce_publisher_t *custom_publisher           = (rmw_uxrce_publisher_t *)publisher->data;
-      const message_type_support_callbacks_t *functions = custom_publisher->type_support_callbacks;
+      rmw_uxrce_publisher_t* custom_publisher           = (rmw_uxrce_publisher_t*)publisher->data;
+      const message_type_support_callbacks_t* functions = custom_publisher->type_support_callbacks;
       uint32_t topic_length = functions->get_serialized_size(ros_message);
 
       if (custom_publisher->cs_cb_size)
@@ -103,9 +103,9 @@ rmw_publish(
 
 rmw_ret_t
 rmw_publish_serialized_message(
-   const rmw_publisher_t *publisher,
-   const rmw_serialized_message_t *serialized_message,
-   rmw_publisher_allocation_t *allocation)
+   const rmw_publisher_t* publisher,
+   const rmw_serialized_message_t* serialized_message,
+   rmw_publisher_allocation_t* allocation)
 {
    (void)publisher;
    (void)serialized_message;
@@ -116,9 +116,9 @@ rmw_publish_serialized_message(
 
 rmw_ret_t
 rmw_publish_loaned_message(
-   const rmw_publisher_t *publisher,
-   void *ros_message,
-   rmw_publisher_allocation_t *allocation)
+   const rmw_publisher_t* publisher,
+   void* ros_message,
+   rmw_publisher_allocation_t* allocation)
 {
    (void)publisher;
    (void)ros_message;

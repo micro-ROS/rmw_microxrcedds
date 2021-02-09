@@ -30,9 +30,9 @@
 
 rmw_ret_t
 rmw_get_node_names(
-   const rmw_node_t *node,
-   rcutils_string_array_t *node_names,
-   rcutils_string_array_t *node_namespaces)
+   const rmw_node_t* node,
+   rcutils_string_array_t* node_names,
+   rcutils_string_array_t* node_namespaces)
 {
 #ifdef RMW_UXRCE_GRAPH
    // Perform RMW checks
@@ -49,8 +49,8 @@ rmw_get_node_names(
    }
 
    // Get micro_ros_msgs/msg/Graph instance
-   rmw_uxrce_node_t *custom_node = (rmw_uxrce_node_t *)(node->data);
-   rmw_graph_info_t *graph_info  = &custom_node->context->graph_info;
+   rmw_uxrce_node_t* custom_node = (rmw_uxrce_node_t*)(node->data);
+   rmw_graph_info_t* graph_info  = &custom_node->context->graph_info;
 
    if (!graph_info->initialized)
    {
@@ -58,7 +58,7 @@ rmw_get_node_names(
    }
 
    rmw_ret_t ret = RMW_RET_OK;
-   micro_ros_msgs__msg__Graph *graph_data = micro_ros_msgs__msg__Graph__create();
+   micro_ros_msgs__msg__Graph* graph_data = micro_ros_msgs__msg__Graph__create();
 
    if (RMW_RET_OK != rmw_graph_fill_data_from_buffer(graph_info, graph_data))
    {
@@ -84,7 +84,7 @@ rmw_get_node_names(
    // Copy information into result arrays
    for (size_t i = 0; i < graph_data->nodes.size; ++i)
    {
-      micro_ros_msgs__msg__Node *node = &graph_data->nodes.data[i];
+      micro_ros_msgs__msg__Node* node = &graph_data->nodes.data[i];
       node_namespaces->data[i] = allocator.zero_allocate(
          strlen(node->node_namespace.data) + 1, sizeof(char), allocator.state);
       strcpy(node_namespaces->data[i], node->node_namespace.data);
@@ -107,10 +107,10 @@ fini:
 
 rmw_ret_t
 rmw_get_node_names_with_enclaves(
-   const rmw_node_t *node,
-   rcutils_string_array_t *node_names,
-   rcutils_string_array_t *node_namespaces,
-   rcutils_string_array_t *enclaves)
+   const rmw_node_t* node,
+   rcutils_string_array_t* node_names,
+   rcutils_string_array_t* node_namespaces,
+   rcutils_string_array_t* enclaves)
 {
    (void)enclaves; // TODO(jamoralp): what is this used for?
    return(rmw_get_node_names(node, node_names, node_namespaces));
