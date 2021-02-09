@@ -34,9 +34,9 @@ protected:
     {
         RMWBaseTest::SetUp();
 
-      node = rmw_create_node(&test_context,  "my_node",  "/ns");
-      ASSERT_NE(node, nullptr);
-   }
+        node = rmw_create_node(&test_context, "my_node", "/ns");
+        ASSERT_NE(node, nullptr);
+    }
 
     void TearDown() override
     {
