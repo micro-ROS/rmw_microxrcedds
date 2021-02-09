@@ -228,6 +228,8 @@ target_compile_options(${PROJECT_NAME}
     $<$<C_COMPILER_ID:MSVC>:/Wall>
   )
 
+file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/include)
+
 ament_export_include_directories(${CMAKE_INSTALL_PREFIX}/include)
 ament_export_include_directories(${microxrcedds_client_INCLUDE_DIR})
 ament_export_include_directories(${microcdr_INCLUDE_DIR})
