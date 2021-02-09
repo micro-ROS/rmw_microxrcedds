@@ -64,12 +64,9 @@ typedef struct rmw_context_impl_t
   uxrSerialTransport transport;
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
   uxrUDPTransport transport;
-<<<<<<< foxy
-=======
   uxrUDPPlatform udp_platform;
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
   uxrCustomTransport transport;
->>>>>>> Initial
 #endif
   uxrSession session;
 
