@@ -136,6 +136,7 @@ void rmw_uros_set_continous_serialization_callbacks(
   rmw_publisher_t * publisher,
   rmw_uros_continous_serialization_size size_cb, 
   rmw_uros_continous_serialization serialization_cb);
+
 #ifdef RMW_UXRCE_TRANSPORT_CUSTOM
 extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
 
