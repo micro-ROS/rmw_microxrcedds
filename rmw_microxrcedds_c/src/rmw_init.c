@@ -20,39 +20,20 @@
 #include "./rmw_uros/options.h"
 #include "./rmw_node.h"
 #include "./identifiers.h"
+
 #include <rmw_microxrcedds_c/config.h>
+#include "./rmw_uxrce_transports.h"
 
 #include <rmw/rmw.h>
 #include <rmw/error_handling.h>
 #include <rmw/allocators.h>
 #include <uxr/client/util/time.h>
 
-#ifdef RMW_UXRCE_TRANSPORT_CUSTOM
-#include <uxr/client/profile/transport/custom/custom_transport.h>
-#endif //RMW_UXRCE_TRANSPORT_CUSTOM
-
 #include "./callbacks.h"
 
 #ifdef RMW_UXRCE_GRAPH
 #include "./rmw_graph.h"
 #endif  // RMW_UXRCE_GRAPH
-
-#ifdef RMW_UXRCE_TRANSPORT_SERIAL
-#include <stdio.h>
-#include <fcntl.h>
-#include <termios.h>
-#endif
-
-#if defined(RMW_UXRCE_TRANSPORT_SERIAL)
-#define CLOSE_TRANSPORT(transport) uxr_close_serial_transport(transport)
-#elif defined(RMW_UXRCE_TRANSPORT_UDP)
-#define CLOSE_TRANSPORT(transport) uxr_close_udp_transport(transport)
-#elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
-#define CLOSE_TRANSPORT(transport) uxr_close_custom_transport(transport)
-#else
-#define CLOSE_TRANSPORT(transport)
-#endif
-
 
 rmw_ret_t
 rmw_init_options_init(rmw_init_options_t * init_options, rcutils_allocator_t allocator)
@@ -205,88 +186,12 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   rmw_uxrce_init_client_memory(&client_memory, custom_clients, RMW_UXRCE_MAX_CLIENTS);
   rmw_uxrce_init_topic_memory(&topics_memory, custom_topics, RMW_UXRCE_MAX_TOPICS_INTERNAL);
 
-  // Micro-XRCE-DDS Client initialization
-
-#ifdef RMW_UXRCE_TRANSPORT_SERIAL
-  int fd = open(options->impl->transport_params.serial_device, O_RDWR | O_NOCTTY);
-  if (0 < fd) {
-    struct termios tty_config;
-    memset(&tty_config, 0, sizeof(tty_config));
-    if (0 == tcgetattr(fd, &tty_config)) {
-      /* Setting CONTROL OPTIONS. */
-      tty_config.c_cflag |= CREAD;          // Enable read.
-      tty_config.c_cflag |= CLOCAL;         // Set local mode.
-      tty_config.c_cflag &= ~PARENB;        // Disable parity.
-      tty_config.c_cflag &= ~CSTOPB;        // Set one stop bit.
-      tty_config.c_cflag &= ~CSIZE;         // Mask the character size bits.
-      tty_config.c_cflag |= CS8;            // Set 8 data bits.
-      tty_config.c_cflag &= ~CRTSCTS;       // Disable hardware flow control.
-
-      /* Setting LOCAL OPTIONS. */
-      tty_config.c_lflag &= ~ICANON;        // Set non-canonical input.
-      tty_config.c_lflag &= ~ECHO;          // Disable echoing of input characters.
-      tty_config.c_lflag &= ~ECHOE;         // Disable echoing the erase character.
-      tty_config.c_lflag &= ~ISIG;          // Disable SIGINTR, SIGSUSP, SIGDSUSP
-                                            // and SIGQUIT signals.
-
-      /* Setting INPUT OPTIONS. */
-      tty_config.c_iflag &= ~IXON;          // Disable output software flow control.
-      tty_config.c_iflag &= ~IXOFF;         // Disable input software flow control.
-      tty_config.c_iflag &= ~INPCK;         // Disable parity check.
-      tty_config.c_iflag &= ~ISTRIP;        // Disable strip parity bits.
-      tty_config.c_iflag &= ~IGNBRK;        // No ignore break condition.
-      tty_config.c_iflag &= ~IGNCR;         // No ignore carrier return.
-      tty_config.c_iflag &= ~INLCR;         // No map NL to CR.
-      tty_config.c_iflag &= ~ICRNL;         // No map CR to NL.
-
-      /* Setting OUTPUT OPTIONS. */
-      tty_config.c_oflag &= ~OPOST;         // Set raw output.
-
-      /* Setting OUTPUT CHARACTERS. */
-      tty_config.c_cc[VMIN] = 34;
-      tty_config.c_cc[VTIME] = 10;
-
-      /* Setting BAUD RATE. */
-      cfsetispeed(&tty_config, B115200);
-      cfsetospeed(&tty_config, B115200);
-
-      if (0 == tcsetattr(fd, TCSANOW, &tty_config)) {
-        if (!uxr_init_serial_transport(
-            &context_impl->transport, fd, 0, 1))
-        {
-          RMW_SET_ERROR_MSG("Can not create an serial connection");
-          return RMW_RET_ERROR;
-        }
-      }
-    }
+  // Micro-XRCE-DDS Client transport initialization
+  rmw_ret_t transport_init_ret = rmw_uxrce_transport_init(
+    context->impl, options->impl, NULL);
+  if (RMW_RET_OK != transport_init_ret) {
+    return transport_init_ret;
   }
-  printf("Serial mode => dev: %s\n", options->impl->transport_params.serial_device);
-
-#elif defined(RMW_UXRCE_TRANSPORT_UDP)
-  // TODO(Borja) Think how we are going to select transport to use
-  #ifdef RMW_UXRCE_TRANSPORT_IPV4
-  uxrIpProtocol ip_protocol = UXR_IPv4;
-  #elif defined(RMW_UXRCE_TRANSPORT_IPV6)
-  uxrIpProtocol ip_protocol = UXR_IPv6;
-  #endif
-
-  if (!uxr_init_udp_transport(
-      &context_impl->transport, ip_protocol,
-      options->impl->transport_params.agent_address, options->impl->transport_params.agent_port))
-  {
-    RMW_SET_ERROR_MSG("Can not create an udp connection");
-    return RMW_RET_ERROR;
-  }
-  printf(
-    "UDP mode => ip: %s - port: %s\n", options->impl->transport_params.agent_address,
-    options->impl->transport_params.agent_port);
-#elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
-  if (!uxr_init_custom_transport(&context_impl->transport, options->impl->transport_params.args))
-  {
-    RMW_SET_ERROR_MSG("Can not create an custom connection");
-    return RMW_RET_ERROR;
-  }
-#endif
 
   uxr_init_session(
     &context_impl->session, &context_impl->transport.comm,

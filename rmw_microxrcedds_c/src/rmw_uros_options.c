@@ -22,7 +22,10 @@
 #include <rmw/ret_types.h>
 #include <rmw/error_handling.h>
 
+#include "./rmw_uxrce_transports.h"
+
 #include <uxr/client/client.h>
+#include <uxr/client/util/ping.h>
 
 rmw_ret_t rmw_uros_init_options(
   int argc, const char * const argv[],
@@ -183,16 +186,37 @@ rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_
   return RMW_RET_OK;
 }
 
-rmw_ret_t rmw_uros_check_agent_status(int timeout_ms)
-{  
-  bool synchronized = true;
-  rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
-  while (item != NULL) {
-    rmw_context_impl_t * context = (rmw_context_impl_t *) item->data;
-    synchronized &= uxr_sync_session(&context->session, timeout_ms);
-    item = item->next;
-  }
-  return (synchronized && session_memory.allocateditems != NULL) ? RMW_RET_OK : RMW_RET_ERROR;
+rmw_ret_t rmw_uros_ping_agent(const int timeout_ms, const uint8_t attempts)
+{
+    bool success = false;
+
+    if (NULL == session_memory.allocateditems) {
+#ifdef RMW_UXRCE_TRANSPORT_SERIAL
+        uxrSerialTransport transport;
+#elif defined(RMW_UXRCE_TRANSPORT_UDP)
+        uxrUDPTransport transport;
+#elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
+        uxrCustomTransport transport;
+#endif
+        rmw_ret_t ret = rmw_uxrce_transport_init(NULL, NULL, (void *)&transport);
+
+        if (RMW_RET_OK != ret) {
+            return ret;
+        }
+
+        success = uxr_ping_agent_attempts(&transport.comm, timeout_ms, attempts);
+        CLOSE_TRANSPORT(&transport);
+    } else {
+        rmw_uxrce_mempool_item_t* item = session_memory.allocateditems;
+        do {
+            rmw_context_impl_t* context = (rmw_context_impl_t *)item->data;
+
+            success = uxr_ping_agent_attempts(&context->transport.comm, timeout_ms, attempts);
+            item = item->next;
+        } while (NULL != item && !success);
+    }
+
+    return (success ? RMW_RET_OK : RMW_RET_ERROR);
 }
 
 void rmw_uros_set_continous_serialization_callbacks(
@@ -204,6 +228,7 @@ void rmw_uros_set_continous_serialization_callbacks(
   custom_publisher->cs_cb_size = size_cb;
   custom_publisher->cs_cb_serialization = serialization_cb;
 }
+
 #ifdef RMW_UXRCE_TRANSPORT_CUSTOM
 rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
 

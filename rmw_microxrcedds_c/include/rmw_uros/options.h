@@ -18,9 +18,8 @@
 #include <rmw/rmw.h>
 #include <rmw/ret_types.h>
 #include <rmw/init_options.h>
+#include <uxr/client/profile/transport/custom/custom_transport.h>
 #include <rmw_microxrcedds_c/config.h>
-#include <uxr/client/client.h>
-
 #include <ucdr/microcdr.h>
 
 #if defined(__cplusplus)
@@ -112,13 +111,15 @@ rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t * rmw_options);
 rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_t * rmw_options);
 
 /**
- * \brief Check if micro-ROS Agent answers to micro-ROS client
- *
- * \param[in] timeout_ms timeout in ms.
+ * \brief Check if micro-ROS Agent is up and running.
+ *        This function can be called even when the micro-ROS context has not yet been
+ *        initialized by the application logics.
+ * \param[in] timeout_ms Timeout in ms (per attempt).
+ * \param[in] attempts Number of tries before considering the ping as failed.
  * \return RMW_RET_OK If micro-ROS Agent is available.
  * \return RMW_RET_ERROR If micro-ROS Agent is not available.
  */
-rmw_ret_t rmw_uros_check_agent_status(int timeout_ms);
+rmw_ret_t rmw_uros_ping_agent(const int timeout_ms, const uint8_t attempts);
 
 /**
  * \brief Sets the callback functions for continous serialization for a publisher
