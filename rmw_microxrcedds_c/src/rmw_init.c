@@ -272,7 +272,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 
   if (!uxr_init_udp_transport(
       &context_impl->transport, ip_protocol,
-      context_impl->connection_params.agent_address, context_impl->connection_params.agent_port))
+      options->impl->transport_params.agent_address, options->impl->transport_params.agent_port))
   {
     RMW_SET_ERROR_MSG("Can not create an udp connection");
     return RMW_RET_ERROR;
