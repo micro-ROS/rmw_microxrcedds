@@ -27,13 +27,13 @@ extern "C"
 
 rmw_uxrce_topic_t *
 create_topic(
-  struct rmw_uxrce_node_t * custom_node,
-  const char * topic_name,
-  const message_type_support_callbacks_t * message_type_support_callbacks,
-  const rmw_qos_profile_t * qos_policies);
+   struct rmw_uxrce_node_t *custom_node,
+   const char *topic_name,
+   const message_type_support_callbacks_t *message_type_support_callbacks,
+   const rmw_qos_profile_t *qos_policies);
 
-rmw_ret_t destroy_topic(rmw_uxrce_topic_t * topic);
-size_t topic_count(rmw_uxrce_node_t * custom_node);
+rmw_ret_t destroy_topic(rmw_uxrce_topic_t *topic);
+size_t topic_count(rmw_uxrce_node_t *custom_node);
 
 #if defined(__cplusplus)
 }

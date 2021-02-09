@@ -24,118 +24,128 @@
 
 rmw_uxrce_topic_t *
 create_topic(
-  struct rmw_uxrce_node_t * custom_node,
-  const char * topic_name,
-  const message_type_support_callbacks_t * message_type_support_callbacks,
-  const rmw_qos_profile_t * qos_policies)
+   struct rmw_uxrce_node_t *custom_node,
+   const char *topic_name,
+   const message_type_support_callbacks_t *message_type_support_callbacks,
+   const rmw_qos_profile_t *qos_policies)
 {
-  rmw_uxrce_topic_t * custom_topic = NULL;
-  rmw_uxrce_mempool_item_t * memory_node = get_memory(&topics_memory);
-  if (!memory_node) {
-    RMW_SET_ERROR_MSG("Not available memory node");
-    goto fail;
-  }
+   rmw_uxrce_topic_t *       custom_topic = NULL;
+   rmw_uxrce_mempool_item_t *memory_node  = get_memory(&topics_memory);
 
-  custom_topic = (rmw_uxrce_topic_t *)memory_node->data;
+   if (!memory_node)
+   {
+      RMW_SET_ERROR_MSG("Not available memory node");
+      goto fail;
+   }
 
-  // Init
-  custom_topic->sync_with_agent = false;
-  custom_topic->owner_node = custom_node;
+   custom_topic = (rmw_uxrce_topic_t *)memory_node->data;
 
-  // Asociate to typesupport
-  custom_topic->message_type_support_callbacks = message_type_support_callbacks;
+   // Init
+   custom_topic->sync_with_agent = false;
+   custom_topic->owner_node      = custom_node;
 
-  // Generate topic id
-  custom_topic->topic_id = uxr_object_id(custom_node->context->id_topic++, UXR_TOPIC_ID);
+   // Asociate to typesupport
+   custom_topic->message_type_support_callbacks = message_type_support_callbacks;
 
-  // Generate request
-  uint16_t topic_req = 0;
+   // Generate topic id
+   custom_topic->topic_id = uxr_object_id(custom_node->context->id_topic++, UXR_TOPIC_ID);
+
+   // Generate request
+   uint16_t topic_req = 0;
 #ifdef RMW_UXRCE_TRANSPORT_USE_XML
-  if (!build_topic_xml(
-      topic_name, message_type_support_callbacks,
-      qos_policies, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
-  {
-    RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
-    rmw_uxrce_fini_topic_memory(custom_topic);
-    custom_topic = NULL;
-    goto fail;
-  }
+   if (!build_topic_xml(
+          topic_name, message_type_support_callbacks,
+          qos_policies, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
+   {
+      RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
+      rmw_uxrce_fini_topic_memory(custom_topic);
+      custom_topic = NULL;
+      goto fail;
+   }
 
-  topic_req = uxr_buffer_create_topic_xml(
-    &custom_node->context->session,
-    custom_node->context->reliable_output, custom_topic->topic_id,
-    custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
+   topic_req = uxr_buffer_create_topic_xml(
+      &custom_node->context->session,
+      custom_node->context->reliable_output, custom_topic->topic_id,
+      custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
 #elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
-  (void)qos_policies;
-  if (!build_topic_profile(topic_name, rmw_uxrce_profile_name, sizeof(rmw_uxrce_profile_name))) {
-    RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
-    rmw_uxrce_fini_topic_memory(custom_topic);
-    custom_topic = NULL;
-    goto fail;
-  }
+   (void)qos_policies;
+   if (!build_topic_profile(topic_name, rmw_uxrce_profile_name, sizeof(rmw_uxrce_profile_name)))
+   {
+      RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
+      rmw_uxrce_fini_topic_memory(custom_topic);
+      custom_topic = NULL;
+      goto fail;
+   }
 
-  topic_req = uxr_buffer_create_topic_ref(
-    &custom_node->context->session,
-    custom_node->context->reliable_output, custom_topic->topic_id,
-    custom_node->participant_id, rmw_uxrce_profile_name, UXR_REPLACE);
+   topic_req = uxr_buffer_create_topic_ref(
+      &custom_node->context->session,
+      custom_node->context->reliable_output, custom_topic->topic_id,
+      custom_node->participant_id, rmw_uxrce_profile_name, UXR_REPLACE);
 #endif
 
-  // Send the request and wait for response
-  custom_topic->sync_with_agent = run_xrce_session(custom_node->context, topic_req);
+   // Send the request and wait for response
+   custom_topic->sync_with_agent = run_xrce_session(custom_node->context, topic_req);
 
-  if (!custom_topic->sync_with_agent) {
-    rmw_uxrce_fini_topic_memory(custom_topic);
-    custom_topic = NULL;
-    goto fail;
-  }
+   if (!custom_topic->sync_with_agent)
+   {
+      rmw_uxrce_fini_topic_memory(custom_topic);
+      custom_topic = NULL;
+      goto fail;
+   }
 
 fail:
-  return custom_topic;
+   return(custom_topic);
 }
 
-rmw_ret_t destroy_topic(rmw_uxrce_topic_t * topic)
+rmw_ret_t destroy_topic(rmw_uxrce_topic_t *topic)
 {
-  rmw_ret_t result_ret = RMW_RET_OK;
+   rmw_ret_t result_ret = RMW_RET_OK;
 
-  uint16_t delete_topic = uxr_buffer_delete_entity(
-    &topic->owner_node->context->session,
-    topic->owner_node->context->reliable_output,
-    topic->topic_id);
+   uint16_t delete_topic = uxr_buffer_delete_entity(
+      &topic->owner_node->context->session,
+      topic->owner_node->context->reliable_output,
+      topic->topic_id);
 
-  rmw_uxrce_node_t * custom_node = topic->owner_node;
+   rmw_uxrce_node_t *custom_node = topic->owner_node;
 
-  if (!run_xrce_session(custom_node->context, delete_topic))
-  {
-    result_ret = RMW_RET_ERROR;
-  } else {
-    rmw_uxrce_fini_topic_memory(topic);
-    result_ret = RMW_RET_OK;
-  }
-  return result_ret;
+   if (!run_xrce_session(custom_node->context, delete_topic))
+   {
+      result_ret = RMW_RET_ERROR;
+   }
+   else
+   {
+      rmw_uxrce_fini_topic_memory(topic);
+      result_ret = RMW_RET_OK;
+   }
+   return(result_ret);
 }
 
-size_t topic_count(rmw_uxrce_node_t * custom_node)
+size_t topic_count(rmw_uxrce_node_t *custom_node)
 {
-  size_t count = 0;
-  rmw_uxrce_mempool_item_t * item = NULL;
+   size_t count = 0;
+   rmw_uxrce_mempool_item_t *item = NULL;
 
-  item = publisher_memory.allocateditems;
-  while (item != NULL) {
-    rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)item->data;
-    item = item->next;
-    if (custom_publisher->owner_node == custom_node && custom_publisher->topic != NULL) {
-      count++;
-    }
-  }
+   item = publisher_memory.allocateditems;
+   while (item != NULL)
+   {
+      rmw_uxrce_publisher_t *custom_publisher = (rmw_uxrce_publisher_t *)item->data;
+      item = item->next;
+      if (custom_publisher->owner_node == custom_node && custom_publisher->topic != NULL)
+      {
+         count++;
+      }
+   }
 
-  item = subscription_memory.allocateditems;
-  while (item != NULL) {
-    rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)item->data;
-    item = item->next;
-    if (custom_subscription->owner_node == custom_node && custom_subscription->topic != NULL) {
-      count++;
-    }
-  }
+   item = subscription_memory.allocateditems;
+   while (item != NULL)
+   {
+      rmw_uxrce_subscription_t *custom_subscription = (rmw_uxrce_subscription_t *)item->data;
+      item = item->next;
+      if (custom_subscription->owner_node == custom_node && custom_subscription->topic != NULL)
+      {
+         count++;
+      }
+   }
 
-  return count;
+   return(count);
 }

@@ -47,20 +47,20 @@
  *          if some argument was not initialized as expected.
  */
 rmw_ret_t rmw_uxrce_transport_init(
-        rmw_context_impl_t* context,
-        rmw_init_options_impl_t* init_options,
-        void* transport);
+   rmw_context_impl_t *context,
+   rmw_init_options_impl_t *init_options,
+   void *transport);
 
 /**
  * @brief   Helper macros for closing an open micro XRCE-DDS transport.
  * @param   transport The uxrXXXTransport struct pointer used to close the connection.
  */
 #if defined(RMW_UXRCE_TRANSPORT_SERIAL)
-#define CLOSE_TRANSPORT(transport) uxr_close_serial_transport(transport)
+#define CLOSE_TRANSPORT(transport)    uxr_close_serial_transport(transport)
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
-#define CLOSE_TRANSPORT(transport) uxr_close_udp_transport(transport)
+#define CLOSE_TRANSPORT(transport)    uxr_close_udp_transport(transport)
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
-#define CLOSE_TRANSPORT(transport) uxr_close_custom_transport(transport)
+#define CLOSE_TRANSPORT(transport)    uxr_close_custom_transport(transport)
 #else
 #define CLOSE_TRANSPORT(transport)
 #endif

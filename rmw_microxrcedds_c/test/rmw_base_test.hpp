@@ -21,27 +21,27 @@
 class RMWBaseTest : public ::testing::Test
 {
 protected:
-  static void SetUpTestSuite()
-  {
-  }
+   static void SetUpTestSuite()
+   {
+   }
 
-  static void TearDownTestSuite()
-  {
-  }
+   static void TearDownTestSuite()
+   {
+   }
 
-  void SetUp() override
-  {
-    ASSERT_EQ(rmw_init_options_init(&test_options, rcutils_get_default_allocator()), RMW_RET_OK);
-    ASSERT_EQ(rmw_init(&test_options, &test_context), RMW_RET_OK);
-  }
+   void SetUp() override
+   {
+      ASSERT_EQ(rmw_init_options_init(&test_options, rcutils_get_default_allocator()), RMW_RET_OK);
+      ASSERT_EQ(rmw_init(&test_options, &test_context), RMW_RET_OK);
+   }
 
-  void TearDown() override
-  {
-    ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
-  }
+   void TearDown() override
+   {
+      ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
+   }
 
-  rmw_context_t test_context = rmw_get_zero_initialized_context();
-  rmw_init_options_t test_options = rmw_get_zero_initialized_init_options();
+   rmw_context_t test_context      = rmw_get_zero_initialized_context();
+   rmw_init_options_t test_options = rmw_get_zero_initialized_init_options();
 };
 
 #endif  // RMW_BASE_TEST_HPP_
