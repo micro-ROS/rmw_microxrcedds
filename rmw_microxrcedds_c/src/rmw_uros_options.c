@@ -133,8 +133,7 @@ bool on_agent_found(const TransportLocator* locator, void* args)
   sprintf(port_str, "%d", port);
 
   uxrUDPTransport transport;
-  uxrUDPPlatform udp_platform;
-  if(uxr_init_udp_transport(&transport, &udp_platform, ip_protocol, ip, port_str))
+  if(uxr_init_udp_transport(&transport, ip_protocol, ip, port_str))
   {
     uxrSession session;
     uxr_init_session(&session, &transport.comm, rmw_options->impl->connection_params.client_key);

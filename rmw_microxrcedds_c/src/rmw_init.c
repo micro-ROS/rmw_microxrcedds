@@ -242,8 +242,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 
       if (0 == tcsetattr(fd, TCSANOW, &tty_config)) {
         if (!uxr_init_serial_transport(
-            &context_impl->transport,
-            &context_impl->serial_platform, fd, 0, 1))
+            &context_impl->transport, fd, 0, 1))
         {
           RMW_SET_ERROR_MSG("Can not create an serial connection");
           return RMW_RET_ERROR;
@@ -262,7 +261,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   #endif
 
   if (!uxr_init_udp_transport(
-      &context_impl->transport, &context_impl->udp_platform, ip_protocol,
+      &context_impl->transport, ip_protocol,
       context_impl->connection_params.agent_address, context_impl->connection_params.agent_port))
   {
     RMW_SET_ERROR_MSG("Can not create an udp connection");
@@ -278,8 +277,7 @@ rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
   }
 
   if (!uxr_init_serial_transport(
-      &context_impl->transport, &context_impl->serial_platform,
-      pseudo_fd, 0, 1))
+      &context_impl->transport, pseudo_fd, 0, 1))
   {
     RMW_SET_ERROR_MSG("Can not create an custom serial connection");
     return RMW_RET_ERROR;
