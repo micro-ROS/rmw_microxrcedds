@@ -31,37 +31,37 @@
 
 typedef struct
 {
-   rosidl_message_type_support_t    type_support;
-   message_type_support_callbacks_t callbacks;
-   std::string                      topic_name;
-   std::string                      type_name;
-   std::string                      message_namespace;
+    rosidl_message_type_support_t    type_support;
+    message_type_support_callbacks_t callbacks;
+    std::string                      topic_name;
+    std::string                      type_name;
+    std::string                      message_namespace;
 } dummy_type_support_t;
 
 typedef struct
 {
-   rosidl_service_type_support_t    type_support;
-   service_type_support_callbacks_t callbacks;
-   dummy_type_support_t             request_members;
-   dummy_type_support_t             response_members;
-   std::string                      service_name;
-   std::string                      type_name;
-   std::string                      message_namespace;
+    rosidl_service_type_support_t    type_support;
+    service_type_support_callbacks_t callbacks;
+    dummy_type_support_t             request_members;
+    dummy_type_support_t             response_members;
+    std::string                      service_name;
+    std::string                      type_name;
+    std::string                      message_namespace;
 } dummy_service_type_support_t;
 
 void ConfigureDummyTypeSupport(
-   const char* type_name,
-   const char* topic_name,
-   const char* message_namespace,
-   size_t id,
-   dummy_type_support_t* dummy_type_support);
+    const char* type_name,
+    const char* topic_name,
+    const char* message_namespace,
+    size_t id,
+    dummy_type_support_t* dummy_type_support);
 
 void ConfigureDummyServiceTypeSupport(
-   const char* type_name,
-   const char* service_name,
-   const char* message_namespace,
-   size_t id,
-   dummy_service_type_support_t* dummy_type_support);
+    const char* type_name,
+    const char* service_name,
+    const char* message_namespace,
+    size_t id,
+    dummy_service_type_support_t* dummy_type_support);
 
 
 void ConfigureDefaultQOSPolices(rmw_qos_profile_t* dummy_qos_policies);

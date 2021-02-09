@@ -28,11 +28,11 @@
 // #include <micro_ros_msgs/msg/entity.h>
 
 rmw_ret_t rmw_graph_init(
-   rmw_context_impl_t* context,
-   rmw_graph_info_t* graph_info);
+    rmw_context_impl_t* context,
+    rmw_graph_info_t* graph_info);
 
 rmw_ret_t rmw_graph_fill_data_from_buffer(
-   rmw_graph_info_t* graph_info,
-   micro_ros_msgs__msg__Graph* graph_data);
+    rmw_graph_info_t* graph_info,
+    micro_ros_msgs__msg__Graph* graph_data);
 
 #endif  // RMW_UXRCE_GRAPH_H_
