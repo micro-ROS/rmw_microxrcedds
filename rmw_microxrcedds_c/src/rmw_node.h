@@ -20,8 +20,8 @@
 #include "./types.h"
 
 
-rmw_node_t * create_node(
-  const char * name, const char * namespace_, size_t domain_id,
-  const rmw_context_t * context);
+rmw_node_t* create_node(
+   const char* name, const char* namespace_, size_t domain_id,
+   const rmw_context_t* context);
 
 #endif  // RMW_NODE_H_

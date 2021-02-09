@@ -39,246 +39,246 @@
 #ifdef RMW_UXRCE_GRAPH
 typedef struct rmw_graph_info_t
 {
-  bool initialized;
-  bool has_changed;
-  rmw_context_impl_t * context;
+   bool                                 initialized;
+   bool                                 has_changed;
+   rmw_context_impl_t*                  context;
 
-  uxrObjectId participant_id;
-  uxrObjectId subscriber_id;
-  uxrObjectId topic_id;
-  uxrObjectId datareader_id;
-  uint16_t subscription_request;
+   uxrObjectId                          participant_id;
+   uxrObjectId                          subscriber_id;
+   uxrObjectId                          topic_id;
+   uxrObjectId                          datareader_id;
+   uint16_t                             subscription_request;
 
-  uint8_t micro_buffer[RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
-  size_t micro_buffer_length;
+   uint8_t                              micro_buffer[RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
+   size_t                               micro_buffer_length;
 
-  const rosidl_message_type_support_t * graph_type_support;
+   const rosidl_message_type_support_t* graph_type_support;
 } rmw_graph_info_t;
 #endif  // RMW_UXRCE_GRAPH
 
 typedef struct rmw_context_impl_t
 {
-  rmw_uxrce_mempool_item_t mem;
+   rmw_uxrce_mempool_item_t mem;
 
 #if defined(RMW_UXRCE_TRANSPORT_SERIAL)
-  uxrSerialTransport transport;
+   uxrSerialTransport       transport;
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
-  uxrUDPTransport transport;
+   uxrUDPTransport          transport;
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
-  uxrCustomTransport transport;
+   uxrCustomTransport       transport;
 #endif
-  uxrSession session;
+   uxrSession               session;
 
 #ifdef RMW_UXRCE_GRAPH
-  rmw_graph_info_t graph_info;
+   rmw_graph_info_t         graph_info;
 #endif
-  rmw_guard_condition_t graph_guard_condition;
+   rmw_guard_condition_t    graph_guard_condition;
 
-  uxrStreamId reliable_input;
-  uxrStreamId reliable_output;
-  uxrStreamId best_effort_output;
-  uxrStreamId best_effort_input;
+   uxrStreamId              reliable_input;
+   uxrStreamId              reliable_output;
+   uxrStreamId              best_effort_output;
+   uxrStreamId              best_effort_input;
 
-  uxrStreamId * creation_destroy_stream;
+   uxrStreamId*             creation_destroy_stream;
 
-  uint8_t input_reliable_stream_buffer[RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
-  uint8_t output_reliable_stream_buffer[RMW_UXRCE_MAX_OUTPUT_BUFFER_SIZE];
-  uint8_t output_best_effort_stream_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
+   uint8_t                  input_reliable_stream_buffer[RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
+   uint8_t                  output_reliable_stream_buffer[RMW_UXRCE_MAX_OUTPUT_BUFFER_SIZE];
+   uint8_t                  output_best_effort_stream_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
 
-  uint16_t id_participant;
-  uint16_t id_topic;
-  uint16_t id_publisher;
-  uint16_t id_datawriter;
-  uint16_t id_subscriber;
-  uint16_t id_datareader;
-  uint16_t id_requester;
-  uint16_t id_replier;
+   uint16_t                 id_participant;
+   uint16_t                 id_topic;
+   uint16_t                 id_publisher;
+   uint16_t                 id_datawriter;
+   uint16_t                 id_subscriber;
+   uint16_t                 id_datareader;
+   uint16_t                 id_requester;
+   uint16_t                 id_replier;
 } rmw_context_impl_t;
 
 typedef struct rmw_context_impl_t rmw_uxrce_session_t;
 
 struct  rmw_init_options_impl_t
 {
-  struct rmw_uxrce_transport_params_t transport_params;
+   struct rmw_uxrce_transport_params_t transport_params;
 };
 
 // ROS2 entities definitions
 
 typedef struct rmw_uxrce_topic_t
 {
-  rmw_uxrce_mempool_item_t mem;
+   rmw_uxrce_mempool_item_t                mem;
 
-  uxrObjectId topic_id;
-  const message_type_support_callbacks_t * message_type_support_callbacks;
+   uxrObjectId                             topic_id;
+   const message_type_support_callbacks_t* message_type_support_callbacks;
 
-  bool sync_with_agent;
-  struct rmw_uxrce_node_t * owner_node;
+   bool                                    sync_with_agent;
+   struct rmw_uxrce_node_t*                owner_node;
 } rmw_uxrce_topic_t;
 
 typedef struct rmw_uxrce_service_t
 {
-  rmw_uxrce_mempool_item_t mem;
-  rmw_service_t * rmw_handle;
-  uxrObjectId service_id;
-  rmw_gid_t service_gid;
-  const service_type_support_callbacks_t * type_support_callbacks;
-  uint16_t request_id;
+   rmw_uxrce_mempool_item_t                mem;
+   rmw_service_t*                          rmw_handle;
+   uxrObjectId                             service_id;
+   rmw_gid_t                               service_gid;
+   const service_type_support_callbacks_t* type_support_callbacks;
+   uint16_t                                request_id;
 
-  SampleIdentity sample_id[RMW_UXRCE_MAX_HISTORY];
-  uint8_t micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
-  size_t micro_buffer_lenght[RMW_UXRCE_MAX_HISTORY];
+   SampleIdentity                          sample_id[RMW_UXRCE_MAX_HISTORY];
+   uint8_t                                 micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
+   size_t                                  micro_buffer_lenght[RMW_UXRCE_MAX_HISTORY];
 
-  uint8_t history_write_index;
-  uint8_t history_read_index;
-  bool micro_buffer_in_use;
+   uint8_t                                 history_write_index;
+   uint8_t                                 history_read_index;
+   bool                                    micro_buffer_in_use;
 
-  uxrStreamId stream_id;
+   uxrStreamId                             stream_id;
 
-  uint8_t replay_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
+   uint8_t                                 replay_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
 
-  struct rmw_uxrce_node_t * owner_node;
+   struct rmw_uxrce_node_t*                owner_node;
 } rmw_uxrce_service_t;
 
 typedef struct rmw_uxrce_client_t
 {
-  rmw_uxrce_mempool_item_t mem;
-  rmw_client_t * rmw_handle;
-  uxrObjectId client_id;
-  rmw_gid_t client_gid;
-  const service_type_support_callbacks_t * type_support_callbacks;
-  uint16_t request_id;
+   rmw_uxrce_mempool_item_t                mem;
+   rmw_client_t*                           rmw_handle;
+   uxrObjectId                             client_id;
+   rmw_gid_t                               client_gid;
+   const service_type_support_callbacks_t* type_support_callbacks;
+   uint16_t                                request_id;
 
-  int64_t reply_id[RMW_UXRCE_MAX_HISTORY];
-  uint8_t micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
-  size_t micro_buffer_lenght[RMW_UXRCE_MAX_HISTORY];
+   int64_t                                 reply_id[RMW_UXRCE_MAX_HISTORY];
+   uint8_t                                 micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
+   size_t                                  micro_buffer_lenght[RMW_UXRCE_MAX_HISTORY];
 
-  uint8_t history_write_index;
-  uint8_t history_read_index;
-  bool micro_buffer_in_use;
+   uint8_t                                 history_write_index;
+   uint8_t                                 history_read_index;
+   bool                                    micro_buffer_in_use;
 
-  uxrStreamId stream_id;
+   uxrStreamId                             stream_id;
 
-  uint8_t request_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
+   uint8_t                                 request_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
 
-  struct rmw_uxrce_node_t * owner_node;
+   struct rmw_uxrce_node_t*                owner_node;
 } rmw_uxrce_client_t;
 
 typedef struct rmw_uxrce_subscription_t
 {
-  rmw_uxrce_mempool_item_t mem;
-  rmw_subscription_t * rmw_handle;
-  uxrObjectId subscriber_id;
-  uxrObjectId datareader_id;
-  rmw_gid_t subscription_gid;
-  const message_type_support_callbacks_t * type_support_callbacks;
+   rmw_uxrce_mempool_item_t                mem;
+   rmw_subscription_t*                     rmw_handle;
+   uxrObjectId                             subscriber_id;
+   uxrObjectId                             datareader_id;
+   rmw_gid_t                               subscription_gid;
+   const message_type_support_callbacks_t* type_support_callbacks;
 
-  uint8_t micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
-  size_t micro_buffer_lenght[RMW_UXRCE_MAX_HISTORY];
+   uint8_t                                 micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
+   size_t                                  micro_buffer_lenght[RMW_UXRCE_MAX_HISTORY];
 
-  uint8_t history_write_index;
-  uint8_t history_read_index;
-  bool micro_buffer_in_use;
+   uint8_t                                 history_write_index;
+   uint8_t                                 history_read_index;
+   bool                                    micro_buffer_in_use;
 
-  uint16_t subscription_request;
+   uint16_t                                subscription_request;
 
-  struct rmw_uxrce_topic_t * topic;
+   struct rmw_uxrce_topic_t*               topic;
 
-  struct rmw_uxrce_node_t * owner_node;
-  rmw_qos_profile_t qos;
-  uxrStreamId stream_id;
+   struct rmw_uxrce_node_t*                owner_node;
+   rmw_qos_profile_t                       qos;
+   uxrStreamId                             stream_id;
 } rmw_uxrce_subscription_t;
 
 typedef struct rmw_uxrce_publisher_t
 {
-  rmw_uxrce_mempool_item_t mem;
-  rmw_publisher_t * rmw_handle;
-  uxrObjectId publisher_id;
-  uxrObjectId datawriter_id;
-  rmw_gid_t publisher_gid;
+   rmw_uxrce_mempool_item_t                mem;
+   rmw_publisher_t*                        rmw_handle;
+   uxrObjectId                             publisher_id;
+   uxrObjectId                             datawriter_id;
+   rmw_gid_t                               publisher_gid;
 
-  const message_type_support_callbacks_t * type_support_callbacks;
+   const message_type_support_callbacks_t* type_support_callbacks;
 
-  rmw_uros_continous_serialization_size cs_cb_size;
-  rmw_uros_continous_serialization cs_cb_serialization;
+   rmw_uros_continous_serialization_size   cs_cb_size;
+   rmw_uros_continous_serialization        cs_cb_serialization;
 
-  struct rmw_uxrce_topic_t * topic;
+   struct rmw_uxrce_topic_t*               topic;
 
-  rmw_qos_profile_t qos;
-  uxrStreamId stream_id;
+   rmw_qos_profile_t                       qos;
+   uxrStreamId                             stream_id;
 
-  struct rmw_uxrce_node_t * owner_node;
+   struct rmw_uxrce_node_t*                owner_node;
 } rmw_uxrce_publisher_t;
 
 typedef struct rmw_uxrce_node_t
 {
-  rmw_uxrce_mempool_item_t mem;
-  rmw_node_t * rmw_handle;
-  rmw_context_impl_t * context;
+   rmw_uxrce_mempool_item_t mem;
+   rmw_node_t*              rmw_handle;
+   rmw_context_impl_t*      context;
 
-  uxrObjectId participant_id;
+   uxrObjectId              participant_id;
 } rmw_uxrce_node_t;
 
 // Static memory pools
 
 #ifdef RMW_UXRCE_TRANSPORT_USE_XML
-  extern char rmw_uxrce_xml_buffer[RMW_UXRCE_XML_BUFFER_LENGTH];
+extern char rmw_uxrce_xml_buffer[RMW_UXRCE_XML_BUFFER_LENGTH];
 #elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
-  extern char rmw_uxrce_profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
+extern char rmw_uxrce_profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
 #endif
 
 extern rmw_uxrce_mempool_t session_memory;
-extern rmw_context_impl_t custom_sessions[RMW_UXRCE_MAX_SESSIONS];
+extern rmw_context_impl_t  custom_sessions[RMW_UXRCE_MAX_SESSIONS];
 
 extern rmw_uxrce_mempool_t node_memory;
-extern rmw_uxrce_node_t custom_nodes[RMW_UXRCE_MAX_NODES];
+extern rmw_uxrce_node_t    custom_nodes[RMW_UXRCE_MAX_NODES];
 
-extern rmw_uxrce_mempool_t publisher_memory;
+extern rmw_uxrce_mempool_t   publisher_memory;
 extern rmw_uxrce_publisher_t custom_publishers[RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_NODES];
 
-extern rmw_uxrce_mempool_t subscription_memory;
+extern rmw_uxrce_mempool_t      subscription_memory;
 extern rmw_uxrce_subscription_t custom_subscriptions[RMW_UXRCE_MAX_SUBSCRIPTIONS];
 
 extern rmw_uxrce_mempool_t service_memory;
 extern rmw_uxrce_service_t custom_services[RMW_UXRCE_MAX_SERVICES];
 
 extern rmw_uxrce_mempool_t client_memory;
-extern rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
+extern rmw_uxrce_client_t  custom_clients[RMW_UXRCE_MAX_CLIENTS];
 
 extern rmw_uxrce_mempool_t topics_memory;
-extern rmw_uxrce_topic_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
+extern rmw_uxrce_topic_t   custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
 
 // Memory init functions
 
 void rmw_uxrce_init_session_memory(
-  rmw_uxrce_mempool_t * memory,
-  rmw_context_impl_t * sessions, size_t size);
+   rmw_uxrce_mempool_t* memory,
+   rmw_context_impl_t* sessions, size_t size);
 void rmw_uxrce_init_node_memory(
-  rmw_uxrce_mempool_t * memory, rmw_uxrce_node_t * nodes,
-  size_t size);
+   rmw_uxrce_mempool_t* memory, rmw_uxrce_node_t* nodes,
+   size_t size);
 void rmw_uxrce_init_service_memory(
-  rmw_uxrce_mempool_t * memory,
-  rmw_uxrce_service_t * services, size_t size);
+   rmw_uxrce_mempool_t* memory,
+   rmw_uxrce_service_t* services, size_t size);
 void rmw_uxrce_init_client_memory(
-  rmw_uxrce_mempool_t * memory, rmw_uxrce_client_t * clients,
-  size_t size);
+   rmw_uxrce_mempool_t* memory, rmw_uxrce_client_t* clients,
+   size_t size);
 void rmw_uxrce_init_publisher_memory(
-  rmw_uxrce_mempool_t * memory,
-  rmw_uxrce_publisher_t * publishers, size_t size);
+   rmw_uxrce_mempool_t* memory,
+   rmw_uxrce_publisher_t* publishers, size_t size);
 void rmw_uxrce_init_subscription_memory(
-  rmw_uxrce_mempool_t * memory,
-  rmw_uxrce_subscription_t * subscribers, size_t size);
+   rmw_uxrce_mempool_t* memory,
+   rmw_uxrce_subscription_t* subscribers, size_t size);
 void rmw_uxrce_init_topic_memory(
-  rmw_uxrce_mempool_t * memory, rmw_uxrce_topic_t * topics,
-  size_t size);
+   rmw_uxrce_mempool_t* memory, rmw_uxrce_topic_t* topics,
+   size_t size);
 
 // Memory management functions
 
-void rmw_uxrce_fini_session_memory(rmw_context_impl_t * session);
-void rmw_uxrce_fini_node_memory(rmw_node_t * node);
-void rmw_uxrce_fini_publisher_memory(rmw_publisher_t * publisher);
-void rmw_uxrce_fini_subscription_memory(rmw_subscription_t * subscriber);
-void rmw_uxrce_fini_client_memory(rmw_client_t * client);
-void rmw_uxrce_fini_service_memory(rmw_service_t * service);
-void rmw_uxrce_fini_topic_memory(rmw_uxrce_topic_t * topic);
+void rmw_uxrce_fini_session_memory(rmw_context_impl_t* session);
+void rmw_uxrce_fini_node_memory(rmw_node_t* node);
+void rmw_uxrce_fini_publisher_memory(rmw_publisher_t* publisher);
+void rmw_uxrce_fini_subscription_memory(rmw_subscription_t* subscriber);
+void rmw_uxrce_fini_client_memory(rmw_client_t* client);
+void rmw_uxrce_fini_service_memory(rmw_service_t* service);
+void rmw_uxrce_fini_topic_memory(rmw_uxrce_topic_t* topic);
 
 #endif  // TYPES_H_

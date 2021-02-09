@@ -15,9 +15,9 @@
 #include "identifiers.h"
 #include "utils.h"
 
-const char *
+const char*
 rmw_get_implementation_identifier()
 {
-  EPROS_PRINT_TRACE()
-  return eprosima_microxrcedds_identifier;
+   EPROS_PRINT_TRACE()
+   return(eprosima_microxrcedds_identifier);
 }

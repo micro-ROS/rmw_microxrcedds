@@ -17,31 +17,31 @@
 #include <rmw/rmw.h>
 #include <rmw/allocators.h>
 
-rmw_guard_condition_t *
-rmw_create_guard_condition(rmw_context_t * context)
+rmw_guard_condition_t*
+rmw_create_guard_condition(rmw_context_t* context)
 {
-  (void) context;
-  EPROS_PRINT_TRACE()
+   (void)context;
+   EPROS_PRINT_TRACE()
 
-  rmw_guard_condition_t * rmw_guard_condition = (rmw_guard_condition_t *)rmw_allocate(
-    sizeof(rmw_guard_condition_t));
+   rmw_guard_condition_t * rmw_guard_condition = (rmw_guard_condition_t*)rmw_allocate(
+      sizeof(rmw_guard_condition_t));
 
-  rmw_guard_condition->context = context;
-  rmw_guard_condition->implementation_identifier = rmw_get_implementation_identifier();
-  rmw_guard_condition->data = (bool *)rmw_allocate(sizeof(bool));
+   rmw_guard_condition->context = context;
+   rmw_guard_condition->implementation_identifier = rmw_get_implementation_identifier();
+   rmw_guard_condition->data = (bool*)rmw_allocate(sizeof(bool));
 
-  bool * hasTriggered = (bool *)rmw_guard_condition->data;
-  *hasTriggered = false;
+   bool* hasTriggered = (bool*)rmw_guard_condition->data;
+   *hasTriggered = false;
 
-  return rmw_guard_condition;
+   return(rmw_guard_condition);
 }
 
 rmw_ret_t
-rmw_destroy_guard_condition(rmw_guard_condition_t * guard_condition)
+rmw_destroy_guard_condition(rmw_guard_condition_t* guard_condition)
 {
-  EPROS_PRINT_TRACE()
+   EPROS_PRINT_TRACE()
 
-  rmw_free(guard_condition);
+   rmw_free(guard_condition);
 
-  return RMW_RET_OK;
+   return(RMW_RET_OK);
 }
