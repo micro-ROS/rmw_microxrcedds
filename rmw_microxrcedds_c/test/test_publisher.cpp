@@ -298,8 +298,6 @@ TEST_F(TestPublisher, continous_fragment_mode) {
 
   rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
 
-  bool ignore_local_publications = true;
-
   rmw_publisher_t * pub = rmw_create_publisher(
     this->node,
     &dummy_type_support.type_support,
@@ -361,8 +359,6 @@ TEST_F(TestPublisher, continous_fragment_mode_with_callbacks) {
   ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
   rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
-
-  bool ignore_local_publications = true;
 
   rmw_publisher_t * pub = rmw_create_publisher(
     this->node,
