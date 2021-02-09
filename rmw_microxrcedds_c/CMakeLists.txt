@@ -230,6 +230,7 @@ target_compile_options(${PROJECT_NAME}
 
 ament_export_include_directories(${CMAKE_INSTALL_PREFIX}/include)
 ament_export_include_directories(${microxrcedds_client_INCLUDE_DIR})
+ament_export_include_directories(${microcdr_INCLUDE_DIR})
 ament_export_libraries(${PROJECT_NAME})
 
 ament_export_dependencies(

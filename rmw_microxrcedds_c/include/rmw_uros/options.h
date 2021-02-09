@@ -20,6 +20,7 @@
 #include <rmw/init_options.h>
 #include <uxr/client/profile/transport/custom/custom_transport.h>
 #include <rmw_microxrcedds_c/config.h>
+#include <ucdr/microcdr.h>
 
 #if defined(__cplusplus)
 extern "C"
