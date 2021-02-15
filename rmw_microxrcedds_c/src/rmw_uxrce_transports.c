@@ -15,6 +15,8 @@
 
 #include <rmw/error_handling.h>
 
+#include "./rmw_uros/options.h"
+
 rmw_ret_t rmw_uxrce_transport_init(
     rmw_context_impl_t* context_impl,
     rmw_init_options_impl_t* init_options_impl,
@@ -124,7 +126,9 @@ rmw_ret_t rmw_uxrce_transport_init(
     uxrCustomTransport* custom_transport = (NULL == context_impl)
                                            ? (uxrCustomTransport*)transport
                                            : &context_impl->transport;
-    void* args = init_options_impl->transport_params.args;
+    void* args = (NULL == context_impl)
+                 ? rmw_uxrce_transport_default_params.args
+                 : init_options_impl->transport_params.args;
 
     if (!uxr_init_custom_transport(custom_transport, args))
     {
