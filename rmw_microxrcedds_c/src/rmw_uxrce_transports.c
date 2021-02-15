@@ -127,7 +127,7 @@ rmw_ret_t rmw_uxrce_transport_init(
                                            ? (uxrCustomTransport*)transport
                                            : &context_impl->transport;
     void* args = (NULL == context_impl)
-                 ? custom_transport->args
+                 ? rmw_uxrce_transport_default_params.args
                  : init_options_impl->transport_params.args;
 
     if (!uxr_init_custom_transport(custom_transport, args))
