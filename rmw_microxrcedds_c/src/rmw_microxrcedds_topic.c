@@ -99,7 +99,7 @@ fail:
 
 rmw_ret_t destroy_topic(rmw_uxrce_topic_t* topic)
 {
-    rmw_ret_t result_ret = RMW_RET_OK;
+    rmw_ret_t         result_ret  = RMW_RET_OK;
     rmw_uxrce_node_t* custom_node = topic->owner_node;
 
     uint16_t delete_topic = uxr_buffer_delete_entity(

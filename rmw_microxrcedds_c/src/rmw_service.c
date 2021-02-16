@@ -227,7 +227,7 @@ rmw_destroy_service(
         rmw_uxrce_service_t* custom_service = (rmw_uxrce_service_t*)service->data;
         uint16_t             delete_service =
             uxr_buffer_delete_entity(
-                &custom_node->context->session, 
+                &custom_node->context->session,
                 *custom_node->context->creation_destroy_stream,
                 custom_service->service_id);
 
