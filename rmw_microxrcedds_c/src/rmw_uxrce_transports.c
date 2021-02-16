@@ -27,7 +27,8 @@ rmw_ret_t rmw_uxrce_transport_init(
                                 ? RMW_UXRCE_DEFAULT_SERIAL_DEVICE
                                 : init_options_impl->transport_params.serial_device;
 
-    if (0 < (int fd = open(serial_device, O_RDWR | O_NOCTTY)))
+    int fd;
+    if (0 < (fd = open(serial_device, O_RDWR | O_NOCTTY)))
     {
         struct termios tty_config;
         memset(&tty_config, 0, sizeof(tty_config));
