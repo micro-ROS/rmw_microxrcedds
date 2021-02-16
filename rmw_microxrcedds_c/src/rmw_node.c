@@ -223,7 +223,7 @@ rmw_ret_t rmw_destroy_node(rmw_node_t* node)
 
     uint16_t delete_participant = uxr_buffer_delete_entity(
         &custom_node->context->session,
-        custom_node->context->reliable_output,
+        *custom_node->context->creation_destroy_stream,
         custom_node->participant_id);
 
     if (!run_xrce_session(custom_node->context, delete_participant))

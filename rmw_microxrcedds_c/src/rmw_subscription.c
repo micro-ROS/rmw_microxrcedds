@@ -366,12 +366,12 @@ rmw_destroy_subscription(rmw_node_t* node, rmw_subscription_t* subscription)
         uint16_t delete_datareader =
             uxr_buffer_delete_entity(
                 &custom_subscription->owner_node->context->session,
-                custom_subscription->owner_node->context->reliable_output,
+                *custom_subscription->owner_node->context->creation_destroy_stream,
                 custom_subscription->datareader_id);
         uint16_t delete_subscriber =
             uxr_buffer_delete_entity(
                 &custom_subscription->owner_node->context->session,
-                custom_subscription->owner_node->context->reliable_output,
+                *custom_subscription->owner_node->context->creation_destroy_stream,
                 custom_subscription->subscriber_id);
 
         bool ret = run_xrce_session(custom_node->context, delete_datareader);

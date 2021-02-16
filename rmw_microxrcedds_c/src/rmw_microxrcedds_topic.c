@@ -99,14 +99,13 @@ fail:
 
 rmw_ret_t destroy_topic(rmw_uxrce_topic_t* topic)
 {
-    rmw_ret_t result_ret = RMW_RET_OK;
+    rmw_ret_t         result_ret  = RMW_RET_OK;
+    rmw_uxrce_node_t* custom_node = topic->owner_node;
 
     uint16_t delete_topic = uxr_buffer_delete_entity(
-        &topic->owner_node->context->session,
-        topic->owner_node->context->reliable_output,
+        &custom_node->context->session,
+        *custom_node->context->creation_destroy_stream,
         topic->topic_id);
-
-    rmw_uxrce_node_t* custom_node = topic->owner_node;
 
     if (!run_xrce_session(custom_node->context, delete_topic))
     {

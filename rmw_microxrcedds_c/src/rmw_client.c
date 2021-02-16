@@ -229,7 +229,8 @@ rmw_destroy_client(
         rmw_uxrce_client_t* custom_client = (rmw_uxrce_client_t*)client->data;
         uint16_t            delete_client =
             uxr_buffer_delete_entity(
-                &custom_node->context->session, custom_node->context->reliable_output,
+                &custom_node->context->session,
+                *custom_node->context->creation_destroy_stream,
                 custom_client->client_id);
 
         if (!run_xrce_session(custom_node->context, delete_client))
