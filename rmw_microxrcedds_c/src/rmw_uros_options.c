@@ -218,6 +218,12 @@ rmw_ret_t rmw_uros_ping_agent(const int timeout_ms, const uint8_t attempts)
         uxrUDPTransport transport;
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
         uxrCustomTransport transport;
+        transport.framing  = rmw_uxrce_transport_default_params.framing;
+        transport.args     = rmw_uxrce_transport_default_params.args;
+        transport.open  = rmw_uxrce_transport_default_params.open_cb;
+        transport.close = rmw_uxrce_transport_default_params.close_cb;
+        transport.write = rmw_uxrce_transport_default_params.write_cb;
+        transport.read  = rmw_uxrce_transport_default_params.read_cb;
 #endif
         rmw_ret_t ret = rmw_uxrce_transport_init(NULL, NULL, (void*)&transport);
 
