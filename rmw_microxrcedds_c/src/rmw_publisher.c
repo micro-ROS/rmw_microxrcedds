@@ -389,11 +389,11 @@ rmw_destroy_publisher(
 
         uint16_t delete_writer = uxr_buffer_delete_entity(
             &custom_publisher->owner_node->context->session,
-            custom_publisher->owner_node->context->reliable_output,
+            *custom_publisher->owner_node->context->creation_destroy_stream,
             custom_publisher->datawriter_id);
         uint16_t delete_publisher = uxr_buffer_delete_entity(
             &custom_publisher->owner_node->context->session,
-            custom_publisher->owner_node->context->reliable_output,
+            *custom_publisher->owner_node->context->creation_destroy_stream,
             custom_publisher->publisher_id);
 
         bool ret = run_xrce_session(custom_node->context, delete_writer);
