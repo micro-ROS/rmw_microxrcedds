@@ -58,7 +58,7 @@ protected:
 /*
  * Testing request and reply
  */
-TEST_F(TestReqRes, publish_and_receive)
+TEST_F(TestReqRes, request_and_reply)
 {
     // CREATE FAKE TYPESUPPORT
 

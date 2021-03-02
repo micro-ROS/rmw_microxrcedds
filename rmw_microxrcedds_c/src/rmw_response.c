@@ -51,16 +51,21 @@ rmw_send_response(
     const message_type_support_callbacks_t* functions =
         (const message_type_support_callbacks_t*)res_members->data;
 
-    uint32_t topic_size = functions->get_serialized_size(ros_response);
+    ucdrBuffer mb;
+    uint32_t response_length = functions->get_serialized_size(ros_response);
+    uint16_t rc = uxr_prepare_output_stream(
+                &custom_node->context->session,
+                custom_service->stream_id, custom_service->service_id, &mb,
+                response_length);
+    
+    uxr_serialize_SampleIdentity(&mb, &sample_id);
+    functions->cdr_serialize(ros_response, &mb);
 
-    ucdrBuffer reply_ub;
-    ucdr_init_buffer(&reply_ub, custom_service->replay_buffer, sizeof(custom_service->replay_buffer));
-
-    functions->cdr_serialize(ros_response, &reply_ub);
-
-    uxr_buffer_reply(
-        &custom_node->context->session, custom_service->stream_id,
-        custom_service->service_id, &sample_id, custom_service->replay_buffer, topic_size);
+    if (UXR_INVALID_REQUEST_ID == rc)
+    {
+        RMW_SET_ERROR_MSG("Micro XRCE-DDS service response error.");
+        return(RMW_RET_ERROR);
+    }
 
     return(RMW_RET_OK);
 }
