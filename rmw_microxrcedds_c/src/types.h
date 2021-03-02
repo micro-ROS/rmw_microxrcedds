@@ -133,9 +133,6 @@ typedef struct rmw_uxrce_service_t
     bool                                    micro_buffer_in_use;
 
     uxrStreamId                             stream_id;
-
-    uint8_t                                 replay_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
-
     struct rmw_uxrce_node_t*                owner_node;
 } rmw_uxrce_service_t;
 
@@ -157,9 +154,6 @@ typedef struct rmw_uxrce_client_t
     bool                                    micro_buffer_in_use;
 
     uxrStreamId                             stream_id;
-
-    uint8_t                                 request_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
-
     struct rmw_uxrce_node_t*                owner_node;
 } rmw_uxrce_client_t;
 

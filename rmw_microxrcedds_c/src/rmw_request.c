@@ -39,18 +39,14 @@ rmw_send_request(
     const message_type_support_callbacks_t* functions =
         (const message_type_support_callbacks_t*)req_members->data;
 
-    uint32_t topic_size = functions->get_serialized_size(ros_request);
-
-    ucdrBuffer request_ub;
-    ucdr_init_buffer(
-        &request_ub, custom_client->request_buffer,
-        sizeof(custom_client->request_buffer));
-
-    functions->cdr_serialize(ros_request, &request_ub);
-
-    *sequence_id = uxr_buffer_request(
-        &custom_node->context->session, custom_client->stream_id,
-        custom_client->client_id, custom_client->request_buffer, topic_size);
+    ucdrBuffer mb;
+    uint32_t request_length = functions->get_serialized_size(ros_request);
+    *sequence_id = uxr_prepare_output_stream(
+                &custom_node->context->session,
+                custom_client->stream_id, custom_client->client_id, &mb,
+                request_length);
+    
+    functions->cdr_serialize(ros_request, &mb);
 
     if (UXR_INVALID_REQUEST_ID == *sequence_id)
     {
