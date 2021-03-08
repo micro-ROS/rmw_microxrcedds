@@ -67,7 +67,7 @@ rmw_create_publisher(
     (void)publisher_options;
 
     EPROS_PRINT_TRACE()
-    rmw_publisher_t * rmw_publisher = NULL;
+    rmw_publisher_t* rmw_publisher = NULL;
     if (!node)
     {
         RMW_SET_ERROR_MSG("node handle is null");

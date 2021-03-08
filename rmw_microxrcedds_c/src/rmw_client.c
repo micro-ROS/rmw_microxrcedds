@@ -35,7 +35,7 @@ rmw_create_client(
     const rmw_qos_profile_t* qos_policies)
 {
     EPROS_PRINT_TRACE()
-    rmw_client_t * rmw_client = NULL;
+    rmw_client_t* rmw_client = NULL;
     if (!node)
     {
         RMW_SET_ERROR_MSG("node handle is null");
@@ -173,7 +173,7 @@ rmw_create_client(
             (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
             custom_node->context->best_effort_output :
             custom_node->context->reliable_output;
-        
+
         uxrStreamId data_request_stream_id =
             (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
             custom_node->context->best_effort_input :

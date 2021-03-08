@@ -23,7 +23,7 @@ rmw_create_guard_condition(rmw_context_t* context)
     (void)context;
     EPROS_PRINT_TRACE()
 
-    rmw_guard_condition_t * rmw_guard_condition = (rmw_guard_condition_t*)rmw_allocate(
+    rmw_guard_condition_t* rmw_guard_condition = (rmw_guard_condition_t*)rmw_allocate(
         sizeof(rmw_guard_condition_t));
 
     rmw_guard_condition->context = context;

@@ -35,7 +35,7 @@ rmw_create_service(
     const rmw_qos_profile_t* qos_policies)
 {
     EPROS_PRINT_TRACE()
-    rmw_service_t * rmw_service = NULL;
+    rmw_service_t* rmw_service = NULL;
     if (!node)
     {
         RMW_SET_ERROR_MSG("node handle is null");
@@ -180,7 +180,6 @@ rmw_create_service(
             &custom_node->context->session,
             *custom_node->context->creation_destroy_stream, custom_service->service_id,
             data_request_stream_id, &delivery_control);
-        
     }
     return(rmw_service);
 

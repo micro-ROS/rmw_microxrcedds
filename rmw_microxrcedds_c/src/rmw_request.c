@@ -40,12 +40,12 @@ rmw_send_request(
         (const message_type_support_callbacks_t*)req_members->data;
 
     ucdrBuffer mb;
-    uint32_t request_length = functions->get_serialized_size(ros_request);
+    uint32_t   request_length = functions->get_serialized_size(ros_request);
     *sequence_id = uxr_prepare_output_stream(
-                &custom_node->context->session,
-                custom_client->stream_id, custom_client->client_id, &mb,
-                request_length);
-    
+        &custom_node->context->session,
+        custom_client->stream_id, custom_client->client_id, &mb,
+        request_length);
+
     functions->cdr_serialize(ros_request, &mb);
 
     if (UXR_INVALID_REQUEST_ID == *sequence_id)

@@ -64,7 +64,7 @@ rmw_create_subscription(
     (void)subscription_options;
 
     EPROS_PRINT_TRACE()
-    rmw_subscription_t * rmw_subscription = NULL;
+    rmw_subscription_t* rmw_subscription = NULL;
     if (!node)
     {
         RMW_SET_ERROR_MSG("node handle is null");
@@ -254,7 +254,6 @@ rmw_create_subscription(
             &custom_node->context->session,
             *custom_node->context->creation_destroy_stream, custom_subscription->datareader_id,
             data_request_stream_id, &delivery_control);
-        
     }
     return(rmw_subscription);
 
