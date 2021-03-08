@@ -142,14 +142,10 @@ rmw_ret_t rmw_graph_init(
     delivery_control.max_elapsed_time     = UXR_MAX_ELAPSED_TIME_UNLIMITED;
     delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
 
-    graph_info->subscription_data_request = uxr_buffer_request_data(
+    uxr_buffer_request_data(
         &context->session,
         context->reliable_output, graph_info->datareader_id,
         context->reliable_input, &delivery_control);
-    
-    if(!run_xrce_session(&custom_node->context, graph_info->subscription_request)){
-        goto end;
-    }
 
 end:
     return(ret);

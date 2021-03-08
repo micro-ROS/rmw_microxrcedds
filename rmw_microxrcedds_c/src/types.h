@@ -47,7 +47,6 @@ typedef struct rmw_graph_info_t
     uxrObjectId                          subscriber_id;
     uxrObjectId                          topic_id;
     uxrObjectId                          datareader_id;
-    uint16_t                             subscription_data_request;
 
     uint8_t                              micro_buffer[RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
     size_t                               micro_buffer_length;
@@ -172,8 +171,6 @@ typedef struct rmw_uxrce_subscription_t
     uint8_t                                 history_write_index;
     uint8_t                                 history_read_index;
     bool                                    micro_buffer_in_use;
-
-    uint16_t                                subscription_data_request;
 
     struct rmw_uxrce_topic_t*               topic;
 

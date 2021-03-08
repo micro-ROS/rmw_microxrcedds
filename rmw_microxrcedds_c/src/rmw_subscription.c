@@ -250,14 +250,10 @@ rmw_create_subscription(
             custom_node->context->best_effort_input :
             custom_node->context->reliable_input;
 
-        custom_subscription->subscription_data_request = uxr_buffer_request_data(
+        uxr_buffer_request_data(
             &custom_node->context->session,
             *custom_node->context->creation_destroy_stream, custom_subscription->datareader_id,
             data_request_stream_id, &delivery_control);
-
-        if(!run_xrce_session(custom_node->context, custom_subscription->subscription_data_request)){
-            goto fail;
-        }
         
     }
     return(rmw_subscription);

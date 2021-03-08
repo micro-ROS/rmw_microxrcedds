@@ -183,10 +183,6 @@ rmw_create_client(
             &custom_node->context->session,
             *custom_node->context->creation_destroy_stream, custom_client->client_id,
             data_request_stream_id, &delivery_control);
-        
-        if(!run_xrce_session(custom_node->context, custom_client->client_data_request)){
-            goto fail;
-        }
     }
     return(rmw_client);
 

@@ -181,9 +181,6 @@ rmw_create_service(
             *custom_node->context->creation_destroy_stream, custom_service->service_id,
             data_request_stream_id, &delivery_control);
         
-        if(!run_xrce_session(custom_node->context, custom_service->service_data_resquest)){
-            goto fail;
-        }
     }
     return(rmw_service);
 
