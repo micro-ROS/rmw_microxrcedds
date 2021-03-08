@@ -53,7 +53,7 @@ rmw_ret_t rmw_graph_init(
 
     uint16_t participant_req = uxr_buffer_create_participant_xml(
         &context->session,
-        context->reliable_output,
+        *context->creation_destroy_stream,
         graph_info->participant_id, (int16_t)microros_domain_id,
         rmw_uxrce_xml_buffer, UXR_REPLACE);
 
@@ -84,7 +84,7 @@ rmw_ret_t rmw_graph_init(
     }
 
     uint16_t subscriber_req = uxr_buffer_create_subscriber_xml(
-        &context->session, context->reliable_output, graph_info->subscriber_id,
+        &context->session, *context->creation_destroy_stream, graph_info->subscriber_id,
         graph_info->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
 
     graph_info->datareader_id = uxr_object_id(context->id_datareader++, UXR_DATAREADER_ID);
@@ -105,7 +105,7 @@ rmw_ret_t rmw_graph_init(
     }
 
     uint16_t topic_req = uxr_buffer_create_topic_xml(
-        &context->session, context->reliable_output, graph_info->topic_id,
+        &context->session, *context->creation_destroy_stream, graph_info->topic_id,
         graph_info->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
 
     // Create graph datareader request
@@ -120,7 +120,7 @@ rmw_ret_t rmw_graph_init(
     }
 
     uint16_t datareader_req = uxr_buffer_create_datareader_xml(
-        &context->session, context->reliable_output, graph_info->datareader_id,
+        &context->session, *context->creation_destroy_stream, graph_info->datareader_id,
         graph_info->subscriber_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
 
     // Run session
@@ -142,10 +142,14 @@ rmw_ret_t rmw_graph_init(
     delivery_control.max_elapsed_time     = UXR_MAX_ELAPSED_TIME_UNLIMITED;
     delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
 
-    graph_info->subscription_request = uxr_buffer_request_data(
+    graph_info->subscription_data_request = uxr_buffer_request_data(
         &context->session,
         context->reliable_output, graph_info->datareader_id,
         context->reliable_input, &delivery_control);
+    
+    if(!run_xrce_session(&custom_node->context, graph_info->subscription_request)){
+        goto end;
+    }
 
 end:
     return(ret);

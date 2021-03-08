@@ -119,8 +119,8 @@ rmw_create_publisher(
 
         custom_publisher->stream_id =
             (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
-            custom_node->context->best_effort_input :
-            custom_node->context->reliable_input;
+            custom_node->context->best_effort_output :
+            custom_node->context->reliable_output;
 
         custom_publisher->cs_cb_size          = NULL;
         custom_publisher->cs_cb_serialization = NULL;
@@ -185,13 +185,13 @@ rmw_create_publisher(
         }
         publisher_req = uxr_buffer_create_publisher_xml(
             &custom_publisher->owner_node->context->session,
-            custom_node->context->reliable_output,
+            *custom_node->context->creation_destroy_stream,
             custom_publisher->publisher_id,
             custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
   #elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
         publisher_req = uxr_buffer_create_publisher_xml(
             &custom_publisher->owner_node->context->session,
-            custom_node->context->reliable_output,
+            *custom_node->context->creation_destroy_stream,
             custom_publisher->publisher_id,
             custom_node->participant_id, "", UXR_REPLACE);
   #endif
@@ -220,7 +220,7 @@ rmw_create_publisher(
 
         datawriter_req = uxr_buffer_create_datawriter_xml(
             &custom_publisher->owner_node->context->session,
-            custom_node->context->reliable_output,
+            *custom_node->context->creation_destroy_stream,
             custom_publisher->datawriter_id,
             custom_publisher->publisher_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
   #elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
@@ -232,7 +232,7 @@ rmw_create_publisher(
 
         datawriter_req = uxr_buffer_create_datawriter_ref(
             &custom_publisher->owner_node->context->session,
-            custom_node->context->reliable_output,
+            *custom_node->context->creation_destroy_stream,
             custom_publisher->datawriter_id,
             custom_publisher->publisher_id, rmw_uxrce_profile_name, UXR_REPLACE);
   #endif

@@ -65,7 +65,7 @@ create_topic(
 
     topic_req = uxr_buffer_create_topic_xml(
         &custom_node->context->session,
-        custom_node->context->reliable_output, custom_topic->topic_id,
+        *custom_node->context->creation_destroy_stream, custom_topic->topic_id,
         custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
 #elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
     (void)qos_policies;
@@ -79,7 +79,7 @@ create_topic(
 
     topic_req = uxr_buffer_create_topic_ref(
         &custom_node->context->session,
-        custom_node->context->reliable_output, custom_topic->topic_id,
+        *custom_node->context->creation_destroy_stream, custom_topic->topic_id,
         custom_node->participant_id, rmw_uxrce_profile_name, UXR_REPLACE);
 #endif
 
