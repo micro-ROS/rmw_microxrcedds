@@ -91,7 +91,7 @@ rmw_node_t* create_node(
     participant_req =
         uxr_buffer_create_participant_xml(
             &node_info->context->session,
-            node_info->context->reliable_output,
+            *node_info->context->creation_destroy_stream,
             node_info->participant_id, (uint16_t)domain_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
 #elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
     if (!build_participant_profile(rmw_uxrce_profile_name, sizeof(rmw_uxrce_profile_name)))
@@ -102,7 +102,7 @@ rmw_node_t* create_node(
     participant_req =
         uxr_buffer_create_participant_ref(
             &node_info->context->session,
-            node_info->context->reliable_output,
+            *node_info->context->creation_destroy_stream,
             node_info->participant_id, (uint16_t)domain_id, rmw_uxrce_profile_name, UXR_REPLACE);
 #endif
 
@@ -134,7 +134,7 @@ rmw_create_node(
     (void)context;
     (void)localhost_only;
     EPROS_PRINT_TRACE()
-    rmw_node_t * rmw_node = NULL;
+    rmw_node_t* rmw_node = NULL;
     if (!name || strlen(name) == 0)
     {
         RMW_SET_ERROR_MSG("name is null");

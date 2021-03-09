@@ -64,7 +64,7 @@ rmw_create_subscription(
     (void)subscription_options;
 
     EPROS_PRINT_TRACE()
-    rmw_subscription_t * rmw_subscription = NULL;
+    rmw_subscription_t* rmw_subscription = NULL;
     if (!node)
     {
         RMW_SET_ERROR_MSG("node handle is null");
@@ -181,14 +181,14 @@ rmw_create_subscription(
         }
         subscriber_req = uxr_buffer_create_subscriber_xml(
             &custom_node->context->session,
-            custom_node->context->reliable_output, custom_subscription->subscriber_id,
+            *custom_node->context->creation_destroy_stream, custom_subscription->subscriber_id,
             custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
 #elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
         // TODO(BORJA)  Publisher by reference does not make sense in
         //              current micro XRCE-DDS implementation.
         subscriber_req = uxr_buffer_create_subscriber_xml(
             &custom_node->context->session,
-            custom_node->context->reliable_output, custom_subscription->subscriber_id,
+            *custom_node->context->creation_destroy_stream, custom_subscription->subscriber_id,
             custom_node->participant_id, "", UXR_REPLACE);
 #endif
 
@@ -215,7 +215,7 @@ rmw_create_subscription(
 
         datareader_req = uxr_buffer_create_datareader_xml(
             &custom_node->context->session,
-            custom_node->context->reliable_output, custom_subscription->datareader_id,
+            *custom_node->context->creation_destroy_stream, custom_subscription->datareader_id,
             custom_subscription->subscriber_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
 #elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
         if (!build_datareader_profile(topic_name, rmw_uxrce_profile_name, sizeof(rmw_uxrce_profile_name)))
@@ -226,7 +226,7 @@ rmw_create_subscription(
 
         datareader_req = uxr_buffer_create_datareader_ref(
             &custom_node->context->session,
-            custom_node->context->reliable_output, custom_subscription->datareader_id,
+            *custom_node->context->creation_destroy_stream, custom_subscription->datareader_id,
             custom_subscription->subscriber_id, rmw_uxrce_profile_name, UXR_REPLACE);
 #endif
 
@@ -245,15 +245,15 @@ rmw_create_subscription(
         delivery_control.max_elapsed_time     = UXR_MAX_ELAPSED_TIME_UNLIMITED;
         delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
 
-        custom_subscription->stream_id =
+        uxrStreamId data_request_stream_id =
             (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
             custom_node->context->best_effort_input :
             custom_node->context->reliable_input;
 
-        custom_subscription->subscription_request = uxr_buffer_request_data(
+        uxr_buffer_request_data(
             &custom_node->context->session,
-            custom_node->context->reliable_output, custom_subscription->datareader_id,
-            custom_subscription->stream_id, &delivery_control);
+            *custom_node->context->creation_destroy_stream, custom_subscription->datareader_id,
+            data_request_stream_id, &delivery_control);
     }
     return(rmw_subscription);
 

@@ -106,7 +106,7 @@ void on_request(
     while (service_item != NULL)
     {
         rmw_uxrce_service_t* custom_service = (rmw_uxrce_service_t*)service_item->data;
-        if (custom_service->request_id == request_id)
+        if (custom_service->service_data_resquest == request_id)
         {
             custom_service->micro_buffer_lenght[custom_service->history_write_index] = length;
             ucdr_deserialize_array_uint8_t(
@@ -151,7 +151,7 @@ void on_reply(
     while (client_item != NULL)
     {
         rmw_uxrce_client_t* custom_client = (rmw_uxrce_client_t*)client_item->data;
-        if (custom_client->request_id == request_id)
+        if (custom_client->client_data_request == request_id)
         {
             custom_client->micro_buffer_lenght[custom_client->history_write_index] = length;
             ucdr_deserialize_array_uint8_t(

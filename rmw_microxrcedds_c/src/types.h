@@ -47,7 +47,6 @@ typedef struct rmw_graph_info_t
     uxrObjectId                          subscriber_id;
     uxrObjectId                          topic_id;
     uxrObjectId                          datareader_id;
-    uint16_t                             subscription_request;
 
     uint8_t                              micro_buffer[RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
     size_t                               micro_buffer_length;
@@ -122,7 +121,7 @@ typedef struct rmw_uxrce_service_t
     uxrObjectId                             service_id;
     rmw_gid_t                               service_gid;
     const service_type_support_callbacks_t* type_support_callbacks;
-    uint16_t                                request_id;
+    uint16_t                                service_data_resquest;
 
     SampleIdentity                          sample_id[RMW_UXRCE_MAX_HISTORY];
     uint8_t                                 micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
@@ -143,7 +142,7 @@ typedef struct rmw_uxrce_client_t
     uxrObjectId                             client_id;
     rmw_gid_t                               client_gid;
     const service_type_support_callbacks_t* type_support_callbacks;
-    uint16_t                                request_id;
+    uint16_t                                client_data_request;
 
     int64_t                                 reply_id[RMW_UXRCE_MAX_HISTORY];
     uint8_t                                 micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
@@ -172,8 +171,6 @@ typedef struct rmw_uxrce_subscription_t
     uint8_t                                 history_write_index;
     uint8_t                                 history_read_index;
     bool                                    micro_buffer_in_use;
-
-    uint16_t                                subscription_request;
 
     struct rmw_uxrce_topic_t*               topic;
 

@@ -52,12 +52,12 @@ rmw_send_response(
         (const message_type_support_callbacks_t*)res_members->data;
 
     ucdrBuffer mb;
-    uint32_t response_length = functions->get_serialized_size(ros_response) + 24; // Adding sample indentity size 
-    uint16_t rc = uxr_prepare_output_stream(
-                &custom_node->context->session,
-                custom_service->stream_id, custom_service->service_id, &mb,
-                response_length);
-    
+    uint32_t   response_length = functions->get_serialized_size(ros_response) + 24; // Adding sample indentity size
+    uint16_t   rc = uxr_prepare_output_stream(
+        &custom_node->context->session,
+        custom_service->stream_id, custom_service->service_id, &mb,
+        response_length);
+
     uxr_serialize_SampleIdentity(&mb, &sample_id);
     functions->cdr_serialize(ros_response, &mb);
 

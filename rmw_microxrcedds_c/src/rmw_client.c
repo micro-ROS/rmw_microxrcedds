@@ -35,7 +35,7 @@ rmw_create_client(
     const rmw_qos_profile_t* qos_policies)
 {
     EPROS_PRINT_TRACE()
-    rmw_client_t * rmw_client = NULL;
+    rmw_client_t* rmw_client = NULL;
     if (!node)
     {
         RMW_SET_ERROR_MSG("node handle is null");
@@ -145,12 +145,13 @@ rmw_create_client(
         }
         client_req = uxr_buffer_create_requester_xml(
             &custom_node->context->session,
-            custom_node->context->reliable_output, custom_client->client_id,
+            *custom_node->context->creation_destroy_stream,
+            custom_client->client_id,
             custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
 #elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
         // TODO(pablogs9): Is possible to instantiate a replier by ref?
         // client_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
-        //     custom_node->context->reliable_output, custom_service->subscriber_id,
+        //     *custom_node->context->creation_destroy_stream, custom_service->subscriber_id,
         //     custom_node->participant_id, "", UXR_REPLACE);
 #endif
 
@@ -170,13 +171,18 @@ rmw_create_client(
 
         custom_client->stream_id =
             (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+            custom_node->context->best_effort_output :
+            custom_node->context->reliable_output;
+
+        uxrStreamId data_request_stream_id =
+            (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
             custom_node->context->best_effort_input :
             custom_node->context->reliable_input;
 
-        custom_client->request_id = uxr_buffer_request_data(
+        custom_client->client_data_request = uxr_buffer_request_data(
             &custom_node->context->session,
-            custom_node->context->reliable_output, custom_client->client_id,
-            custom_client->stream_id, &delivery_control);
+            *custom_node->context->creation_destroy_stream, custom_client->client_id,
+            data_request_stream_id, &delivery_control);
     }
     return(rmw_client);
 
