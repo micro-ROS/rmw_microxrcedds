@@ -107,11 +107,12 @@ As stated in [CONTRIBUTING.md](CONTRIBUTING.md), developers and contributors are
 
 **rmw_microxrcedds_c** [code style](https://github.com/eProsima/cpp-style) is enforced using [*uncrustify*](https://github.com/uncrustify/uncrustify).
 Among the CI tests there are tests that ensures that every pull request is compliant with the code style.
-<!-- The latest pull request results can be seen [here](http://jenkins.eprosima.com:8080/job/Micro-CDR%20Manual%20Linux/lastBuild/). -->
+The latest pull request results can be seen [here](http://jenkins.eprosima.com:8080/job/Micro-CDR%20Manual%20Linux/lastBuild/).
 
 TODO: linter test Set uncrustify
 TODO: clang tidy for static analisys.
 TODO: https://github.com/ament/ament_lint/blob/master/ament_lint_common/doc/index.rst
+
 ## Dependencies [5]
 
 ### Direct Runtime Dependencies [5.iii]
