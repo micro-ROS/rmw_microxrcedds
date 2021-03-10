@@ -28,8 +28,9 @@
 #include <uxr/client/util/ping.h>
 
 rmw_ret_t rmw_uros_init_options(
-    int argc, const char* const argv[],
-    rmw_init_options_t* rmw_options)
+        int argc,
+        const char* const argv[],
+        rmw_init_options_t* rmw_options)
 {
     if (NULL == rmw_options)
     {
@@ -66,11 +67,13 @@ rmw_ret_t rmw_uros_init_options(
 #else
     (void)argc;
     (void)argv;
-#endif
+#endif /* if defined(RMW_UXRCE_TRANSPORT_SERIAL) */
     return(ret);
 }
 
-rmw_ret_t rmw_uros_options_set_serial_device(const char* dev, rmw_init_options_t* rmw_options)
+rmw_ret_t rmw_uros_options_set_serial_device(
+        const char* dev,
+        rmw_init_options_t* rmw_options)
 {
 #if defined(RMW_UXRCE_TRANSPORT_SERIAL)
     if (NULL == rmw_options)
@@ -95,12 +98,13 @@ rmw_ret_t rmw_uros_options_set_serial_device(const char* dev, rmw_init_options_t
 
     RMW_SET_ERROR_MSG("RMW_UXRCE_TRANSPORT_SERIAL not set.");
     return(RMW_RET_INVALID_ARGUMENT);
-#endif
+#endif /* if defined(RMW_UXRCE_TRANSPORT_SERIAL) */
 }
 
 rmw_ret_t rmw_uros_options_set_udp_address(
-    const char* ip, const char* port,
-    rmw_init_options_t* rmw_options)
+        const char* ip,
+        const char* port,
+        rmw_init_options_t* rmw_options)
 {
 #ifdef RMW_UXRCE_TRANSPORT_UDP
     if (NULL == rmw_options)
@@ -137,16 +141,18 @@ rmw_ret_t rmw_uros_options_set_udp_address(
 
     RMW_SET_ERROR_MSG("RMW_UXRCE_TRANSPORT_UDP not set.");
     return(RMW_RET_INVALID_ARGUMENT);
-#endif
+#endif /* ifdef RMW_UXRCE_TRANSPORT_UDP */
 }
 
 #if defined(RMW_UXRCE_TRANSPORT_UDP) && defined(UCLIENT_PROFILE_DISCOVERY)
-bool on_agent_found(const TransportLocator* locator, void* args)
+bool on_agent_found(
+        const TransportLocator* locator,
+        void* args)
 {
     rmw_init_options_t* rmw_options = (rmw_init_options_t*)args;
-    uxrIpProtocol       ip_protocol;
-    char     ip[MAX_IP_LEN];
-    char     port_str[MAX_PORT_LEN];
+    uxrIpProtocol ip_protocol;
+    char ip[MAX_IP_LEN];
+    char port_str[MAX_PORT_LEN];
     uint16_t port;
 
     uxr_locator_to_ip(locator, ip, sizeof(ip), &port, &ip_protocol);
@@ -168,9 +174,10 @@ bool on_agent_found(const TransportLocator* locator, void* args)
     return(false);
 }
 
-#endif
+#endif /* if defined(RMW_UXRCE_TRANSPORT_UDP) && defined(UCLIENT_PROFILE_DISCOVERY) */
 
-rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t* rmw_options)
+rmw_ret_t rmw_uros_discover_agent(
+        rmw_init_options_t* rmw_options)
 {
 #if defined(RMW_UXRCE_TRANSPORT_UDP) && defined(UCLIENT_PROFILE_DISCOVERY)
     if (NULL == rmw_options)
@@ -190,10 +197,12 @@ rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t* rmw_options)
 
     RMW_SET_ERROR_MSG("RMW_UXRCE_TRANSPORT_UDP or UCLIENT_PROFILE_DISCOVERY not set.");
     return(RMW_RET_INVALID_ARGUMENT);
-#endif
+#endif /* if defined(RMW_UXRCE_TRANSPORT_UDP) && defined(UCLIENT_PROFILE_DISCOVERY) */
 }
 
-rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_t* rmw_options)
+rmw_ret_t rmw_uros_options_set_client_key(
+        uint32_t client_key,
+        rmw_init_options_t* rmw_options)
 {
     if (NULL == rmw_options)
     {
@@ -206,7 +215,9 @@ rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_
     return(RMW_RET_OK);
 }
 
-rmw_ret_t rmw_uros_ping_agent(const int timeout_ms, const uint8_t attempts)
+rmw_ret_t rmw_uros_ping_agent(
+        const int timeout_ms,
+        const uint8_t attempts)
 {
     bool success = false;
 
@@ -224,7 +235,7 @@ rmw_ret_t rmw_uros_ping_agent(const int timeout_ms, const uint8_t attempts)
         transport.close   = rmw_uxrce_transport_default_params.close_cb;
         transport.write   = rmw_uxrce_transport_default_params.write_cb;
         transport.read    = rmw_uxrce_transport_default_params.read_cb;
-#endif
+#endif /* ifdef RMW_UXRCE_TRANSPORT_SERIAL */
         rmw_ret_t ret = rmw_uxrce_transport_init(NULL, NULL, (void*)&transport);
 
         if (RMW_RET_OK != ret)
@@ -251,9 +262,9 @@ rmw_ret_t rmw_uros_ping_agent(const int timeout_ms, const uint8_t attempts)
 }
 
 void rmw_uros_set_continous_serialization_callbacks(
-    rmw_publisher_t* publisher,
-    rmw_uros_continous_serialization_size size_cb,
-    rmw_uros_continous_serialization serialization_cb)
+        rmw_publisher_t* publisher,
+        rmw_uros_continous_serialization_size size_cb,
+        rmw_uros_continous_serialization serialization_cb)
 {
     rmw_uxrce_publisher_t* custom_publisher = (rmw_uxrce_publisher_t*)publisher->data;
 
@@ -265,17 +276,17 @@ void rmw_uros_set_continous_serialization_callbacks(
 rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
 
 rmw_ret_t rmw_uros_set_custom_transport(
-    bool framing,
-    void* args,
-    open_custom_func open_cb,
-    close_custom_func close_cb,
-    write_custom_func write_cb,
-    read_custom_func read_cb)
+        bool framing,
+        void* args,
+        open_custom_func open_cb,
+        close_custom_func close_cb,
+        write_custom_func write_cb,
+        read_custom_func read_cb)
 {
     if (NULL != open_cb &&
-        NULL != close_cb &&
-        NULL != write_cb &&
-        NULL != read_cb)
+            NULL != close_cb &&
+            NULL != write_cb &&
+            NULL != read_cb)
     {
         rmw_uxrce_transport_default_params.framing  = framing;
         rmw_uxrce_transport_default_params.args     = args;

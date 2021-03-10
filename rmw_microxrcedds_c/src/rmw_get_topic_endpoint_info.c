@@ -33,48 +33,48 @@
 #ifdef RMW_UXRCE_GRAPH
 static rmw_endpoint_type_t
 __endpoint_kind_to_endpoint_type(
-    const uint8_t kind)
+        const uint8_t kind)
 {
     rmw_endpoint_type_t endpoint_type = RMW_ENDPOINT_INVALID;
 
     switch (kind)
     {
-    case micro_ros_msgs__msg__Entity__PUBLISHER:
-    {
-        endpoint_type = RMW_ENDPOINT_PUBLISHER;
-        break;
-    }
+        case micro_ros_msgs__msg__Entity__PUBLISHER:
+        {
+            endpoint_type = RMW_ENDPOINT_PUBLISHER;
+            break;
+        }
 
-    case micro_ros_msgs__msg__Entity__SUBSCRIBER:
-    {
-        endpoint_type = RMW_ENDPOINT_SUBSCRIPTION;
-        break;
-    }
+        case micro_ros_msgs__msg__Entity__SUBSCRIBER:
+        {
+            endpoint_type = RMW_ENDPOINT_SUBSCRIPTION;
+            break;
+        }
 
-    default:
-    {
-        break;
-    }
+        default:
+        {
+            break;
+        }
     }
     return(endpoint_type);
 }
 
 static rmw_ret_t
 __rmw_get_endpoint_info_by_topic(
-    const uint8_t kind,
-    const rmw_node_t* node,
-    rcutils_allocator_t* allocator,
-    const char* topic_name,
-    bool no_mangle,
-    rmw_topic_endpoint_info_array_t* endpoints_info)
+        const uint8_t kind,
+        const rmw_node_t* node,
+        rcutils_allocator_t* allocator,
+        const char* topic_name,
+        bool no_mangle,
+        rmw_topic_endpoint_info_array_t* endpoints_info)
 {
     (void)no_mangle; // TODO (jamoralp): what is this used for?
     // Perform RMW checks
     RMW_CHECK_ARGUMENT_FOR_NULL(node, RMW_RET_INVALID_ARGUMENT);
     RMW_CHECK_TYPE_IDENTIFIERS_MATCH(node, node->implementation_identifier,
-                                     eprosima_microxrcedds_identifier, return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+            eprosima_microxrcedds_identifier, return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
     RCUTILS_CHECK_ALLOCATOR_WITH_MSG(allocator, "Allocator argument is invalid",
-                                     return RMW_RET_INVALID_ARGUMENT);
+            return RMW_RET_INVALID_ARGUMENT);
 
     if (RMW_RET_OK != rmw_topic_endpoint_info_array_check_zero(endpoints_info))
     {
@@ -111,14 +111,14 @@ __rmw_get_endpoint_info_by_topic(
             micro_ros_msgs__msg__Entity* entity = &node->entities.data[j];
 
             if (0 == strcmp(topic_name, entity->name.data) &&
-                kind == entity->entity_type)
+                    kind == entity->entity_type)
             {
                 size_t current_position = endpoints_info->size;
                 if (0 == current_position)
                 {
                     // First data introduced: init array
                     if (RMW_RET_OK != rmw_topic_endpoint_info_array_init_with_size(
-                            endpoints_info, 1, allocator))
+                                endpoints_info, 1, allocator))
                     {
                         ret = RMW_RET_ERROR;
                         goto fini;
@@ -136,14 +136,14 @@ __rmw_get_endpoint_info_by_topic(
                 // Retrieve endpoint information
                 // Node name
                 rmw_topic_endpoint_info_t* endpoint_info =
-                    &endpoints_info->info_array[current_position];
+                        &endpoints_info->info_array[current_position];
                 endpoint_info->node_name = allocator->zero_allocate(
                     strlen(node->node_name.data) + 1,
                     sizeof(char), allocator->state);
                 if (RMW_RET_OK != rmw_topic_endpoint_info_set_node_name(
-                        endpoint_info,
-                        node->node_name.data,
-                        allocator))
+                            endpoint_info,
+                            node->node_name.data,
+                            allocator))
                 {
                     ret = RMW_RET_ERROR;
                     goto fini;
@@ -153,9 +153,9 @@ __rmw_get_endpoint_info_by_topic(
                     strlen(node->node_namespace.data) + 1,
                     sizeof(char), allocator->state);
                 if (RMW_RET_OK != rmw_topic_endpoint_info_set_node_namespace(
-                        endpoint_info,
-                        node->node_namespace.data,
-                        allocator))
+                            endpoint_info,
+                            node->node_namespace.data,
+                            allocator))
                 {
                     ret = RMW_RET_ERROR;
                     goto fini;
@@ -165,16 +165,16 @@ __rmw_get_endpoint_info_by_topic(
                     strlen(entity->types.data[0].data) + 1,
                     sizeof(char), allocator->state);
                 if (RMW_RET_OK != rmw_topic_endpoint_info_set_topic_type(
-                        endpoint_info,
-                        entity->types.data[0].data,
-                        allocator))
+                            endpoint_info,
+                            entity->types.data[0].data,
+                            allocator))
                 {
                     ret = RMW_RET_ERROR;
                     goto fini;
                 }
                 if (RMW_RET_OK != rmw_topic_endpoint_info_set_endpoint_type(
-                        endpoint_info,
-                        __endpoint_kind_to_endpoint_type(kind)))
+                            endpoint_info,
+                            __endpoint_kind_to_endpoint_type(kind)))
                 {
                     ret = RMW_RET_ERROR;
                     goto fini;
@@ -194,11 +194,11 @@ fini:
 
 rmw_ret_t
 rmw_get_publishers_info_by_topic(
-    const rmw_node_t* node,
-    rcutils_allocator_t* allocator,
-    const char* topic_name,
-    bool no_mangle,
-    rmw_topic_endpoint_info_array_t* publishers_info)
+        const rmw_node_t* node,
+        rcutils_allocator_t* allocator,
+        const char* topic_name,
+        bool no_mangle,
+        rmw_topic_endpoint_info_array_t* publishers_info)
 {
 #ifdef RMW_UXRCE_GRAPH
     return(__rmw_get_endpoint_info_by_topic(
@@ -221,11 +221,11 @@ rmw_get_publishers_info_by_topic(
 
 rmw_ret_t
 rmw_get_subscriptions_info_by_topic(
-    const rmw_node_t* node,
-    rcutils_allocator_t* allocator,
-    const char* topic_name,
-    bool no_mangle,
-    rmw_topic_endpoint_info_array_t* subscriptions_info)
+        const rmw_node_t* node,
+        rcutils_allocator_t* allocator,
+        const char* topic_name,
+        bool no_mangle,
+        rmw_topic_endpoint_info_array_t* subscriptions_info)
 {
 #ifdef RMW_UXRCE_GRAPH
     return(__rmw_get_endpoint_info_by_topic(

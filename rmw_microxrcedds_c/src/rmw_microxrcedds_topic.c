@@ -24,10 +24,10 @@
 
 rmw_uxrce_topic_t*
 create_topic(
-    struct rmw_uxrce_node_t* custom_node,
-    const char* topic_name,
-    const message_type_support_callbacks_t* message_type_support_callbacks,
-    const rmw_qos_profile_t* qos_policies)
+        struct rmw_uxrce_node_t* custom_node,
+        const char* topic_name,
+        const message_type_support_callbacks_t* message_type_support_callbacks,
+        const rmw_qos_profile_t* qos_policies)
 {
     rmw_uxrce_topic_t*        custom_topic = NULL;
     rmw_uxrce_mempool_item_t* memory_node  = get_memory(&topics_memory);
@@ -54,8 +54,8 @@ create_topic(
     uint16_t topic_req = 0;
 #ifdef RMW_UXRCE_TRANSPORT_USE_XML
     if (!build_topic_xml(
-            topic_name, message_type_support_callbacks,
-            qos_policies, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
+                topic_name, message_type_support_callbacks,
+                qos_policies, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
     {
         RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
         rmw_uxrce_fini_topic_memory(custom_topic);
@@ -81,7 +81,7 @@ create_topic(
         &custom_node->context->session,
         *custom_node->context->creation_destroy_stream, custom_topic->topic_id,
         custom_node->participant_id, rmw_uxrce_profile_name, UXR_REPLACE);
-#endif
+#endif /* ifdef RMW_UXRCE_TRANSPORT_USE_XML */
 
     // Send the request and wait for response
     custom_topic->sync_with_agent = run_xrce_session(custom_node->context, topic_req);
@@ -97,9 +97,10 @@ fail:
     return(custom_topic);
 }
 
-rmw_ret_t destroy_topic(rmw_uxrce_topic_t* topic)
+rmw_ret_t destroy_topic(
+        rmw_uxrce_topic_t* topic)
 {
-    rmw_ret_t         result_ret  = RMW_RET_OK;
+    rmw_ret_t result_ret  = RMW_RET_OK;
     rmw_uxrce_node_t* custom_node = topic->owner_node;
 
     uint16_t delete_topic = uxr_buffer_delete_entity(
@@ -119,7 +120,8 @@ rmw_ret_t destroy_topic(rmw_uxrce_topic_t* topic)
     return(result_ret);
 }
 
-size_t topic_count(rmw_uxrce_node_t* custom_node)
+size_t topic_count(
+        rmw_uxrce_node_t* custom_node)
 {
     size_t count = 0;
     rmw_uxrce_mempool_item_t* item = NULL;

@@ -28,17 +28,17 @@
 
 rmw_ret_t
 rmw_get_service_names_and_types(
-    const rmw_node_t* node,
-    rcutils_allocator_t* allocator,
-    rmw_names_and_types_t* service_names_and_types)
+        const rmw_node_t* node,
+        rcutils_allocator_t* allocator,
+        rmw_names_and_types_t* service_names_and_types)
 {
 #ifdef RMW_UXRCE_GRAPH
     // Perform RMW checks
     RMW_CHECK_ARGUMENT_FOR_NULL(node, RMW_RET_INVALID_ARGUMENT);
     RMW_CHECK_TYPE_IDENTIFIERS_MATCH(node, node->implementation_identifier,
-                                     eprosima_microxrcedds_identifier, return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+            eprosima_microxrcedds_identifier, return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
     RCUTILS_CHECK_ALLOCATOR_WITH_MSG(allocator, "Allocator argument is invalid",
-                                     return RMW_RET_INVALID_ARGUMENT);
+            return RMW_RET_INVALID_ARGUMENT);
 
     if (RMW_RET_OK != rmw_names_and_types_check_zero(service_names_and_types))
     {
@@ -76,94 +76,94 @@ rmw_get_service_names_and_types(
 
             switch (entity->entity_type)
             {
-            case micro_ros_msgs__msg__Entity__SERVICE_SERVER:
-            case micro_ros_msgs__msg__Entity__SERVICE_CLIENT:
-            {
-                // Do not include in the list if it already exists
-                bool already_included = false;
-                for (size_t k = 0; k < service_names_and_types->names.size; ++k)
+                case micro_ros_msgs__msg__Entity__SERVICE_SERVER:
+                case micro_ros_msgs__msg__Entity__SERVICE_CLIENT:
                 {
-                    if (0 == strcmp(service_names_and_types->names.data[k], entity->name.data))
+                    // Do not include in the list if it already exists
+                    bool already_included = false;
+                    for (size_t k = 0; k < service_names_and_types->names.size; ++k)
                     {
-                        already_included = true;
+                        if (0 == strcmp(service_names_and_types->names.data[k], entity->name.data))
+                        {
+                            already_included = true;
+                            break;
+                        }
+                    }
+                    if (already_included)
+                    {
                         break;
                     }
-                }
-                if (already_included)
-                {
+
+                    // Retrieve name
+                    size_t current_position = service_names_and_types->names.size;
+                    if (0 == current_position)
+                    {
+                        // First data introduced: init array
+                        if (RCUTILS_RET_OK != rcutils_string_array_init(
+                                    &service_names_and_types->names, 1, allocator))
+                        {
+                            ret = RMW_RET_ERROR;
+                            goto fini;
+                        }
+                    }
+                    else
+                    {
+                        // Subsequent data: resize
+                        if (RCUTILS_RET_OK != rcutils_string_array_resize(
+                                    &service_names_and_types->names, service_names_and_types->names.size + 1))
+                        {
+                            ret = RMW_RET_ERROR;
+                            goto fini;
+                        }
+                    }
+
+                    // Make space for entity name string
+                    service_names_and_types->names.data[current_position] = allocator->reallocate(
+                        service_names_and_types->names.data[current_position],
+                        strlen(entity->name.data) + 1, allocator->state);
+                    strcpy(
+                        service_names_and_types->names.data[current_position],
+                        entity->name.data);
+
+                    // Retrieve types
+                    if (NULL == service_names_and_types->types)
+                    {
+                        service_names_and_types->types = allocator->zero_allocate(
+                            1, sizeof(rcutils_string_array_t), allocator->state);
+                    }
+                    else
+                    {
+                        service_names_and_types->types = allocator->reallocate(
+                            service_names_and_types->types,
+                            service_names_and_types->names.size * sizeof(rcutils_string_array_t),
+                            allocator->state);
+                    }
+
+                    size_t types_size = entity->types.size;
+                    if (RCUTILS_RET_OK != rcutils_string_array_init(
+                                &service_names_and_types->types[current_position],
+                                types_size, allocator))
+                    {
+                        ret = RMW_RET_ERROR;
+                        goto fini;
+                    }
+
+                    for (size_t k = 0; k < types_size; ++k)
+                    {
+                        service_names_and_types->types[current_position].data[k] = allocator->zero_allocate(
+                            strlen(entity->types.data[k].data) + 1,
+                            sizeof(char), allocator->state);
+                        strcpy(
+                            service_names_and_types->types[current_position].data[k],
+                            entity->types.data[k].data);
+                    }
                     break;
                 }
 
-                // Retrieve name
-                size_t current_position = service_names_and_types->names.size;
-                if (0 == current_position)
+                default:
                 {
-                    // First data introduced: init array
-                    if (RCUTILS_RET_OK != rcutils_string_array_init(
-                            &service_names_and_types->names, 1, allocator))
-                    {
-                        ret = RMW_RET_ERROR;
-                        goto fini;
-                    }
+                    break;
                 }
-                else
-                {
-                    // Subsequent data: resize
-                    if (RCUTILS_RET_OK != rcutils_string_array_resize(
-                            &service_names_and_types->names, service_names_and_types->names.size + 1))
-                    {
-                        ret = RMW_RET_ERROR;
-                        goto fini;
-                    }
-                }
-
-                // Make space for entity name string
-                service_names_and_types->names.data[current_position] = allocator->reallocate(
-                    service_names_and_types->names.data[current_position],
-                    strlen(entity->name.data) + 1, allocator->state);
-                strcpy(
-                    service_names_and_types->names.data[current_position],
-                    entity->name.data);
-
-                // Retrieve types
-                if (NULL == service_names_and_types->types)
-                {
-                    service_names_and_types->types = allocator->zero_allocate(
-                        1, sizeof(rcutils_string_array_t), allocator->state);
-                }
-                else
-                {
-                    service_names_and_types->types = allocator->reallocate(
-                        service_names_and_types->types,
-                        service_names_and_types->names.size * sizeof(rcutils_string_array_t),
-                        allocator->state);
-                }
-
-                size_t types_size = entity->types.size;
-                if (RCUTILS_RET_OK != rcutils_string_array_init(
-                        &service_names_and_types->types[current_position],
-                        types_size, allocator))
-                {
-                    ret = RMW_RET_ERROR;
-                    goto fini;
-                }
-
-                for (size_t k = 0; k < types_size; ++k)
-                {
-                    service_names_and_types->types[current_position].data[k] = allocator->zero_allocate(
-                        strlen(entity->types.data[k].data) + 1,
-                        sizeof(char), allocator->state);
-                    strcpy(
-                        service_names_and_types->types[current_position].data[k],
-                        entity->types.data[k].data);
-                }
-                break;
-            }
-
-            default:
-            {
-                break;
-            }
             }
         }
     }

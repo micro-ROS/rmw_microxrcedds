@@ -18,12 +18,14 @@
 #include <rmw_microxrcedds_c/config.h>
 #include <rmw/allocators.h>
 
-bool has_memory(rmw_uxrce_mempool_t* mem)
+bool has_memory(
+        rmw_uxrce_mempool_t* mem)
 {
     return(mem->freeitems != NULL ? true : false);
 }
 
-rmw_uxrce_mempool_item_t* get_memory(rmw_uxrce_mempool_t* mem)
+rmw_uxrce_mempool_item_t* get_memory(
+        rmw_uxrce_mempool_t* mem)
 {
     rmw_uxrce_mempool_item_t* item = NULL;
 
@@ -58,12 +60,14 @@ rmw_uxrce_mempool_item_t* get_memory(rmw_uxrce_mempool_t* mem)
         put_memory(mem, item);
         item->is_dynamic_memory = true;
         item = get_memory(mem);
-#endif
+#endif /* ifdef RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS */
     }
     return(item);
 }
 
-void put_memory(rmw_uxrce_mempool_t* mem, rmw_uxrce_mempool_item_t* item)
+void put_memory(
+        rmw_uxrce_mempool_t* mem,
+        rmw_uxrce_mempool_item_t* item)
 {
     // Gets item from allocated pool
     if (item->prev)
@@ -87,7 +91,7 @@ void put_memory(rmw_uxrce_mempool_t* mem, rmw_uxrce_mempool_item_t* item)
         rmw_free(item);
         return;
     }
-#endif
+#endif /* ifdef RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS */
 
     // Puts item in free pool
     item->next = mem->freeitems;

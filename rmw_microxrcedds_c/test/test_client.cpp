@@ -30,6 +30,7 @@
 class TestClient : public RMWBaseTest
 {
 protected:
+
     void SetUp() override
     {
         RMWBaseTest::SetUp();
@@ -93,7 +94,7 @@ TEST_F(TestClient, memory_poll_multiple_clients)
 
     std::vector <dummy_service_type_support_t> dummy_type_supports;
     std::vector <rmw_client_t*> clients;
-    rmw_ret_t     ret;
+    rmw_ret_t ret;
     rmw_client_t* client;
 
     // Get all available nodes

@@ -30,6 +30,7 @@
 class TestService : public RMWBaseTest
 {
 protected:
+
     void SetUp() override
     {
         RMWBaseTest::SetUp();
@@ -93,7 +94,7 @@ TEST_F(TestService, memory_poll_multiple_services)
 
     std::vector <dummy_service_type_support_t> dummy_type_supports;
     std::vector <rmw_service_t*> services;
-    rmw_ret_t      ret;
+    rmw_ret_t ret;
     rmw_service_t* service;
 
     // Get all available nodes

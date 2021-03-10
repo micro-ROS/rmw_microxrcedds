@@ -22,13 +22,13 @@
 
 rmw_ret_t
 rmw_wait(
-    rmw_subscriptions_t* subscriptions,
-    rmw_guard_conditions_t* guard_conditions,
-    rmw_services_t* services,
-    rmw_clients_t* clients,
-    rmw_events_t* events,
-    rmw_wait_set_t* wait_set,
-    const rmw_time_t* wait_timeout)
+        rmw_subscriptions_t* subscriptions,
+        rmw_guard_conditions_t* guard_conditions,
+        rmw_services_t* services,
+        rmw_clients_t* clients,
+        rmw_events_t* events,
+        rmw_wait_set_t* wait_set,
+        const rmw_time_t* wait_timeout)
 {
     (void)services;
     (void)clients;
@@ -139,7 +139,7 @@ rmw_wait(
         for (size_t i = 0; i < subscriptions->subscriber_count; ++i)
         {
             rmw_uxrce_subscription_t* custom_subscription =
-                (rmw_uxrce_subscription_t*)subscriptions->subscribers[i];
+                    (rmw_uxrce_subscription_t*)subscriptions->subscribers[i];
 
             if (!custom_subscription->micro_buffer_in_use)
             {

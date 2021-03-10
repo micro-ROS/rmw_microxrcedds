@@ -19,8 +19,8 @@
 
 rmw_ret_t
 rmw_get_gid_for_publisher(
-    const rmw_publisher_t* publisher,
-    rmw_gid_t* gid)
+        const rmw_publisher_t* publisher,
+        rmw_gid_t* gid)
 {
     // Check
     RMW_CHECK_ARGUMENT_FOR_NULL(publisher, RMW_RET_INVALID_ARGUMENT);
