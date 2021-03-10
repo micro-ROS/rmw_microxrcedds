@@ -1,6 +1,9 @@
 name: CI RMW_MicroXRCEDDS
 
 on:
+    push:
+      branches:
+        - master
     pull_request:
       branches: 
         - '**'
