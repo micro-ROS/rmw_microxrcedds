@@ -20,10 +20,10 @@
 
 #ifdef HAVE_C_TYPESUPPORT
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>
-#endif
+#endif /* ifdef HAVE_C_TYPESUPPORT */
 #ifdef HAVE_CPP_TYPESUPPORT
 #include <rosidl_typesupport_microxrcedds_cpp/identifier.h>
-#endif
+#endif /* ifdef HAVE_CPP_TYPESUPPORT */
 
 #include "rmw/allocators.h"
 #include <rmw/error_handling.h>
@@ -34,28 +34,28 @@
 char rmw_uxrce_xml_buffer[RMW_UXRCE_XML_BUFFER_LENGTH];
 #elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
 char rmw_uxrce_profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
-#endif
+#endif /* ifdef RMW_UXRCE_TRANSPORT_USE_XML */
 
 rmw_uxrce_mempool_t session_memory;
-rmw_context_impl_t  custom_sessions[RMW_UXRCE_MAX_SESSIONS];
+rmw_context_impl_t custom_sessions[RMW_UXRCE_MAX_SESSIONS];
 
 rmw_uxrce_mempool_t node_memory;
-rmw_uxrce_node_t    custom_nodes[RMW_UXRCE_MAX_NODES];
+rmw_uxrce_node_t custom_nodes[RMW_UXRCE_MAX_NODES];
 
-rmw_uxrce_mempool_t   publisher_memory;
+rmw_uxrce_mempool_t publisher_memory;
 rmw_uxrce_publisher_t custom_publishers[RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_NODES];
 
-rmw_uxrce_mempool_t      subscription_memory;
+rmw_uxrce_mempool_t subscription_memory;
 rmw_uxrce_subscription_t custom_subscriptions[RMW_UXRCE_MAX_SUBSCRIPTIONS];
 
 rmw_uxrce_mempool_t service_memory;
 rmw_uxrce_service_t custom_services[RMW_UXRCE_MAX_SERVICES];
 
 rmw_uxrce_mempool_t client_memory;
-rmw_uxrce_client_t  custom_clients[RMW_UXRCE_MAX_CLIENTS];
+rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 
 rmw_uxrce_mempool_t topics_memory;
-rmw_uxrce_topic_t   custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
+rmw_uxrce_topic_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
 
 // Memory init functions
 
@@ -65,13 +65,13 @@ rmw_uxrce_topic_t   custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
         rmw_uxrce_ ## X ## _t * array,                  \
         size_t size)                                    \
     {                                                   \
-        if (size > 0 && !memory->is_initialized) {      \
+        if (size > 0 && !memory->is_initialized){      \
             memory->is_initialized = true;              \
             memory->element_size   = sizeof(*array);    \
             memory->allocateditems = NULL;              \
             memory->freeitems      = NULL;              \
                                                         \
-            for (size_t i = 0; i < size; i++) {         \
+            for (size_t i = 0; i < size; i++){         \
                 put_memory(memory, &array[i].mem);      \
                 array[i].mem.data = (void*)&array[i];   \
                 array[0].mem.is_dynamic_memory = false; \
@@ -90,12 +90,14 @@ RMW_INIT_MEMORY(topic)
 
 // Memory management functions
 
-void rmw_uxrce_fini_session_memory(rmw_context_impl_t* session)
+void rmw_uxrce_fini_session_memory(
+        rmw_context_impl_t* session)
 {
     put_memory(&session_memory, &session->mem);
 }
 
-void rmw_uxrce_fini_node_memory(rmw_node_t* node)
+void rmw_uxrce_fini_node_memory(
+        rmw_node_t* node)
 {
     if (!is_uxrce_rmw_identifier_valid(node->implementation_identifier))
     {
@@ -129,7 +131,8 @@ void rmw_uxrce_fini_node_memory(rmw_node_t* node)
     node = NULL;
 }
 
-void rmw_uxrce_fini_publisher_memory(rmw_publisher_t* publisher)
+void rmw_uxrce_fini_publisher_memory(
+        rmw_publisher_t* publisher)
 {
     if (!is_uxrce_rmw_identifier_valid(publisher->implementation_identifier))
     {
@@ -157,7 +160,8 @@ void rmw_uxrce_fini_publisher_memory(rmw_publisher_t* publisher)
     rmw_free(publisher);
 }
 
-void rmw_uxrce_fini_subscription_memory(rmw_subscription_t* subscriber)
+void rmw_uxrce_fini_subscription_memory(
+        rmw_subscription_t* subscriber)
 {
     if (!is_uxrce_rmw_identifier_valid(subscriber->implementation_identifier))
     {
@@ -184,7 +188,8 @@ void rmw_uxrce_fini_subscription_memory(rmw_subscription_t* subscriber)
     rmw_free(subscriber);
 }
 
-void rmw_uxrce_fini_service_memory(rmw_service_t* service)
+void rmw_uxrce_fini_service_memory(
+        rmw_service_t* service)
 {
     if (!is_uxrce_rmw_identifier_valid(service->implementation_identifier))
     {
@@ -210,7 +215,8 @@ void rmw_uxrce_fini_service_memory(rmw_service_t* service)
     rmw_free(service);
 }
 
-void rmw_uxrce_fini_client_memory(rmw_client_t* client)
+void rmw_uxrce_fini_client_memory(
+        rmw_client_t* client)
 {
     if (!is_uxrce_rmw_identifier_valid(client->implementation_identifier))
     {
@@ -236,7 +242,8 @@ void rmw_uxrce_fini_client_memory(rmw_client_t* client)
     rmw_free(client);
 }
 
-void rmw_uxrce_fini_topic_memory(rmw_uxrce_topic_t* topic)
+void rmw_uxrce_fini_topic_memory(
+        rmw_uxrce_topic_t* topic)
 {
     put_memory(&topics_memory, &topic->mem);
 }

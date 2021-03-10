@@ -36,7 +36,9 @@
 #endif  // RMW_UXRCE_GRAPH
 
 rmw_ret_t
-rmw_init_options_init(rmw_init_options_t* init_options, rcutils_allocator_t allocator)
+rmw_init_options_init(
+        rmw_init_options_t* init_options,
+        rcutils_allocator_t allocator)
 {
     RMW_CHECK_ARGUMENT_FOR_NULL(init_options, RMW_RET_INVALID_ARGUMENT);
     RCUTILS_CHECK_ALLOCATOR(&allocator, return RMW_RET_INVALID_ARGUMENT);
@@ -92,7 +94,7 @@ rmw_init_options_init(rmw_init_options_t* init_options, rcutils_allocator_t allo
     init_options->impl->transport_params.close_cb = rmw_uxrce_transport_default_params.close_cb;
     init_options->impl->transport_params.write_cb = rmw_uxrce_transport_default_params.write_cb;
     init_options->impl->transport_params.read_cb  = rmw_uxrce_transport_default_params.read_cb;
-#endif
+#endif /* if defined(RMW_UXRCE_TRANSPORT_SERIAL) */
 
     srand(uxr_nanos());
 
@@ -105,7 +107,9 @@ rmw_init_options_init(rmw_init_options_t* init_options, rcutils_allocator_t allo
 }
 
 rmw_ret_t
-rmw_init_options_copy(const rmw_init_options_t* src, rmw_init_options_t* dst)
+rmw_init_options_copy(
+        const rmw_init_options_t* src,
+        rmw_init_options_t* dst)
 {
     RMW_CHECK_ARGUMENT_FOR_NULL(src, RMW_RET_INVALID_ARGUMENT);
     RMW_CHECK_ARGUMENT_FOR_NULL(dst, RMW_RET_INVALID_ARGUMENT);
@@ -128,7 +132,8 @@ rmw_init_options_copy(const rmw_init_options_t* src, rmw_init_options_t* dst)
 }
 
 rmw_ret_t
-rmw_init_options_fini(rmw_init_options_t* init_options)
+rmw_init_options_fini(
+        rmw_init_options_t* init_options)
 {
     RMW_CHECK_ARGUMENT_FOR_NULL(init_options, RMW_RET_INVALID_ARGUMENT);
     RCUTILS_CHECK_ALLOCATOR(&(init_options->allocator), return RMW_RET_INVALID_ARGUMENT);
@@ -145,7 +150,9 @@ rmw_init_options_fini(rmw_init_options_t* init_options)
 }
 
 rmw_ret_t
-rmw_init(const rmw_init_options_t* options, rmw_context_t* context)
+rmw_init(
+        const rmw_init_options_t* options,
+        rmw_context_t* context)
 {
     RCUTILS_CHECK_ARGUMENT_FOR_NULL(options, RMW_RET_INVALID_ARGUMENT);
     RCUTILS_CHECK_ARGUMENT_FOR_NULL(context, RMW_RET_INVALID_ARGUMENT);
@@ -172,11 +179,11 @@ rmw_init(const rmw_init_options_t* options, rmw_context_t* context)
 
   #if defined(RMW_UXRCE_TRANSPORT_CUSTOM)
     uxr_set_custom_transport_callbacks(&context_impl->transport,
-                                       options->impl->transport_params.framing,
-                                       options->impl->transport_params.open_cb,
-                                       options->impl->transport_params.close_cb,
-                                       options->impl->transport_params.write_cb,
-                                       options->impl->transport_params.read_cb);
+            options->impl->transport_params.framing,
+            options->impl->transport_params.open_cb,
+            options->impl->transport_params.close_cb,
+            options->impl->transport_params.write_cb,
+            options->impl->transport_params.read_cb);
   #endif //RMW_UXRCE_TRANSPORT_CUSTOM
 
     context_impl->id_participant = 0;
@@ -223,9 +230,9 @@ rmw_init(const rmw_init_options_t* options, rmw_context_t* context)
         &context_impl->session, context_impl->input_reliable_stream_buffer,
         context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY_INPUT, RMW_UXRCE_STREAM_HISTORY_INPUT);
     context_impl->reliable_output =
-        uxr_create_output_reliable_stream(
-            &context_impl->session, context_impl->output_reliable_stream_buffer,
-            context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY_OUTPUT, RMW_UXRCE_STREAM_HISTORY_OUTPUT);
+            uxr_create_output_reliable_stream(
+        &context_impl->session, context_impl->output_reliable_stream_buffer,
+        context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY_OUTPUT, RMW_UXRCE_STREAM_HISTORY_OUTPUT);
 
     context_impl->best_effort_input  = uxr_create_input_best_effort_stream(&context_impl->session);
     context_impl->best_effort_output = uxr_create_output_best_effort_stream(
@@ -233,8 +240,8 @@ rmw_init(const rmw_init_options_t* options, rmw_context_t* context)
         context_impl->output_best_effort_stream_buffer, context_impl->transport.comm.mtu);
 
     context_impl->creation_destroy_stream = (RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT > 0) ?
-                                            &context_impl->reliable_output :
-                                            &context_impl->best_effort_output;
+            &context_impl->reliable_output :
+            &context_impl->best_effort_output;
 
     if (!uxr_create_session(&context_impl->session))
     {
@@ -256,7 +263,8 @@ rmw_init(const rmw_init_options_t* options, rmw_context_t* context)
 }
 
 rmw_ret_t
-rmw_shutdown(rmw_context_t* context)
+rmw_shutdown(
+        rmw_context_t* context)
 {
     RCUTILS_CHECK_ARGUMENT_FOR_NULL(context, RMW_RET_INVALID_ARGUMENT);
     RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
@@ -276,7 +284,8 @@ rmw_shutdown(rmw_context_t* context)
 }
 
 rmw_ret_t
-rmw_context_fini(rmw_context_t* context)
+rmw_context_fini(
+        rmw_context_t* context)
 {
     // TODO(pablogs9): Should we manage not closed XRCE sessions?
     rmw_ret_t ret = RMW_RET_OK;

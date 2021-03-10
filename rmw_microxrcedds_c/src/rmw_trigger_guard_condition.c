@@ -19,7 +19,8 @@
 #include <rmw/error_handling.h>
 
 rmw_ret_t
-rmw_trigger_guard_condition(const rmw_guard_condition_t* guard_condition)
+rmw_trigger_guard_condition(
+        const rmw_guard_condition_t* guard_condition)
 {
     EPROS_PRINT_TRACE()
     rmw_ret_t ret = RMW_RET_OK;

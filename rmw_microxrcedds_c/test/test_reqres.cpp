@@ -37,16 +37,17 @@ dummy_service_type_support_t dummy_type_support;
 const rosidl_message_type_support_t* get_request_members()
 {
     return(&dummy_type_support.request_members.type_support);
-};
+}
 
 const rosidl_message_type_support_t* get_response_members()
 {
     return(&dummy_type_support.response_members.type_support);
-};
+}
 
 class TestReqRes : public RMWBaseTest
 {
 protected:
+
     size_t id_gen = 0;
 
 
@@ -73,42 +74,50 @@ TEST_F(TestReqRes, request_and_reply)
     dummy_type_support.callbacks.request_members_  = get_response_members;
 
     dummy_type_support.request_members.callbacks.cdr_serialize =
-        [](const void* untyped_service_req_message, ucdrBuffer* cdr) -> bool {
-            bool ret;
-            const rosidl_runtime_c__String* service_req_message =
-                reinterpret_cast <const rosidl_runtime_c__String*>(untyped_service_req_message);
-
-            ret = ucdr_serialize_string(cdr, service_req_message->data);
-            return(ret);
-        };
-    dummy_type_support.request_members.callbacks.cdr_deserialize =
-        [](ucdrBuffer* cdr, void* untyped_service_req_message) -> bool {
-            bool ret;
-            rosidl_runtime_c__String* service_req_message =
-                reinterpret_cast <rosidl_runtime_c__String*>(untyped_service_req_message);
-
-            ret = ucdr_deserialize_string(cdr, service_req_message->data, service_req_message->capacity);
-            if (ret)
+            [](const void* untyped_service_req_message, ucdrBuffer* cdr) -> bool
             {
-                service_req_message->size = strlen(service_req_message->data);
-            }
-            return(ret);
-        };
+                bool ret;
+                const rosidl_runtime_c__String* service_req_message =
+                        reinterpret_cast <const rosidl_runtime_c__String*>(untyped_service_req_message);
+
+                ret = ucdr_serialize_string(cdr, service_req_message->data);
+                return(ret);
+            };
+    dummy_type_support.request_members.callbacks.cdr_deserialize =
+            [](ucdrBuffer* cdr, void* untyped_service_req_message) -> bool
+            {
+                bool ret;
+                rosidl_runtime_c__String* service_req_message =
+                        reinterpret_cast <rosidl_runtime_c__String*>(untyped_service_req_message);
+
+                ret = ucdr_deserialize_string(cdr, service_req_message->data, service_req_message->capacity);
+                if (ret)
+                {
+                    service_req_message->size = strlen(service_req_message->data);
+                }
+                return(ret);
+            };
     dummy_type_support.request_members.callbacks.get_serialized_size =
-        [](const void* untyped_service_req_message) -> uint32_t {
-            const rosidl_runtime_c__String* service_req_message =
-                reinterpret_cast <const rosidl_runtime_c__String*>(untyped_service_req_message);
+            [](const void* untyped_service_req_message) -> uint32_t
+            {
+                const rosidl_runtime_c__String* service_req_message =
+                        reinterpret_cast <const rosidl_runtime_c__String*>(untyped_service_req_message);
 
-            return(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + service_req_message->size + 8);
-        };
-    dummy_type_support.request_members.callbacks.max_serialized_size = []() -> size_t {
-                                                                           return((size_t)(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + 1));
-                                                                       };
+                return(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + service_req_message->size + 8);
+            };
+    dummy_type_support.request_members.callbacks.max_serialized_size = []() -> size_t
+            {
+                return((size_t)(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + 1));
+            };
 
-    dummy_type_support.response_members.callbacks.cdr_serialize       = dummy_type_support.request_members.callbacks.cdr_serialize;
-    dummy_type_support.response_members.callbacks.cdr_deserialize     = dummy_type_support.request_members.callbacks.cdr_deserialize;
-    dummy_type_support.response_members.callbacks.get_serialized_size = dummy_type_support.request_members.callbacks.get_serialized_size;
-    dummy_type_support.response_members.callbacks.max_serialized_size = dummy_type_support.request_members.callbacks.max_serialized_size;
+    dummy_type_support.response_members.callbacks.cdr_serialize       =
+            dummy_type_support.request_members.callbacks.cdr_serialize;
+    dummy_type_support.response_members.callbacks.cdr_deserialize     =
+            dummy_type_support.request_members.callbacks.cdr_deserialize;
+    dummy_type_support.response_members.callbacks.get_serialized_size =
+            dummy_type_support.request_members.callbacks.get_serialized_size;
+    dummy_type_support.response_members.callbacks.max_serialized_size =
+            dummy_type_support.request_members.callbacks.max_serialized_size;
 
     rmw_qos_profile_t dummy_qos_policies;
     ConfigureDefaultQOSPolices(&dummy_qos_policies);
@@ -170,7 +179,7 @@ TEST_F(TestReqRes, request_and_reply)
 
     rmw_events_t*   events   = NULL;
     rmw_wait_set_t* wait_set = NULL;
-    rmw_time_t      wait_timeout;
+    rmw_time_t wait_timeout;
 
     wait_timeout.sec  = 1;
     wait_timeout.nsec = 1;
@@ -198,11 +207,11 @@ TEST_F(TestReqRes, request_and_reply)
     rmw_service_info_t request_header;
 
     ASSERT_EQ(rmw_take_request(
-                  serv,
-                  &request_header,
-                  &read_service_req_message,
-                  &taken
-                  ), RMW_RET_OK);
+                serv,
+                &request_header,
+                &read_service_req_message,
+                &taken
+                ), RMW_RET_OK);
 
     ASSERT_EQ(taken, true);
     ASSERT_EQ(strcmp(content_req, read_service_req_message.data), 0);
@@ -218,10 +227,10 @@ TEST_F(TestReqRes, request_and_reply)
     service_res_message.size     = service_res_message.capacity;
 
     ASSERT_EQ(rmw_send_response(
-                  serv,
-                  &request_header.request_id,
-                  &service_res_message
-                  ), RMW_RET_OK);
+                serv,
+                &request_header.request_id,
+                &service_res_message
+                ), RMW_RET_OK);
 
     // READ REPONSE
 
@@ -256,11 +265,11 @@ TEST_F(TestReqRes, request_and_reply)
     taken = false;
 
     ASSERT_EQ(rmw_take_response(
-                  client,
-                  &request_header,
-                  &read_service_res_message,
-                  &taken
-                  ), RMW_RET_OK);
+                client,
+                &request_header,
+                &read_service_res_message,
+                &taken
+                ), RMW_RET_OK);
 
     ASSERT_EQ(taken, true);
     ASSERT_EQ(request_header.request_id.sequence_number, sequence_id);

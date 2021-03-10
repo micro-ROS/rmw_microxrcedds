@@ -30,6 +30,7 @@
 class TestSubscription : public RMWBaseTest
 {
 protected:
+
     void SetUp() override
     {
         RMWBaseTest::SetUp();
@@ -96,7 +97,7 @@ TEST_F(TestSubscription, memory_poll_multiple_topic)
 
     std::vector <dummy_type_support_t> dummy_type_supports;
     std::vector <rmw_subscription_t*>  subscriptions;
-    rmw_ret_t           ret;
+    rmw_ret_t ret;
     rmw_subscription_t* subscription;
 
     rmw_subscription_options_t default_subscription_options = rmw_get_default_subscription_options();
@@ -206,7 +207,7 @@ TEST_F(TestSubscription, memory_poll_shared_topic)
     rmw_subscription_options_t default_subscription_options = rmw_get_default_subscription_options();
 
     std::vector <rmw_subscription_t*> subscriptions;
-    rmw_ret_t           ret;
+    rmw_ret_t ret;
     rmw_subscription_t* subscription;
 
 

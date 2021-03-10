@@ -19,9 +19,9 @@
 
 rmw_ret_t
 rmw_send_request(
-    const rmw_client_t* client,
-    const void* ros_request,
-    int64_t* sequence_id)
+        const rmw_client_t* client,
+        const void* ros_request,
+        int64_t* sequence_id)
 {
     EPROS_PRINT_TRACE();
 
@@ -35,12 +35,12 @@ rmw_send_request(
     rmw_uxrce_node_t*   custom_node   = custom_client->owner_node;
 
     const rosidl_message_type_support_t* req_members =
-        custom_client->type_support_callbacks->request_members_();
+            custom_client->type_support_callbacks->request_members_();
     const message_type_support_callbacks_t* functions =
-        (const message_type_support_callbacks_t*)req_members->data;
+            (const message_type_support_callbacks_t*)req_members->data;
 
     ucdrBuffer mb;
-    uint32_t   request_length = functions->get_serialized_size(ros_request);
+    uint32_t request_length = functions->get_serialized_size(ros_request);
     *sequence_id = uxr_prepare_output_stream(
         &custom_node->context->session,
         custom_client->stream_id, custom_client->client_id, &mb,
@@ -69,10 +69,10 @@ rmw_send_request(
 
 rmw_ret_t
 rmw_take_request(
-    const rmw_service_t* service,
-    rmw_service_info_t* request_header,
-    void* ros_request,
-    bool* taken)
+        const rmw_service_t* service,
+        rmw_service_info_t* request_header,
+        void* ros_request,
+        bool* taken)
 {
     EPROS_PRINT_TRACE();
 
@@ -96,11 +96,11 @@ rmw_take_request(
 
     // Conversion from SampleIdentity to rmw_request_id_t
     request_header->request_id.sequence_number =
-        (((int64_t)custom_service->sample_id[custom_service->history_read_index].sequence_number.high) << 32)
-        | custom_service->sample_id[custom_service->history_read_index].sequence_number.low;
+            (((int64_t)custom_service->sample_id[custom_service->history_read_index].sequence_number.high) << 32)
+            | custom_service->sample_id[custom_service->history_read_index].sequence_number.low;
     request_header->request_id.writer_guid[0] =
-        (int8_t)custom_service->sample_id[custom_service->history_read_index].writer_guid.entityId.
-        entityKind;
+            (int8_t)custom_service->sample_id[custom_service->history_read_index].writer_guid.entityId.
+                    entityKind;
     memcpy(
         &request_header->request_id.writer_guid[1],
         custom_service->sample_id[custom_service->history_read_index].writer_guid.entityId.entityKey,
@@ -110,9 +110,9 @@ rmw_take_request(
         custom_service->sample_id[custom_service->history_read_index].writer_guid.guidPrefix.data, 12);
 
     const rosidl_message_type_support_t* req_members =
-        custom_service->type_support_callbacks->request_members_();
+            custom_service->type_support_callbacks->request_members_();
     const message_type_support_callbacks_t* functions =
-        (const message_type_support_callbacks_t*)req_members->data;
+            (const message_type_support_callbacks_t*)req_members->data;
 
     ucdrBuffer temp_buffer;
     ucdr_init_buffer(
@@ -123,7 +123,7 @@ rmw_take_request(
     bool deserialize_rv = functions->cdr_deserialize(&temp_buffer, ros_request);
 
     custom_service->history_read_index = (custom_service->history_read_index + 1) %
-                                         RMW_UXRCE_MAX_HISTORY;
+            RMW_UXRCE_MAX_HISTORY;
     if (custom_service->history_write_index == custom_service->history_read_index)
     {
         custom_service->micro_buffer_in_use = false;

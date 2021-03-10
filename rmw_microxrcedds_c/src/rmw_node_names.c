@@ -30,15 +30,15 @@
 
 rmw_ret_t
 rmw_get_node_names(
-    const rmw_node_t* node,
-    rcutils_string_array_t* node_names,
-    rcutils_string_array_t* node_namespaces)
+        const rmw_node_t* node,
+        rcutils_string_array_t* node_names,
+        rcutils_string_array_t* node_namespaces)
 {
 #ifdef RMW_UXRCE_GRAPH
     // Perform RMW checks
     RMW_CHECK_ARGUMENT_FOR_NULL(node, RMW_RET_INVALID_ARGUMENT);
     RMW_CHECK_TYPE_IDENTIFIERS_MATCH(node, node->implementation_identifier,
-                                     eprosima_microxrcedds_identifier, return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+            eprosima_microxrcedds_identifier, return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
     if (RMW_RET_OK != rmw_check_zero_rmw_string_array(node_names))
     {
         return(RMW_RET_INVALID_ARGUMENT);
@@ -69,13 +69,13 @@ rmw_get_node_names(
     // Init node name and namespaces string array
     rcutils_allocator_t allocator = rcutils_get_default_allocator();
     if (RCUTILS_RET_OK != rcutils_string_array_init(
-            node_names, graph_data->nodes.size, &allocator))
+                node_names, graph_data->nodes.size, &allocator))
     {
         ret = RMW_RET_ERROR;
         goto fini;
     }
     if (RCUTILS_RET_OK != rcutils_string_array_init(
-            node_namespaces, graph_data->nodes.size, &allocator))
+                node_namespaces, graph_data->nodes.size, &allocator))
     {
         ret = RMW_RET_ERROR;
         goto fini;
@@ -107,10 +107,10 @@ fini:
 
 rmw_ret_t
 rmw_get_node_names_with_enclaves(
-    const rmw_node_t* node,
-    rcutils_string_array_t* node_names,
-    rcutils_string_array_t* node_namespaces,
-    rcutils_string_array_t* enclaves)
+        const rmw_node_t* node,
+        rcutils_string_array_t* node_names,
+        rcutils_string_array_t* node_namespaces,
+        rcutils_string_array_t* enclaves)
 {
     (void)enclaves; // TODO(jamoralp): what is this used for?
     return(rmw_get_node_names(node, node_names, node_namespaces));

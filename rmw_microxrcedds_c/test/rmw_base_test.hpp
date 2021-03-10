@@ -21,6 +21,7 @@
 class RMWBaseTest : public ::testing::Test
 {
 protected:
+
     static void SetUpTestSuite()
     {
     }

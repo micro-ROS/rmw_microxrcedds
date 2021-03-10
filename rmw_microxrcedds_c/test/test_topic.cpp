@@ -29,6 +29,7 @@
 class TestTopic : public RMWBaseTest
 {
 protected:
+
     void SetUp() override
     {
         RMWBaseTest::SetUp();

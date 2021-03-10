@@ -22,10 +22,10 @@
 
 #ifdef HAVE_C_TYPESUPPORT
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>
-#endif
+#endif /* ifdef HAVE_C_TYPESUPPORT */
 #ifdef HAVE_CPP_TYPESUPPORT
 #include <rosidl_typesupport_microxrcedds_cpp/identifier.h>
-#endif
+#endif /* ifdef HAVE_CPP_TYPESUPPORT */
 
 #include <rmw/rmw.h>
 #include <rmw/error_handling.h>
@@ -34,9 +34,9 @@
 
 rmw_ret_t
 rmw_init_subscription_allocation(
-    const rosidl_message_type_support_t* type_support,
-    const rosidl_runtime_c__Sequence__bound* message_bounds,
-    rmw_subscription_allocation_t* allocation)
+        const rosidl_message_type_support_t* type_support,
+        const rosidl_runtime_c__Sequence__bound* message_bounds,
+        rmw_subscription_allocation_t* allocation)
 {
     (void)type_support;
     (void)message_bounds;
@@ -46,7 +46,8 @@ rmw_init_subscription_allocation(
 }
 
 rmw_ret_t
-rmw_fini_subscription_allocation(rmw_subscription_allocation_t* allocation)
+rmw_fini_subscription_allocation(
+        rmw_subscription_allocation_t* allocation)
 {
     (void)allocation;
     RMW_SET_ERROR_MSG("function not implemented");
@@ -55,11 +56,11 @@ rmw_fini_subscription_allocation(rmw_subscription_allocation_t* allocation)
 
 rmw_subscription_t*
 rmw_create_subscription(
-    const rmw_node_t* node,
-    const rosidl_message_type_support_t* type_support,
-    const char* topic_name,
-    const rmw_qos_profile_t* qos_policies,
-    const rmw_subscription_options_t* subscription_options)
+        const rmw_node_t* node,
+        const rosidl_message_type_support_t* type_support,
+        const char* topic_name,
+        const rmw_qos_profile_t* qos_policies,
+        const rmw_subscription_options_t* subscription_options)
 {
     (void)subscription_options;
 
@@ -94,7 +95,7 @@ rmw_create_subscription(
         rmw_subscription->data = NULL;
         rmw_subscription->implementation_identifier = rmw_get_implementation_identifier();
         rmw_subscription->topic_name =
-            (const char*)(rmw_allocate(sizeof(char) * (strlen(topic_name) + 1)));
+                (const char*)(rmw_allocate(sizeof(char) * (strlen(topic_name) + 1)));
         if (!rmw_subscription->topic_name)
         {
             RMW_SET_ERROR_MSG("failed to allocate memory");
@@ -116,7 +117,7 @@ rmw_create_subscription(
 
         custom_subscription->owner_node = custom_node;
         custom_subscription->subscription_gid.implementation_identifier =
-            rmw_get_implementation_identifier();
+                rmw_get_implementation_identifier();
         custom_subscription->micro_buffer_in_use = false;
         memcpy(&custom_subscription->qos, qos_policies, sizeof(rmw_qos_profile_t));
 
@@ -124,14 +125,14 @@ rmw_create_subscription(
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
         type_support_xrce = get_message_typesupport_handle(
             type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
-#endif
+#endif /* ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE */
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE
         if (NULL == type_support_xrce)
         {
             type_support_xrce = get_message_typesupport_handle(
                 type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
         }
-#endif
+#endif /* ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE */
         if (NULL == type_support_xrce)
         {
             RMW_SET_ERROR_MSG("Undefined type support");
@@ -139,7 +140,7 @@ rmw_create_subscription(
         }
 
         custom_subscription->type_support_callbacks =
-            (const message_type_support_callbacks_t*)type_support_xrce->data;
+                (const message_type_support_callbacks_t*)type_support_xrce->data;
 
         if (custom_subscription->type_support_callbacks == NULL)
         {
@@ -190,7 +191,7 @@ rmw_create_subscription(
             &custom_node->context->session,
             *custom_node->context->creation_destroy_stream, custom_subscription->subscriber_id,
             custom_node->participant_id, "", UXR_REPLACE);
-#endif
+#endif /* ifdef RMW_UXRCE_TRANSPORT_USE_XML */
 
         if (!run_xrce_session(custom_node->context, subscriber_req))
         {
@@ -205,9 +206,9 @@ rmw_create_subscription(
 
 #ifdef RMW_UXRCE_TRANSPORT_USE_XML
         if (!build_datareader_xml(
-                topic_name, custom_subscription->type_support_callbacks,
-                qos_policies, rmw_uxrce_xml_buffer,
-                sizeof(rmw_uxrce_xml_buffer)))
+                    topic_name, custom_subscription->type_support_callbacks,
+                    qos_policies, rmw_uxrce_xml_buffer,
+                    sizeof(rmw_uxrce_xml_buffer)))
         {
             RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
             goto fail;
@@ -228,7 +229,7 @@ rmw_create_subscription(
             &custom_node->context->session,
             *custom_node->context->creation_destroy_stream, custom_subscription->datareader_id,
             custom_subscription->subscriber_id, rmw_uxrce_profile_name, UXR_REPLACE);
-#endif
+#endif /* ifdef RMW_UXRCE_TRANSPORT_USE_XML */
 
         if (!run_xrce_session(custom_node->context, datareader_req))
         {
@@ -246,9 +247,9 @@ rmw_create_subscription(
         delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
 
         uxrStreamId data_request_stream_id =
-            (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
-            custom_node->context->best_effort_input :
-            custom_node->context->reliable_input;
+                (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+                custom_node->context->best_effort_input :
+                custom_node->context->reliable_input;
 
         uxr_buffer_request_data(
             &custom_node->context->session,
@@ -265,11 +266,11 @@ fail:
 
 rmw_ret_t
 rmw_subscription_count_matched_publishers(
-    const rmw_subscription_t* subscription,
-    size_t* publisher_count)
+        const rmw_subscription_t* subscription,
+        size_t* publisher_count)
 {
 #ifdef RMW_UXRCE_GRAPH
-    rmw_ret_t           ret        = RMW_RET_OK;
+    rmw_ret_t ret        = RMW_RET_OK;
     const char*         topic_name = subscription->topic_name;
     rcutils_allocator_t allocator  = rcutils_get_default_allocator();
 
@@ -277,14 +278,14 @@ rmw_subscription_count_matched_publishers(
     const rmw_node_t*         node = custom_subscription->owner_node->rmw_handle;
 
     rmw_topic_endpoint_info_array_t publishers_info =
-        rmw_get_zero_initialized_topic_endpoint_info_array();
+            rmw_get_zero_initialized_topic_endpoint_info_array();
 
     if (RMW_RET_OK != rmw_get_publishers_info_by_topic(
-            node,
-            &allocator,
-            topic_name,
-            false,
-            &publishers_info))
+                node,
+                &allocator,
+                topic_name,
+                false,
+                &publishers_info))
     {
         ret = RMW_RET_ERROR;
         goto sub_count_pub_fail;
@@ -310,8 +311,8 @@ sub_count_pub_fail:
 
 rmw_ret_t
 rmw_subscription_get_actual_qos(
-    const rmw_subscription_t* subscription,
-    rmw_qos_profile_t* qos)
+        const rmw_subscription_t* subscription,
+        rmw_qos_profile_t* qos)
 {
     (void)qos;
 
@@ -322,7 +323,9 @@ rmw_subscription_get_actual_qos(
 }
 
 rmw_ret_t
-rmw_destroy_subscription(rmw_node_t* node, rmw_subscription_t* subscription)
+rmw_destroy_subscription(
+        rmw_node_t* node,
+        rmw_subscription_t* subscription)
 {
     EPROS_PRINT_TRACE()
     rmw_ret_t result_ret = RMW_RET_OK;
@@ -364,15 +367,15 @@ rmw_destroy_subscription(rmw_node_t* node, rmw_subscription_t* subscription)
         destroy_topic(custom_subscription->topic);
 
         uint16_t delete_datareader =
-            uxr_buffer_delete_entity(
-                &custom_subscription->owner_node->context->session,
-                *custom_subscription->owner_node->context->creation_destroy_stream,
-                custom_subscription->datareader_id);
+                uxr_buffer_delete_entity(
+            &custom_subscription->owner_node->context->session,
+            *custom_subscription->owner_node->context->creation_destroy_stream,
+            custom_subscription->datareader_id);
         uint16_t delete_subscriber =
-            uxr_buffer_delete_entity(
-                &custom_subscription->owner_node->context->session,
-                *custom_subscription->owner_node->context->creation_destroy_stream,
-                custom_subscription->subscriber_id);
+                uxr_buffer_delete_entity(
+            &custom_subscription->owner_node->context->session,
+            *custom_subscription->owner_node->context->creation_destroy_stream,
+            custom_subscription->subscriber_id);
 
         bool ret = run_xrce_session(custom_node->context, delete_datareader);
         ret &= run_xrce_session(custom_node->context, delete_subscriber);

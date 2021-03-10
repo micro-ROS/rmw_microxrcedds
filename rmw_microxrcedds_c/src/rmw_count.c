@@ -29,15 +29,15 @@
 #ifdef RMW_UXRCE_GRAPH
 static rmw_ret_t
 __rmw_count_entities(
-    uint8_t kind,
-    const rmw_node_t* node,
-    const char* topic_name,
-    size_t* count)
+        uint8_t kind,
+        const rmw_node_t* node,
+        const char* topic_name,
+        size_t* count)
 {
     // Perform RMW checks
     RMW_CHECK_ARGUMENT_FOR_NULL(node, RMW_RET_INVALID_ARGUMENT);
     RMW_CHECK_TYPE_IDENTIFIERS_MATCH(node, node->implementation_identifier,
-                                     eprosima_microxrcedds_identifier, return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+            eprosima_microxrcedds_identifier, return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
     RMW_CHECK_ARGUMENT_FOR_NULL(topic_name, RMW_RET_INVALID_ARGUMENT);
     RMW_CHECK_ARGUMENT_FOR_NULL(count, RMW_RET_INVALID_ARGUMENT);
     // Set count to zero, just in case it was holding another value
@@ -88,9 +88,9 @@ fini:
 
 rmw_ret_t
 rmw_count_publishers(
-    const rmw_node_t* node,
-    const char* topic_name,
-    size_t* count)
+        const rmw_node_t* node,
+        const char* topic_name,
+        size_t* count)
 {
 #ifdef RMW_UXRCE_GRAPH
     return(__rmw_count_entities(
@@ -109,9 +109,9 @@ rmw_count_publishers(
 
 rmw_ret_t
 rmw_count_subscribers(
-    const rmw_node_t* node,
-    const char* topic_name,
-    size_t* count)
+        const rmw_node_t* node,
+        const char* topic_name,
+        size_t* count)
 {
 #ifdef RMW_UXRCE_GRAPH
     return(__rmw_count_entities(

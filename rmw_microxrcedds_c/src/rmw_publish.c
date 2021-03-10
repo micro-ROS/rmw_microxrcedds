@@ -20,16 +20,17 @@
 
 #include <rmw_uros/options.h>
 
-bool flush_session(uxrSession* session)
+bool flush_session(
+        uxrSession* session)
 {
     return(uxr_run_session_until_confirm_delivery(session, 1000));
 }
 
 rmw_ret_t
 rmw_publish(
-    const rmw_publisher_t* publisher,
-    const void* ros_message,
-    rmw_publisher_allocation_t* allocation)
+        const rmw_publisher_t* publisher,
+        const void* ros_message,
+        rmw_publisher_allocation_t* allocation)
 {
     (void)allocation;
     EPROS_PRINT_TRACE()
@@ -66,15 +67,15 @@ rmw_publish(
         }
 
         ucdrBuffer mb;
-        bool       written = false;
+        bool written = false;
         if (uxr_prepare_output_stream(
-                &custom_publisher->owner_node->context->session,
-                custom_publisher->stream_id, custom_publisher->datawriter_id, &mb,
-                topic_length) ||
-            uxr_prepare_output_stream_fragmented(
-                &custom_publisher->owner_node->context->session,
-                custom_publisher->stream_id, custom_publisher->datawriter_id, &mb,
-                topic_length, flush_session))
+                    &custom_publisher->owner_node->context->session,
+                    custom_publisher->stream_id, custom_publisher->datawriter_id, &mb,
+                    topic_length) ||
+                uxr_prepare_output_stream_fragmented(
+                    &custom_publisher->owner_node->context->session,
+                    custom_publisher->stream_id, custom_publisher->datawriter_id, &mb,
+                    topic_length, flush_session))
         {
             written = functions->cdr_serialize(ros_message, &mb);
             if (custom_publisher->cs_cb_serialization)
@@ -103,9 +104,9 @@ rmw_publish(
 
 rmw_ret_t
 rmw_publish_serialized_message(
-    const rmw_publisher_t* publisher,
-    const rmw_serialized_message_t* serialized_message,
-    rmw_publisher_allocation_t* allocation)
+        const rmw_publisher_t* publisher,
+        const rmw_serialized_message_t* serialized_message,
+        rmw_publisher_allocation_t* allocation)
 {
     (void)publisher;
     (void)serialized_message;
@@ -116,9 +117,9 @@ rmw_publish_serialized_message(
 
 rmw_ret_t
 rmw_publish_loaned_message(
-    const rmw_publisher_t* publisher,
-    void* ros_message,
-    rmw_publisher_allocation_t* allocation)
+        const rmw_publisher_t* publisher,
+        void* ros_message,
+        rmw_publisher_allocation_t* allocation)
 {
     (void)publisher;
     (void)ros_message;

@@ -60,7 +60,7 @@ TEST_F(TestNode, construction_and_destruction)
 TEST_F(TestNode, memory_poll)
 {
     std::vector <rmw_node_t*> nodes;
-    rmw_ret_t   ret;
+    rmw_ret_t ret;
     rmw_node_t* node;
 
     // Get all available nodes

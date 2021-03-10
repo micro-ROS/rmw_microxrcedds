@@ -27,8 +27,10 @@
 #include "./utils.h"
 
 rmw_node_t* create_node(
-    const char* name, const char* namespace_, size_t domain_id,
-    const rmw_context_t* context)
+        const char* name,
+        const char* namespace_,
+        size_t domain_id,
+        const rmw_context_t* context)
 {
     rmw_node_t* node_handle = NULL;
 
@@ -79,7 +81,7 @@ rmw_node_t* create_node(
     memcpy((char*)node_handle->namespace_, namespace_, strlen(namespace_) + 1);
 
     node_info->participant_id =
-        uxr_object_id(node_info->context->id_participant++, UXR_PARTICIPANT_ID);
+            uxr_object_id(node_info->context->id_participant++, UXR_PARTICIPANT_ID);
     uint16_t participant_req = UXR_INVALID_REQUEST_ID;
 
 #ifdef RMW_UXRCE_TRANSPORT_USE_XML
@@ -89,10 +91,10 @@ rmw_node_t* create_node(
         return(NULL);
     }
     participant_req =
-        uxr_buffer_create_participant_xml(
-            &node_info->context->session,
-            *node_info->context->creation_destroy_stream,
-            node_info->participant_id, (uint16_t)domain_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
+            uxr_buffer_create_participant_xml(
+        &node_info->context->session,
+        *node_info->context->creation_destroy_stream,
+        node_info->participant_id, (uint16_t)domain_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
 #elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
     if (!build_participant_profile(rmw_uxrce_profile_name, sizeof(rmw_uxrce_profile_name)))
     {
@@ -100,11 +102,11 @@ rmw_node_t* create_node(
         return(NULL);
     }
     participant_req =
-        uxr_buffer_create_participant_ref(
-            &node_info->context->session,
-            *node_info->context->creation_destroy_stream,
-            node_info->participant_id, (uint16_t)domain_id, rmw_uxrce_profile_name, UXR_REPLACE);
-#endif
+            uxr_buffer_create_participant_ref(
+        &node_info->context->session,
+        *node_info->context->creation_destroy_stream,
+        node_info->participant_id, (uint16_t)domain_id, rmw_uxrce_profile_name, UXR_REPLACE);
+#endif /* ifdef RMW_UXRCE_TRANSPORT_USE_XML */
 
     if (!run_xrce_session(node_info->context, participant_req))
     {
@@ -125,11 +127,11 @@ fail:
 
 rmw_node_t*
 rmw_create_node(
-    rmw_context_t* context,
-    const char* name,
-    const char* namespace_,
-    size_t domain_id,
-    bool localhost_only)
+        rmw_context_t* context,
+        const char* name,
+        const char* namespace_,
+        size_t domain_id,
+        bool localhost_only)
 {
     (void)context;
     (void)localhost_only;
@@ -150,7 +152,8 @@ rmw_create_node(
     return(rmw_node);
 }
 
-rmw_ret_t rmw_destroy_node(rmw_node_t* node)
+rmw_ret_t rmw_destroy_node(
+        rmw_node_t* node)
 {
     EPROS_PRINT_TRACE()
     rmw_ret_t ret = RMW_RET_OK;
@@ -237,7 +240,8 @@ rmw_ret_t rmw_destroy_node(rmw_node_t* node)
 }
 
 rmw_ret_t
-rmw_node_assert_liveliness(const rmw_node_t* node)
+rmw_node_assert_liveliness(
+        const rmw_node_t* node)
 {
     (void)node;
     RMW_SET_ERROR_MSG("function not implemented");
@@ -245,12 +249,13 @@ rmw_node_assert_liveliness(const rmw_node_t* node)
 }
 
 const rmw_guard_condition_t*
-rmw_node_get_graph_guard_condition(const rmw_node_t* node)
+rmw_node_get_graph_guard_condition(
+        const rmw_node_t* node)
 {
     rmw_uxrce_node_t*      custom_node           = (rmw_uxrce_node_t*)node->data;
     rmw_context_impl_t*    context               = custom_node->context;
     rmw_guard_condition_t* graph_guard_condition =
-        &context->graph_guard_condition;
+            &context->graph_guard_condition;
 
 #ifdef RMW_UXRCE_GRAPH
     if (NULL == graph_guard_condition->data)

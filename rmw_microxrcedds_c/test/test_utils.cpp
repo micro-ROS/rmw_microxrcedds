@@ -19,11 +19,11 @@
 #include "rosidl_typesupport_microxrcedds_c/identifier.h"
 
 void ConfigureDummyTypeSupport(
-    const char* type_name,
-    const char* topic_name,
-    const char* message_namespace,
-    size_t id,
-    dummy_type_support_t* dummy_type_support)
+        const char* type_name,
+        const char* topic_name,
+        const char* message_namespace,
+        size_t id,
+        dummy_type_support_t* dummy_type_support)
 {
     dummy_type_support->topic_name        = std::string(topic_name).append(std::to_string(id));
     dummy_type_support->type_name         = std::string(type_name).append(std::to_string(id));
@@ -33,35 +33,40 @@ void ConfigureDummyTypeSupport(
     dummy_type_support->callbacks.message_namespace_ = dummy_type_support->message_namespace.data();
 
     dummy_type_support->callbacks.cdr_serialize =
-        [](const void* untyped_ros_message, ucdrBuffer* cdr) {
-            return(true);
-        };
+            [](const void* untyped_ros_message, ucdrBuffer* cdr)
+            {
+                return(true);
+            };
     dummy_type_support->callbacks.cdr_deserialize =
-        [](ucdrBuffer* cdr, void* untyped_ros_message) {
-            return(true);
-        };
-    dummy_type_support->callbacks.get_serialized_size = [](const void*) {
-                                                            return(uint32_t(0u));
-                                                        };
-    dummy_type_support->callbacks.max_serialized_size = []() {
-                                                            return(size_t(0u));
-                                                        };
+            [](ucdrBuffer* cdr, void* untyped_ros_message)
+            {
+                return(true);
+            };
+    dummy_type_support->callbacks.get_serialized_size = [](const void*)
+            {
+                return(uint32_t(0u));
+            };
+    dummy_type_support->callbacks.max_serialized_size = []()
+            {
+                return(size_t(0u));
+            };
 
     dummy_type_support->type_support.typesupport_identifier =
-        ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE;
+            ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE;
     dummy_type_support->type_support.data = &dummy_type_support->callbacks;
     dummy_type_support->type_support.func =
-        [](const rosidl_message_type_support_t* type_support, const char* id) {
-            return(type_support);
-        };
+            [](const rosidl_message_type_support_t* type_support, const char* id)
+            {
+                return(type_support);
+            };
 }
 
 void ConfigureDummyServiceTypeSupport(
-    const char* type_name,
-    const char* service_name,
-    const char* message_namespace,
-    size_t id,
-    dummy_service_type_support_t* dummy_type_support)
+        const char* type_name,
+        const char* service_name,
+        const char* message_namespace,
+        size_t id,
+        dummy_service_type_support_t* dummy_type_support)
 {
     dummy_type_support->service_name      = std::string(service_name).append(std::to_string(id));
     dummy_type_support->type_name         = std::string(type_name).append(std::to_string(id));
@@ -84,40 +89,44 @@ void ConfigureDummyServiceTypeSupport(
         1,
         &dummy_type_support->response_members);
 
-    dummy_type_support->callbacks.response_members_ = []() -> const rosidl_message_type_support_t* {
-                                                          dummy_type_support_t* aux = new dummy_type_support_t();
+    dummy_type_support->callbacks.response_members_ = []() -> const rosidl_message_type_support_t*
+            {
+                dummy_type_support_t* aux = new dummy_type_support_t();
 
-                                                          ConfigureDummyTypeSupport(
-                                                              "type_name",
-                                                              "service_name",
-                                                              "message_namespace",
-                                                              0,
-                                                              aux);
-                                                          return(&aux->type_support);
-                                                      };
+                ConfigureDummyTypeSupport(
+                    "type_name",
+                    "service_name",
+                    "message_namespace",
+                    0,
+                    aux);
+                return(&aux->type_support);
+            };
 
-    dummy_type_support->callbacks.request_members_ = []() -> const rosidl_message_type_support_t* {
-                                                         dummy_type_support_t* aux = new dummy_type_support_t();
+    dummy_type_support->callbacks.request_members_ = []() -> const rosidl_message_type_support_t*
+            {
+                dummy_type_support_t* aux = new dummy_type_support_t();
 
-                                                         ConfigureDummyTypeSupport(
-                                                             "type_name",
-                                                             "service_name",
-                                                             "message_namespace",
-                                                             0,
-                                                             aux);
-                                                         return(&aux->type_support);
-                                                     };
+                ConfigureDummyTypeSupport(
+                    "type_name",
+                    "service_name",
+                    "message_namespace",
+                    0,
+                    aux);
+                return(&aux->type_support);
+            };
 
     dummy_type_support->type_support.typesupport_identifier =
-        ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE;
+            ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE;
     dummy_type_support->type_support.data = &dummy_type_support->callbacks;
     dummy_type_support->type_support.func =
-        [](const rosidl_service_type_support_t* type_support, const char* id) {
-            return(type_support);
-        };
+            [](const rosidl_service_type_support_t* type_support, const char* id)
+            {
+                return(type_support);
+            };
 }
 
-void ConfigureDefaultQOSPolices(rmw_qos_profile_t* dummy_qos_policies)
+void ConfigureDefaultQOSPolices(
+        rmw_qos_profile_t* dummy_qos_policies)
 {
     dummy_qos_policies->avoid_ros_namespace_conventions = false;
     dummy_qos_policies->depth = 0;

@@ -16,10 +16,10 @@
 
 #ifdef HAVE_C_TYPESUPPORT
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>
-#endif
+#endif /* ifdef HAVE_C_TYPESUPPORT */
 #ifdef HAVE_CPP_TYPESUPPORT
 #include <rosidl_typesupport_microxrcedds_cpp/identifier.h>
-#endif
+#endif /* ifdef HAVE_CPP_TYPESUPPORT */
 
 #include <rmw/rmw.h>
 #include <rmw/allocators.h>
@@ -29,10 +29,10 @@
 
 rmw_service_t*
 rmw_create_service(
-    const rmw_node_t* node,
-    const rosidl_service_type_support_t* type_support,
-    const char* service_name,
-    const rmw_qos_profile_t* qos_policies)
+        const rmw_node_t* node,
+        const rosidl_service_type_support_t* type_support,
+        const char* service_name,
+        const rmw_qos_profile_t* qos_policies)
 {
     EPROS_PRINT_TRACE()
     rmw_service_t* rmw_service = NULL;
@@ -64,7 +64,7 @@ rmw_create_service(
         rmw_service->implementation_identifier = rmw_get_implementation_identifier();
 
         rmw_service->service_name =
-            (const char*)(rmw_allocate(sizeof(char) * (strlen(service_name) + 1)));
+                (const char*)(rmw_allocate(sizeof(char) * (strlen(service_name) + 1)));
         if (!rmw_service->service_name)
         {
             RMW_SET_ERROR_MSG("failed to allocate memory");
@@ -85,7 +85,7 @@ rmw_create_service(
 
         custom_service->owner_node = custom_node;
         custom_service->service_gid.implementation_identifier =
-            rmw_get_implementation_identifier();
+                rmw_get_implementation_identifier();
         custom_service->history_write_index = 0;
         custom_service->history_read_index  = 0;
 
@@ -93,14 +93,14 @@ rmw_create_service(
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
         type_support_xrce = get_service_typesupport_handle(
             type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
-#endif
+#endif /* ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE */
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE
         if (NULL == type_support_xrce)
         {
             type_support_xrce = get_service_typesupport_handle(
                 type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
         }
-#endif
+#endif /* ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE */
         if (NULL == type_support_xrce)
         {
             RMW_SET_ERROR_MSG("Undefined type support");
@@ -108,7 +108,7 @@ rmw_create_service(
         }
 
         custom_service->type_support_callbacks =
-            (const service_type_support_callbacks_t*)type_support_xrce->data;
+                (const service_type_support_callbacks_t*)type_support_xrce->data;
 
         if (custom_service->type_support_callbacks == NULL)
         {
@@ -134,8 +134,9 @@ rmw_create_service(
         char service_name_id[20];
         generate_name(&custom_service->service_id, service_name_id, sizeof(service_name_id));
         if (!build_service_xml(
-                service_name_id, service_name, false,
-                custom_service->type_support_callbacks, qos_policies, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
+                    service_name_id, service_name, false,
+                    custom_service->type_support_callbacks, qos_policies, rmw_uxrce_xml_buffer,
+                    sizeof(rmw_uxrce_xml_buffer)))
         {
             RMW_SET_ERROR_MSG("failed to generate xml request for service creation");
             goto fail;
@@ -149,7 +150,7 @@ rmw_create_service(
         // service_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
         //     *custom_node->context->creation_destroy_stream, custom_service->subscriber_id,
         //     custom_node->participant_id, "", UXR_REPLACE);
-#endif
+#endif /* ifdef RMW_UXRCE_TRANSPORT_USE_XML */
 
         rmw_service->data = custom_service;
 
@@ -167,14 +168,14 @@ rmw_create_service(
         delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
 
         custom_service->stream_id =
-            (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
-            custom_node->context->best_effort_output :
-            custom_node->context->reliable_output;
+                (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+                custom_node->context->best_effort_output :
+                custom_node->context->reliable_output;
 
         uxrStreamId data_request_stream_id =
-            (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
-            custom_node->context->best_effort_input :
-            custom_node->context->reliable_input;
+                (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+                custom_node->context->best_effort_input :
+                custom_node->context->reliable_input;
 
         custom_service->service_data_resquest = uxr_buffer_request_data(
             &custom_node->context->session,
@@ -191,8 +192,8 @@ fail:
 
 rmw_ret_t
 rmw_destroy_service(
-    rmw_node_t* node,
-    rmw_service_t* service)
+        rmw_node_t* node,
+        rmw_service_t* service)
 {
     EPROS_PRINT_TRACE()
     rmw_ret_t result_ret = RMW_RET_OK;
@@ -230,11 +231,11 @@ rmw_destroy_service(
     {
         rmw_uxrce_node_t*    custom_node    = (rmw_uxrce_node_t*)node->data;
         rmw_uxrce_service_t* custom_service = (rmw_uxrce_service_t*)service->data;
-        uint16_t             delete_service =
-            uxr_buffer_delete_entity(
-                &custom_node->context->session,
-                *custom_node->context->creation_destroy_stream,
-                custom_service->service_id);
+        uint16_t delete_service =
+                uxr_buffer_delete_entity(
+            &custom_node->context->session,
+            *custom_node->context->creation_destroy_stream,
+            custom_service->service_id);
 
         if (!run_xrce_session(custom_node->context, delete_service))
         {

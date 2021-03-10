@@ -18,9 +18,9 @@
 #include "./rmw_uros/options.h"
 
 rmw_ret_t rmw_uxrce_transport_init(
-    rmw_context_impl_t* context_impl,
-    rmw_init_options_impl_t* init_options_impl,
-    void* transport)
+        rmw_context_impl_t* context_impl,
+        rmw_init_options_impl_t* init_options_impl,
+        void* transport)
 {
 #ifdef RMW_UXRCE_TRANSPORT_SERIAL
     const char* serial_device = (NULL == context_impl)
@@ -98,13 +98,13 @@ rmw_ret_t rmw_uxrce_transport_init(
         return(RMW_RET_ERROR);
     }
     printf("micro-ROS transport: connected using serial mode, dev: '%s'\n",
-           serial_device);
+            serial_device);
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
 #ifdef RMW_UXRCE_TRANSPORT_IPV4
     uxrIpProtocol ip_protocol = UXR_IPv4;
 #elif defined(RMW_UXRCE_TRANSPORT_IPV6)
     uxrIpProtocol ip_protocol = UXR_IPv6;
-#endif
+#endif /* ifdef RMW_UXRCE_TRANSPORT_IPV4 */
 
     uxrUDPTransport* udp_transport = (NULL == context_impl)
                                      ? (uxrUDPTransport*)transport
@@ -122,7 +122,7 @@ rmw_ret_t rmw_uxrce_transport_init(
         return(RMW_RET_ERROR);
     }
     printf("micro-ROS transport: connected using UDP mode, ip: '%s', port: '%s'\n",
-           agent_ip, agent_port);
+            agent_ip, agent_port);
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
     uxrCustomTransport* custom_transport = (NULL == context_impl)
                                            ? (uxrCustomTransport*)transport
@@ -136,6 +136,6 @@ rmw_ret_t rmw_uxrce_transport_init(
         RMW_SET_ERROR_MSG("rmw_transport_init CUSTOM: cannot init XRCE transport");
         return(RMW_RET_ERROR);
     }
-#endif
+#endif /* ifdef RMW_UXRCE_TRANSPORT_SERIAL */
     return(RMW_RET_OK);
 }

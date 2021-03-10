@@ -16,9 +16,9 @@
 #include <rmw/error_handling.h>
 
 rmw_ret_t rmw_service_server_is_available(
-    const rmw_node_t* node,
-    const rmw_client_t* client,
-    bool* is_available)
+        const rmw_node_t* node,
+        const rmw_client_t* client,
+        bool* is_available)
 {
     (void)node;
     (void)client;

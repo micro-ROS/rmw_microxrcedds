@@ -19,9 +19,9 @@
 
 rmw_ret_t
 rmw_send_response(
-    const rmw_service_t* service,
-    rmw_request_id_t* request_header,
-    void* ros_response)
+        const rmw_service_t* service,
+        rmw_request_id_t* request_header,
+        void* ros_response)
 {
     EPROS_PRINT_TRACE();
 
@@ -47,13 +47,13 @@ rmw_send_response(
         sizeof(sample_id.writer_guid.guidPrefix.data));
 
     const rosidl_message_type_support_t* res_members =
-        custom_service->type_support_callbacks->response_members_();
+            custom_service->type_support_callbacks->response_members_();
     const message_type_support_callbacks_t* functions =
-        (const message_type_support_callbacks_t*)res_members->data;
+            (const message_type_support_callbacks_t*)res_members->data;
 
     ucdrBuffer mb;
-    uint32_t   response_length = functions->get_serialized_size(ros_response) + 24; // Adding sample indentity size
-    uint16_t   rc = uxr_prepare_output_stream(
+    uint32_t response_length = functions->get_serialized_size(ros_response) + 24;   // Adding sample indentity size
+    uint16_t rc = uxr_prepare_output_stream(
         &custom_node->context->session,
         custom_service->stream_id, custom_service->service_id, &mb,
         response_length);
@@ -72,10 +72,10 @@ rmw_send_response(
 
 rmw_ret_t
 rmw_take_response(
-    const rmw_client_t* client,
-    rmw_service_info_t* request_header,
-    void* ros_response,
-    bool* taken)
+        const rmw_client_t* client,
+        rmw_service_info_t* request_header,
+        void* ros_response,
+        bool* taken)
 {
     EPROS_PRINT_TRACE();
 
@@ -98,12 +98,12 @@ rmw_take_response(
     }
 
     request_header->request_id.sequence_number =
-        custom_client->reply_id[custom_client->history_read_index];
+            custom_client->reply_id[custom_client->history_read_index];
 
     const rosidl_message_type_support_t* res_members =
-        custom_client->type_support_callbacks->response_members_();
+            custom_client->type_support_callbacks->response_members_();
     const message_type_support_callbacks_t* functions =
-        (const message_type_support_callbacks_t*)res_members->data;
+            (const message_type_support_callbacks_t*)res_members->data;
 
 
     ucdrBuffer temp_buffer;
@@ -116,7 +116,7 @@ rmw_take_response(
         ros_response);
 
     custom_client->history_read_index = (custom_client->history_read_index + 1) %
-                                        RMW_UXRCE_MAX_HISTORY;
+            RMW_UXRCE_MAX_HISTORY;
     if (custom_client->history_write_index == custom_client->history_read_index)
     {
         custom_client->micro_buffer_in_use = false;

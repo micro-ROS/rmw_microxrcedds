@@ -15,11 +15,11 @@
 #include "./callbacks.h"
 
 void on_status(
-    struct uxrSession* session,
-    uxrObjectId object_id,
-    uint16_t request_id,
-    uint8_t status,
-    void* args)
+        struct uxrSession* session,
+        uxrObjectId object_id,
+        uint16_t request_id,
+        uint8_t status,
+        void* args)
 {
     (void)session;
     (void)object_id;
@@ -29,13 +29,13 @@ void on_status(
 }
 
 void on_topic(
-    struct uxrSession* session,
-    uxrObjectId object_id,
-    uint16_t request_id,
-    uxrStreamId stream_id,
-    struct ucdrBuffer* ub,
-    uint16_t length,
-    void* args)
+        struct uxrSession* session,
+        uxrObjectId object_id,
+        uint16_t request_id,
+        uxrStreamId stream_id,
+        struct ucdrBuffer* ub,
+        uint16_t length,
+        void* args)
 {
     (void)session;
     (void)request_id;
@@ -46,7 +46,7 @@ void on_topic(
     rmw_graph_info_t*   graph_info   = &context_impl->graph_info;
 
     if (object_id.id == graph_info->datareader_id.id &&
-        object_id.type == graph_info->datareader_id.type)
+            object_id.type == graph_info->datareader_id.type)
     {
         graph_info->micro_buffer_length = (size_t)length;
         ucdr_deserialize_array_uint8_t(ub, graph_info->micro_buffer, length);
@@ -62,9 +62,9 @@ void on_topic(
     while (subscription_item != NULL)
     {
         rmw_uxrce_subscription_t* custom_subscription =
-            (rmw_uxrce_subscription_t*)subscription_item->data;
+                (rmw_uxrce_subscription_t*)subscription_item->data;
         if ((custom_subscription->datareader_id.id == object_id.id) &&
-            (custom_subscription->datareader_id.type == object_id.type))
+                (custom_subscription->datareader_id.type == object_id.type))
         {
             custom_subscription->micro_buffer_lenght[custom_subscription->history_write_index] = length;
             ucdr_deserialize_array_uint8_t(
@@ -73,14 +73,14 @@ void on_topic(
 
             // TODO(pablogs9): Circular overlapping buffer implemented: use qos
             if (custom_subscription->micro_buffer_in_use &&
-                custom_subscription->history_write_index == custom_subscription->history_read_index)
+                    custom_subscription->history_write_index == custom_subscription->history_read_index)
             {
                 custom_subscription->history_read_index = (custom_subscription->history_read_index + 1) %
-                                                          RMW_UXRCE_MAX_HISTORY;
+                        RMW_UXRCE_MAX_HISTORY;
             }
 
             custom_subscription->history_write_index = (custom_subscription->history_write_index + 1) %
-                                                       RMW_UXRCE_MAX_HISTORY;
+                    RMW_UXRCE_MAX_HISTORY;
             custom_subscription->micro_buffer_in_use = true;
 
             break;
@@ -90,13 +90,13 @@ void on_topic(
 }
 
 void on_request(
-    struct uxrSession* session,
-    uxrObjectId object_id,
-    uint16_t request_id,
-    SampleIdentity* sample_id,
-    struct ucdrBuffer* ub,
-    uint16_t length,
-    void* args)
+        struct uxrSession* session,
+        uxrObjectId object_id,
+        uint16_t request_id,
+        SampleIdentity* sample_id,
+        struct ucdrBuffer* ub,
+        uint16_t length,
+        void* args)
 {
     (void)session;
     (void)object_id;
@@ -118,14 +118,14 @@ void on_request(
 
             // TODO(pablogs9): Circular overlapping buffer implemented: use qos
             if (custom_service->micro_buffer_in_use &&
-                custom_service->history_write_index == custom_service->history_read_index)
+                    custom_service->history_write_index == custom_service->history_read_index)
             {
                 custom_service->history_read_index = (custom_service->history_read_index + 1) %
-                                                     RMW_UXRCE_MAX_HISTORY;
+                        RMW_UXRCE_MAX_HISTORY;
             }
 
             custom_service->history_write_index = (custom_service->history_write_index + 1) %
-                                                  RMW_UXRCE_MAX_HISTORY;
+                    RMW_UXRCE_MAX_HISTORY;
             custom_service->micro_buffer_in_use = true;
 
             break;
@@ -135,13 +135,13 @@ void on_request(
 }
 
 void on_reply(
-    struct uxrSession* session,
-    uxrObjectId object_id,
-    uint16_t request_id,
-    uint16_t reply_id,
-    struct ucdrBuffer* ub,
-    uint16_t length,
-    void* args)
+        struct uxrSession* session,
+        uxrObjectId object_id,
+        uint16_t request_id,
+        uint16_t reply_id,
+        struct ucdrBuffer* ub,
+        uint16_t length,
+        void* args)
 {
     (void)session;
     (void)object_id;
@@ -161,14 +161,14 @@ void on_reply(
 
             // TODO(pablogs9): Circular overlapping buffer implemented: use qos
             if (custom_client->micro_buffer_in_use &&
-                custom_client->history_write_index == custom_client->history_read_index)
+                    custom_client->history_write_index == custom_client->history_read_index)
             {
                 custom_client->history_read_index = (custom_client->history_read_index + 1) %
-                                                    RMW_UXRCE_MAX_HISTORY;
+                        RMW_UXRCE_MAX_HISTORY;
             }
 
             custom_client->history_write_index = (custom_client->history_write_index + 1) %
-                                                 RMW_UXRCE_MAX_HISTORY;
+                    RMW_UXRCE_MAX_HISTORY;
             custom_client->micro_buffer_in_use = true;
 
             break;

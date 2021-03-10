@@ -34,6 +34,7 @@
 class TestPubSub : public RMWBaseTest
 {
 protected:
+
     size_t id_gen = 0;
 
     const char* topic_type        = "topic_type";
@@ -56,37 +57,41 @@ TEST_F(TestPubSub, publish_and_receive)
         &dummy_type_support);
 
     dummy_type_support.callbacks.cdr_serialize =
-        [](const void* untyped_ros_message, ucdrBuffer* cdr) -> bool {
-            bool ret;
-            const rosidl_runtime_c__String* ros_message =
-                reinterpret_cast <const rosidl_runtime_c__String*>(untyped_ros_message);
-
-            ret = ucdr_serialize_string(cdr, ros_message->data);
-            return(ret);
-        };
-    dummy_type_support.callbacks.cdr_deserialize =
-        [](ucdrBuffer* cdr, void* untyped_ros_message) -> bool {
-            bool ret;
-            rosidl_runtime_c__String* ros_message =
-                reinterpret_cast <rosidl_runtime_c__String*>(untyped_ros_message);
-
-            ret = ucdr_deserialize_string(cdr, ros_message->data, ros_message->capacity);
-            if (ret)
+            [](const void* untyped_ros_message, ucdrBuffer* cdr) -> bool
             {
-                ros_message->size = strlen(ros_message->data);
-            }
-            return(ret);
-        };
-    dummy_type_support.callbacks.get_serialized_size =
-        [](const void* untyped_ros_message) -> uint32_t {
-            const rosidl_runtime_c__String* ros_message =
-                reinterpret_cast <const rosidl_runtime_c__String*>(untyped_ros_message);
+                bool ret;
+                const rosidl_runtime_c__String* ros_message =
+                        reinterpret_cast <const rosidl_runtime_c__String*>(untyped_ros_message);
 
-            return(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + ros_message->size + 8);
-        };
-    dummy_type_support.callbacks.max_serialized_size = []() -> size_t {
-                                                           return((size_t)(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + 1));
-                                                       };
+                ret = ucdr_serialize_string(cdr, ros_message->data);
+                return(ret);
+            };
+    dummy_type_support.callbacks.cdr_deserialize =
+            [](ucdrBuffer* cdr, void* untyped_ros_message) -> bool
+            {
+                bool ret;
+                rosidl_runtime_c__String* ros_message =
+                        reinterpret_cast <rosidl_runtime_c__String*>(untyped_ros_message);
+
+                ret = ucdr_deserialize_string(cdr, ros_message->data, ros_message->capacity);
+                if (ret)
+                {
+                    ros_message->size = strlen(ros_message->data);
+                }
+                return(ret);
+            };
+    dummy_type_support.callbacks.get_serialized_size =
+            [](const void* untyped_ros_message) -> uint32_t
+            {
+                const rosidl_runtime_c__String* ros_message =
+                        reinterpret_cast <const rosidl_runtime_c__String*>(untyped_ros_message);
+
+                return(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + ros_message->size + 8);
+            };
+    dummy_type_support.callbacks.max_serialized_size = []() -> size_t
+            {
+                return((size_t)(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + 1));
+            };
 
     rmw_qos_profile_t dummy_qos_policies;
     ConfigureDefaultQOSPolices(&dummy_qos_policies);
@@ -137,7 +142,7 @@ TEST_F(TestPubSub, publish_and_receive)
 
     rmw_events_t*   events   = NULL;
     rmw_wait_set_t* wait_set = NULL;
-    rmw_time_t      wait_timeout;
+    rmw_time_t wait_timeout;
 
     wait_timeout.sec  = 1;
     wait_timeout.nsec = 1;

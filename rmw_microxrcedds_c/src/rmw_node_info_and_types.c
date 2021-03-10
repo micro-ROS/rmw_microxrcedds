@@ -29,21 +29,21 @@
 #ifdef RMW_UXRCE_GRAPH
 static rmw_ret_t
 __rmw_get_entity_names_and_types_by_node(
-    const uint8_t kind,
-    const rmw_node_t* node,
-    rcutils_allocator_t* allocator,
-    const char* node_name,
-    const char* node_namespace,
-    bool demangle,
-    rmw_names_and_types_t* topic_names_and_types)
+        const uint8_t kind,
+        const rmw_node_t* node,
+        rcutils_allocator_t* allocator,
+        const char* node_name,
+        const char* node_namespace,
+        bool demangle,
+        rmw_names_and_types_t* topic_names_and_types)
 {
     (void)demangle; // TODO(jamoralp): what to use this for?
 
     RMW_CHECK_ARGUMENT_FOR_NULL(node, RMW_RET_INVALID_ARGUMENT);
     RMW_CHECK_TYPE_IDENTIFIERS_MATCH(node, node->implementation_identifier,
-                                     eprosima_microxrcedds_identifier, return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+            eprosima_microxrcedds_identifier, return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
     RCUTILS_CHECK_ALLOCATOR_WITH_MSG(allocator, "Allocator argument is invalid",
-                                     return RMW_RET_INVALID_ARGUMENT);
+            return RMW_RET_INVALID_ARGUMENT);
 
     if (RMW_RET_OK != rmw_names_and_types_check_zero(topic_names_and_types))
     {
@@ -73,7 +73,7 @@ __rmw_get_entity_names_and_types_by_node(
     {
         micro_ros_msgs__msg__Node* node = &graph_data->nodes.data[i];
         if (0 == strcmp(node_name, node->node_name.data) &&
-            0 == strcmp(node_namespace, node->node_namespace.data))
+                0 == strcmp(node_namespace, node->node_namespace.data))
         {
             // This is the node we are looking for; get publishers names and types.
             size_t entities_size = node->entities.size;
@@ -88,7 +88,7 @@ __rmw_get_entity_names_and_types_by_node(
                     {
                         // First data introduced: init array
                         if (RCUTILS_RET_OK != rcutils_string_array_init(
-                                &topic_names_and_types->names, 1, allocator))
+                                    &topic_names_and_types->names, 1, allocator))
                         {
                             ret = RMW_RET_ERROR;
                             goto fini;
@@ -98,7 +98,7 @@ __rmw_get_entity_names_and_types_by_node(
                     {
                         // Subsequent data: resize
                         if (RCUTILS_RET_OK != rcutils_string_array_resize(
-                                &topic_names_and_types->names, topic_names_and_types->names.size + 1))
+                                    &topic_names_and_types->names, topic_names_and_types->names.size + 1))
                         {
                             ret = RMW_RET_ERROR;
                             goto fini;
@@ -129,8 +129,8 @@ __rmw_get_entity_names_and_types_by_node(
 
                     size_t types_size = entity->types.size;
                     if (RCUTILS_RET_OK != rcutils_string_array_init(
-                            &topic_names_and_types->types[current_position],
-                            types_size, allocator))
+                                &topic_names_and_types->types[current_position],
+                                types_size, allocator))
                     {
                         ret = RMW_RET_ERROR;
                         goto fini;
@@ -160,12 +160,12 @@ fini:
 
 rmw_ret_t
 rmw_get_publisher_names_and_types_by_node(
-    const rmw_node_t* node,
-    rcutils_allocator_t* allocator,
-    const char* node_name,
-    const char* node_namespace,
-    bool demangle,
-    rmw_names_and_types_t* topic_names_and_types)
+        const rmw_node_t* node,
+        rcutils_allocator_t* allocator,
+        const char* node_name,
+        const char* node_namespace,
+        bool demangle,
+        rmw_names_and_types_t* topic_names_and_types)
 {
 #ifdef RMW_UXRCE_GRAPH
     return(__rmw_get_entity_names_and_types_by_node(
@@ -190,12 +190,12 @@ rmw_get_publisher_names_and_types_by_node(
 
 rmw_ret_t
 rmw_get_subscriber_names_and_types_by_node(
-    const rmw_node_t* node,
-    rcutils_allocator_t* allocator,
-    const char* node_name,
-    const char* node_namespace,
-    bool demangle,
-    rmw_names_and_types_t* topic_names_and_types)
+        const rmw_node_t* node,
+        rcutils_allocator_t* allocator,
+        const char* node_name,
+        const char* node_namespace,
+        bool demangle,
+        rmw_names_and_types_t* topic_names_and_types)
 {
 #ifdef RMW_UXRCE_GRAPH
     return(__rmw_get_entity_names_and_types_by_node(
@@ -220,11 +220,11 @@ rmw_get_subscriber_names_and_types_by_node(
 
 rmw_ret_t
 rmw_get_service_names_and_types_by_node(
-    const rmw_node_t* node,
-    rcutils_allocator_t* allocator,
-    const char* node_name,
-    const char* node_namespace,
-    rmw_names_and_types_t* service_names_and_types)
+        const rmw_node_t* node,
+        rcutils_allocator_t* allocator,
+        const char* node_name,
+        const char* node_namespace,
+        rmw_names_and_types_t* service_names_and_types)
 {
 #ifdef RMW_UXRCE_GRAPH
     return(__rmw_get_entity_names_and_types_by_node(
@@ -248,11 +248,11 @@ rmw_get_service_names_and_types_by_node(
 
 rmw_ret_t
 rmw_get_client_names_and_types_by_node(
-    const rmw_node_t* node,
-    rcutils_allocator_t* allocator,
-    const char* node_name,
-    const char* node_namespace,
-    rmw_names_and_types_t* service_names_and_types)
+        const rmw_node_t* node,
+        rcutils_allocator_t* allocator,
+        const char* node_name,
+        const char* node_namespace,
+        rmw_names_and_types_t* service_names_and_types)
 {
 #ifdef RMW_UXRCE_GRAPH
     return(__rmw_get_entity_names_and_types_by_node(

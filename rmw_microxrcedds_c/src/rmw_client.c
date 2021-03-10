@@ -16,10 +16,10 @@
 
 #ifdef HAVE_C_TYPESUPPORT
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>
-#endif
+#endif /* ifdef HAVE_C_TYPESUPPORT */
 #ifdef HAVE_CPP_TYPESUPPORT
 #include <rosidl_typesupport_microxrcedds_cpp/identifier.h>
-#endif
+#endif /* ifdef HAVE_CPP_TYPESUPPORT */
 
 #include <rmw/rmw.h>
 #include <rmw/allocators.h>
@@ -29,10 +29,10 @@
 
 rmw_client_t*
 rmw_create_client(
-    const rmw_node_t* node,
-    const rosidl_service_type_support_t* type_support,
-    const char* service_name,
-    const rmw_qos_profile_t* qos_policies)
+        const rmw_node_t* node,
+        const rosidl_service_type_support_t* type_support,
+        const char* service_name,
+        const rmw_qos_profile_t* qos_policies)
 {
     EPROS_PRINT_TRACE()
     rmw_client_t* rmw_client = NULL;
@@ -64,8 +64,8 @@ rmw_create_client(
         rmw_client->implementation_identifier = rmw_get_implementation_identifier();
 
         rmw_client->service_name = (const char*)(rmw_allocate(
-                                                     sizeof(char) * (strlen(
-                                                                         service_name) + 1)));
+                    sizeof(char) * (strlen(
+                        service_name) + 1)));
         if (!rmw_client->service_name)
         {
             RMW_SET_ERROR_MSG("failed to allocate memory");
@@ -86,7 +86,7 @@ rmw_create_client(
 
         custom_client->owner_node = custom_node;
         custom_client->client_gid.implementation_identifier =
-            rmw_get_implementation_identifier();
+                rmw_get_implementation_identifier();
         custom_client->history_write_index = 0;
         custom_client->history_read_index  = 0;
 
@@ -94,14 +94,14 @@ rmw_create_client(
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
         type_support_xrce = get_service_typesupport_handle(
             type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
-#endif
+#endif /* ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE */
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE
         if (NULL == type_support_xrce)
         {
             type_support_xrce = get_service_typesupport_handle(
                 type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
         }
-#endif
+#endif /* ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE */
         if (NULL == type_support_xrce)
         {
             RMW_SET_ERROR_MSG("Undefined type support");
@@ -109,7 +109,7 @@ rmw_create_client(
         }
 
         custom_client->type_support_callbacks =
-            (const service_type_support_callbacks_t*)type_support_xrce->data;
+                (const service_type_support_callbacks_t*)type_support_xrce->data;
 
         if (custom_client->type_support_callbacks == NULL)
         {
@@ -124,7 +124,7 @@ rmw_create_client(
 
 
         custom_client->client_id =
-            uxr_object_id(custom_node->context->id_requester++, UXR_REQUESTER_ID);
+                uxr_object_id(custom_node->context->id_requester++, UXR_REQUESTER_ID);
 
         memset(custom_client->client_gid.data, 0, RMW_GID_STORAGE_SIZE);
         memcpy(
@@ -137,8 +137,9 @@ rmw_create_client(
         char service_name_id[20];
         generate_name(&custom_client->client_id, service_name_id, sizeof(service_name_id));
         if (!build_service_xml(
-                service_name_id, service_name, true,
-                custom_client->type_support_callbacks, qos_policies, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
+                    service_name_id, service_name, true,
+                    custom_client->type_support_callbacks, qos_policies, rmw_uxrce_xml_buffer,
+                    sizeof(rmw_uxrce_xml_buffer)))
         {
             RMW_SET_ERROR_MSG("failed to generate xml request for client creation");
             goto fail;
@@ -153,7 +154,7 @@ rmw_create_client(
         // client_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
         //     *custom_node->context->creation_destroy_stream, custom_service->subscriber_id,
         //     custom_node->participant_id, "", UXR_REPLACE);
-#endif
+#endif /* ifdef RMW_UXRCE_TRANSPORT_USE_XML */
 
         rmw_client->data = custom_client;
 
@@ -170,14 +171,14 @@ rmw_create_client(
         delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
 
         custom_client->stream_id =
-            (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
-            custom_node->context->best_effort_output :
-            custom_node->context->reliable_output;
+                (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+                custom_node->context->best_effort_output :
+                custom_node->context->reliable_output;
 
         uxrStreamId data_request_stream_id =
-            (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
-            custom_node->context->best_effort_input :
-            custom_node->context->reliable_input;
+                (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+                custom_node->context->best_effort_input :
+                custom_node->context->reliable_input;
 
         custom_client->client_data_request = uxr_buffer_request_data(
             &custom_node->context->session,
@@ -194,8 +195,8 @@ fail:
 
 rmw_ret_t
 rmw_destroy_client(
-    rmw_node_t* node,
-    rmw_client_t* client)
+        rmw_node_t* node,
+        rmw_client_t* client)
 {
     EPROS_PRINT_TRACE()
     rmw_ret_t result_ret = RMW_RET_OK;
@@ -233,11 +234,11 @@ rmw_destroy_client(
     {
         rmw_uxrce_node_t*   custom_node   = (rmw_uxrce_node_t*)node->data;
         rmw_uxrce_client_t* custom_client = (rmw_uxrce_client_t*)client->data;
-        uint16_t            delete_client =
-            uxr_buffer_delete_entity(
-                &custom_node->context->session,
-                *custom_node->context->creation_destroy_stream,
-                custom_client->client_id);
+        uint16_t delete_client =
+                uxr_buffer_delete_entity(
+            &custom_node->context->session,
+            *custom_node->context->creation_destroy_stream,
+            custom_client->client_id);
 
         if (!run_xrce_session(custom_node->context, delete_client))
         {

@@ -33,6 +33,7 @@
 class TestPublisher : public RMWBaseTest
 {
 protected:
+
     void SetUp() override
     {
         RMWBaseTest::SetUp();
@@ -100,7 +101,7 @@ TEST_F(TestPublisher, memory_poll_multiple_topic)
 
     std::vector <dummy_type_support_t> dummy_type_supports;
     std::vector <rmw_publisher_t*>     publishers;
-    rmw_ret_t        ret;
+    rmw_ret_t ret;
     rmw_publisher_t* publisher;
 
     rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
@@ -209,7 +210,7 @@ TEST_F(TestPublisher, memory_poll_shared_topic)
     ConfigureDefaultQOSPolices(&dummy_qos_policies);
 
     std::vector <rmw_publisher_t*> publishers;
-    rmw_ret_t        ret;
+    rmw_ret_t ret;
     rmw_publisher_t* publisher;
 
     rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
@@ -295,18 +296,20 @@ TEST_F(TestPublisher, continous_fragment_mode)
         &dummy_type_support);
 
     dummy_type_support.callbacks.cdr_serialize =
-        [](const void* untyped_ros_message, ucdrBuffer* cdr) -> bool {
-            bool ret;
-            const rosidl_runtime_c__String* ros_message =
-                reinterpret_cast <const rosidl_runtime_c__String*>(untyped_ros_message);
+            [](const void* untyped_ros_message, ucdrBuffer* cdr) -> bool
+            {
+                bool ret;
+                const rosidl_runtime_c__String* ros_message =
+                        reinterpret_cast <const rosidl_runtime_c__String*>(untyped_ros_message);
 
-            ret = ucdr_serialize_string(cdr, ros_message->data);
-            return(ret);
-        };
+                ret = ucdr_serialize_string(cdr, ros_message->data);
+                return(ret);
+            };
 
-    dummy_type_support.callbacks.get_serialized_size = [](const void*) {
-                                                           return(uint32_t(30000u));
-                                                       };
+    dummy_type_support.callbacks.get_serialized_size = [](const void*)
+            {
+                return(uint32_t(30000u));
+            };
 
     rmw_qos_profile_t dummy_qos_policies;
     ConfigureDefaultQOSPolices(&dummy_qos_policies);
@@ -339,12 +342,14 @@ TEST_F(TestPublisher, continous_fragment_mode)
  * Testing continous fragment mode with setting the custom callbacks
  */
 
-extern "C" void uros_continous_serialization_size(uint32_t* topic_length)
+extern "C" void uros_continous_serialization_size(
+        uint32_t* topic_length)
 {
     *topic_length += 10000;
 }
 
-extern "C" void uros_continous_serialization(ucdrBuffer* ucdr)
+extern "C" void uros_continous_serialization(
+        ucdrBuffer* ucdr)
 {
     for (size_t i = 0; i < 10000; i++)
     {
@@ -364,18 +369,20 @@ TEST_F(TestPublisher, continous_fragment_mode_with_callbacks)
         &dummy_type_support);
 
     dummy_type_support.callbacks.cdr_serialize =
-        [](const void* untyped_ros_message, ucdrBuffer* cdr) -> bool {
-            bool ret;
-            const rosidl_runtime_c__String* ros_message =
-                reinterpret_cast <const rosidl_runtime_c__String*>(untyped_ros_message);
+            [](const void* untyped_ros_message, ucdrBuffer* cdr) -> bool
+            {
+                bool ret;
+                const rosidl_runtime_c__String* ros_message =
+                        reinterpret_cast <const rosidl_runtime_c__String*>(untyped_ros_message);
 
-            ret = ucdr_serialize_string(cdr, ros_message->data);
-            return(ret);
-        };
+                ret = ucdr_serialize_string(cdr, ros_message->data);
+                return(ret);
+            };
 
-    dummy_type_support.callbacks.get_serialized_size = [](const void*) {
-                                                           return(uint32_t(10u));
-                                                       };
+    dummy_type_support.callbacks.get_serialized_size = [](const void*)
+            {
+                return(uint32_t(10u));
+            };
 
     rmw_qos_profile_t dummy_qos_policies;
     ConfigureDefaultQOSPolices(&dummy_qos_policies);
