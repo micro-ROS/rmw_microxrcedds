@@ -1,9 +1,9 @@
-name: CI RMW_MicroXRCEDDS
+name: CI rmw_microxrcedds_c
 
 on:
     push:
       branches:
-        - master
+        - '**'
     pull_request:
       branches: 
         - '**'
