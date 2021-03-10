@@ -23,6 +23,7 @@ jobs:
             cd repo
             sudo apt update
             sudo apt install uncrustify
+            curl -l https://raw.githubusercontent.com/eProsima/cpp-style/master/uncrustify.cfg -o uncrustify.cfg
             find . \( -name "*.cpp" -o -name "*.c" -o -name "*.h" -o -name "*.hpp" \) -exec uncrustify -c uncrustify.cfg --replace --no-backup {} +
             git config user.name "GitHub Actions Bot"
             git config user.email "<>"
