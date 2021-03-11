@@ -147,7 +147,7 @@ The chart below compares the requirements in the [REP-2004](https://www.ros.org/
 | 2.iii   | Peer review policy                                | ✓             |
 | 2.iv    | CI policy for change requests                     | ✓             |
 | 3       | **Documentation**                                 | ---           |
-| 3.i     | Per feature documentation                         | ✓          |
+| 3.i     | Per feature documentation                         | ✓             |
 | 3.iii   | Declared License(s)                               | ✓             |
 | 3.iv    | Copyright in source files                         | ✓             |
 | 3.v.a   | Quality declaration linked to README              | ✓             |
