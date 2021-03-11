@@ -68,7 +68,8 @@ Current results can be seen here:
 
 ### Feature Documentation [3.i]
 
-TODO HERE
+Some of the **rmw_microxrcedds_c** features are documented on the repository level [README](../README.md).
+[eProsima Micro XRCE-DDS](https://github.com/eProsima/Micro-XRCE-DDS) has feature documentation [hosted publicly](https://micro-xrce-dds.docs.eprosima.com/en/latest/).
 
 ### License [3.iii]
 
@@ -91,26 +92,20 @@ Current results can be found here:
 
 ### Coverage [4.iii]
 
-TODO
-<!-- 
-[![Coverage](https://img.shields.io/jenkins/coverage/cobertura?jobUrl=http%3A%2F%2Fjenkins.eprosima.com%3A8080%2Fview%2FMicro%2520XRCE%2Fjob%2FMicro-CDR%2520Nightly%2520Master%2520Linux%2F)](http://jenkins.eprosima.com:8080/view/Micro%20XRCE/job/Micro-CDR%20Nightly%20Master%20Linux/)
-*rmw_microxrcedds_c* aims to provide a line coverage **above 90%**.
-*Micro CDR* code coverage policy comprises:
-1. All contributions to *Micro CDR* must increase (or at least keep) current line coverage.
-   This is done to ensure that the **90%** line coverage goal is eventually met.
-1. Line coverage regressions are only permitted if properly justified and accepted by maintainers.
-1. If the CI system reports a coverage regression after a pull request has been merged, the maintainers must study the case and decide how to proceed, mostly reverting the changes and asking for a more thorough testing of the committed changes.
-2. This policy is enforced through the [nightly Micro CDR CI job](http://jenkins.eprosima.com:8080/view/Micro%20XRCE/job/Micro-CDR%20Nightly%20Master%20Linux/).
+[![codecov](https://codecov.io/gh/micro-ROS/rmw-microxrcedds/branch/foxy/graph/badge.svg?token=F7LUHZO0IV)](https://codecov.io/gh/micro-ROS/rmw-microxrcedds)
 
-As stated in [CONTRIBUTING.md](CONTRIBUTING.md), developers and contributors are asked to run a line coverage assessment locally before submitting a PR. -->
+
+*rmw_microxrcedds_c* checks the coverage of every commit. Last coverage can be seen in [Codecov](https://app.codecov.io/gh/micro-ROS/rmw-microxrcedds/commits)
+
 ### Linters and Static Analysis [4.v]
 
 **rmw_microxrcedds_c** [code style](https://github.com/eProsima/cpp-style) is enforced using [*uncrustify*](https://github.com/uncrustify/uncrustify).
 Among the CI tests there are tests that ensures that every pull request is compliant with the code style.
 The latest CI results can be seen [here](https://github.com/micro-ROS/rmw-microxrcedds/actions/workflows/ci.yml).
 
-TODO: clang tidy for static analisys.
-TODO: https://github.com/ament/ament_lint/blob/master/ament_lint_common/doc/index.rst
+**rmw_microxrcedds_c** uses and passes all the standard linters and static analysis tools for a C++ package as described in the [ROS 2 Developer Guide](https://index.ros.org/doc/ros2/Contributing/Developer-Guide/#linters).
+
+Results of the latest linter tests can be found [here](https://github.com/micro-ROS/rmw-microxrcedds/actions/workflows/ci.yml?query=branch%3Afoxy).
 
 ## Dependencies [5]
 
@@ -152,16 +147,16 @@ The chart below compares the requirements in the [REP-2004](https://www.ros.org/
 | 2.iii   | Peer review policy                                | ✓             |
 | 2.iv    | CI policy for change requests                     | ✓             |
 | 3       | **Documentation**                                 | ---           |
-| 3.i     | Per feature documentation                         | TODO          |
+| 3.i     | Per feature documentation                         | ✓          |
 | 3.iii   | Declared License(s)                               | ✓             |
 | 3.iv    | Copyright in source files                         | ✓             |
 | 3.v.a   | Quality declaration linked to README              | ✓             |
 | 3.v.b   | Centralized declaration available for peer review | ✓             |
 | 4       | **Testing**                                       | ---           |
 | 4.i     | Feature items tests                               | ✓             |
-| 4.iii.a | Using coverage                                    | TODO          |
-| 4.v.a   | Code style enforcement (linters)                  | TODO          |
-| 4.v.b   | Use of static analysis tools                      | TODO          |
+| 4.iii.a | Using coverage                                    | ✓             |
+| 4.v.a   | Code style enforcement (linters)                  | ✓             |
+| 4.v.b   | Use of static analysis tools                      | ✓             |
 | 5       | **Dependencies**                                  | ---           |
 | 5.iii   | Justifies quality use of dependencies             | ✓             |
 | 6       | **Platform support**                              | ---           |
