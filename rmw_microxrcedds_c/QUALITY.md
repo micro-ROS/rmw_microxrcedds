@@ -117,7 +117,7 @@ Results of the latest linter tests can be found [here](https://github.com/micro-
 * `rcutils`: [QUALITY DECLARATION](https://github.com/ros2/rcutils/blob/master/QUALITY_DECLARATION.md)
 * `rmw`: [QUALITY DECLARATION](https://github.com/ros2/rmw/blob/master/rmw/QUALITY_DECLARATION.md)
 * `rosidl_runtime_c`: [QUALITY DECLARATION](https://github.com/ros2/rosidl/blob/master/rosidl_runtime_c/QUALITY_DECLARATION.md)
-* `rosidl_typesupport_microxrcedds_c`: TODO
+* `rosidl_typesupport_microxrcedds_c`: [QUALITY DECLARATION](https://github.com/micro-ROS/rosidl_typesupport_microxrcedds/blob/foxy/rosidl_typesupport_microxrcedds_c/QUALITY.md)
 
 ## Platform Support [6]
 
