@@ -36,19 +36,9 @@ jobs:
             . /opt/ros/foxy/setup.sh && . /uros_ws/install/local_setup.sh && ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v6 &
             sleep 1 
             . /opt/ros/foxy/setup.sh && . install/local_setup.sh 
-            cd build/rmw_microxrcedds/test
-            ./test-node
-            ./test-publisher
-            ./test-subscriber
-            ./test-topic
-            ./test-pubsub
-            ./test-rmw
-            ./test-client
-            ./test-service
-            ./test-reqres
-            # ./build/rmw_microxrcedds/test/test-sizes 2> memanalisys_out
-            ./test-sizes 2> memanalisys_out
-           
+            colcon test --packages-select=rmw_microxrcedds --return-code-on-test-failure --ctest-args -E "(cpplint)|(lint_cmake)|(uncrustify)"
+            ./build/rmw_microxrcedds/test/test-sizes 2> memanalisys_out
+
         - name: Uncrustify
           run: | 
             # Install Uncrustify
@@ -63,7 +53,6 @@ jobs:
             cd src/rmw-microxrcedds/rmw_microxrcedds_c
             curl -l https://raw.githubusercontent.com/eProsima/cpp-style/master/uncrustify.cfg -o uncrustify.cfg
             find src test include \( -name "*.cpp" -o -name "*.c" -o -name "*.h" -o -name "*.hpp" \) -exec uncrustify -c uncrustify.cfg --check {} +
-<<<<<<< foxy
         
         - name: Static memory
           uses: machine-learning-apps/pr-comment@master
@@ -71,7 +60,6 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             path: build/rmw_microxrcedds/test/memanalisys_out
-=======
 
         - name: Coverage
           run: |
@@ -79,4 +67,3 @@ jobs:
             gcovr -x -r . -o coverage.xml ../../build --exclude rmw_microxrcedds_c/test
             curl -s https://codecov.io/bash -o codecov.bash && chmod +x codecov.bash
             ./codecov.bash -t ${{ secrets.CODECOV_TOKEN }}
->>>>>>> Add coverage
