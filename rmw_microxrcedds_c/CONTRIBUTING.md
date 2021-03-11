@@ -2,7 +2,7 @@
 
 The following documents constitutes a set of guidelines to which contributors must adhere.
 
-  - [Contribution Guidelines](#contribution-guidelines)
+- [Contribution Guidelines](#contribution-guidelines)
   - [Contributions Licensing](#contributions-licensing)
   - [Developer Certificate of Origin](#developer-certificate-of-origin)
   - [General considerations](#general-considerations)
