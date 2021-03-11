@@ -62,7 +62,7 @@ All pull requests must pass CI to be considered for merging, unless maintainers 
 CI testing is automatically triggered by incoming pull requests.
 Current results can be seen here:
 
-* [![CI RMW_MicroXRCEDDS](https://github.com/micro-ROS/rmw-microxrcedds/actions/workflows/ci.yml/badge.svg)](https://github.com/micro-ROS/rmw-microxrcedds/actions/workflows/ci.yml)
+* [![CI rmw_microxrcedds_c](https://github.com/micro-ROS/rmw-microxrcedds/actions/workflows/ci.yml/badge.svg?branch=foxy&event=push)](https://github.com/micro-ROS/rmw-microxrcedds/actions/workflows/ci.yml)
 * 
 ## Documentation [3]
 
@@ -87,7 +87,7 @@ A full copy of the license can be found [here](LICENSE).
 New features are required to have tests before being added as stated in [CONTRIBUTING](CONTRIBUTING.md).
 Current results can be found here:
 
-* [![CI RMW_MicroXRCEDDS](https://github.com/micro-ROS/rmw-microxrcedds/actions/workflows/ci.yml/badge.svg)](https://github.com/micro-ROS/rmw-microxrcedds/actions/workflows/ci.yml)
+* [![CI rmw_microxrcedds_c](https://github.com/micro-ROS/rmw-microxrcedds/actions/workflows/ci.yml/badge.svg?branch=foxy&event=push)](https://github.com/micro-ROS/rmw-microxrcedds/actions/workflows/ci.yml)
 
 ### Coverage [4.iii]
 
@@ -107,9 +107,8 @@ As stated in [CONTRIBUTING.md](CONTRIBUTING.md), developers and contributors are
 
 **rmw_microxrcedds_c** [code style](https://github.com/eProsima/cpp-style) is enforced using [*uncrustify*](https://github.com/uncrustify/uncrustify).
 Among the CI tests there are tests that ensures that every pull request is compliant with the code style.
-The latest pull request results can be seen [here](http://jenkins.eprosima.com:8080/job/Micro-CDR%20Manual%20Linux/lastBuild/).
+The latest CI results can be seen [here](https://github.com/micro-ROS/rmw-microxrcedds/actions/workflows/ci.yml).
 
-TODO: linter test Set uncrustify
 TODO: clang tidy for static analisys.
 TODO: https://github.com/ament/ament_lint/blob/master/ament_lint_common/doc/index.rst
 
@@ -118,13 +117,12 @@ TODO: https://github.com/ament/ament_lint/blob/master/ament_lint_common/doc/inde
 ### Direct Runtime Dependencies [5.iii]
 
 **rmw_microxrcedds_c**  depends on the following packages:
-* `eProsima Micro XRCE-DDS-Client`: TODO
-* `eProsima Micro CDR`: TODO
+* `eProsima Micro XRCE-DDS-Client`: [QUALITY DECLARATION](https://github.com/eProsima/Micro-XRCE-DDS-Client/blob/master/QUALITY.md)
+* `eProsima Micro CDR`: [QUALITY DECLARATION](https://github.com/eProsima/Micro-CDR/blob/master/QUALITY.md)
 * `rcutils`: [QUALITY DECLARATION](https://github.com/ros2/rcutils/blob/master/QUALITY_DECLARATION.md)
 * `rmw`: [QUALITY DECLARATION](https://github.com/ros2/rmw/blob/master/rmw/QUALITY_DECLARATION.md)
 * `rosidl_runtime_c`: [QUALITY DECLARATION](https://github.com/ros2/rosidl/blob/master/rosidl_runtime_c/QUALITY_DECLARATION.md)
-* `rosidl_runtime_cpp`: [QUALITY DECLARATION](https://github.com/ros2/rosidl/blob/master/rosidl_runtime_cpp/QUALITY_DECLARATION.md)
-* `rmw_microxrcedds_c`: TODO
+* `rosidl_typesupport_microxrcedds_c`: TODO
 
 ## Platform Support [6]
 
