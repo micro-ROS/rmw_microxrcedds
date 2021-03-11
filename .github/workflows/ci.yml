@@ -64,6 +64,6 @@ jobs:
         - name: Coverage
           run: |
             cd src/rmw-microxrcedds/
-            gcovr -x -r . -o coverage.xml ../../build --exclude rmw_microxrcedds_c/test
+            gcovr -x -r . -o coverage.xml ../../build --exclude-unreachable-branches --exclude rmw_microxrcedds_c/test
             curl -s https://codecov.io/bash -o codecov.bash && chmod +x codecov.bash
             ./codecov.bash -t ${{ secrets.CODECOV_TOKEN }}
