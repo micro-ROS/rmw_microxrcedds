@@ -3,7 +3,8 @@ name: CI rmw_microxrcedds_c
 on:
     push:
       branches:
-        - [foxy, main]
+        - foxy
+        - main
     pull_request:
       branches: 
         - '**'
