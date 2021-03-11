@@ -49,7 +49,7 @@ All changes will occur through a pull request.
 
 ### Contributor Origin [2.ii]
 
-**rmw_microxrcedds_c** uses the [Developer Certificate of Origin (DCO)](https://developercertificate.org/) as its confirmation of contributor origin policy since version 1.2.2.
+**rmw_microxrcedds_c** uses the [Developer Certificate of Origin (DCO)](https://developercertificate.org/) as its confirmation of contributor origin policy since version 1.0.0.
 More information can be found in [CONTRIBUTING](CONTRIBUTING.md)
 
 ### Peer Review Policy [2.iii]
@@ -63,7 +63,7 @@ CI testing is automatically triggered by incoming pull requests.
 Current results can be seen here:
 
 * [![CI rmw_microxrcedds_c](https://github.com/micro-ROS/rmw-microxrcedds/actions/workflows/ci.yml/badge.svg?branch=foxy&event=push)](https://github.com/micro-ROS/rmw-microxrcedds/actions/workflows/ci.yml)
-* 
+
 ## Documentation [3]
 
 ### Feature Documentation [3.i]
@@ -94,8 +94,7 @@ Current results can be found here:
 
 [![codecov](https://codecov.io/gh/micro-ROS/rmw-microxrcedds/branch/foxy/graph/badge.svg?token=F7LUHZO0IV)](https://codecov.io/gh/micro-ROS/rmw-microxrcedds)
 
-
-*rmw_microxrcedds_c* checks the coverage of every commit. Last coverage can be seen in [Codecov](https://app.codecov.io/gh/micro-ROS/rmw-microxrcedds/commits)
+**rmw_microxrcedds_c** checks the coverage of every commit. Last coverage can be seen in [Codecov](https://app.codecov.io/gh/micro-ROS/rmw-microxrcedds/commits).
 
 ### Linters and Static Analysis [4.v]
 
@@ -111,7 +110,7 @@ Results of the latest linter tests can be found [here](https://github.com/micro-
 
 ### Direct Runtime Dependencies [5.iii]
 
-**rmw_microxrcedds_c**  depends on the following packages:
+**rmw_microxrcedds_c**  has the following runtime dependencies, which are at or above **Quality Level 2**:
 * `eProsima Micro XRCE-DDS-Client`: [QUALITY DECLARATION](https://github.com/eProsima/Micro-XRCE-DDS-Client/blob/master/QUALITY.md)
 * `eProsima Micro CDR`: [QUALITY DECLARATION](https://github.com/eProsima/Micro-CDR/blob/master/QUALITY.md)
 * `rcutils`: [QUALITY DECLARATION](https://github.com/ros2/rcutils/blob/master/QUALITY_DECLARATION.md)
