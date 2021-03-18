@@ -29,9 +29,6 @@ jobs:
           run: . /opt/ros/foxy/setup.sh && colcon build --cmake-args "-DBUILD_SHARED_LIBS=ON"
 
         - name: Test
-          env:
-            URL: ${{ github.event.issue.comments_url }}
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: | 
             . /opt/ros/foxy/setup.sh && . /uros_ws/install/local_setup.sh && ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v6 &
             sleep 1 
@@ -46,9 +43,8 @@ jobs:
             ./test-client
             ./test-service
             ./test-reqres
-            # ./build/rmw_microxrcedds/test/test-sizes 2> out
-            ./test-sizes 2> out
-            # echo "RMW_STATIC_MEM="$(cat out)"" >> $GITHUB_ENV
+            # ./build/rmw_microxrcedds/test/test-sizes 2> memanalisys_out
+            ./test-sizes 2> memanalisys_out
            
         - name: Uncrustify
           run: | 
@@ -70,4 +66,4 @@ jobs:
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
-            path: build/rmw_microxrcedds/test/out
+            path: build/rmw_microxrcedds/test/memanalisys_out
