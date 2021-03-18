@@ -39,6 +39,11 @@ TEST_F(RMWBaseTest, estimate_default_static_memory)
     unsigned long node_size = sizeof(rmw_uxrce_node_t);
     // unsigned long static_input_buffer_size = sizeof(rmw_uxrce_static_input_buffer_t);
 
+    fprintf(stderr, "rmw_microxrcedds - static memory analisys\n");
+    fprintf(stderr, "DEFAULT CONFIGURATION\n");
+    fprintf(stderr, "---------------------\n");
+    fprintf(stderr, "\n");
+
     fprintf(stderr, "MTU :\t\t\t\t\t%d B\n", RMW_UXRCE_MAX_TRANSPORT_MTU);
     fprintf(stderr, "Input buffer size :\t\t\t%d B\n", RMW_UXRCE_MAX_INPUT_BUFFER_SIZE);
     fprintf(stderr, "Input history :\t\t\t\t%d\n", RMW_UXRCE_STREAM_HISTORY_INPUT);
@@ -64,6 +69,7 @@ TEST_F(RMWBaseTest, estimate_default_static_memory)
             RMW_UXRCE_MAX_PUBLISHERS * publisher_size +
             RMW_UXRCE_MAX_NODES * node_size;
     // RMW_UXRCE_MAX_HISTORY * static_input_buffer_size;
-
+    
+    fprintf(stderr, "\n");
     fprintf(stderr, "TOTAL :\t\t\t\t\t%ld B\n", total);
 }
