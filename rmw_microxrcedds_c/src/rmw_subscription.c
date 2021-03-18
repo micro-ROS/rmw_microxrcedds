@@ -171,10 +171,10 @@ rmw_create_subscription(
             UXR_SUBSCRIBER_ID);
         uint16_t subscriber_req = UXR_INVALID_REQUEST_ID;
 
-#ifdef RMW_UXRCE_TRANSPORT_USE_XML
+#ifdef RMW_UXRCE_USE_XML
         char subscriber_name[20];
         generate_name(&custom_subscription->subscriber_id, subscriber_name, sizeof(subscriber_name));
-        if (!build_subscriber_xml(subscriber_name, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
+        if (!build_subscriber_xml(subscriber_name, rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
         {
             RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
             goto fail;
@@ -182,15 +182,15 @@ rmw_create_subscription(
         subscriber_req = uxr_buffer_create_subscriber_xml(
             &custom_node->context->session,
             *custom_node->context->creation_destroy_stream, custom_subscription->subscriber_id,
-            custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
-#elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
+            custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+#elif defined(RMW_UXRCE_USE_REFS)
         // TODO(BORJA)  Publisher by reference does not make sense in
         //              current micro XRCE-DDS implementation.
         subscriber_req = uxr_buffer_create_subscriber_xml(
             &custom_node->context->session,
             *custom_node->context->creation_destroy_stream, custom_subscription->subscriber_id,
             custom_node->participant_id, "", UXR_REPLACE);
-#endif /* ifdef RMW_UXRCE_TRANSPORT_USE_XML */
+#endif /* ifdef RMW_UXRCE_USE_XML */
 
         if (!run_xrce_session(custom_node->context, subscriber_req))
         {
@@ -203,11 +203,11 @@ rmw_create_subscription(
             UXR_DATAREADER_ID);
         uint16_t datareader_req = UXR_INVALID_REQUEST_ID;
 
-#ifdef RMW_UXRCE_TRANSPORT_USE_XML
+#ifdef RMW_UXRCE_USE_XML
         if (!build_datareader_xml(
                     topic_name, custom_subscription->type_support_callbacks,
-                    qos_policies, rmw_uxrce_xml_buffer,
-                    sizeof(rmw_uxrce_xml_buffer)))
+                    qos_policies, rmw_uxrce_entity_naming_buffer,
+                    sizeof(rmw_uxrce_entity_naming_buffer)))
         {
             RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
             goto fail;
@@ -216,9 +216,9 @@ rmw_create_subscription(
         datareader_req = uxr_buffer_create_datareader_xml(
             &custom_node->context->session,
             *custom_node->context->creation_destroy_stream, custom_subscription->datareader_id,
-            custom_subscription->subscriber_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
-#elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
-        if (!build_datareader_profile(topic_name, rmw_uxrce_profile_name, sizeof(rmw_uxrce_profile_name)))
+            custom_subscription->subscriber_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+#elif defined(RMW_UXRCE_USE_REFS)
+        if (!build_datareader_profile(topic_name, rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
         {
             RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
             goto fail;
@@ -227,8 +227,8 @@ rmw_create_subscription(
         datareader_req = uxr_buffer_create_datareader_ref(
             &custom_node->context->session,
             *custom_node->context->creation_destroy_stream, custom_subscription->datareader_id,
-            custom_subscription->subscriber_id, rmw_uxrce_profile_name, UXR_REPLACE);
-#endif /* ifdef RMW_UXRCE_TRANSPORT_USE_XML */
+            custom_subscription->subscriber_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+#endif /* ifdef RMW_UXRCE_USE_XML */
 
         if (!run_xrce_session(custom_node->context, datareader_req))
         {

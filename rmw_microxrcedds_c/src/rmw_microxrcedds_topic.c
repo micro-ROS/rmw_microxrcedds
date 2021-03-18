@@ -52,10 +52,10 @@ create_topic(
 
     // Generate request
     uint16_t topic_req = 0;
-#ifdef RMW_UXRCE_TRANSPORT_USE_XML
+#ifdef RMW_UXRCE_USE_XML
     if (!build_topic_xml(
                 topic_name, message_type_support_callbacks,
-                qos_policies, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
+                qos_policies, rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
     {
         RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
         rmw_uxrce_fini_topic_memory(custom_topic);
@@ -66,10 +66,10 @@ create_topic(
     topic_req = uxr_buffer_create_topic_xml(
         &custom_node->context->session,
         *custom_node->context->creation_destroy_stream, custom_topic->topic_id,
-        custom_node->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
-#elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
+        custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+#elif defined(RMW_UXRCE_USE_REFS)
     (void)qos_policies;
-    if (!build_topic_profile(topic_name, rmw_uxrce_profile_name, sizeof(rmw_uxrce_profile_name)))
+    if (!build_topic_profile(topic_name, rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
     {
         RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
         rmw_uxrce_fini_topic_memory(custom_topic);
@@ -80,8 +80,8 @@ create_topic(
     topic_req = uxr_buffer_create_topic_ref(
         &custom_node->context->session,
         *custom_node->context->creation_destroy_stream, custom_topic->topic_id,
-        custom_node->participant_id, rmw_uxrce_profile_name, UXR_REPLACE);
-#endif /* ifdef RMW_UXRCE_TRANSPORT_USE_XML */
+        custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+#endif /* ifdef RMW_UXRCE_USE_XML */
 
     // Send the request and wait for response
     custom_topic->sync_with_agent = run_xrce_session(custom_node->context, topic_req);

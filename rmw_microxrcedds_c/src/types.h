@@ -205,11 +205,7 @@ typedef struct rmw_uxrce_static_input_buffer_t
 
 // Static memory pools
 
-#ifdef RMW_UXRCE_TRANSPORT_USE_XML
-extern char rmw_uxrce_xml_buffer[RMW_UXRCE_XML_BUFFER_LENGTH];
-#elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
-extern char rmw_uxrce_profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
-#endif // ifdef RMW_UXRCE_TRANSPORT_USE_XML
+extern char rmw_uxrce_entity_naming_buffer[RMW_UXRCE_ENTITY_NAMING_BUFFER_LENGTH];
 
 extern rmw_uxrce_mempool_t session_memory;
 extern rmw_context_impl_t custom_sessions[RMW_UXRCE_MAX_SESSIONS];
