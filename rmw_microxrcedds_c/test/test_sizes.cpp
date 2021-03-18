@@ -69,7 +69,7 @@ TEST_F(RMWBaseTest, estimate_default_static_memory)
             RMW_UXRCE_MAX_PUBLISHERS * publisher_size +
             RMW_UXRCE_MAX_NODES * node_size;
     // RMW_UXRCE_MAX_HISTORY * static_input_buffer_size;
-    
+
     fprintf(stderr, "\n");
     fprintf(stderr, "TOTAL :\t\t\t\t\t%ld B\n", total);
 }
