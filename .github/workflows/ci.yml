@@ -29,6 +29,9 @@ jobs:
           run: . /opt/ros/foxy/setup.sh && colcon build --cmake-args "-DBUILD_SHARED_LIBS=ON"
 
         - name: Test
+          env:
+            URL: ${{ github.event.issue.comments_url }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: | 
             . /opt/ros/foxy/setup.sh && . /uros_ws/install/local_setup.sh && ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v6 &
             sleep 1 
@@ -43,7 +46,9 @@ jobs:
             ./test-client
             ./test-service
             ./test-reqres
-
+            # ./build/rmw_microxrcedds/test/test-sizes 2> out
+            ./test-sizes 2> out
+            curl -X POST $URL -H "Content-Type: application/json" -H "Authorization: token $GITHUB_TOKEN" --data '{ "body": "$(cat out)" }'
         - name: Uncrustify
           run: | 
             # Install Uncrustify
@@ -58,3 +63,4 @@ jobs:
             cd src/rmw-microxrcedds/rmw_microxrcedds_c
             curl -l https://raw.githubusercontent.com/eProsima/cpp-style/master/uncrustify.cfg -o uncrustify.cfg
             find src test include \( -name "*.cpp" -o -name "*.c" -o -name "*.h" -o -name "*.hpp" \) -exec uncrustify -c uncrustify.cfg --check {} +
+
