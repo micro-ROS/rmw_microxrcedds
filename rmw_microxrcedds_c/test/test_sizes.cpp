@@ -38,32 +38,32 @@ TEST_F(RMWBaseTest, estimate_default_static_memory)
     unsigned long publisher_size = sizeof(rmw_uxrce_publisher_t);
     unsigned long node_size = sizeof(rmw_uxrce_node_t);
     // unsigned long static_input_buffer_size = sizeof(rmw_uxrce_static_input_buffer_t);
-    
-    fprintf(stderr, "MTU :\t\t\t\t\t%d B\n",RMW_UXRCE_MAX_TRANSPORT_MTU);
-    fprintf(stderr, "Input buffer size :\t\t\t%d B\n",RMW_UXRCE_MAX_INPUT_BUFFER_SIZE);
-    fprintf(stderr, "Input history :\t\t\t\t%d\n",RMW_UXRCE_STREAM_HISTORY_INPUT);
-    fprintf(stderr, "Output buffer size  :\t\t\t%d B\n",RMW_UXRCE_MAX_OUTPUT_BUFFER_SIZE);
-    fprintf(stderr, "Output history :\t\t\t%d\n",RMW_UXRCE_STREAM_HISTORY_OUTPUT);
+
+    fprintf(stderr, "MTU :\t\t\t\t\t%d B\n", RMW_UXRCE_MAX_TRANSPORT_MTU);
+    fprintf(stderr, "Input buffer size :\t\t\t%d B\n", RMW_UXRCE_MAX_INPUT_BUFFER_SIZE);
+    fprintf(stderr, "Input history :\t\t\t\t%d\n", RMW_UXRCE_STREAM_HISTORY_INPUT);
+    fprintf(stderr, "Output buffer size  :\t\t\t%d B\n", RMW_UXRCE_MAX_OUTPUT_BUFFER_SIZE);
+    fprintf(stderr, "Output history :\t\t\t%d\n", RMW_UXRCE_STREAM_HISTORY_OUTPUT);
     fprintf(stderr, "\n");
-    fprintf(stderr, "Context (%d) :\t\t\t\t%ld B\n",RMW_UXRCE_MAX_SESSIONS,context_size);
-    fprintf(stderr, "Topic (%d) :\t\t\t\t%ld B\n",RMW_UXRCE_MAX_TOPICS_INTERNAL,topic_size);
-    fprintf(stderr, "Service (%d) :\t\t\t\t%ld B\n",RMW_UXRCE_MAX_SERVICES,service_size);
-    fprintf(stderr, "Client (%d) :\t\t\t\t%ld B\n",RMW_UXRCE_MAX_CLIENTS,client_size);
-    fprintf(stderr, "Subscription (%d) :\t\t\t%ld B\n",RMW_UXRCE_MAX_SUBSCRIPTIONS,subscription_size);
-    fprintf(stderr, "Publisher (%d) :\t\t\t\t%ld B\n",RMW_UXRCE_MAX_PUBLISHERS,publisher_size);
-    fprintf(stderr, "Node (%d) :\t\t\t\t%ld B\n",RMW_UXRCE_MAX_NODES,node_size);
+    fprintf(stderr, "Context (%d) :\t\t\t\t%ld B\n", RMW_UXRCE_MAX_SESSIONS, context_size);
+    fprintf(stderr, "Topic (%d) :\t\t\t\t%ld B\n", RMW_UXRCE_MAX_TOPICS_INTERNAL, topic_size);
+    fprintf(stderr, "Service (%d) :\t\t\t\t%ld B\n", RMW_UXRCE_MAX_SERVICES, service_size);
+    fprintf(stderr, "Client (%d) :\t\t\t\t%ld B\n", RMW_UXRCE_MAX_CLIENTS, client_size);
+    fprintf(stderr, "Subscription (%d) :\t\t\t%ld B\n", RMW_UXRCE_MAX_SUBSCRIPTIONS, subscription_size);
+    fprintf(stderr, "Publisher (%d) :\t\t\t\t%ld B\n", RMW_UXRCE_MAX_PUBLISHERS, publisher_size);
+    fprintf(stderr, "Node (%d) :\t\t\t\t%ld B\n", RMW_UXRCE_MAX_NODES, node_size);
     // fprintf(stderr, "Static input buffer (%d) :\t\t%ld B\n",RMW_UXRCE_MAX_HISTORY,static_input_buffer_size);
 
 
 
     unsigned long total =   RMW_UXRCE_MAX_SESSIONS * context_size +
-                            RMW_UXRCE_MAX_TOPICS_INTERNAL * topic_size +
-                            RMW_UXRCE_MAX_SERVICES * service_size +
-                            RMW_UXRCE_MAX_CLIENTS * client_size +
-                            RMW_UXRCE_MAX_SUBSCRIPTIONS * subscription_size +
-                            RMW_UXRCE_MAX_PUBLISHERS * publisher_size +
-                            RMW_UXRCE_MAX_NODES * node_size;
-                            // RMW_UXRCE_MAX_HISTORY * static_input_buffer_size;
+            RMW_UXRCE_MAX_TOPICS_INTERNAL * topic_size +
+            RMW_UXRCE_MAX_SERVICES * service_size +
+            RMW_UXRCE_MAX_CLIENTS * client_size +
+            RMW_UXRCE_MAX_SUBSCRIPTIONS * subscription_size +
+            RMW_UXRCE_MAX_PUBLISHERS * publisher_size +
+            RMW_UXRCE_MAX_NODES * node_size;
+    // RMW_UXRCE_MAX_HISTORY * static_input_buffer_size;
 
-    fprintf(stderr, "TOTAL :\t\t\t\t\t%ld B\n",total);
+    fprintf(stderr, "TOTAL :\t\t\t\t\t%ld B\n", total);
 }
