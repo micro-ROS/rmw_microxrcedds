@@ -23,7 +23,7 @@
 bool flush_session(
         uxrSession* session)
 {
-    return(uxr_run_session_until_confirm_delivery(session, 1000));
+    return uxr_run_session_until_confirm_delivery(session, 1000);
 }
 
 rmw_ret_t
@@ -99,7 +99,7 @@ rmw_publish(
             ret = RMW_RET_ERROR;
         }
     }
-    return(ret);
+    return ret;
 }
 
 rmw_ret_t
@@ -112,7 +112,7 @@ rmw_publish_serialized_message(
     (void)serialized_message;
     (void)allocation;
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -126,5 +126,5 @@ rmw_publish_loaned_message(
     (void)allocation;
 
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }

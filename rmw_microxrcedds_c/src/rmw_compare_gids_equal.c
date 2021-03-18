@@ -27,15 +27,15 @@ rmw_compare_gids_equal(
     if (gid1->implementation_identifier != rmw_get_implementation_identifier())
     {
         RMW_SET_ERROR_MSG("publisher handle not from this implementation");
-        return(RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+        return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
     }
     else if (gid2->implementation_identifier != rmw_get_implementation_identifier())
     {
         RMW_SET_ERROR_MSG("publisher handle not from this implementation");
-        return(RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+        return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
     }
 
     *result = memcmp(gid1->data, gid2->data, sizeof(rmw_gid_t)) == 0;
 
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 }

@@ -185,12 +185,12 @@ rmw_create_client(
             *custom_node->context->creation_destroy_stream, custom_client->client_id,
             data_request_stream_id, &delivery_control);
     }
-    return(rmw_client);
+    return rmw_client;
 
 fail:
     rmw_uxrce_fini_client_memory(rmw_client);
     rmw_client = NULL;
-    return(rmw_client);
+    return rmw_client;
 }
 
 rmw_ret_t
@@ -251,5 +251,5 @@ rmw_destroy_client(
         }
     }
 
-    return(result_ret);
+    return result_ret;
 }

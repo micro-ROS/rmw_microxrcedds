@@ -37,7 +37,7 @@ rmw_node_t* create_node(
     if (!context)
     {
         RMW_SET_ERROR_MSG("context is null");
-        return(NULL);
+        return NULL;
     }
 
     rmw_uxrce_mempool_item_t* memory_node = get_memory(&node_memory);
@@ -55,7 +55,7 @@ rmw_node_t* create_node(
     if (!node_handle)
     {
         RMW_SET_ERROR_MSG("failed to allocate rmw_node_t");
-        return(NULL);
+        return NULL;
     }
 
     node_info->rmw_handle = node_handle;
@@ -67,7 +67,7 @@ rmw_node_t* create_node(
     {
         RMW_SET_ERROR_MSG("failed to allocate memory");
         rmw_uxrce_fini_node_memory(node_handle);
-        return(NULL);
+        return NULL;
     }
     memcpy((char*)node_handle->name, name, strlen(name) + 1);
 
@@ -76,7 +76,7 @@ rmw_node_t* create_node(
     {
         RMW_SET_ERROR_MSG("failed to allocate memory");
         rmw_uxrce_fini_node_memory(node_handle);
-        return(NULL);
+        return NULL;
     }
     memcpy((char*)node_handle->namespace_, namespace_, strlen(namespace_) + 1);
 
@@ -88,7 +88,7 @@ rmw_node_t* create_node(
     if (!build_participant_xml(domain_id, name, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
     {
         RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
-        return(NULL);
+        return NULL;
     }
     participant_req =
             uxr_buffer_create_participant_xml(
@@ -99,7 +99,7 @@ rmw_node_t* create_node(
     if (!build_participant_profile(rmw_uxrce_profile_name, sizeof(rmw_uxrce_profile_name)))
     {
         RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
-        return(NULL);
+        return NULL;
     }
     participant_req =
             uxr_buffer_create_participant_ref(
@@ -111,10 +111,10 @@ rmw_node_t* create_node(
     if (!run_xrce_session(node_info->context, participant_req))
     {
         rmw_uxrce_fini_node_memory(node_handle);
-        return(NULL);
+        return NULL;
     }
 
-    return(node_handle);
+    return node_handle;
 
 fail:
     if (node_handle != NULL)
@@ -122,7 +122,7 @@ fail:
         rmw_uxrce_fini_node_memory(node_handle);
     }
     node_handle = NULL;
-    return(node_handle);
+    return node_handle;
 }
 
 rmw_node_t*
@@ -149,7 +149,7 @@ rmw_create_node(
     {
         rmw_node = create_node(name, namespace_, domain_id, context);
     }
-    return(rmw_node);
+    return rmw_node;
 }
 
 rmw_ret_t rmw_destroy_node(
@@ -160,19 +160,19 @@ rmw_ret_t rmw_destroy_node(
     if (!node)
     {
         RMW_SET_ERROR_MSG("node handle is null");
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
 
     if (!is_uxrce_rmw_identifier_valid(node->implementation_identifier))
     {
         RMW_SET_ERROR_MSG("node handle not from this implementation");
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
 
     if (!node->data)
     {
         RMW_SET_ERROR_MSG("node impl is null");
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
 
     rmw_uxrce_node_t* custom_node = (rmw_uxrce_node_t*)node->data;
@@ -236,7 +236,7 @@ rmw_ret_t rmw_destroy_node(
 
     rmw_uxrce_fini_node_memory(node);
 
-    return(ret);
+    return ret;
 }
 
 rmw_ret_t
@@ -245,7 +245,7 @@ rmw_node_assert_liveliness(
 {
     (void)node;
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }
 
 const rmw_guard_condition_t*
@@ -264,5 +264,5 @@ rmw_node_get_graph_guard_condition(
     }
 #endif  // RMW_UXRCE_GRAPH
 
-    return(graph_guard_condition);
+    return graph_guard_condition;
 }

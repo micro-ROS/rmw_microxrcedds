@@ -40,10 +40,10 @@ bool run_xrce_session(
                 &requests, &status, 1))
         {
             RMW_SET_ERROR_MSG("Issues running micro XRCE-DDS session");
-            return(false);
+            return false;
         }
     }
-    return(true);
+    return true;
 }
 
 int build_participant_xml(
@@ -68,7 +68,7 @@ int build_participant_xml(
         ret = 0;
     }
 
-    return(ret);
+    return ret;
 }
 
 int build_service_xml(
@@ -124,7 +124,7 @@ int build_service_xml(
             service_name, ros_request_subfix);
         if ((ret < 0) || (ret >= (int)sizeof(req_full_topic_name)))
         {
-            return(0);
+            return 0;
         }
 
         ret = snprintf(
@@ -132,7 +132,7 @@ int build_service_xml(
             service_name, ros_reply_subfix);
         if ((ret < 0) || (ret >= (int)sizeof(res_full_topic_name)))
         {
-            return(0);
+            return 0;
         }
     }
     else
@@ -140,12 +140,12 @@ int build_service_xml(
         ret = snprintf(req_full_topic_name, sizeof(req_full_topic_name), "%s", service_name);
         if ((ret < 0) || (ret >= (int)sizeof(req_full_topic_name)))
         {
-            return(0);
+            return 0;
         }
         ret = snprintf(res_full_topic_name, sizeof(res_full_topic_name), "%s", service_name);
         if ((ret < 0) || (ret >= (int)sizeof(req_full_topic_name)))
         {
-            return(0);
+            return 0;
         }
     }
 
@@ -166,7 +166,7 @@ int build_service_xml(
         ret = 0;
     }
 
-    return(ret);
+    return ret;
 }
 
 int build_publisher_xml(
@@ -179,7 +179,7 @@ int build_publisher_xml(
 
     // TODO(pablogs9): Check if there is any case where this xml should be filled for FastDDS
     xml[0] = '\0';
-    return(1);
+    return 1;
 }
 
 int build_subscriber_xml(
@@ -192,7 +192,7 @@ int build_subscriber_xml(
 
     // TODO(pablogs9): Check if there is any case where this xml should be filled for FastDDS
     xml[0] = '\0';
-    return(1);
+    return 1;
 }
 
 int generate_name(
@@ -209,7 +209,7 @@ int generate_name(
         ret = 0;
     }
 
-    return(ret);
+    return ret;
 }
 
 size_t generate_type_name(
@@ -242,7 +242,7 @@ size_t generate_type_name(
         ret = full_name_size;
     }
 
-    return(ret);
+    return ret;
 }
 
 int build_topic_xml(
@@ -275,7 +275,7 @@ int build_topic_xml(
                 topic_name);
             if ((ret < 0) && (ret >= (int)buffer_size))
             {
-                return(0);
+                return 0;
             }
         }
         else
@@ -283,7 +283,7 @@ int build_topic_xml(
             ret = snprintf(full_topic_name, sizeof(full_topic_name), "%s", topic_name);
             if ((ret < 0) && (ret >= (int)buffer_size))
             {
-                return(0);
+                return 0;
             }
         }
 
@@ -294,7 +294,7 @@ int build_topic_xml(
         }
     }
 
-    return(ret);
+    return ret;
 }
 
 int build_xml(
@@ -320,7 +320,7 @@ int build_xml(
                 topic_name);
             if ((ret < 0) && (ret >= (int)buffer_size))
             {
-                return(0);
+                return 0;
             }
         }
         else
@@ -328,7 +328,7 @@ int build_xml(
             ret = snprintf(full_topic_name, sizeof(full_topic_name), "%s", topic_name);
             if ((ret < 0) && (ret >= (int)buffer_size))
             {
-                return(0);
+                return 0;
             }
         }
 
@@ -347,7 +347,7 @@ int build_xml(
         }
     }
 
-    return(ret);
+    return ret;
 }
 
 int build_datawriter_xml(
@@ -377,7 +377,7 @@ int build_datawriter_xml(
             "</data_writer>"
             "</dds>";
 
-    return(build_xml(format, topic_name, members, qos_policies, xml, buffer_size));
+    return build_xml(format, topic_name, members, qos_policies, xml, buffer_size);
 }
 
 int build_datareader_xml(
@@ -407,7 +407,7 @@ int build_datareader_xml(
             "</data_reader>"
             "</dds>";
 
-    return(build_xml(format, topic_name, members, qos_policies, xml, buffer_size));
+    return build_xml(format, topic_name, members, qos_policies, xml, buffer_size);
 }
 
 bool build_participant_profile(
@@ -422,7 +422,7 @@ bool build_participant_profile(
         memcpy(profile_name, profile, sizeof(profile));
         ret = true;
     }
-    return(ret);
+    return ret;
 }
 
 bool build_topic_profile(
@@ -436,7 +436,7 @@ bool build_topic_profile(
     bool ret     = false;
     int written = snprintf(profile_name, buffer_size, format, topic_name);
     ret = (written > 0) && (written < (int)buffer_size);
-    return(ret);
+    return ret;
 }
 
 bool build_datawriter_profile(
@@ -450,7 +450,7 @@ bool build_datawriter_profile(
     bool ret     = false;
     int written = snprintf(profile_name, buffer_size, format, topic_name);
     ret = (written > 0) && (written < (int)buffer_size);
-    return(ret);
+    return ret;
 }
 
 bool build_datareader_profile(
@@ -464,7 +464,7 @@ bool build_datareader_profile(
     bool ret     = false;
     int written = snprintf(profile_name, buffer_size, format, topic_name);
     ret = (written > 0) && (written < (int)buffer_size);
-    return(ret);
+    return ret;
 }
 
 bool is_uxrce_rmw_identifier_valid(

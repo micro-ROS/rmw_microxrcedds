@@ -34,7 +34,7 @@ rmw_create_guard_condition(
     bool* hasTriggered = (bool*)rmw_guard_condition->data;
     *hasTriggered = false;
 
-    return(rmw_guard_condition);
+    return rmw_guard_condition;
 }
 
 rmw_ret_t
@@ -45,5 +45,5 @@ rmw_destroy_guard_condition(
 
     rmw_free(guard_condition);
 
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 }

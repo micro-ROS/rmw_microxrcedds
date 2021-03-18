@@ -40,5 +40,5 @@ rmw_trigger_guard_condition(
         *hasTriggered = true;
     }
 
-    return(ret);
+    return ret;
 }

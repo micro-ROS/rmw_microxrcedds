@@ -28,12 +28,12 @@ rmw_get_gid_for_publisher(
     if (publisher->implementation_identifier != rmw_get_implementation_identifier())
     {
         RMW_SET_ERROR_MSG("publisher handle not from this implementation");
-        return(RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+        return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
     }
 
     // Do
     rmw_uxrce_publisher_t* custom_publisher = (rmw_uxrce_publisher_t*)publisher->data;
     memcpy(gid, &custom_publisher->publisher_gid, sizeof(rmw_gid_t));
 
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 }

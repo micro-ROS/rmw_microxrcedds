@@ -30,7 +30,7 @@ rmw_ret_t rmw_graph_init(
     if (NULL == &context->session)
     {
         RMW_SET_ERROR_MSG("Cannot initializate graph context without a XRCE session");
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
 
     // Init graph_info structure
@@ -48,7 +48,7 @@ rmw_ret_t rmw_graph_init(
             rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
     {
         RMW_SET_ERROR_MSG("Failed to generate xml request for graph participant creation");
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
 
     uint16_t participant_req = uxr_buffer_create_participant_xml(
@@ -150,7 +150,7 @@ rmw_ret_t rmw_graph_init(
         context->reliable_input, &delivery_control);
 
 end:
-    return(ret);
+    return ret;
 }
 
 #define UCDR_DESERIALIZE_AND_CHECK_RETVAL(RETVAL, FUNCTION_NAME, ...)   \
@@ -227,5 +227,5 @@ rmw_ret_t rmw_graph_fill_data_from_buffer(
             }
         }
     }
-    return(ret);
+    return ret;
 }

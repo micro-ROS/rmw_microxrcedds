@@ -303,12 +303,12 @@ TEST_F(TestPublisher, continous_fragment_mode)
                         reinterpret_cast <const rosidl_runtime_c__String*>(untyped_ros_message);
 
                 ret = ucdr_serialize_string(cdr, ros_message->data);
-                return(ret);
+                return ret;
             };
 
     dummy_type_support.callbacks.get_serialized_size = [](const void*)
             {
-                return(uint32_t(30000u));
+                return uint32_t(30000u);
             };
 
     rmw_qos_profile_t dummy_qos_policies;
@@ -376,12 +376,12 @@ TEST_F(TestPublisher, continous_fragment_mode_with_callbacks)
                         reinterpret_cast <const rosidl_runtime_c__String*>(untyped_ros_message);
 
                 ret = ucdr_serialize_string(cdr, ros_message->data);
-                return(ret);
+                return ret;
             };
 
     dummy_type_support.callbacks.get_serialized_size = [](const void*)
             {
-                return(uint32_t(10u));
+                return uint32_t(10u);
             };
 
     rmw_qos_profile_t dummy_qos_policies;

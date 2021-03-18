@@ -41,11 +41,11 @@ rmw_get_node_names(
             eprosima_microxrcedds_identifier, return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
     if (RMW_RET_OK != rmw_check_zero_rmw_string_array(node_names))
     {
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
     if (RMW_RET_OK != rmw_check_zero_rmw_string_array(node_namespaces))
     {
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
 
     // Get micro_ros_msgs/msg/Graph instance
@@ -54,7 +54,7 @@ rmw_get_node_names(
 
     if (!graph_info->initialized)
     {
-        return(RMW_RET_OK);
+        return RMW_RET_OK;
     }
 
     rmw_ret_t ret = RMW_RET_OK;
@@ -95,13 +95,13 @@ rmw_get_node_names(
 
 fini:
     micro_ros_msgs__msg__Graph__destroy(graph_data);
-    return(ret);
+    return ret;
 #else
     (void)node;
     (void)node_names;
     (void)node_namespaces;
     RMW_SET_ERROR_MSG("Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }
 
@@ -113,5 +113,5 @@ rmw_get_node_names_with_enclaves(
         rcutils_string_array_t* enclaves)
 {
     (void)enclaves; // TODO(jamoralp): what is this used for?
-    return(rmw_get_node_names(node, node_names, node_namespaces));
+    return rmw_get_node_names(node, node_names, node_namespaces);
 }

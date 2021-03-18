@@ -24,7 +24,7 @@ rmw_take(
         bool* taken,
         rmw_subscription_allocation_t* allocation)
 {
-    return(rmw_take_with_info(subscription, ros_message, taken, NULL, allocation));
+    return rmw_take_with_info(subscription, ros_message, taken, NULL, allocation);
 }
 
 rmw_ret_t
@@ -48,14 +48,14 @@ rmw_take_with_info(
     if (!is_uxrce_rmw_identifier_valid(subscription->implementation_identifier))
     {
         RMW_SET_ERROR_MSG("Wrong implementation");
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
 
     rmw_uxrce_subscription_t* custom_subscription = (rmw_uxrce_subscription_t*)subscription->data;
 
     if (!custom_subscription->micro_buffer_in_use)
     {
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
 
     ucdrBuffer temp_buffer;
@@ -82,11 +82,11 @@ rmw_take_with_info(
     if (!deserialize_rv)
     {
         RMW_SET_ERROR_MSG("Typesupport desserialize error.");
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
 
     EPROS_PRINT_TRACE()
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 }
 
 rmw_ret_t
@@ -106,14 +106,14 @@ rmw_take_sequence(
     if (!is_uxrce_rmw_identifier_valid(subscription->implementation_identifier))
     {
         RMW_SET_ERROR_MSG("Wrong implementation");
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
 
     rmw_uxrce_subscription_t* custom_subscription = (rmw_uxrce_subscription_t*)subscription->data;
 
     if (!custom_subscription->micro_buffer_in_use)
     {
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
 
     for (size_t i = 0; i < count; i++)
@@ -139,7 +139,7 @@ rmw_take_sequence(
     message_sequence->size      = *taken;
     message_info_sequence->size = *taken;
 
-    return(ret);
+    return ret;
 }
 
 rmw_ret_t
@@ -154,7 +154,7 @@ rmw_take_serialized_message(
     (void)taken;
     (void)allocation;
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -171,7 +171,7 @@ rmw_take_serialized_message_with_info(
     (void)message_info;
     (void)allocation;
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -187,7 +187,7 @@ rmw_take_loaned_message(
     (void)allocation;
 
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -205,7 +205,7 @@ rmw_take_loaned_message_with_info(
     (void)allocation;
 
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -217,7 +217,7 @@ rmw_return_loaned_message_from_subscription(
     (void)loaned_message;
 
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -230,5 +230,5 @@ rmw_take_event(
     (void)event_info;
     (void)taken;
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }

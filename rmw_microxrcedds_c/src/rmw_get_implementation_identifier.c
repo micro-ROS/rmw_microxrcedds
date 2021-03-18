@@ -19,5 +19,5 @@ const char*
 rmw_get_implementation_identifier()
 {
     EPROS_PRINT_TRACE()
-    return(eprosima_microxrcedds_identifier);
+    return eprosima_microxrcedds_identifier;
 }

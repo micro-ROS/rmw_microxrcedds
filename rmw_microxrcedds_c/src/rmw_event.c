@@ -25,7 +25,7 @@ rmw_publisher_event_init(
     (void)publisher;
     (void)event_type;
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -38,5 +38,5 @@ rmw_subscription_event_init(
     (void)subscription;
     (void)event_type;
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }

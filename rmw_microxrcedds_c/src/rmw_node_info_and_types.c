@@ -47,7 +47,7 @@ __rmw_get_entity_names_and_types_by_node(
 
     if (RMW_RET_OK != rmw_names_and_types_check_zero(topic_names_and_types))
     {
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
 
     // Get micro_ros_msgs/msg/Graph instance
@@ -56,7 +56,7 @@ __rmw_get_entity_names_and_types_by_node(
 
     if (!graph_info->initialized)
     {
-        return(RMW_RET_OK);
+        return RMW_RET_OK;
     }
 
     rmw_ret_t ret = RMW_RET_OK;
@@ -153,7 +153,7 @@ __rmw_get_entity_names_and_types_by_node(
 
 fini:
     micro_ros_msgs__msg__Graph__destroy(graph_data);
-    return(ret);
+    return ret;
 }
 
 #endif  // RMW_UXRCE_GRAPH
@@ -184,7 +184,7 @@ rmw_get_publisher_names_and_types_by_node(
     (void)demangle;
     (void)topic_names_and_types;
     RMW_SET_ERROR_MSG("Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }
 
@@ -214,7 +214,7 @@ rmw_get_subscriber_names_and_types_by_node(
     (void)demangle;
     (void)topic_names_and_types;
     RMW_SET_ERROR_MSG("Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }
 
@@ -242,7 +242,7 @@ rmw_get_service_names_and_types_by_node(
     (void)node_namespace;
     (void)service_names_and_types;
     RMW_SET_ERROR_MSG("Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }
 
@@ -270,6 +270,6 @@ rmw_get_client_names_and_types_by_node(
     (void)node_namespace;
     (void)service_names_and_types;
     RMW_SET_ERROR_MSG("Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }

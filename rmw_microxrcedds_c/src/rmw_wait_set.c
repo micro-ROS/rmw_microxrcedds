@@ -30,7 +30,7 @@ rmw_create_wait_set(
     rmw_wait_set_t* rmw_wait_set = (rmw_wait_set_t*)rmw_allocate(
         sizeof(rmw_wait_set_t));
 
-    return(rmw_wait_set);
+    return rmw_wait_set;
 }
 
 rmw_ret_t
@@ -41,5 +41,5 @@ rmw_destroy_wait_set(
 
     rmw_free(wait_set);
 
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 }
