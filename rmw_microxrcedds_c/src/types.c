@@ -64,13 +64,13 @@ rmw_uxrce_static_input_buffer_t custom_static_buffers[RMW_UXRCE_MAX_HISTORY];
         rmw_uxrce_ ## X ## _t * array,                  \
         size_t size)                                    \
     {                                                   \
-        if (size > 0 && !memory->is_initialized){      \
+        if (size > 0 && !memory->is_initialized){       \
             memory->is_initialized = true;              \
             memory->element_size   = sizeof(*array);    \
             memory->allocateditems = NULL;              \
             memory->freeitems      = NULL;              \
                                                         \
-            for (size_t i = 0; i < size; i++){         \
+            for (size_t i = 0; i < size; i++){          \
                 put_memory(memory, &array[i].mem);      \
                 array[i].mem.data = (void*)&array[i];   \
                 array[0].mem.is_dynamic_memory = false; \
