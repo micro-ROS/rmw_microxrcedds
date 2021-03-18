@@ -60,7 +60,7 @@ jobs:
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
-            path: build/rmw_microxrcedds/test/memanalisys_out
+            path: memanalisys_out
 
         - name: Coverage
           run: |
