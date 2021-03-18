@@ -118,7 +118,6 @@ rmw_create_subscription(
         custom_subscription->owner_node = custom_node;
         custom_subscription->subscription_gid.implementation_identifier =
                 rmw_get_implementation_identifier();
-        custom_subscription->micro_buffer_in_use = false;
         memcpy(&custom_subscription->qos, qos_policies, sizeof(rmw_qos_profile_t));
 
         const rosidl_message_type_support_t* type_support_xrce = NULL;

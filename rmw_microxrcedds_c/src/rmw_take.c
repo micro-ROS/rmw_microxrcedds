@@ -53,26 +53,26 @@ rmw_take_with_info(
 
     rmw_uxrce_subscription_t* custom_subscription = (rmw_uxrce_subscription_t*)subscription->data;
 
-    if (!custom_subscription->micro_buffer_in_use)
+    // Find first related item in static buffer memory pool
+    rmw_uxrce_mempool_item_t* static_buffer_item = rmw_uxrce_find_static_input_buffer_by_owner((void*) custom_subscription);
+    if (static_buffer_item == NULL)
     {
         return RMW_RET_ERROR;
     }
 
+    rmw_uxrce_static_input_buffer_t* static_buffer = (rmw_uxrce_static_input_buffer_t*)static_buffer_item->data;
+
     ucdrBuffer temp_buffer;
     ucdr_init_buffer(
-        &temp_buffer, custom_subscription->micro_buffer[custom_subscription->history_read_index],
-        custom_subscription->micro_buffer_lenght[custom_subscription->history_read_index]);
+        &temp_buffer, 
+        static_buffer->buffer,
+        static_buffer->lenght);
 
     bool deserialize_rv = custom_subscription->type_support_callbacks->cdr_deserialize(
         &temp_buffer,
         ros_message);
 
-    custom_subscription->history_read_index = (custom_subscription->history_read_index + 1) %
-            RMW_UXRCE_MAX_HISTORY;
-    if (custom_subscription->history_write_index == custom_subscription->history_read_index)
-    {
-        custom_subscription->micro_buffer_in_use = false;
-    }
+    put_memory(&static_buffer_memory, static_buffer_item);
 
     if (taken != NULL)
     {
@@ -106,13 +106,6 @@ rmw_take_sequence(
     if (!is_uxrce_rmw_identifier_valid(subscription->implementation_identifier))
     {
         RMW_SET_ERROR_MSG("Wrong implementation");
-        return RMW_RET_ERROR;
-    }
-
-    rmw_uxrce_subscription_t* custom_subscription = (rmw_uxrce_subscription_t*)subscription->data;
-
-    if (!custom_subscription->micro_buffer_in_use)
-    {
         return RMW_RET_ERROR;
     }
 

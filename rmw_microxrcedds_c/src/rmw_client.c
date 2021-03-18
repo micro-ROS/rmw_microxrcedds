@@ -87,8 +87,6 @@ rmw_create_client(
         custom_client->owner_node = custom_node;
         custom_client->client_gid.implementation_identifier =
                 rmw_get_implementation_identifier();
-        custom_client->history_write_index = 0;
-        custom_client->history_read_index  = 0;
 
         const rosidl_service_type_support_t* type_support_xrce = NULL;
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
