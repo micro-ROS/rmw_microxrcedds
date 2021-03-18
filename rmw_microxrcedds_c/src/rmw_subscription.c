@@ -174,7 +174,8 @@ rmw_create_subscription(
 #ifdef RMW_UXRCE_USE_XML
         char subscriber_name[20];
         generate_name(&custom_subscription->subscriber_id, subscriber_name, sizeof(subscriber_name));
-        if (!build_subscriber_xml(subscriber_name, rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
+        if (!build_subscriber_xml(subscriber_name, rmw_uxrce_entity_naming_buffer,
+                sizeof(rmw_uxrce_entity_naming_buffer)))
         {
             RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
             goto fail;
@@ -218,7 +219,8 @@ rmw_create_subscription(
             *custom_node->context->creation_destroy_stream, custom_subscription->datareader_id,
             custom_subscription->subscriber_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
 #elif defined(RMW_UXRCE_USE_REFS)
-        if (!build_datareader_profile(topic_name, rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
+        if (!build_datareader_profile(topic_name, rmw_uxrce_entity_naming_buffer,
+                sizeof(rmw_uxrce_entity_naming_buffer)))
         {
             RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
             goto fail;

@@ -178,7 +178,8 @@ rmw_create_publisher(
   #ifdef RMW_UXRCE_USE_XML
         char publisher_name[20];
         generate_name(&custom_publisher->publisher_id, publisher_name, sizeof(publisher_name));
-        if (!build_publisher_xml(publisher_name, rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
+        if (!build_publisher_xml(publisher_name, rmw_uxrce_entity_naming_buffer,
+                sizeof(rmw_uxrce_entity_naming_buffer)))
         {
             RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
             goto fail;
@@ -224,7 +225,8 @@ rmw_create_publisher(
             custom_publisher->datawriter_id,
             custom_publisher->publisher_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
   #elif defined(RMW_UXRCE_USE_REFS)
-        if (!build_datawriter_profile(topic_name, rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
+        if (!build_datawriter_profile(topic_name, rmw_uxrce_entity_naming_buffer,
+                sizeof(rmw_uxrce_entity_naming_buffer)))
         {
             RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
             goto fail;

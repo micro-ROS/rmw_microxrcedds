@@ -66,7 +66,7 @@ void on_topic(
     {
         rmw_uxrce_subscription_t* custom_subscription =
                 (rmw_uxrce_subscription_t*)subscription_item->data;
-        
+
         // Check if topic is related to the subscription
         if ((custom_subscription->datareader_id.id == object_id.id) &&
                 (custom_subscription->datareader_id.type == object_id.type))
@@ -82,10 +82,10 @@ void on_topic(
             static_buffer->owner = (void*) custom_subscription;
             static_buffer->lenght = length;
 
-            if(!ucdr_deserialize_array_uint8_t(
-                ub,
-                static_buffer->buffer, 
-                length))
+            if (!ucdr_deserialize_array_uint8_t(
+                        ub,
+                        static_buffer->buffer,
+                        length))
             {
                 put_memory(&static_buffer_memory, memory_node);
             }
@@ -129,10 +129,10 @@ void on_request(
             static_buffer->lenght = length;
             static_buffer->related.sample_id = *sample_id;
 
-            if(!ucdr_deserialize_array_uint8_t(
-                ub,
-                static_buffer->buffer, 
-                length))
+            if (!ucdr_deserialize_array_uint8_t(
+                        ub,
+                        static_buffer->buffer,
+                        length))
             {
                 put_memory(&static_buffer_memory, memory_node);
             }
@@ -176,10 +176,10 @@ void on_reply(
             static_buffer->lenght = length;
             static_buffer->related.reply_id = reply_id;
 
-            if(!ucdr_deserialize_array_uint8_t(
-                ub,
-                static_buffer->buffer, 
-                length))
+            if (!ucdr_deserialize_array_uint8_t(
+                        ub,
+                        static_buffer->buffer,
+                        length))
             {
                 put_memory(&static_buffer_memory, memory_node);
             }

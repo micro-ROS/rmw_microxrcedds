@@ -192,14 +192,15 @@ typedef struct rmw_uxrce_node_t
 typedef struct rmw_uxrce_static_input_buffer_t
 {
     rmw_uxrce_mempool_item_t mem;
-    
+
     uint8_t buffer[RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
     size_t lenght;
     void* owner;
 
-    union {
+    union
+    {
         int64_t reply_id;
-        SampleIdentity sample_id;        
+        SampleIdentity sample_id;
     } related;
 } rmw_uxrce_static_input_buffer_t;
 
@@ -283,6 +284,7 @@ void rmw_uxrce_fini_service_memory(
 void rmw_uxrce_fini_topic_memory(
         rmw_uxrce_topic_t* topic);
 
-rmw_uxrce_mempool_item_t* rmw_uxrce_find_static_input_buffer_by_owner(void* owner);
+rmw_uxrce_mempool_item_t* rmw_uxrce_find_static_input_buffer_by_owner(
+        void* owner);
 
 #endif  // TYPES_H_

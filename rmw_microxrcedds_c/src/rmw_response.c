@@ -110,7 +110,7 @@ rmw_take_response(
 
     ucdrBuffer temp_buffer;
     ucdr_init_buffer(
-        &temp_buffer, 
+        &temp_buffer,
         static_buffer->buffer,
         static_buffer->lenght);
 

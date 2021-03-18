@@ -97,7 +97,8 @@ rmw_ret_t rmw_graph_init(
     if (!build_topic_xml(
                 graph_topic_name,
                 (message_type_support_callbacks_t*)(graph_info->graph_type_support->data),
-                &graph_subscription_qos_policies, rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
+                &graph_subscription_qos_policies, rmw_uxrce_entity_naming_buffer,
+                sizeof(rmw_uxrce_entity_naming_buffer)))
     {
         RMW_SET_ERROR_MSG("Failed to generate xml request for graph topic creation");
         ret = RMW_RET_ERROR;
@@ -112,7 +113,8 @@ rmw_ret_t rmw_graph_init(
     if (!build_datareader_xml(
                 graph_topic_name,
                 (message_type_support_callbacks_t*)(graph_info->graph_type_support->data),
-                &graph_subscription_qos_policies, rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
+                &graph_subscription_qos_policies, rmw_uxrce_entity_naming_buffer,
+                sizeof(rmw_uxrce_entity_naming_buffer)))
     {
         RMW_SET_ERROR_MSG("Failed to generate xml request for graph datareader creation");
         ret = RMW_RET_ERROR;

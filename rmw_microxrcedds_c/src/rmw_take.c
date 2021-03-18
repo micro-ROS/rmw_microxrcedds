@@ -54,7 +54,8 @@ rmw_take_with_info(
     rmw_uxrce_subscription_t* custom_subscription = (rmw_uxrce_subscription_t*)subscription->data;
 
     // Find first related item in static buffer memory pool
-    rmw_uxrce_mempool_item_t* static_buffer_item = rmw_uxrce_find_static_input_buffer_by_owner((void*) custom_subscription);
+    rmw_uxrce_mempool_item_t* static_buffer_item = rmw_uxrce_find_static_input_buffer_by_owner(
+        (void*) custom_subscription);
     if (static_buffer_item == NULL)
     {
         return RMW_RET_ERROR;
@@ -64,7 +65,7 @@ rmw_take_with_info(
 
     ucdrBuffer temp_buffer;
     ucdr_init_buffer(
-        &temp_buffer, 
+        &temp_buffer,
         static_buffer->buffer,
         static_buffer->lenght);
 

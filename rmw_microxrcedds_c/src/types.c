@@ -248,10 +248,12 @@ void rmw_uxrce_fini_topic_memory(
     put_memory(&topics_memory, &topic->mem);
 }
 
-rmw_uxrce_mempool_item_t* rmw_uxrce_find_static_input_buffer_by_owner(void* owner){
+rmw_uxrce_mempool_item_t* rmw_uxrce_find_static_input_buffer_by_owner(
+        void* owner)
+{
     rmw_uxrce_mempool_item_t* static_buffer_item = static_buffer_memory.allocateditems;
     while (static_buffer_item != NULL)
-    {   
+    {
         rmw_uxrce_static_input_buffer_t* data = (rmw_uxrce_static_input_buffer_t*)static_buffer_item->data;
         if (data->owner == owner)
         {

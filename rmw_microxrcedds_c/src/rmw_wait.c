@@ -104,7 +104,7 @@ rmw_wait(
         {
             rmw_uxrce_service_t* custom_service = (rmw_uxrce_service_t*)services->services[i];
 
-            if (NULL == rmw_uxrce_find_static_input_buffer_by_owner((void *) custom_service))
+            if (NULL == rmw_uxrce_find_static_input_buffer_by_owner((void*) custom_service))
             {
                 services->services[i] = NULL;
             }
@@ -122,7 +122,7 @@ rmw_wait(
         {
             rmw_uxrce_client_t* custom_client = (rmw_uxrce_client_t*)clients->clients[i];
 
-            if (NULL == rmw_uxrce_find_static_input_buffer_by_owner((void *) custom_client))
+            if (NULL == rmw_uxrce_find_static_input_buffer_by_owner((void*) custom_client))
             {
                 clients->clients[i] = NULL;
             }
@@ -141,7 +141,7 @@ rmw_wait(
             rmw_uxrce_subscription_t* custom_subscription =
                     (rmw_uxrce_subscription_t*)subscriptions->subscribers[i];
 
-            if (NULL == rmw_uxrce_find_static_input_buffer_by_owner((void *) custom_subscription))
+            if (NULL == rmw_uxrce_find_static_input_buffer_by_owner((void*) custom_subscription))
             {
                 subscriptions->subscribers[i] = NULL;
             }
