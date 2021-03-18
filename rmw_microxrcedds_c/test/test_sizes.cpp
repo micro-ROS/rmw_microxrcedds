@@ -38,7 +38,7 @@ TEST_F(RMWBaseTest, estimate_default_static_memory)
     unsigned long node_size = sizeof(rmw_uxrce_node_t);
     unsigned long static_input_buffer_size = sizeof(rmw_uxrce_static_input_buffer_t);
 
-    fprintf(stderr, "# Static memory analisys \n");
+    fprintf(stderr, "# Static memory analysis \n");
     fprintf(stderr, "_**Default configuration**_\n");
     fprintf(stderr, "\n");
 
