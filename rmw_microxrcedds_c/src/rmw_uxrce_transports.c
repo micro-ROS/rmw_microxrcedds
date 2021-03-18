@@ -36,7 +36,7 @@ rmw_ret_t rmw_uxrce_transport_init(
         if (0 != tcgetattr(fd, &tty_config))
         {
             RMW_SET_ERROR_MSG("rmw_transport_init SERIAL: tgetattr error");
-            return(RMW_RET_ERROR);
+            return RMW_RET_ERROR;
         }
 
         /* Setting CONTROL OPTIONS. */
@@ -79,7 +79,7 @@ rmw_ret_t rmw_uxrce_transport_init(
         if (0 != tcsetattr(fd, TCSANOW, &tty_config))
         {
             RMW_SET_ERROR_MSG("rmw_transport_init SERIAL: tcsetattr error");
-            return(RMW_RET_ERROR);
+            return RMW_RET_ERROR;
         }
 
         uxrSerialTransport* serial_transport = (NULL == context_impl)
@@ -89,13 +89,13 @@ rmw_ret_t rmw_uxrce_transport_init(
         if (!uxr_init_serial_transport(serial_transport, fd, 0, 1))
         {
             RMW_SET_ERROR_MSG("rmw_transport_init SERIAL: cannot init XRCE transport");
-            return(RMW_RET_ERROR);
+            return RMW_RET_ERROR;
         }
     }
     else
     {
         RMW_SET_ERROR_MSG("rmw_transport_init SERIAL: invalid serial device file descriptor");
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
     printf("micro-ROS transport: connected using serial mode, dev: '%s'\n",
             serial_device);
@@ -119,7 +119,7 @@ rmw_ret_t rmw_uxrce_transport_init(
     if (!uxr_init_udp_transport(udp_transport, ip_protocol, agent_ip, agent_port))
     {
         RMW_SET_ERROR_MSG("rmw_transport_init UDP: cannot init XRCE transport");
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
     printf("micro-ROS transport: connected using UDP mode, ip: '%s', port: '%s'\n",
             agent_ip, agent_port);
@@ -134,8 +134,8 @@ rmw_ret_t rmw_uxrce_transport_init(
     if (!uxr_init_custom_transport(custom_transport, args))
     {
         RMW_SET_ERROR_MSG("rmw_transport_init CUSTOM: cannot init XRCE transport");
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
 #endif /* ifdef RMW_UXRCE_TRANSPORT_SERIAL */
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 }

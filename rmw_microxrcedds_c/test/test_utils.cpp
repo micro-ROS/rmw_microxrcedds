@@ -35,20 +35,20 @@ void ConfigureDummyTypeSupport(
     dummy_type_support->callbacks.cdr_serialize =
             [](const void* untyped_ros_message, ucdrBuffer* cdr)
             {
-                return(true);
+                return true;
             };
     dummy_type_support->callbacks.cdr_deserialize =
             [](ucdrBuffer* cdr, void* untyped_ros_message)
             {
-                return(true);
+                return true;
             };
     dummy_type_support->callbacks.get_serialized_size = [](const void*)
             {
-                return(uint32_t(0u));
+                return uint32_t(0u);
             };
     dummy_type_support->callbacks.max_serialized_size = []()
             {
-                return(size_t(0u));
+                return size_t(0u);
             };
 
     dummy_type_support->type_support.typesupport_identifier =
@@ -57,7 +57,7 @@ void ConfigureDummyTypeSupport(
     dummy_type_support->type_support.func =
             [](const rosidl_message_type_support_t* type_support, const char* id)
             {
-                return(type_support);
+                return type_support;
             };
 }
 
@@ -99,7 +99,7 @@ void ConfigureDummyServiceTypeSupport(
                     "message_namespace",
                     0,
                     aux);
-                return(&aux->type_support);
+                return &aux->type_support;
             };
 
     dummy_type_support->callbacks.request_members_ = []() -> const rosidl_message_type_support_t*
@@ -112,7 +112,7 @@ void ConfigureDummyServiceTypeSupport(
                     "message_namespace",
                     0,
                     aux);
-                return(&aux->type_support);
+                return &aux->type_support;
             };
 
     dummy_type_support->type_support.typesupport_identifier =
@@ -121,7 +121,7 @@ void ConfigureDummyServiceTypeSupport(
     dummy_type_support->type_support.func =
             [](const rosidl_service_type_support_t* type_support, const char* id)
             {
-                return(type_support);
+                return type_support;
             };
 }
 
@@ -167,5 +167,5 @@ bool CheckErrorState()
     // if (ok) std::cout << error_state->file
     //  << ":" << error_state->line_number << " -> " << error_state->message << std::endl;
 
-    return(ok);
+    return ok;
 }

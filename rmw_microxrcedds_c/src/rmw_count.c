@@ -51,7 +51,7 @@ __rmw_count_entities(
 
     if (!graph_info->initialized)
     {
-        return(ret);
+        return ret;
     }
 
     micro_ros_msgs__msg__Graph* graph_data = micro_ros_msgs__msg__Graph__create();
@@ -81,7 +81,7 @@ __rmw_count_entities(
 
 fini:
     micro_ros_msgs__msg__Graph__destroy(graph_data);
-    return(ret);
+    return ret;
 }
 
 #endif  // RMW_UXRCE_GRAPH
@@ -103,7 +103,7 @@ rmw_count_publishers(
     (void)topic_name;
     (void)count;
     RMW_SET_ERROR_MSG("Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }
 
@@ -124,6 +124,6 @@ rmw_count_subscribers(
     (void)topic_name;
     (void)count;
     RMW_SET_ERROR_MSG("Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }

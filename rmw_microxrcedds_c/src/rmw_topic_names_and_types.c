@@ -45,7 +45,7 @@ rmw_get_topic_names_and_types(
 
     if (RMW_RET_OK != rmw_names_and_types_check_zero(topic_names_and_types))
     {
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
 
     // Get micro_ros_msgs/msg/Graph instance
@@ -56,7 +56,7 @@ rmw_get_topic_names_and_types(
 
     if (!graph_info->initialized)
     {
-        return(ret);
+        return ret;
     }
 
     micro_ros_msgs__msg__Graph* graph_data = micro_ros_msgs__msg__Graph__create();
@@ -173,13 +173,13 @@ rmw_get_topic_names_and_types(
 
 fini:
     micro_ros_msgs__msg__Graph__destroy(graph_data);
-    return(ret);
+    return ret;
 #else
     (void)node;
     (void)allocator;
     (void)no_demangle;
     (void)topic_names_and_types;
     RMW_SET_ERROR_MSG("Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }

@@ -44,7 +44,7 @@ rmw_init_publisher_allocation(
     (void)message_bounds;
     (void)allocation;
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -53,7 +53,7 @@ rmw_fini_publisher_allocation(
 {
     (void)allocation;
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }
 
 rmw_publisher_t*
@@ -243,12 +243,12 @@ rmw_create_publisher(
             goto fail;
         }
     }
-    return(rmw_publisher);
+    return rmw_publisher;
 
 fail:
     rmw_uxrce_fini_publisher_memory(rmw_publisher);
     rmw_publisher = NULL;
-    return(rmw_publisher);
+    return rmw_publisher;
 }
 
 rmw_ret_t
@@ -287,12 +287,12 @@ pub_count_sub_fail:
     {
         ret = RMW_RET_ERROR;
     }
-    return(ret);
+    return ret;
 #else
     (void)publisher;
     (void)subscription_count;
     RMW_SET_ERROR_MSG("Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }
 
@@ -302,7 +302,7 @@ rmw_publisher_assert_liveliness(
 {
     (void)publisher;
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -315,7 +315,7 @@ rmw_publisher_get_actual_qos(
     rmw_uxrce_publisher_t* custom_publisher = (rmw_uxrce_publisher_t*)publisher->data;
     qos = &custom_publisher->qos;
 
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 }
 
 rmw_ret_t
@@ -329,7 +329,7 @@ rmw_borrow_loaned_message(
     (void)ros_message;
 
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -341,7 +341,7 @@ rmw_return_loaned_message_from_publisher(
     (void)loaned_message;
 
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -407,5 +407,5 @@ rmw_destroy_publisher(
         rmw_uxrce_fini_publisher_memory(publisher);
     }
 
-    return(result_ret);
+    return result_ret;
 }

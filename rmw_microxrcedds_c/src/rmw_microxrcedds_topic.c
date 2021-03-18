@@ -94,7 +94,7 @@ create_topic(
     }
 
 fail:
-    return(custom_topic);
+    return custom_topic;
 }
 
 rmw_ret_t destroy_topic(
@@ -117,7 +117,7 @@ rmw_ret_t destroy_topic(
         rmw_uxrce_fini_topic_memory(topic);
         result_ret = RMW_RET_OK;
     }
-    return(result_ret);
+    return result_ret;
 }
 
 size_t topic_count(
@@ -148,5 +148,5 @@ size_t topic_count(
         }
     }
 
-    return(count);
+    return count;
 }

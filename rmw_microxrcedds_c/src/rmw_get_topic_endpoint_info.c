@@ -56,7 +56,7 @@ __endpoint_kind_to_endpoint_type(
             break;
         }
     }
-    return(endpoint_type);
+    return endpoint_type;
 }
 
 static rmw_ret_t
@@ -78,7 +78,7 @@ __rmw_get_endpoint_info_by_topic(
 
     if (RMW_RET_OK != rmw_topic_endpoint_info_array_check_zero(endpoints_info))
     {
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
 
     // Get micro_ros_msgs/msg/Graph instance
@@ -89,7 +89,7 @@ __rmw_get_endpoint_info_by_topic(
 
     if (!graph_info->initialized)
     {
-        return(ret);
+        return ret;
     }
 
     micro_ros_msgs__msg__Graph* graph_data = micro_ros_msgs__msg__Graph__create();
@@ -187,7 +187,7 @@ __rmw_get_endpoint_info_by_topic(
 
 fini:
     micro_ros_msgs__msg__Graph__destroy(graph_data);
-    return(ret);
+    return ret;
 }
 
 #endif  // RMW_UXRCE_GRAPH
@@ -215,7 +215,7 @@ rmw_get_publishers_info_by_topic(
     (void)no_mangle;
     (void)publishers_info;
     RMW_SET_ERROR_MSG("Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }
 
@@ -242,6 +242,6 @@ rmw_get_subscriptions_info_by_topic(
     (void)no_mangle;
     (void)subscriptions_info;
     RMW_SET_ERROR_MSG("Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }

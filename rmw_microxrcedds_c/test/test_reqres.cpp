@@ -36,12 +36,12 @@ dummy_service_type_support_t dummy_type_support;
 
 const rosidl_message_type_support_t* get_request_members()
 {
-    return(&dummy_type_support.request_members.type_support);
+    return &dummy_type_support.request_members.type_support;
 }
 
 const rosidl_message_type_support_t* get_response_members()
 {
-    return(&dummy_type_support.response_members.type_support);
+    return &dummy_type_support.response_members.type_support;
 }
 
 class TestReqRes : public RMWBaseTest
@@ -81,7 +81,7 @@ TEST_F(TestReqRes, request_and_reply)
                         reinterpret_cast <const rosidl_runtime_c__String*>(untyped_service_req_message);
 
                 ret = ucdr_serialize_string(cdr, service_req_message->data);
-                return(ret);
+                return ret;
             };
     dummy_type_support.request_members.callbacks.cdr_deserialize =
             [](ucdrBuffer* cdr, void* untyped_service_req_message) -> bool
@@ -95,7 +95,7 @@ TEST_F(TestReqRes, request_and_reply)
                 {
                     service_req_message->size = strlen(service_req_message->data);
                 }
-                return(ret);
+                return ret;
             };
     dummy_type_support.request_members.callbacks.get_serialized_size =
             [](const void* untyped_service_req_message) -> uint32_t
@@ -103,11 +103,11 @@ TEST_F(TestReqRes, request_and_reply)
                 const rosidl_runtime_c__String* service_req_message =
                         reinterpret_cast <const rosidl_runtime_c__String*>(untyped_service_req_message);
 
-                return(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + service_req_message->size + 8);
+                return MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + service_req_message->size + 8;
             };
     dummy_type_support.request_members.callbacks.max_serialized_size = []() -> size_t
             {
-                return((size_t)(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + 1));
+                return (size_t)(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + 1);
             };
 
     dummy_type_support.response_members.callbacks.cdr_serialize       =

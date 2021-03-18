@@ -47,7 +47,7 @@ rmw_init_options_init(
     {
         RMW_SET_ERROR_MSG("expected zero-initialized init_options");
 
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
 
     init_options->instance_id = 0;
@@ -65,7 +65,7 @@ rmw_init_options_init(
     else
     {
         RMW_SET_ERROR_MSG("default serial port configuration overflow");
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
     if (strlen(RMW_UXRCE_DEFAULT_UDP_IP) <= MAX_IP_LEN)
@@ -75,7 +75,7 @@ rmw_init_options_init(
     else
     {
         RMW_SET_ERROR_MSG("default ip configuration overflow");
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
 
     if (strlen(RMW_UXRCE_DEFAULT_UDP_PORT) <= MAX_PORT_LEN)
@@ -85,7 +85,7 @@ rmw_init_options_init(
     else
     {
         RMW_SET_ERROR_MSG("default port configuration overflow");
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
     init_options->impl->transport_params.framing  = rmw_uxrce_transport_default_params.framing;
@@ -103,7 +103,7 @@ rmw_init_options_init(
         init_options->impl->transport_params.client_key = rand();
     } while (init_options->impl->transport_params.client_key == 0);
 
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 }
 
 rmw_ret_t
@@ -122,13 +122,13 @@ rmw_init_options_copy(
     {
         RMW_SET_ERROR_MSG("expected zero-initialized dst");
 
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
     memcpy(dst, src, sizeof(rmw_init_options_t));
     dst->impl = rmw_allocate(sizeof(rmw_init_options_impl_t));
     memcpy(dst->impl, src->impl, sizeof(rmw_init_options_impl_t));
 
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 }
 
 rmw_ret_t
@@ -146,7 +146,7 @@ rmw_init_options_fini(
     rmw_free(init_options->impl);
 
     *init_options = rmw_get_zero_initialized_init_options();
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 }
 
 rmw_ret_t
@@ -172,7 +172,7 @@ rmw_init(
     {
         RMW_SET_ERROR_MSG("Not available session memory node");
 
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
 
     rmw_context_impl_t* context_impl = (rmw_context_impl_t*)memory_node->data;
@@ -214,7 +214,7 @@ rmw_init(
         context->impl, options->impl, NULL);
     if (RMW_RET_OK != transport_init_ret)
     {
-        return(transport_init_ret);
+        return transport_init_ret;
     }
 
     uxr_init_session(
@@ -247,7 +247,7 @@ rmw_init(
     {
         CLOSE_TRANSPORT(&context_impl->transport);
         RMW_SET_ERROR_MSG("failed to create node session on Micro ROS Agent.");
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
 
 #ifdef RMW_UXRCE_GRAPH
@@ -255,11 +255,11 @@ rmw_init(
     if (RMW_RET_OK != rmw_graph_init(context_impl, &context_impl->graph_info))
     {
         uxr_delete_session(&context_impl->session);
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
 #endif  // RMW_UXRCE_GRAPH
 
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 }
 
 rmw_ret_t
@@ -280,7 +280,7 @@ rmw_shutdown(
         *context = rmw_get_zero_initialized_context();
     }
 
-    return(ret);
+    return ret;
 }
 
 rmw_ret_t
@@ -309,5 +309,5 @@ rmw_context_fini(
 
     context->impl = NULL;
 
-    return(ret);
+    return ret;
 }

@@ -28,7 +28,7 @@ rmw_send_request(
     if (!is_uxrce_rmw_identifier_valid(client->implementation_identifier))
     {
         RMW_SET_ERROR_MSG("Wrong implementation");
-        return(RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+        return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
     }
 
     rmw_uxrce_client_t* custom_client = (rmw_uxrce_client_t*)client->data;
@@ -51,7 +51,7 @@ rmw_send_request(
     if (UXR_INVALID_REQUEST_ID == *sequence_id)
     {
         RMW_SET_ERROR_MSG("Micro XRCE-DDS service request error.");
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
 
     if (UXR_BEST_EFFORT_STREAM == custom_client->stream_id.type)
@@ -64,7 +64,7 @@ rmw_send_request(
             &custom_node->context->session, RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT);
     }
 
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 }
 
 rmw_ret_t
@@ -84,14 +84,14 @@ rmw_take_request(
     if (!is_uxrce_rmw_identifier_valid(service->implementation_identifier))
     {
         RMW_SET_ERROR_MSG("Wrong implementation");
-        return(RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+        return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
     }
 
     rmw_uxrce_service_t* custom_service = (rmw_uxrce_service_t*)service->data;
 
     if (!custom_service->micro_buffer_in_use)
     {
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
 
     // Conversion from SampleIdentity to rmw_request_id_t
@@ -137,9 +137,9 @@ rmw_take_request(
     if (!deserialize_rv)
     {
         RMW_SET_ERROR_MSG("Typesupport desserialize error.");
-        return(RMW_RET_ERROR);
+        return RMW_RET_ERROR;
     }
 
     EPROS_PRINT_TRACE()
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 }

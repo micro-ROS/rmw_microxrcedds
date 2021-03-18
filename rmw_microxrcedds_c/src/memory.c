@@ -21,7 +21,7 @@
 bool has_memory(
         rmw_uxrce_mempool_t* mem)
 {
-    return(mem->freeitems != NULL ? true : false);
+    return mem->freeitems != NULL ? true : false;
 }
 
 rmw_uxrce_mempool_item_t* get_memory(
@@ -62,7 +62,7 @@ rmw_uxrce_mempool_item_t* get_memory(
         item = get_memory(mem);
 #endif /* ifdef RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS */
     }
-    return(item);
+    return item;
 }
 
 void put_memory(

@@ -35,7 +35,7 @@ rmw_ret_t rmw_uros_init_options(
     if (NULL == rmw_options)
     {
         RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
     rmw_ret_t ret = RMW_RET_OK;
     // TODO(pablogs9): Is the impl allocated at this point?
@@ -68,7 +68,7 @@ rmw_ret_t rmw_uros_init_options(
     (void)argc;
     (void)argv;
 #endif /* if defined(RMW_UXRCE_TRANSPORT_SERIAL) */
-    return(ret);
+    return ret;
 }
 
 rmw_ret_t rmw_uros_options_set_serial_device(
@@ -79,7 +79,7 @@ rmw_ret_t rmw_uros_options_set_serial_device(
     if (NULL == rmw_options)
     {
         RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
 
     if (dev != NULL && strlen(dev) <= MAX_SERIAL_DEVICE)
@@ -89,15 +89,15 @@ rmw_ret_t rmw_uros_options_set_serial_device(
     else
     {
         RMW_SET_ERROR_MSG("serial port configuration error");
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 #else
     (void)dev;
     (void)rmw_options;
 
     RMW_SET_ERROR_MSG("RMW_UXRCE_TRANSPORT_SERIAL not set.");
-    return(RMW_RET_INVALID_ARGUMENT);
+    return RMW_RET_INVALID_ARGUMENT;
 #endif /* if defined(RMW_UXRCE_TRANSPORT_SERIAL) */
 }
 
@@ -110,7 +110,7 @@ rmw_ret_t rmw_uros_options_set_udp_address(
     if (NULL == rmw_options)
     {
         RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
 
     if (ip != NULL && strlen(ip) <= MAX_IP_LEN)
@@ -120,7 +120,7 @@ rmw_ret_t rmw_uros_options_set_udp_address(
     else
     {
         RMW_SET_ERROR_MSG("default ip configuration error");
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
 
     if (port != NULL && strlen(port) <= MAX_PORT_LEN)
@@ -130,17 +130,17 @@ rmw_ret_t rmw_uros_options_set_udp_address(
     else
     {
         RMW_SET_ERROR_MSG("default port configuration error");
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
 
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 #else
     (void)ip;
     (void)port;
     (void)rmw_options;
 
     RMW_SET_ERROR_MSG("RMW_UXRCE_TRANSPORT_UDP not set.");
-    return(RMW_RET_INVALID_ARGUMENT);
+    return RMW_RET_INVALID_ARGUMENT;
 #endif /* ifdef RMW_UXRCE_TRANSPORT_UDP */
 }
 
@@ -168,10 +168,10 @@ bool on_agent_found(
             sprintf(rmw_options->impl->transport_params.agent_port, "%d", port);
             sprintf(rmw_options->impl->transport_params.agent_address, "%s", ip);
             uxr_delete_session(&session);
-            return(true);
+            return true;
         }
     }
-    return(false);
+    return false;
 }
 
 #endif /* if defined(RMW_UXRCE_TRANSPORT_UDP) && defined(UCLIENT_PROFILE_DISCOVERY) */
@@ -183,7 +183,7 @@ rmw_ret_t rmw_uros_discover_agent(
     if (NULL == rmw_options)
     {
         RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
 
     memset(rmw_options->impl->transport_params.agent_address, 0, MAX_IP_LEN);
@@ -191,12 +191,12 @@ rmw_ret_t rmw_uros_discover_agent(
 
     uxr_discovery_agents_default(1, 1000, on_agent_found, (void*)rmw_options);
 
-    return((strlen(rmw_options->impl->transport_params.agent_address) > 0) ? RMW_RET_OK : RMW_RET_TIMEOUT);
+    return (strlen(rmw_options->impl->transport_params.agent_address) > 0) ? RMW_RET_OK : RMW_RET_TIMEOUT;
 #else
     (void)rmw_options;
 
     RMW_SET_ERROR_MSG("RMW_UXRCE_TRANSPORT_UDP or UCLIENT_PROFILE_DISCOVERY not set.");
-    return(RMW_RET_INVALID_ARGUMENT);
+    return RMW_RET_INVALID_ARGUMENT;
 #endif /* if defined(RMW_UXRCE_TRANSPORT_UDP) && defined(UCLIENT_PROFILE_DISCOVERY) */
 }
 
@@ -207,12 +207,12 @@ rmw_ret_t rmw_uros_options_set_client_key(
     if (NULL == rmw_options)
     {
         RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
 
     rmw_options->impl->transport_params.client_key = client_key;
 
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 }
 
 rmw_ret_t rmw_uros_ping_agent(
@@ -240,7 +240,7 @@ rmw_ret_t rmw_uros_ping_agent(
 
         if (RMW_RET_OK != ret)
         {
-            return(ret);
+            return ret;
         }
 
         success = uxr_ping_agent_attempts(&transport.comm, timeout_ms, attempts);
@@ -258,7 +258,7 @@ rmw_ret_t rmw_uros_ping_agent(
         } while (NULL != item && !success);
     }
 
-    return(success ? RMW_RET_OK : RMW_RET_ERROR);
+    return success ? RMW_RET_OK : RMW_RET_ERROR;
 }
 
 void rmw_uros_set_continous_serialization_callbacks(
@@ -298,9 +298,9 @@ rmw_ret_t rmw_uros_set_custom_transport(
     else
     {
         RMW_SET_ERROR_MSG("Uninitialised arguments.");
-        return(RMW_RET_INVALID_ARGUMENT);
+        return RMW_RET_INVALID_ARGUMENT;
     }
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 }
 
 #endif //RMW_UXRCE_TRANSPORT_CUSTOM

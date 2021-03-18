@@ -42,7 +42,7 @@ rmw_init_subscription_allocation(
     (void)message_bounds;
     (void)allocation;
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
@@ -51,7 +51,7 @@ rmw_fini_subscription_allocation(
 {
     (void)allocation;
     RMW_SET_ERROR_MSG("function not implemented");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 }
 
 rmw_subscription_t*
@@ -81,12 +81,12 @@ rmw_create_subscription(
     else if (!topic_name || strlen(topic_name) == 0)
     {
         RMW_SET_ERROR_MSG("subscription topic is null or empty string");
-        return(NULL);
+        return NULL;
     }
     else if (!qos_policies)
     {
         RMW_SET_ERROR_MSG("qos_profile is null");
-        return(NULL);
+        return NULL;
     }
     else
     {
@@ -256,12 +256,12 @@ rmw_create_subscription(
             *custom_node->context->creation_destroy_stream, custom_subscription->datareader_id,
             data_request_stream_id, &delivery_control);
     }
-    return(rmw_subscription);
+    return rmw_subscription;
 
 fail:
     rmw_uxrce_fini_subscription_memory(rmw_subscription);
     rmw_subscription = NULL;
-    return(rmw_subscription);
+    return rmw_subscription;
 }
 
 rmw_ret_t
@@ -300,12 +300,12 @@ sub_count_pub_fail:
     {
         ret = RMW_RET_ERROR;
     }
-    return(ret);
+    return ret;
 #else
     (void)subscription;
     (void)publisher_count;
     RMW_SET_ERROR_MSG("Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
-    return(RMW_RET_UNSUPPORTED);
+    return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }
 
@@ -319,7 +319,7 @@ rmw_subscription_get_actual_qos(
     rmw_uxrce_subscription_t* custom_subscription = (rmw_uxrce_subscription_t*)subscription->data;
     qos = &custom_subscription->qos;
 
-    return(RMW_RET_OK);
+    return RMW_RET_OK;
 }
 
 rmw_ret_t
@@ -387,5 +387,5 @@ rmw_destroy_subscription(
         rmw_uxrce_fini_subscription_memory(subscription);
     }
 
-    return(result_ret);
+    return result_ret;
 }

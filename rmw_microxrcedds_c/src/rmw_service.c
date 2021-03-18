@@ -182,12 +182,12 @@ rmw_create_service(
             *custom_node->context->creation_destroy_stream, custom_service->service_id,
             data_request_stream_id, &delivery_control);
     }
-    return(rmw_service);
+    return rmw_service;
 
 fail:
     rmw_uxrce_fini_service_memory(rmw_service);
     rmw_service = NULL;
-    return(rmw_service);
+    return rmw_service;
 }
 
 rmw_ret_t
@@ -244,5 +244,5 @@ rmw_destroy_service(
         rmw_uxrce_fini_service_memory(service);
     }
 
-    return(result_ret);
+    return result_ret;
 }
