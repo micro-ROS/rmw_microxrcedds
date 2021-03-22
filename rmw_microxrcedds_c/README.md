@@ -1,6 +1,6 @@
 # `rmw_microxrcedds_c`
 
-`rmw_microxrcedds_c` implements the ROS middleware interface using eProsima Micro XRCE-DDS middleware.
+`rmw_microxrcedds_c` implements the ROS middleware interface using *eProsima Micro XRCE-DDS* as a middleware.
 
 For more information see the repository level [README](../README.md)
 
