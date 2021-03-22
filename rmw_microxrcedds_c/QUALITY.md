@@ -120,7 +120,7 @@ Results of the latest linter tests can be found [here](https://github.com/micro-
 
 ## Platform Support [6]
 
-**rmw_microxrcedds_c** supports the all the platforms that are intended for. Those included GNU/Linux and POSIX systems and all the major embedded RTOS such as Zephyr RTOS, FreeRTOS and Nuttx. Windows is not included as Tier 1 platform because it is irrelevant for the nature of this package.
+**rmw_microxrcedds_c** is intended for micro-ROS and therefore to run on embedded platforms, so the officially supported platforms are not the same as in ROS 2. These include GNU/Linux and POSIX systems and all the major embedded RTOS such as Zephyr RTOS, FreeRTOS, and NuttX. Windows is not included as a Tier 1 platform because it is not relevant for this package due to its nature.
 
 More information about the supported platforms can be found in [PLATFORM_SUPPORT](PLATFORM_SUPPORT.md)
 
