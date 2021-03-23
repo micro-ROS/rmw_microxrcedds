@@ -94,7 +94,7 @@ Current results can be found here:
 
 [![codecov](https://codecov.io/gh/micro-ROS/rmw-microxrcedds/branch/foxy/graph/badge.svg?token=F7LUHZO0IV)](https://codecov.io/gh/micro-ROS/rmw-microxrcedds)
 
-**rmw_microxrcedds_c** checks the coverage of every commit. Last coverage can be seen in [Codecov](https://app.codecov.io/gh/micro-ROS/rmw-microxrcedds/commits).
+**rmw_microxrcedds_c** checks the coverage of every commit. Last coverage assessment can be seen in [Codecov](https://app.codecov.io/gh/micro-ROS/rmw-microxrcedds/commits).
 
 ### Linters and Static Analysis [4.v]
 
