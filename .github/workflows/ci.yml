@@ -12,7 +12,7 @@ on:
 jobs:
     rmw_microxrcedds_ci:
         runs-on: ubuntu-20.04
-        container: microros/micro-ros-agent:foxy
+        container: microros/micro-ros-agent:rolling
     
         steps:
         - uses: actions/checkout@v2
@@ -23,20 +23,20 @@ jobs:
           run: |
             git clone -b foxy https://github.com/eProsima/Micro-CDR src/Micro-CDR 
             git clone -b foxy https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client 
-            git clone -b foxy https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
+            git clone -b main https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
             touch src/rosidl_typesupport_microxrcedds/test/COLCON_IGNORE
             # Install coverage tools
             apt update && apt install -y python3-pip
             pip3 install gcovr
 
         - name: Build
-          run: . /opt/ros/foxy/setup.sh && colcon build --symlink-install --cmake-args -DBUILD_SHARED_LIBS=ON -DCMAKE_CXX_FLAGS="-ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline" -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE=ON -DCMAKE_C_FLAGS="-ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline" -DCMAKE_C_OUTPUT_EXTENSION_REPLACE=ON
+          run: . /opt/ros/$ROS_DISTRO/setup.sh && colcon build --symlink-install --cmake-args -DBUILD_SHARED_LIBS=ON -DCMAKE_CXX_FLAGS="-ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline" -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE=ON -DCMAKE_C_FLAGS="-ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline" -DCMAKE_C_OUTPUT_EXTENSION_REPLACE=ON
 
         - name: Test
           run: | 
-            . /opt/ros/foxy/setup.sh && . /uros_ws/install/local_setup.sh && ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v6 &
+            . /opt/ros/$ROS_DISTRO/setup.sh && . /uros_ws/install/local_setup.sh && ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v6 &
             sleep 1 
-            . /opt/ros/foxy/setup.sh && . install/local_setup.sh 
+            . /opt/ros/$ROS_DISTRO/setup.sh && . install/local_setup.sh 
             colcon test --packages-select=rmw_microxrcedds --return-code-on-test-failure --ctest-args -E "(cpplint)|(lint_cmake)|(uncrustify)|(xmllint)"
             ./build/rmw_microxrcedds/test/test-sizes 2> memanalisys_out
 
