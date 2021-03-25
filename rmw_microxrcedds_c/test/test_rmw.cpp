@@ -80,7 +80,7 @@ TEST(rmw_microxrcedds, sync_session)
 
     std::time_t timestamp_seconds = std::time(nullptr);
     ASSERT_EQ(rmw_uros_sync_session(&result_ns, 500), RMW_RET_OK);
-    
-    ASSERT_TRUE(result_ns/1000000000 == timestamp_seconds);
+    ASSERT_EQ(result_ns/1000000000, timestamp_seconds);
+
     ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
 }
