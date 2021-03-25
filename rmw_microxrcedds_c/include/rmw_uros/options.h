@@ -65,7 +65,7 @@ typedef struct rmw_uxrce_transport_params_t
  * \return RMW_RET_INVALID_ARGUMENT If no session is running or the synchronization fails.
  */
 rmw_ret_t rmw_uros_sync_session(
-        int64_t * result,
+        int64_t* result,
         const int timeout_ms);
 
 /**
