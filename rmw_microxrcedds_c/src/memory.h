@@ -26,7 +26,6 @@ typedef struct rmw_uxrce_mempool_item_t
     void*                            data;
 } rmw_uxrce_mempool_item_t;
 
-// #error "this should be locked!"
 
 typedef struct rmw_uxrce_mempool_t
 {
