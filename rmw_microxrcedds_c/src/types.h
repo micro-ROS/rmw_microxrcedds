@@ -194,7 +194,7 @@ typedef struct rmw_uxrce_static_input_buffer_t
     rmw_uxrce_mempool_item_t mem;
 
     uint8_t buffer[RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
-    size_t lenght;
+    size_t length;
     void* owner;
 
     union

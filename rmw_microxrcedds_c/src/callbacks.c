@@ -80,7 +80,7 @@ void on_topic(
 
             rmw_uxrce_static_input_buffer_t* static_buffer = (rmw_uxrce_static_input_buffer_t*)memory_node->data;
             static_buffer->owner = (void*) custom_subscription;
-            static_buffer->lenght = length;
+            static_buffer->length = length;
 
             if (!ucdr_deserialize_array_uint8_t(
                         ub,
@@ -126,7 +126,7 @@ void on_request(
 
             rmw_uxrce_static_input_buffer_t* static_buffer = (rmw_uxrce_static_input_buffer_t*)memory_node->data;
             static_buffer->owner = (void*) custom_service;
-            static_buffer->lenght = length;
+            static_buffer->length = length;
             static_buffer->related.sample_id = *sample_id;
 
             if (!ucdr_deserialize_array_uint8_t(
@@ -173,7 +173,7 @@ void on_reply(
 
             rmw_uxrce_static_input_buffer_t* static_buffer = (rmw_uxrce_static_input_buffer_t*)memory_node->data;
             static_buffer->owner = (void*) custom_client;
-            static_buffer->lenght = length;
+            static_buffer->length = length;
             static_buffer->related.reply_id = reply_id;
 
             if (!ucdr_deserialize_array_uint8_t(

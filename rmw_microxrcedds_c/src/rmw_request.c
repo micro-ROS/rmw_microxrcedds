@@ -122,7 +122,7 @@ rmw_take_request(
     ucdr_init_buffer(
         &temp_buffer,
         static_buffer->buffer,
-        static_buffer->lenght);
+        static_buffer->length);
 
     bool deserialize_rv = functions->cdr_deserialize(&temp_buffer, ros_request);
 

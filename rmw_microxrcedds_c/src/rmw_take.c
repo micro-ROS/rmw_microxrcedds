@@ -67,7 +67,7 @@ rmw_take_with_info(
     ucdr_init_buffer(
         &temp_buffer,
         static_buffer->buffer,
-        static_buffer->lenght);
+        static_buffer->length);
 
     bool deserialize_rv = custom_subscription->type_support_callbacks->cdr_deserialize(
         &temp_buffer,
