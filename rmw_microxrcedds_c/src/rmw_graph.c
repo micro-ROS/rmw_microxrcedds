@@ -45,7 +45,7 @@ rmw_ret_t rmw_graph_init(
     const char* graph_participant_name = "microros_graph";
 
     if (!build_participant_xml(microros_domain_id, graph_participant_name,
-            rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
+            rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
     {
         RMW_SET_ERROR_MSG("Failed to generate xml request for graph participant creation");
         return RMW_RET_ERROR;
@@ -55,7 +55,7 @@ rmw_ret_t rmw_graph_init(
         &context->session,
         *context->creation_destroy_stream,
         graph_info->participant_id, (int16_t)microros_domain_id,
-        rmw_uxrce_xml_buffer, UXR_REPLACE);
+        rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
 
     // Set graph subscription QoS policies
     // TODO (jamoralp): most of these QoS are not even being used.
@@ -76,7 +76,7 @@ rmw_ret_t rmw_graph_init(
     graph_info->subscriber_id = uxr_object_id(context->id_subscriber++, UXR_SUBSCRIBER_ID);
     char subscriber_name[20];
     generate_name(&graph_info->subscriber_id, subscriber_name, sizeof(subscriber_name));
-    if (!build_subscriber_xml(subscriber_name, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
+    if (!build_subscriber_xml(subscriber_name, rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
     {
         RMW_SET_ERROR_MSG("Failed to generate xml request for graph subscriber creation");
         ret = RMW_RET_ERROR;
@@ -85,7 +85,7 @@ rmw_ret_t rmw_graph_init(
 
     uint16_t subscriber_req = uxr_buffer_create_subscriber_xml(
         &context->session, *context->creation_destroy_stream, graph_info->subscriber_id,
-        graph_info->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
+        graph_info->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
 
     graph_info->datareader_id = uxr_object_id(context->id_datareader++, UXR_DATAREADER_ID);
     const char* graph_topic_name = "ros_to_microros_graph";
@@ -97,7 +97,8 @@ rmw_ret_t rmw_graph_init(
     if (!build_topic_xml(
                 graph_topic_name,
                 (message_type_support_callbacks_t*)(graph_info->graph_type_support->data),
-                &graph_subscription_qos_policies, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
+                &graph_subscription_qos_policies, rmw_uxrce_entity_naming_buffer,
+                sizeof(rmw_uxrce_entity_naming_buffer)))
     {
         RMW_SET_ERROR_MSG("Failed to generate xml request for graph topic creation");
         ret = RMW_RET_ERROR;
@@ -106,13 +107,14 @@ rmw_ret_t rmw_graph_init(
 
     uint16_t topic_req = uxr_buffer_create_topic_xml(
         &context->session, *context->creation_destroy_stream, graph_info->topic_id,
-        graph_info->participant_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
+        graph_info->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
 
     // Create graph datareader request
     if (!build_datareader_xml(
                 graph_topic_name,
                 (message_type_support_callbacks_t*)(graph_info->graph_type_support->data),
-                &graph_subscription_qos_policies, rmw_uxrce_xml_buffer, sizeof(rmw_uxrce_xml_buffer)))
+                &graph_subscription_qos_policies, rmw_uxrce_entity_naming_buffer,
+                sizeof(rmw_uxrce_entity_naming_buffer)))
     {
         RMW_SET_ERROR_MSG("Failed to generate xml request for graph datareader creation");
         ret = RMW_RET_ERROR;
@@ -121,7 +123,7 @@ rmw_ret_t rmw_graph_init(
 
     uint16_t datareader_req = uxr_buffer_create_datareader_xml(
         &context->session, *context->creation_destroy_stream, graph_info->datareader_id,
-        graph_info->subscriber_id, rmw_uxrce_xml_buffer, UXR_REPLACE);
+        graph_info->subscriber_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
 
     // Run session
     uint16_t requests[] = {

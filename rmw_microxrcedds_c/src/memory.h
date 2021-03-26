@@ -26,13 +26,13 @@ typedef struct rmw_uxrce_mempool_item_t
     void*                            data;
 } rmw_uxrce_mempool_item_t;
 
+
 typedef struct rmw_uxrce_mempool_t
 {
     struct rmw_uxrce_mempool_item_t* allocateditems;
     struct rmw_uxrce_mempool_item_t* freeitems;
 
     bool is_initialized;
-    size_t size;
     size_t element_size;
 } rmw_uxrce_mempool_t;
 

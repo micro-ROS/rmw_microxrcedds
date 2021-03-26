@@ -30,11 +30,7 @@
 
 // Static memory pools
 
-#ifdef RMW_UXRCE_TRANSPORT_USE_XML
-char rmw_uxrce_xml_buffer[RMW_UXRCE_XML_BUFFER_LENGTH];
-#elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
-char rmw_uxrce_profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
-#endif /* ifdef RMW_UXRCE_TRANSPORT_USE_XML */
+char rmw_uxrce_entity_naming_buffer[RMW_UXRCE_ENTITY_NAMING_BUFFER_LENGTH];
 
 rmw_uxrce_mempool_t session_memory;
 rmw_context_impl_t custom_sessions[RMW_UXRCE_MAX_SESSIONS];
@@ -57,6 +53,9 @@ rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 rmw_uxrce_mempool_t topics_memory;
 rmw_uxrce_topic_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
 
+rmw_uxrce_mempool_t static_buffer_memory;
+rmw_uxrce_static_input_buffer_t custom_static_buffers[RMW_UXRCE_MAX_HISTORY];
+
 // Memory init functions
 
 #define RMW_INIT_MEMORY(X)                              \
@@ -65,13 +64,13 @@ rmw_uxrce_topic_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
         rmw_uxrce_ ## X ## _t * array,                  \
         size_t size)                                    \
     {                                                   \
-        if (size > 0 && !memory->is_initialized){      \
+        if (size > 0 && !memory->is_initialized){       \
             memory->is_initialized = true;              \
             memory->element_size   = sizeof(*array);    \
             memory->allocateditems = NULL;              \
             memory->freeitems      = NULL;              \
                                                         \
-            for (size_t i = 0; i < size; i++){         \
+            for (size_t i = 0; i < size; i++){          \
                 put_memory(memory, &array[i].mem);      \
                 array[i].mem.data = (void*)&array[i];   \
                 array[0].mem.is_dynamic_memory = false; \
@@ -87,6 +86,7 @@ RMW_INIT_MEMORY(subscription)
 RMW_INIT_MEMORY(node)
 RMW_INIT_MEMORY(session)
 RMW_INIT_MEMORY(topic)
+RMW_INIT_MEMORY(static_input_buffer)
 
 // Memory management functions
 
@@ -246,4 +246,20 @@ void rmw_uxrce_fini_topic_memory(
         rmw_uxrce_topic_t* topic)
 {
     put_memory(&topics_memory, &topic->mem);
+}
+
+rmw_uxrce_mempool_item_t* rmw_uxrce_find_static_input_buffer_by_owner(
+        void* owner)
+{
+    rmw_uxrce_mempool_item_t* static_buffer_item = static_buffer_memory.allocateditems;
+    while (static_buffer_item != NULL)
+    {
+        rmw_uxrce_static_input_buffer_t* data = (rmw_uxrce_static_input_buffer_t*)static_buffer_item->data;
+        if (data->owner == owner)
+        {
+            return static_buffer_item;
+        }
+        static_buffer_item = static_buffer_item->next;
+    }
+    return NULL;
 }

@@ -92,35 +92,33 @@ rmw_take_response(
 
     rmw_uxrce_client_t* custom_client = (rmw_uxrce_client_t*)client->data;
 
-    if (!custom_client->micro_buffer_in_use)
+    // Find first related item in static buffer memory pool
+    rmw_uxrce_mempool_item_t* static_buffer_item = rmw_uxrce_find_static_input_buffer_by_owner((void*) custom_client);
+    if (static_buffer_item == NULL)
     {
         return RMW_RET_ERROR;
     }
 
-    request_header->request_id.sequence_number =
-            custom_client->reply_id[custom_client->history_read_index];
+    rmw_uxrce_static_input_buffer_t* static_buffer = (rmw_uxrce_static_input_buffer_t*)static_buffer_item->data;
+
+    request_header->request_id.sequence_number = static_buffer->related.reply_id;
 
     const rosidl_message_type_support_t* res_members =
             custom_client->type_support_callbacks->response_members_();
     const message_type_support_callbacks_t* functions =
             (const message_type_support_callbacks_t*)res_members->data;
 
-
     ucdrBuffer temp_buffer;
     ucdr_init_buffer(
-        &temp_buffer, custom_client->micro_buffer[custom_client->history_read_index],
-        custom_client->micro_buffer_lenght[custom_client->history_read_index]);
+        &temp_buffer,
+        static_buffer->buffer,
+        static_buffer->length);
 
     bool deserialize_rv = functions->cdr_deserialize(
         &temp_buffer,
         ros_response);
 
-    custom_client->history_read_index = (custom_client->history_read_index + 1) %
-            RMW_UXRCE_MAX_HISTORY;
-    if (custom_client->history_write_index == custom_client->history_read_index)
-    {
-        custom_client->micro_buffer_in_use = false;
-    }
+    put_memory(&static_buffer_memory, static_buffer_item);
 
     if (taken != NULL)
     {

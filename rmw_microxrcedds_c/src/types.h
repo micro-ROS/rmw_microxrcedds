@@ -123,10 +123,6 @@ typedef struct rmw_uxrce_service_t
     const service_type_support_callbacks_t* type_support_callbacks;
     uint16_t service_data_resquest;
 
-    SampleIdentity sample_id[RMW_UXRCE_MAX_HISTORY];
-    uint8_t micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
-    size_t micro_buffer_lenght[RMW_UXRCE_MAX_HISTORY];
-
     uint8_t history_write_index;
     uint8_t history_read_index;
     bool micro_buffer_in_use;
@@ -144,14 +140,6 @@ typedef struct rmw_uxrce_client_t
     const service_type_support_callbacks_t* type_support_callbacks;
     uint16_t client_data_request;
 
-    int64_t reply_id[RMW_UXRCE_MAX_HISTORY];
-    uint8_t micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
-    size_t micro_buffer_lenght[RMW_UXRCE_MAX_HISTORY];
-
-    uint8_t history_write_index;
-    uint8_t history_read_index;
-    bool micro_buffer_in_use;
-
     uxrStreamId stream_id;
     struct rmw_uxrce_node_t*                owner_node;
 } rmw_uxrce_client_t;
@@ -164,14 +152,6 @@ typedef struct rmw_uxrce_subscription_t
     uxrObjectId datareader_id;
     rmw_gid_t subscription_gid;
     const message_type_support_callbacks_t* type_support_callbacks;
-
-    uint8_t micro_buffer[RMW_UXRCE_MAX_HISTORY][RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
-    size_t micro_buffer_lenght[RMW_UXRCE_MAX_HISTORY];
-
-    uint8_t history_write_index;
-    uint8_t history_read_index;
-    bool micro_buffer_in_use;
-
     struct rmw_uxrce_topic_t*               topic;
 
     struct rmw_uxrce_node_t*                owner_node;
@@ -209,13 +189,24 @@ typedef struct rmw_uxrce_node_t
     uxrObjectId participant_id;
 } rmw_uxrce_node_t;
 
+typedef struct rmw_uxrce_static_input_buffer_t
+{
+    rmw_uxrce_mempool_item_t mem;
+
+    uint8_t buffer[RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
+    size_t length;
+    void* owner;
+
+    union
+    {
+        int64_t reply_id;
+        SampleIdentity sample_id;
+    } related;
+} rmw_uxrce_static_input_buffer_t;
+
 // Static memory pools
 
-#ifdef RMW_UXRCE_TRANSPORT_USE_XML
-extern char rmw_uxrce_xml_buffer[RMW_UXRCE_XML_BUFFER_LENGTH];
-#elif defined(RMW_UXRCE_TRANSPORT_USE_REFS)
-extern char rmw_uxrce_profile_name[RMW_UXRCE_REF_BUFFER_LENGTH];
-#endif // ifdef RMW_UXRCE_TRANSPORT_USE_XML
+extern char rmw_uxrce_entity_naming_buffer[RMW_UXRCE_ENTITY_NAMING_BUFFER_LENGTH];
 
 extern rmw_uxrce_mempool_t session_memory;
 extern rmw_context_impl_t custom_sessions[RMW_UXRCE_MAX_SESSIONS];
@@ -237,6 +228,9 @@ extern rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 
 extern rmw_uxrce_mempool_t topics_memory;
 extern rmw_uxrce_topic_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
+
+extern rmw_uxrce_mempool_t static_buffer_memory;
+extern rmw_uxrce_static_input_buffer_t custom_static_buffers[RMW_UXRCE_MAX_HISTORY];
 
 // Memory init functions
 
@@ -268,6 +262,10 @@ void rmw_uxrce_init_topic_memory(
         rmw_uxrce_mempool_t* memory,
         rmw_uxrce_topic_t* topics,
         size_t size);
+void rmw_uxrce_init_static_input_buffer_memory(
+        rmw_uxrce_mempool_t* memory,
+        rmw_uxrce_static_input_buffer_t* buffers,
+        size_t size);
 
 // Memory management functions
 
@@ -285,5 +283,8 @@ void rmw_uxrce_fini_service_memory(
         rmw_service_t* service);
 void rmw_uxrce_fini_topic_memory(
         rmw_uxrce_topic_t* topic);
+
+rmw_uxrce_mempool_item_t* rmw_uxrce_find_static_input_buffer_by_owner(
+        void* owner);
 
 #endif  // TYPES_H_

@@ -89,25 +89,29 @@ rmw_take_request(
 
     rmw_uxrce_service_t* custom_service = (rmw_uxrce_service_t*)service->data;
 
-    if (!custom_service->micro_buffer_in_use)
+    // Find first related item in static buffer memory pool
+    rmw_uxrce_mempool_item_t* static_buffer_item = rmw_uxrce_find_static_input_buffer_by_owner((void*) custom_service);
+    if (static_buffer_item == NULL)
     {
         return RMW_RET_ERROR;
     }
 
+    rmw_uxrce_static_input_buffer_t* static_buffer = (rmw_uxrce_static_input_buffer_t*)static_buffer_item->data;
+
     // Conversion from SampleIdentity to rmw_request_id_t
     request_header->request_id.sequence_number =
-            (((int64_t)custom_service->sample_id[custom_service->history_read_index].sequence_number.high) << 32)
-            | custom_service->sample_id[custom_service->history_read_index].sequence_number.low;
+            (((int64_t)static_buffer->related.sample_id.sequence_number.high) << 32)
+            | static_buffer->related.sample_id.sequence_number.low;
     request_header->request_id.writer_guid[0] =
-            (int8_t)custom_service->sample_id[custom_service->history_read_index].writer_guid.entityId.
-                    entityKind;
+            (int8_t)static_buffer->related.sample_id.writer_guid.entityId.entityKind;
+
     memcpy(
         &request_header->request_id.writer_guid[1],
-        custom_service->sample_id[custom_service->history_read_index].writer_guid.entityId.entityKey,
+        static_buffer->related.sample_id.writer_guid.entityId.entityKey,
         3);
     memcpy(
         &request_header->request_id.writer_guid[4],
-        custom_service->sample_id[custom_service->history_read_index].writer_guid.guidPrefix.data, 12);
+        static_buffer->related.sample_id.writer_guid.guidPrefix.data, 12);
 
     const rosidl_message_type_support_t* req_members =
             custom_service->type_support_callbacks->request_members_();
@@ -116,18 +120,13 @@ rmw_take_request(
 
     ucdrBuffer temp_buffer;
     ucdr_init_buffer(
-        &temp_buffer, custom_service->micro_buffer[custom_service->history_read_index],
-        custom_service->micro_buffer_lenght[custom_service->history_read_index]);
-
+        &temp_buffer,
+        static_buffer->buffer,
+        static_buffer->length);
 
     bool deserialize_rv = functions->cdr_deserialize(&temp_buffer, ros_request);
 
-    custom_service->history_read_index = (custom_service->history_read_index + 1) %
-            RMW_UXRCE_MAX_HISTORY;
-    if (custom_service->history_write_index == custom_service->history_read_index)
-    {
-        custom_service->micro_buffer_in_use = false;
-    }
+    put_memory(&static_buffer_memory, static_buffer_item);
 
     if (taken != NULL)
     {

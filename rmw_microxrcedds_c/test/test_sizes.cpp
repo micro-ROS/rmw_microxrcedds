@@ -27,7 +27,6 @@
  * Testing client construction and destruction.
  */
 
-
 TEST_F(RMWBaseTest, estimate_default_static_memory)
 {
     unsigned long context_size = sizeof(rmw_context_impl_t);
@@ -37,9 +36,9 @@ TEST_F(RMWBaseTest, estimate_default_static_memory)
     unsigned long subscription_size = sizeof(rmw_uxrce_subscription_t);
     unsigned long publisher_size = sizeof(rmw_uxrce_publisher_t);
     unsigned long node_size = sizeof(rmw_uxrce_node_t);
-    // unsigned long static_input_buffer_size = sizeof(rmw_uxrce_static_input_buffer_t);
+    unsigned long static_input_buffer_size = sizeof(rmw_uxrce_static_input_buffer_t);
 
-    fprintf(stderr, "# Static memory analisys \n");
+    fprintf(stderr, "# Static memory analysis \n");
     fprintf(stderr, "_**Default configuration**_\n");
     fprintf(stderr, "\n");
 
@@ -59,7 +58,7 @@ TEST_F(RMWBaseTest, estimate_default_static_memory)
     fprintf(stderr, "| Subscription | %d | %ld B | \n", RMW_UXRCE_MAX_SUBSCRIPTIONS, subscription_size);
     fprintf(stderr, "| Publisher | %d | %ld B | \n", RMW_UXRCE_MAX_PUBLISHERS, publisher_size);
     fprintf(stderr, "| Node | %d | %ld B | \n", RMW_UXRCE_MAX_NODES, node_size);
-    // fprintf(stderr, "Static input buffer | %d | :%ld B | \n",RMW_UXRCE_MAX_HISTORY,static_input_buffer_size);
+    fprintf(stderr, "| Static input buffer | %d | %ld B | \n", RMW_UXRCE_MAX_HISTORY, static_input_buffer_size);
 
     unsigned long total =   RMW_UXRCE_MAX_SESSIONS * context_size +
             RMW_UXRCE_MAX_TOPICS_INTERNAL * topic_size +
@@ -67,8 +66,8 @@ TEST_F(RMWBaseTest, estimate_default_static_memory)
             RMW_UXRCE_MAX_CLIENTS * client_size +
             RMW_UXRCE_MAX_SUBSCRIPTIONS * subscription_size +
             RMW_UXRCE_MAX_PUBLISHERS * publisher_size +
-            RMW_UXRCE_MAX_NODES * node_size;
-    // RMW_UXRCE_MAX_HISTORY * static_input_buffer_size;
+            RMW_UXRCE_MAX_NODES * node_size +
+            RMW_UXRCE_MAX_HISTORY * static_input_buffer_size;
 
     fprintf(stderr, "\n");
     fprintf(stderr, "**TOTAL: %ld B**\n", total);
