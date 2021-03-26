@@ -17,6 +17,8 @@
 #include <rmw/rmw.h>
 #include <rmw/error_handling.h>
 
+#include <uxr/client/profile/multithread/multithread.h>
+
 rmw_ret_t
 rmw_send_response(
         const rmw_service_t* service,
@@ -60,6 +62,8 @@ rmw_send_response(
 
     uxr_serialize_SampleIdentity(&mb, &sample_id);
     functions->cdr_serialize(ros_response, &mb);
+
+    UXR_UNLOCK_STREAM_ID(&custom_node->context->session, custom_service->stream_id);
 
     if (UXR_INVALID_REQUEST_ID == rc)
     {

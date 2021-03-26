@@ -18,6 +18,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include <uxr/client/profile/multithread/multithread.h>
+
 typedef struct rmw_uxrce_mempool_item_t
 {
     bool is_dynamic_memory;
@@ -26,7 +28,6 @@ typedef struct rmw_uxrce_mempool_item_t
     void*                            data;
 } rmw_uxrce_mempool_item_t;
 
-
 typedef struct rmw_uxrce_mempool_t
 {
     struct rmw_uxrce_mempool_item_t* allocateditems;
@@ -34,6 +35,11 @@ typedef struct rmw_uxrce_mempool_t
 
     bool is_initialized;
     size_t element_size;
+
+#ifdef UCLIENT_PROFILE_MULTITHREAD
+    uxrMutex mutex;
+#endif // UCLIENT_PROFILE_MULTITHREAD
+
 } rmw_uxrce_mempool_t;
 
 bool has_memory(

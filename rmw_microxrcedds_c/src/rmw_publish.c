@@ -20,6 +20,8 @@
 
 #include <rmw_uros/options.h>
 
+#include <uxr/client/profile/multithread/multithread.h>
+
 bool flush_session(
         uxrSession* session)
 {
@@ -83,6 +85,8 @@ rmw_publish(
                 custom_publisher->cs_cb_serialization(&mb);
             }
 
+            UXR_UNLOCK_STREAM_ID(&custom_publisher->owner_node->context->session, custom_publisher->stream_id);
+            
             if (UXR_BEST_EFFORT_STREAM == custom_publisher->stream_id.type)
             {
                 uxr_flash_output_streams(&custom_publisher->owner_node->context->session);
