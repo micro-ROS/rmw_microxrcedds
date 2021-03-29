@@ -28,8 +28,37 @@
 #include <uxr/client/util/ping.h>
 #include <uxr/client/util/time.h>
 
+int64_t rmw_uros_epoch_millis()
+{
+    // Check session is initialized
+    if (NULL == session_memory.allocateditems)
+    {
+        RMW_SET_ERROR_MSG("Uninitialized session.");
+        return 0;
+    }
+
+    rmw_uxrce_mempool_item_t* item = session_memory.allocateditems;
+    rmw_context_impl_t* context = (rmw_context_impl_t*)item->data;
+
+    return uxr_epoch_millis(&context->session);
+}
+
+int64_t rmw_uros_epoch_nanos()
+{
+    // Check session is initialized
+    if (NULL == session_memory.allocateditems)
+    {
+        RMW_SET_ERROR_MSG("Uninitialized session.");
+        return 0;
+    }
+
+    rmw_uxrce_mempool_item_t* item = session_memory.allocateditems;
+    rmw_context_impl_t* context = (rmw_context_impl_t*)item->data;
+
+    return uxr_epoch_nanos(&context->session);
+}
+
 rmw_ret_t rmw_uros_sync_session(
-        int64_t* result,
         const int timeout_ms)
 {
     rmw_ret_t ret = RMW_RET_OK;
@@ -44,11 +73,7 @@ rmw_ret_t rmw_uros_sync_session(
     rmw_uxrce_mempool_item_t* item = session_memory.allocateditems;
     rmw_context_impl_t* context = (rmw_context_impl_t*)item->data;
 
-    if (uxr_sync_session(&context->session, timeout_ms))
-    {
-        *result = uxr_nanos() - context->session.time_offset;
-    }
-    else
+    if (!uxr_sync_session(&context->session, timeout_ms))
     {
         RMW_SET_ERROR_MSG("Time synchronization failed.");
         return RMW_RET_ERROR;

@@ -73,16 +73,18 @@ TEST(rmw_microxrcedds, sync_session)
 {
     rmw_context_t test_context = rmw_get_zero_initialized_context();
     rmw_init_options_t test_options = rmw_get_zero_initialized_init_options();
-    int64_t result_ns = 0;
 
     ASSERT_EQ(rmw_init_options_init(&test_options, rcutils_get_default_allocator()), RMW_RET_OK);
     ASSERT_EQ(rmw_init(&test_options, &test_context), RMW_RET_OK);
 
     std::time_t timestamp_seconds = std::time(nullptr);
-    ASSERT_EQ(rmw_uros_sync_session(&result_ns, 500), RMW_RET_OK);
+    ASSERT_EQ(rmw_uros_sync_session(500), RMW_RET_OK);
 
-    int64_t time_diff = abs(result_ns / 1000000000 - timestamp_seconds);
-    ASSERT_LE(time_diff, 5);
+    int64_t time_diff_ns = abs(rmw_uros_epoch_nanos() / 1000000000 - timestamp_seconds);
+    ASSERT_LE(time_diff_ns, 5);
+
+    int64_t time_diff_ms = abs(rmw_uros_epoch_millis() / 1000000000 - timestamp_seconds);
+    ASSERT_LE(time_diff_ms, 5);
 
     ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
 }
