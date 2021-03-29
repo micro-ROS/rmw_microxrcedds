@@ -83,7 +83,7 @@ TEST(rmw_microxrcedds, sync_session)
     int64_t time_diff_ns = abs(rmw_uros_epoch_nanos() / 1000000000 - timestamp_seconds);
     ASSERT_LE(time_diff_ns, 5);
 
-    int64_t time_diff_ms = abs(rmw_uros_epoch_millis() / 1000000000 - timestamp_seconds);
+    int64_t time_diff_ms = abs(rmw_uros_epoch_millis() / 1000 - timestamp_seconds);
     ASSERT_LE(time_diff_ms, 5);
 
     ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
