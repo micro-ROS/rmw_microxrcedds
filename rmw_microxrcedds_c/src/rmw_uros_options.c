@@ -36,15 +36,16 @@ int64_t rmw_uros_epoch_millis()
         RMW_SET_ERROR_MSG("Uninitialized session.");
         return 0;
     }
-    else if (!session->synchronized)
-    {
-        RMW_SET_ERROR_MSG("Session time not synchronized");
-        return -1;
-    }
 
     rmw_uxrce_mempool_item_t* item = session_memory.allocateditems;
     rmw_context_impl_t* context = (rmw_context_impl_t*)item->data;
 
+    if (!context->session.synchronized)
+    {
+        RMW_SET_ERROR_MSG("Session time not synchronized");
+        return -1;
+    }
+    
     return uxr_epoch_millis(&context->session);
 }
 
@@ -56,15 +57,16 @@ int64_t rmw_uros_epoch_nanos()
         RMW_SET_ERROR_MSG("Uninitialized session.");
         return 0;
     }
-    else if (!session->synchronized)
+
+    rmw_uxrce_mempool_item_t* item = session_memory.allocateditems;
+    rmw_context_impl_t* context = (rmw_context_impl_t*)item->data;
+    
+    if (!context->session.synchronized)
     {
         RMW_SET_ERROR_MSG("Session time not synchronized");
         return -1;
     }
-
-    rmw_uxrce_mempool_item_t* item = session_memory.allocateditems;
-    rmw_context_impl_t* context = (rmw_context_impl_t*)item->data;
-
+    
     return uxr_epoch_nanos(&context->session);
 }
 
@@ -82,7 +84,7 @@ rmw_ret_t rmw_uros_sync_session(
 
     rmw_uxrce_mempool_item_t* item = session_memory.allocateditems;
     rmw_context_impl_t* context = (rmw_context_impl_t*)item->data;
-    session->synchronized = false;
+    context->session.synchronized = false;
 
     if (!uxr_sync_session(&context->session, timeout_ms))
     {
