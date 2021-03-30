@@ -45,7 +45,7 @@ int64_t rmw_uros_epoch_millis()
         RMW_SET_ERROR_MSG("Session time not synchronized");
         return -1;
     }
-    
+
     return uxr_epoch_millis(&context->session);
 }
 
@@ -60,13 +60,13 @@ int64_t rmw_uros_epoch_nanos()
 
     rmw_uxrce_mempool_item_t* item = session_memory.allocateditems;
     rmw_context_impl_t* context = (rmw_context_impl_t*)item->data;
-    
+
     if (!context->session.synchronized)
     {
         RMW_SET_ERROR_MSG("Session time not synchronized");
         return -1;
     }
-    
+
     return uxr_epoch_nanos(&context->session);
 }
 
