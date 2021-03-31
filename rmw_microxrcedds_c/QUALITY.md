@@ -74,7 +74,7 @@ Some of the **rmw_microxrcedds_c** features are documented at the repository lev
 ### License [3.iii]
 
 The license for **rmw_microxrcedds_c** is Apache 2.0, and a summary can be found in each source file.
-A full copy of the license can be found [here](LICENSE).
+A full copy of the license can be found [here](../LICENSE).
 
 ### Copyright Statements [3.iv]
 
