@@ -84,29 +84,26 @@ rmw_node_t* create_node(
             uxr_object_id(node_info->context->id_participant++, UXR_PARTICIPANT_ID);
     uint16_t participant_req = UXR_INVALID_REQUEST_ID;
 
-#ifdef RMW_UXRCE_USE_XML
-    if (!build_participant_xml(domain_id, name, rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
-    {
-        RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
-        return NULL;
-    }
-    participant_req =
-            uxr_buffer_create_participant_xml(
-        &node_info->context->session,
-        *node_info->context->creation_destroy_stream,
-        node_info->participant_id, (uint16_t)domain_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
-#elif defined(RMW_UXRCE_USE_REFS)
+#ifdef RMW_UXRCE_USE_REFS
     if (!build_participant_profile(rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
     {
         RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
         return NULL;
     }
-    participant_req =
-            uxr_buffer_create_participant_ref(
+    participant_req = uxr_buffer_create_participant_ref(
         &node_info->context->session,
         *node_info->context->creation_destroy_stream,
-        node_info->participant_id, (uint16_t)domain_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
-#endif /* ifdef RMW_UXRCE_USE_XML */
+        node_info->participant_id, 
+        (uint16_t)domain_id, 
+        rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+#else
+    participant_req = uxr_buffer_create_participant_bin(
+        &node_info->context->session,
+        *node_info->context->creation_destroy_stream,
+        node_info->participant_id,
+        domain_id,
+        UXR_REPLACE);
+#endif
 
     if (!run_xrce_session(node_info->context, participant_req))
     {

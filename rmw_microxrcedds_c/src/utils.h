@@ -31,11 +31,29 @@ int generate_name(
         const uxrObjectId* id,
         char name[],
         size_t buffer_size);
+
 size_t generate_type_name(
         const message_type_support_callbacks_t* members,
         char type_name[],
         size_t buffer_size);
 
+int generate_topic_name(
+        const char* topic_name,
+        char * full_topic_name,
+        size_t full_topic_name_size);
+
+int generate_service_types(
+        const service_type_support_callbacks_t* members,
+        char * request_type,
+        char * reply_type,
+        size_t buffer_size);
+
+int generate_service_topics(
+        const char* service_name,
+        char * request_topic,
+        char * reply_topic,
+        size_t buffer_size);
+        
 int build_service_xml(
         const char* service_name_id,
         const char* service_name,
@@ -92,7 +110,6 @@ bool build_datareader_profile(
         const char* topic_name,
         char profile_name[],
         size_t buffer_size);
-
 
 bool is_uxrce_rmw_identifier_valid(
         const char* id);

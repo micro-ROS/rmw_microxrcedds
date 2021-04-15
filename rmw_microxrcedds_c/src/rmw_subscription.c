@@ -111,13 +111,10 @@ rmw_create_subscription(
             goto fail;
         }
 
-        // TODO(Borja) RMW_UXRCE_TRANSPORT_id is duplicated in subscriber_id and in subscription_gid.data
         rmw_uxrce_subscription_t* custom_subscription = (rmw_uxrce_subscription_t*)memory_node->data;
         custom_subscription->rmw_handle = rmw_subscription;
 
         custom_subscription->owner_node = custom_node;
-        custom_subscription->subscription_gid.implementation_identifier =
-                rmw_get_implementation_identifier();
         memcpy(&custom_subscription->qos, qos_policies, sizeof(rmw_qos_profile_t));
 
         const rosidl_message_type_support_t* type_support_xrce = NULL;
@@ -146,18 +143,8 @@ rmw_create_subscription(
             RMW_SET_ERROR_MSG("type support data is NULL");
             goto fail;
         }
-        else if (sizeof(uxrObjectId) > RMW_GID_STORAGE_SIZE)
-        {
-            RMW_SET_ERROR_MSG("Not enough memory for impl ids");
-            goto fail;
-        }
 
-        memset(custom_subscription->subscription_gid.data, 0, RMW_GID_STORAGE_SIZE);
-        memcpy(
-            custom_subscription->subscription_gid.data, &custom_subscription->subscriber_id,
-            sizeof(uxrObjectId));
-
-
+        // Create topic
         custom_subscription->topic = create_topic(
             custom_node, topic_name,
             custom_subscription->type_support_callbacks, qos_policies);
@@ -166,32 +153,25 @@ rmw_create_subscription(
             goto fail;
         }
 
+        // Create subscriber
         custom_subscription->subscriber_id = uxr_object_id(
             custom_node->context->id_subscriber++,
             UXR_SUBSCRIBER_ID);
         uint16_t subscriber_req = UXR_INVALID_REQUEST_ID;
 
-#ifdef RMW_UXRCE_USE_XML
-        char subscriber_name[20];
-        generate_name(&custom_subscription->subscriber_id, subscriber_name, sizeof(subscriber_name));
-        if (!build_subscriber_xml(subscriber_name, rmw_uxrce_entity_naming_buffer,
-                sizeof(rmw_uxrce_entity_naming_buffer)))
-        {
-            RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
-            goto fail;
-        }
-        subscriber_req = uxr_buffer_create_subscriber_xml(
-            &custom_node->context->session,
-            *custom_node->context->creation_destroy_stream, custom_subscription->subscriber_id,
-            custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
-#elif defined(RMW_UXRCE_USE_REFS)
-        // TODO(BORJA)  Publisher by reference does not make sense in
-        //              current micro XRCE-DDS implementation.
+#ifdef RMW_UXRCE_USE_REFS
         subscriber_req = uxr_buffer_create_subscriber_xml(
             &custom_node->context->session,
             *custom_node->context->creation_destroy_stream, custom_subscription->subscriber_id,
             custom_node->participant_id, "", UXR_REPLACE);
-#endif /* ifdef RMW_UXRCE_USE_XML */
+#else
+        subscriber_req = uxr_buffer_create_subscriber_bin(
+            &custom_node->context->session,
+            *custom_node->context->creation_destroy_stream, 
+            custom_subscription->subscriber_id,
+            custom_node->participant_id,
+             UXR_REPLACE);
+#endif /* ifdef RMW_UXRCE_USE_REFS */
 
         if (!run_xrce_session(custom_node->context, subscriber_req))
         {
@@ -199,26 +179,13 @@ rmw_create_subscription(
             goto fail;
         }
 
+        // Create datareader
         custom_subscription->datareader_id = uxr_object_id(
             custom_node->context->id_datareader++,
             UXR_DATAREADER_ID);
         uint16_t datareader_req = UXR_INVALID_REQUEST_ID;
 
-#ifdef RMW_UXRCE_USE_XML
-        if (!build_datareader_xml(
-                    topic_name, custom_subscription->type_support_callbacks,
-                    qos_policies, rmw_uxrce_entity_naming_buffer,
-                    sizeof(rmw_uxrce_entity_naming_buffer)))
-        {
-            RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
-            goto fail;
-        }
-
-        datareader_req = uxr_buffer_create_datareader_xml(
-            &custom_node->context->session,
-            *custom_node->context->creation_destroy_stream, custom_subscription->datareader_id,
-            custom_subscription->subscriber_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
-#elif defined(RMW_UXRCE_USE_REFS)
+#ifdef RMW_UXRCE_USE_REFS
         if (!build_datareader_profile(topic_name, rmw_uxrce_entity_naming_buffer,
                 sizeof(rmw_uxrce_entity_naming_buffer)))
         {
@@ -230,6 +197,20 @@ rmw_create_subscription(
             &custom_node->context->session,
             *custom_node->context->creation_destroy_stream, custom_subscription->datareader_id,
             custom_subscription->subscriber_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+#else
+        char full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
+        generate_topic_name(topic_name, full_topic_name, sizeof(full_topic_name));
+
+        datareader_req = uxr_buffer_create_datareader_bin(
+            &custom_node->context->session,
+            *custom_node->context->creation_destroy_stream, 
+            custom_subscription->datareader_id,
+            custom_subscription->subscriber_id,
+            full_topic_name,
+            qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_RELIABLE,
+            qos_policies->history == RMW_QOS_POLICY_HISTORY_KEEP_LAST,
+            qos_policies->durability == RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL,            
+            UXR_REPLACE);
 #endif /* ifdef RMW_UXRCE_USE_XML */
 
         if (!run_xrce_session(custom_node->context, datareader_req))

@@ -33,7 +33,19 @@ rmw_get_gid_for_publisher(
 
     // Do
     rmw_uxrce_publisher_t* custom_publisher = (rmw_uxrce_publisher_t*)publisher->data;
-    memcpy(gid, &custom_publisher->publisher_gid, sizeof(rmw_gid_t));
+
+    if (sizeof(uxrObjectId) > RMW_GID_STORAGE_SIZE)
+    {
+        RMW_SET_ERROR_MSG("Not enough memory for impl ids");
+        return RMW_RET_ERROR;
+    }
+
+    memset(gid->data, 0, RMW_GID_STORAGE_SIZE);
+    memcpy(
+        gid->data, 
+        &custom_publisher->publisher_id,
+        sizeof(uxrObjectId));
+
 
     return RMW_RET_OK;
 }

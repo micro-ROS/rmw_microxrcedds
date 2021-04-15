@@ -51,11 +51,12 @@ rmw_ret_t rmw_graph_init(
         return RMW_RET_ERROR;
     }
 
-    uint16_t participant_req = uxr_buffer_create_participant_xml(
+    uint16_t participant_req = uxr_buffer_create_participant_bin(
         &context->session,
         *context->creation_destroy_stream,
-        graph_info->participant_id, (int16_t)microros_domain_id,
-        rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+        graph_info->participant_id, 
+        (int16_t)microros_domain_id,
+        UXR_REPLACE);
 
     // Set graph subscription QoS policies
     // TODO (jamoralp): most of these QoS are not even being used.

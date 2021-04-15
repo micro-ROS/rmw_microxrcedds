@@ -54,7 +54,6 @@ option(RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS "Enables increasing static pools with
 set(RMW_UXRCE_NODE_NAME_MAX_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a node name.")
 set(RMW_UXRCE_TOPIC_NAME_MAX_LENGTH "100" CACHE STRING "This value sets the maximum number of characters for a topic name.")
 set(RMW_UXRCE_TYPE_NAME_MAX_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a type name.")
-set(RMW_UXRCE_XML_BUFFER_LENGTH "600" CACHE STRING "This value sets the maximum number of characters for a XML buffer.")
 set(RMW_UXRCE_REF_BUFFER_LENGTH "100" CACHE STRING "This value sets the maximum number of characters for a reference buffer.")
 set(RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT "1000" CACHE STRING "This value sets the maximum time to wait for an XRCE entity creation and destroy in milliseconds. If set to 0 best effort is used.")
 set(RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT "1000" CACHE STRING "This value sets the maximum time to wait for a publication in a reliable mode in milliseconds.")
@@ -97,13 +96,8 @@ endif()
 
 # Create entities type define macros.
 set(RMW_UXRCE_USE_REFS OFF)
-set(RMW_UXRCE_USE_XML OFF)
 if(${RMW_UXRCE_CREATION_MODE} STREQUAL "refs")
   set(RMW_UXRCE_USE_REFS ON)
-elseif(${RMW_UXRCE_CREATION_MODE} STREQUAL "xml")
-  set(RMW_UXRCE_USE_XML ON)
-else()
-  message(FATAL_ERROR "Creation mode not supported. Use \"refs\" or \"xml\"")
 endif()
 
 # Create source files with the define

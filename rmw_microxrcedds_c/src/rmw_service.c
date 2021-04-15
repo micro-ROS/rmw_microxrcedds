@@ -84,8 +84,6 @@ rmw_create_service(
         custom_service->rmw_handle = rmw_service;
 
         custom_service->owner_node = custom_node;
-        custom_service->service_gid.implementation_identifier =
-                rmw_get_implementation_identifier();
         custom_service->history_write_index = 0;
         custom_service->history_read_index  = 0;
 
@@ -115,22 +113,16 @@ rmw_create_service(
             RMW_SET_ERROR_MSG("type support data is NULL");
             goto fail;
         }
-        else if (sizeof(uxrObjectId) > RMW_GID_STORAGE_SIZE)
-        {
-            RMW_SET_ERROR_MSG("Not enough memory for impl ids");
-            goto fail;
-        }
 
         custom_service->service_id = uxr_object_id(custom_node->context->id_replier++, UXR_REPLIER_ID);
 
-        memset(custom_service->service_gid.data, 0, RMW_GID_STORAGE_SIZE);
-        memcpy(
-            custom_service->service_gid.data, &custom_service->service_id,
-            sizeof(uxrObjectId));
-
         uint16_t service_req = UXR_INVALID_REQUEST_ID;
 
-#ifdef RMW_UXRCE_USE_XML
+#ifdef RMW_UXRCE_USE_REFS
+        // TODO(pablogs9): Use here true references
+        // service_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
+        //     *custom_node->context->creation_destroy_stream, custom_service->subscriber_id,
+        //     custom_node->participant_id, "", UXR_REPLACE);
         char service_name_id[20];
         generate_name(&custom_service->service_id, service_name_id, sizeof(service_name_id));
         if (!build_service_xml(
@@ -145,11 +137,26 @@ rmw_create_service(
             &custom_node->context->session,
             *custom_node->context->creation_destroy_stream, custom_service->service_id,
             custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
-#elif defined(RMW_UXRCE_USE_REFS)
-        // CHECK IF THIS IS NECESSARY
-        // service_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
-        //     *custom_node->context->creation_destroy_stream, custom_service->subscriber_id,
-        //     custom_node->participant_id, "", UXR_REPLACE);
+#else
+        char req_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
+        char res_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
+        generate_service_types(custom_service->type_support_callbacks, req_type_name, res_type_name, RMW_UXRCE_TYPE_NAME_MAX_LENGTH);
+
+        char req_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
+        char res_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
+        generate_service_topics(service_name, req_topic_name, res_topic_name, RMW_UXRCE_TOPIC_NAME_MAX_LENGTH);
+
+        service_req = uxr_buffer_create_replier_bin(
+            &custom_node->context->session,
+            *custom_node->context->creation_destroy_stream,
+            custom_service->service_id,
+            custom_node->participant_id,
+            (char *) service_name,
+            req_type_name,
+            res_type_name,
+            req_topic_name,
+            res_topic_name,
+            UXR_REPLACE);
 #endif /* ifdef RMW_UXRCE_USE_XML */
 
         rmw_service->data = custom_service;

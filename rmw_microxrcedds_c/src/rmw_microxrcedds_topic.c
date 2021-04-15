@@ -29,6 +29,8 @@ create_topic(
         const message_type_support_callbacks_t* message_type_support_callbacks,
         const rmw_qos_profile_t* qos_policies)
 {
+    (void) qos_policies;
+    
     rmw_uxrce_topic_t*        custom_topic = NULL;
     rmw_uxrce_mempool_item_t* memory_node  = get_memory(&topics_memory);
 
@@ -41,7 +43,6 @@ create_topic(
     custom_topic = (rmw_uxrce_topic_t*)memory_node->data;
 
     // Init
-    custom_topic->sync_with_agent = false;
     custom_topic->owner_node      = custom_node;
 
     // Asociate to typesupport
@@ -52,22 +53,7 @@ create_topic(
 
     // Generate request
     uint16_t topic_req = 0;
-#ifdef RMW_UXRCE_USE_XML
-    if (!build_topic_xml(
-                topic_name, message_type_support_callbacks,
-                qos_policies, rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
-    {
-        RMW_SET_ERROR_MSG("failed to generate xml request for subscriber creation");
-        rmw_uxrce_fini_topic_memory(custom_topic);
-        custom_topic = NULL;
-        goto fail;
-    }
-
-    topic_req = uxr_buffer_create_topic_xml(
-        &custom_node->context->session,
-        *custom_node->context->creation_destroy_stream, custom_topic->topic_id,
-        custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
-#elif defined(RMW_UXRCE_USE_REFS)
+#ifdef RMW_UXRCE_USE_REFS
     (void)qos_policies;
     if (!build_topic_profile(topic_name, rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
     {
@@ -81,12 +67,24 @@ create_topic(
         &custom_node->context->session,
         *custom_node->context->creation_destroy_stream, custom_topic->topic_id,
         custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+#else
+    char full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
+    char type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
+
+    generate_topic_name(topic_name, full_topic_name, sizeof(full_topic_name));
+    generate_type_name(message_type_support_callbacks, type_name, sizeof(type_name));
+
+    topic_req = uxr_buffer_create_topic_bin(
+        &custom_node->context->session,
+        *custom_node->context->creation_destroy_stream,
+        custom_topic->topic_id,
+        custom_node->participant_id,
+        full_topic_name,
+        type_name,
+        UXR_REPLACE);
 #endif /* ifdef RMW_UXRCE_USE_XML */
 
-    // Send the request and wait for response
-    custom_topic->sync_with_agent = run_xrce_session(custom_node->context, topic_req);
-
-    if (!custom_topic->sync_with_agent)
+    if (!run_xrce_session(custom_node->context, topic_req))
     {
         rmw_uxrce_fini_topic_memory(custom_topic);
         custom_topic = NULL;
