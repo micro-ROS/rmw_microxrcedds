@@ -19,9 +19,9 @@
 
 rmw_ret_t
 rmw_publisher_get_network_flow_endpoints(
-  const rmw_publisher_t * publisher,
-  rcutils_allocator_t * allocator,
-  rmw_network_flow_endpoint_array_t * network_flow_endpoint_array)
+        const rmw_publisher_t* publisher,
+        rcutils_allocator_t* allocator,
+        rmw_network_flow_endpoint_array_t* network_flow_endpoint_array)
 {
     (void) publisher;
     (void) allocator;
@@ -33,9 +33,9 @@ rmw_publisher_get_network_flow_endpoints(
 
 rmw_ret_t
 rmw_subscription_get_network_flow_endpoints(
-  const rmw_subscription_t * subscription,
-  rcutils_allocator_t * allocator,
-  rmw_network_flow_endpoint_array_t * network_flow_endpoint_array)
+        const rmw_subscription_t* subscription,
+        rcutils_allocator_t* allocator,
+        rmw_network_flow_endpoint_array_t* network_flow_endpoint_array)
 {
     (void) subscription;
     (void) allocator;

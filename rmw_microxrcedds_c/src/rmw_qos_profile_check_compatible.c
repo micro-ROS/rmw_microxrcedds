@@ -19,11 +19,11 @@
 
 rmw_ret_t
 rmw_qos_profile_check_compatible(
-  const rmw_qos_profile_t publisher_profile,
-  const rmw_qos_profile_t subscription_profile,
-  rmw_qos_compatibility_type_t * compatibility,
-  char * reason,
-  size_t reason_size)
+        const rmw_qos_profile_t publisher_profile,
+        const rmw_qos_profile_t subscription_profile,
+        rmw_qos_compatibility_type_t* compatibility,
+        char* reason,
+        size_t reason_size)
 {
     (void) publisher_profile;
     (void) subscription_profile;
