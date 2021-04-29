@@ -15,7 +15,7 @@
 #include <rmw/rmw.h>
 #include <rmw/types.h>
 #include <rmw/error_handling.h>
-#include <rmw/qos_profles.h>
+#include <rmw/qos_profiles.h>
 
 rmw_ret_t
 rmw_qos_profile_check_compatible(
