@@ -215,7 +215,7 @@ rmw_create_publisher(
             *custom_node->context->creation_destroy_stream,
             custom_publisher->datawriter_id,
             custom_publisher->publisher_id,
-            custom_publisher->topic.topic_id,
+            custom_publisher->topic->topic_id,
             qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_RELIABLE,
             qos_policies->history == RMW_QOS_POLICY_HISTORY_KEEP_LAST,
             qos_policies->durability == RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL,
