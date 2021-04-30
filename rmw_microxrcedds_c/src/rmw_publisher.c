@@ -149,12 +149,12 @@ rmw_create_publisher(
             RMW_SET_ERROR_MSG("type support data is NULL");
             goto fail;
         }
-        
+
         // Create topic
         custom_publisher->topic = create_topic(
             custom_node, topic_name,
             custom_publisher->type_support_callbacks, qos_policies);
-        
+
         if (custom_publisher->topic == NULL)
         {
             RMW_SET_ERROR_MSG("Error creating topic");
@@ -210,10 +210,12 @@ rmw_create_publisher(
             custom_publisher->datawriter_id,
             custom_publisher->publisher_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
   #else
-        bool reliability = qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_RELIABLE || qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT;
+        bool reliability = qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_RELIABLE ||
+                qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT;
         bool history = qos_policies->history == RMW_QOS_POLICY_HISTORY_KEEP_LAST;
-        bool durability = qos_policies->durability == RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL || qos_policies->durability == RMW_QOS_POLICY_DURABILITY_SYSTEM_DEFAULT;
-        
+        bool durability = qos_policies->durability == RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL ||
+                qos_policies->durability == RMW_QOS_POLICY_DURABILITY_SYSTEM_DEFAULT;
+
         datawriter_req = uxr_buffer_create_datawriter_bin(
             &custom_publisher->owner_node->context->session,
             *custom_node->context->creation_destroy_stream,

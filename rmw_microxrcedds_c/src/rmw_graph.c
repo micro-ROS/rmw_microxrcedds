@@ -54,7 +54,7 @@ rmw_ret_t rmw_graph_init(
     uint16_t participant_req = uxr_buffer_create_participant_bin(
         &context->session,
         *context->creation_destroy_stream,
-        graph_info->participant_id, 
+        graph_info->participant_id,
         (int16_t)microros_domain_id,
         UXR_REPLACE);
 

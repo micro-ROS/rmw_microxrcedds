@@ -76,8 +76,8 @@ int build_participant_xml(
 
 int generate_service_topics(
         const char* service_name,
-        char * request_topic,
-        char * reply_topic,
+        char* request_topic,
+        char* reply_topic,
         size_t buffer_size)
 {
     snprintf(
@@ -88,13 +88,13 @@ int generate_service_topics(
         reply_topic, buffer_size, "%s%s%s", ros_reply_prefix,
         service_name, ros_reply_subfix);
 
-    return 1;    
+    return 1;
 }
 
 int generate_service_types(
         const service_type_support_callbacks_t* members,
-        char * request_type,
-        char * reply_type,
+        char* request_type,
+        char* reply_type,
         size_t buffer_size)
 {
     const rosidl_message_type_support_t* req_members = members->request_members_();
@@ -286,14 +286,14 @@ size_t generate_type_name(
 }
 
 int generate_topic_name(
-    const char* topic_name,
-    char * full_topic_name,
-    size_t full_topic_name_size)
+        const char* topic_name,
+        char* full_topic_name,
+        size_t full_topic_name_size)
 {
     int ret = snprintf(
-        full_topic_name, 
+        full_topic_name,
         full_topic_name_size,
-        "%s%s", 
+        "%s%s",
         ros_topic_prefix,
         topic_name);
     if ((ret < 0) && (ret >= (int)full_topic_name_size))

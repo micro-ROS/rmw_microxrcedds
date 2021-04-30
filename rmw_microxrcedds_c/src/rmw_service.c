@@ -140,7 +140,8 @@ rmw_create_service(
 #else
         char req_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
         char res_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
-        generate_service_types(custom_service->type_support_callbacks, req_type_name, res_type_name, RMW_UXRCE_TYPE_NAME_MAX_LENGTH);
+        generate_service_types(custom_service->type_support_callbacks, req_type_name, res_type_name,
+                RMW_UXRCE_TYPE_NAME_MAX_LENGTH);
 
         char req_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
         char res_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
@@ -151,7 +152,7 @@ rmw_create_service(
             *custom_node->context->creation_destroy_stream,
             custom_service->service_id,
             custom_node->participant_id,
-            (char *) service_name,
+            (char*) service_name,
             req_type_name,
             res_type_name,
             req_topic_name,

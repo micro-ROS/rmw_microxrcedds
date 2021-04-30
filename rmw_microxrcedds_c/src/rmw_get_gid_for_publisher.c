@@ -42,7 +42,7 @@ rmw_get_gid_for_publisher(
 
     memset(gid->data, 0, RMW_GID_STORAGE_SIZE);
     memcpy(
-        gid->data, 
+        gid->data,
         &custom_publisher->publisher_id,
         sizeof(uxrObjectId));
 

@@ -30,7 +30,7 @@ create_topic(
         const rmw_qos_profile_t* qos_policies)
 {
     (void) qos_policies;
-    
+
     rmw_uxrce_topic_t*        custom_topic = NULL;
     rmw_uxrce_mempool_item_t* memory_node  = get_memory(&topics_memory);
 
