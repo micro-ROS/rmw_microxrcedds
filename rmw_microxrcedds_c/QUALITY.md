@@ -33,7 +33,7 @@ All installed headers are in the `include` directory of the package. Headers in 
 
 **rmw_microxrcedds_c**  contains C and C++ code and therefore must be concerned with ABI stability. Any ABI break in **rmw_microxrcedds_c** will be done between minor versions and it should be clearly stated in the release notes, note that minor releases can happen within a ROS distribution.
 
-While ABI breaks are taken into consideration, they are not seen as a critical issue, since this is a static linked environment.
+While ABI breaks are taken into consideration, they are not seen as a critical issue, since the main target of this package is micro-ROS (a static linked environment).
 
 ## Change Control Process [2]
 
