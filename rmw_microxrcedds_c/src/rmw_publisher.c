@@ -210,15 +210,12 @@ rmw_create_publisher(
             custom_publisher->datawriter_id,
             custom_publisher->publisher_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
   #else
-        char full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
-        generate_topic_name(topic_name, full_topic_name, sizeof(full_topic_name));
-
         datawriter_req = uxr_buffer_create_datawriter_bin(
             &custom_publisher->owner_node->context->session,
             *custom_node->context->creation_destroy_stream,
             custom_publisher->datawriter_id,
             custom_publisher->publisher_id,
-            full_topic_name,
+            custom_publisher->topic.topic_id,
             qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_RELIABLE,
             qos_policies->history == RMW_QOS_POLICY_HISTORY_KEEP_LAST,
             qos_policies->durability == RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL,
