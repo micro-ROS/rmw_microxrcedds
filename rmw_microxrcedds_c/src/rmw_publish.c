@@ -86,7 +86,7 @@ rmw_publish(
             }
 
             UXR_UNLOCK_STREAM_ID(&custom_publisher->owner_node->context->session, custom_publisher->stream_id);
-            
+
             if (UXR_BEST_EFFORT_STREAM == custom_publisher->stream_id.type)
             {
                 uxr_flash_output_streams(&custom_publisher->owner_node->context->session);
