@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/**
+ * @file
+ */
+
 #ifndef RMW_MICROROS__DISCOVERY_H_
 #define RMW_MICROROS__DISCOVERY_H_
 
@@ -26,6 +30,11 @@ extern "C"
 {
 #endif
 
+/** \addtogroup discovery 
+ *  TODO
+ *  @{
+ */
+
 /**
  * \brief Fills rmw implementation-specific options with the autodicovered address of an micro-ROS Agent.
  *
@@ -35,6 +44,8 @@ extern "C"
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
 rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t* rmw_options);
+
+/** @}*/
 
 #if defined(__cplusplus)
 }

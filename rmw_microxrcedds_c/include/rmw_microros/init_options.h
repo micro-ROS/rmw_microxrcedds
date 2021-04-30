@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/**
+ * @file
+ */
+
 #ifndef RMW_MICROROS__INIT_OPTIONS_H_
 #define RMW_MICROROS__INIT_OPTIONS_H_
 
@@ -25,6 +29,11 @@
 extern "C"
 {
 #endif
+
+/** \addtogroup init_options RMW options
+ *  TODO
+ *  @{
+ */
 
 /**
  * \brief Parses command line args and fills rmw implementation-specific options.
@@ -72,6 +81,8 @@ rmw_ret_t rmw_uros_options_set_udp_address(
  * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
  */
 rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_t* rmw_options);
+
+/** @}*/
 
 #if defined(__cplusplus)
 }

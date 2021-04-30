@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/**
+ * @file
+ */
+
 #ifndef RMW_MICROROS__CUSTOM_TRANSPORTS_H_
 #define RMW_MICROROS__CUSTOM_TRANSPORTS_H_
 
@@ -29,6 +33,11 @@ extern "C"
 #endif
 
 extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
+
+/** \addtogroup transports Transports
+ *  TODO
+ *  @{
+ */
 
 /**
  * \brief Check if micro-ROS Agent answers to micro-ROS client
@@ -49,6 +58,8 @@ rmw_ret_t rmw_uros_set_custom_transport(
     close_custom_func close_cb,
     write_custom_func write_cb,
     read_custom_func read_cb);
+
+/** @}*/
 
 #if defined(__cplusplus)
 }

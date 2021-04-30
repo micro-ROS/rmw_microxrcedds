@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/**
+ * @file
+ */
+
 #ifndef RMW_MICROROS__PING_H_
 #define RMW_MICROROS__PING_H_
 
@@ -31,6 +35,11 @@ extern "C"
 {
 #endif
 
+/** \addtogroup ping Ping
+ *  TODO
+ *  @{
+ */
+
 /**
  * \brief Check if micro-ROS Agent is up and running.
  *        This function can be called even when the micro-ROS context has not yet been
@@ -41,6 +50,8 @@ extern "C"
  * \return RMW_RET_ERROR If micro-ROS Agent is not available.
  */
 rmw_ret_t rmw_uros_ping_agent(const int timeout_ms, const uint8_t attempts);
+
+/** @}*/
 
 #if defined(__cplusplus)
 }

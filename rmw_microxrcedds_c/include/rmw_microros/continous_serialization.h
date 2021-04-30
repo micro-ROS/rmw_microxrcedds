@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/**
+ * @file
+ */
+
 #ifndef RMW_MICROROS__CONTINOUS_SERIALIZATION_H_
 #define RMW_MICROROS__CONTINOUS_SERIALIZATION_H_
 
@@ -26,6 +30,14 @@ extern "C"
 {
 #endif
 
+typedef void (* rmw_uros_continous_serialization_size)(uint32_t* topic_length);
+typedef void (* rmw_uros_continous_serialization)(ucdrBuffer* ucdr);
+
+/** \addtogroup serialization Serialization
+ *  TODO
+ *  @{
+ */
+
 /**
  * \brief Sets the callback functions for continous serialization for a publisher
  *
@@ -33,14 +45,12 @@ extern "C"
  * \param[in] size_cb callback that should modify the total serialization size
  * \param[in] serialization_cb callback that should serialize the user part of the message
  */
-
-typedef void (* rmw_uros_continous_serialization_size)(uint32_t* topic_length);
-typedef void (* rmw_uros_continous_serialization)(ucdrBuffer* ucdr);
-
 void rmw_uros_set_continous_serialization_callbacks(
     rmw_publisher_t* publisher,
     rmw_uros_continous_serialization_size size_cb,
     rmw_uros_continous_serialization serialization_cb);
+
+/** @}*/
 
 #if defined(__cplusplus)
 }
