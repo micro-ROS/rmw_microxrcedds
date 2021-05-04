@@ -76,7 +76,7 @@ rmw_uxrce_static_input_buffer_t custom_static_buffers[RMW_UXRCE_MAX_HISTORY];
             for (size_t i = 0; i < size; i++){          \
                 put_memory(memory, &array[i].mem);      \
                 array[i].mem.data = (void*)&array[i];   \
-                array[0].mem.is_dynamic_memory = false; \
+                array[i].mem.is_dynamic_memory = false; \
             }                                           \
         }                                               \
     }
