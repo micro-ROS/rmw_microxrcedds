@@ -17,6 +17,8 @@
 #include <rmw/rmw.h>
 #include <rmw/error_handling.h>
 
+#include <uxr/client/profile/multithread/multithread.h>
+
 rmw_ret_t
 rmw_send_request(
         const rmw_client_t* client,
@@ -47,6 +49,8 @@ rmw_send_request(
         request_length);
 
     functions->cdr_serialize(ros_request, &mb);
+
+    UXR_UNLOCK_STREAM_ID(&custom_node->context->session, custom_client->stream_id);
 
     if (UXR_INVALID_REQUEST_ID == *sequence_id)
     {

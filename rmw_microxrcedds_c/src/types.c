@@ -28,6 +28,8 @@
 #include "rmw/allocators.h"
 #include <rmw/error_handling.h>
 
+#include <uxr/client/profile/multithread/multithread.h>
+
 // Static memory pools
 
 char rmw_uxrce_entity_naming_buffer[RMW_UXRCE_ENTITY_NAMING_BUFFER_LENGTH];
@@ -65,6 +67,7 @@ rmw_uxrce_static_input_buffer_t custom_static_buffers[RMW_UXRCE_MAX_HISTORY];
         size_t size)                                    \
     {                                                   \
         if (size > 0 && !memory->is_initialized){       \
+            UXR_INIT_LOCK(&memory->mutex);              \
             memory->is_initialized = true;              \
             memory->element_size   = sizeof(*array);    \
             memory->allocateditems = NULL;              \

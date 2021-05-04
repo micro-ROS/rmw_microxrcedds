@@ -18,15 +18,23 @@
 #include <rmw_microxrcedds_c/config.h>
 #include <rmw/allocators.h>
 
+#include <uxr/client/profile/multithread/multithread.h>
+
 bool has_memory(
         rmw_uxrce_mempool_t* mem)
 {
-    return mem->freeitems != NULL ? true : false;
+    UXR_LOCK(&mem->mutex);
+    bool rv = mem->freeitems != NULL ? true : false;
+    UXR_UNLOCK(&mem->mutex);
+
+    return rv;
 }
 
 rmw_uxrce_mempool_item_t* get_memory(
         rmw_uxrce_mempool_t* mem)
 {
+    UXR_LOCK(&mem->mutex);
+
     rmw_uxrce_mempool_item_t* item = NULL;
 
     if (has_memory(mem))
@@ -62,6 +70,9 @@ rmw_uxrce_mempool_item_t* get_memory(
         item = get_memory(mem);
 #endif /* ifdef RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS */
     }
+
+    UXR_UNLOCK(&mem->mutex);
+
     return item;
 }
 
@@ -69,6 +80,8 @@ void put_memory(
         rmw_uxrce_mempool_t* mem,
         rmw_uxrce_mempool_item_t* item)
 {
+    UXR_LOCK(&mem->mutex);
+
     // Gets item from allocated pool
     if (item->prev)
     {
@@ -101,4 +114,6 @@ void put_memory(
     }
     item->prev     = NULL;
     mem->freeitems = item;
+
+    UXR_UNLOCK(&mem->mutex);
 }
