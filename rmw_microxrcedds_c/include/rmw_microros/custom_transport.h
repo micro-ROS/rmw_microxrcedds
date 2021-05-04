@@ -34,7 +34,7 @@ extern "C"
 
 extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
 
-/** \addtogroup transports Transports
+/** \addtogroup rmw micro-ROS RMW API 
  *  TODO
  *  @{
  */

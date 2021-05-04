@@ -30,7 +30,7 @@ extern "C"
 {
 #endif
 
-/** \addtogroup discovery 
+/** \addtogroup rmw micro-ROS RMW API 
  *  TODO
  *  @{
  */

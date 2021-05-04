@@ -293,19 +293,6 @@ if(BUILD_DOCUMENTATION)
         set(DOXYFILE_MAKE make.bat)
     endif()
 
-    find_program(WGET_EXE wget)
-    if(WGET_EXE)
-        message(STATUS "Found WGet: ${WGET_EXE}")
-    else()
-        message(FATAL_ERROR "wget is needed to build the documentation. Please install it correctly")
-    endif()
-    find_program(UNZIP_EXE unzip)
-    if(UNZIP_EXE)
-        message(STATUS "Found Unzip: ${UNZIP_EXE}")
-    else()
-        message(FATAL_ERROR "unzip is needed to build the documentation. Please install it correctly")
-    endif()
-
     # Target to create documentation directories
     file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/doc)
     add_custom_target(docdirs

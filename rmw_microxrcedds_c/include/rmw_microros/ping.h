@@ -35,7 +35,7 @@ extern "C"
 {
 #endif
 
-/** \addtogroup ping Ping
+/** \addtogroup rmw micro-ROS RMW API 
  *  TODO
  *  @{
  */

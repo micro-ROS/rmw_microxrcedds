@@ -30,7 +30,7 @@ extern "C"
 {
 #endif
 
-/** \addtogroup init_options RMW options
+/** \addtogroup rmw micro-ROS RMW API 
  *  TODO
  *  @{
  */
