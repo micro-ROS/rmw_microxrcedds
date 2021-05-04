@@ -201,8 +201,6 @@ rmw_create_subscription(
         bool reliability = qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_RELIABLE ||
                 qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT;
         bool history = qos_policies->history == RMW_QOS_POLICY_HISTORY_KEEP_LAST;
-        bool durability = qos_policies->durability == RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL ||
-                qos_policies->durability == RMW_QOS_POLICY_DURABILITY_SYSTEM_DEFAULT;
 
         datareader_req = uxr_buffer_create_datareader_bin(
             &custom_node->context->session,
@@ -212,7 +210,7 @@ rmw_create_subscription(
             custom_subscription->topic->topic_id,
             reliability,
             history,
-            durability,
+            1,
             UXR_REPLACE);
 #endif /* ifdef RMW_UXRCE_USE_XML */
 

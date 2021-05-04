@@ -213,8 +213,6 @@ rmw_create_publisher(
         bool reliability = qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_RELIABLE ||
                 qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT;
         bool history = qos_policies->history == RMW_QOS_POLICY_HISTORY_KEEP_LAST;
-        bool durability = qos_policies->durability == RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL ||
-                qos_policies->durability == RMW_QOS_POLICY_DURABILITY_SYSTEM_DEFAULT;
 
         datawriter_req = uxr_buffer_create_datawriter_bin(
             &custom_publisher->owner_node->context->session,
@@ -224,7 +222,7 @@ rmw_create_publisher(
             custom_publisher->topic->topic_id,
             reliability,
             history,
-            durability,
+            1,
             UXR_REPLACE);
   #endif /* ifdef RMW_UXRCE_USE_REFS */
 
