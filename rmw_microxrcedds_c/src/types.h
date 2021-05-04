@@ -110,16 +110,14 @@ typedef struct rmw_uxrce_topic_t
     uxrObjectId topic_id;
     const message_type_support_callbacks_t* message_type_support_callbacks;
 
-    bool sync_with_agent;
-    struct rmw_uxrce_node_t*                owner_node;
+    struct rmw_uxrce_node_t* owner_node;
 } rmw_uxrce_topic_t;
 
 typedef struct rmw_uxrce_service_t
 {
     rmw_uxrce_mempool_item_t mem;
-    rmw_service_t*                          rmw_handle;
+    rmw_service_t* rmw_handle;
     uxrObjectId service_id;
-    rmw_gid_t service_gid;
     const service_type_support_callbacks_t* type_support_callbacks;
     uint16_t service_data_resquest;
 
@@ -128,33 +126,32 @@ typedef struct rmw_uxrce_service_t
     bool micro_buffer_in_use;
 
     uxrStreamId stream_id;
-    struct rmw_uxrce_node_t*                owner_node;
+    struct rmw_uxrce_node_t* owner_node;
 } rmw_uxrce_service_t;
 
 typedef struct rmw_uxrce_client_t
 {
     rmw_uxrce_mempool_item_t mem;
-    rmw_client_t*                           rmw_handle;
+    rmw_client_t* rmw_handle;
     uxrObjectId client_id;
-    rmw_gid_t client_gid;
     const service_type_support_callbacks_t* type_support_callbacks;
     uint16_t client_data_request;
 
     uxrStreamId stream_id;
-    struct rmw_uxrce_node_t*                owner_node;
+    struct rmw_uxrce_node_t* owner_node;
 } rmw_uxrce_client_t;
 
 typedef struct rmw_uxrce_subscription_t
 {
     rmw_uxrce_mempool_item_t mem;
-    rmw_subscription_t*                     rmw_handle;
+    rmw_subscription_t* rmw_handle;
     uxrObjectId subscriber_id;
     uxrObjectId datareader_id;
-    rmw_gid_t subscription_gid;
-    const message_type_support_callbacks_t* type_support_callbacks;
-    struct rmw_uxrce_topic_t*               topic;
 
-    struct rmw_uxrce_node_t*                owner_node;
+    const message_type_support_callbacks_t* type_support_callbacks;
+    struct rmw_uxrce_topic_t* topic;
+
+    struct rmw_uxrce_node_t* owner_node;
     rmw_qos_profile_t qos;
     uxrStreamId stream_id;
 } rmw_uxrce_subscription_t;
@@ -162,29 +159,28 @@ typedef struct rmw_uxrce_subscription_t
 typedef struct rmw_uxrce_publisher_t
 {
     rmw_uxrce_mempool_item_t mem;
-    rmw_publisher_t*                        rmw_handle;
+    rmw_publisher_t* rmw_handle;
     uxrObjectId publisher_id;
     uxrObjectId datawriter_id;
-    rmw_gid_t publisher_gid;
 
     const message_type_support_callbacks_t* type_support_callbacks;
 
     rmw_uros_continous_serialization_size cs_cb_size;
     rmw_uros_continous_serialization cs_cb_serialization;
 
-    struct rmw_uxrce_topic_t*               topic;
+    struct rmw_uxrce_topic_t* topic;
 
     rmw_qos_profile_t qos;
     uxrStreamId stream_id;
 
-    struct rmw_uxrce_node_t*                owner_node;
+    struct rmw_uxrce_node_t* owner_node;
 } rmw_uxrce_publisher_t;
 
 typedef struct rmw_uxrce_node_t
 {
     rmw_uxrce_mempool_item_t mem;
-    rmw_node_t*              rmw_handle;
-    rmw_context_impl_t*      context;
+    rmw_node_t* rmw_handle;
+    rmw_context_impl_t* context;
 
     uxrObjectId participant_id;
 } rmw_uxrce_node_t;

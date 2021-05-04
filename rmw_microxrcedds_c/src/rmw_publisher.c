@@ -110,11 +110,9 @@ rmw_create_publisher(
             goto fail;
         }
 
-        // TODO(Borja) RMW_UXRCE_TRANSPORT_id is duplicated in publisher_id and in publisher_gid.data
         rmw_uxrce_publisher_t* custom_publisher = (rmw_uxrce_publisher_t*)memory_node->data;
         custom_publisher->rmw_handle = rmw_publisher;
         custom_publisher->owner_node = custom_node;
-        custom_publisher->publisher_gid.implementation_identifier = rmw_get_implementation_identifier();
         memcpy(&custom_publisher->qos, qos_policies, sizeof(rmw_qos_profile_t));
 
         custom_publisher->stream_id =
@@ -151,51 +149,38 @@ rmw_create_publisher(
             RMW_SET_ERROR_MSG("type support data is NULL");
             goto fail;
         }
-        else if (sizeof(uxrObjectId) > RMW_GID_STORAGE_SIZE)
-        {
-            RMW_SET_ERROR_MSG("Not enough memory for impl ids");
-            goto fail;
-        }
 
-        memset(custom_publisher->publisher_gid.data, 0, RMW_GID_STORAGE_SIZE);
-        memcpy(
-            custom_publisher->publisher_gid.data, &custom_publisher->publisher_id,
-            sizeof(uxrObjectId));
-
+        // Create topic
         custom_publisher->topic = create_topic(
             custom_node, topic_name,
             custom_publisher->type_support_callbacks, qos_policies);
+
         if (custom_publisher->topic == NULL)
         {
+            RMW_SET_ERROR_MSG("Error creating topic");
             goto fail;
         }
 
+        // Create publisher
         custom_publisher->publisher_id = uxr_object_id(
             custom_node->context->id_publisher++,
             UXR_PUBLISHER_ID);
         uint16_t publisher_req = UXR_INVALID_REQUEST_ID;
 
-  #ifdef RMW_UXRCE_USE_XML
-        char publisher_name[20];
-        generate_name(&custom_publisher->publisher_id, publisher_name, sizeof(publisher_name));
-        if (!build_publisher_xml(publisher_name, rmw_uxrce_entity_naming_buffer,
-                sizeof(rmw_uxrce_entity_naming_buffer)))
-        {
-            RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
-            goto fail;
-        }
-        publisher_req = uxr_buffer_create_publisher_xml(
-            &custom_publisher->owner_node->context->session,
-            *custom_node->context->creation_destroy_stream,
-            custom_publisher->publisher_id,
-            custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
-  #elif defined(RMW_UXRCE_USE_REFS)
+  #ifdef RMW_UXRCE_USE_REFS
         publisher_req = uxr_buffer_create_publisher_xml(
             &custom_publisher->owner_node->context->session,
             *custom_node->context->creation_destroy_stream,
             custom_publisher->publisher_id,
             custom_node->participant_id, "", UXR_REPLACE);
-  #endif /* ifdef RMW_UXRCE_USE_XML */
+  #else
+        publisher_req = uxr_buffer_create_publisher_bin(
+            &custom_publisher->owner_node->context->session,
+            *custom_node->context->creation_destroy_stream,
+            custom_publisher->publisher_id,
+            custom_node->participant_id,
+            UXR_REPLACE);
+  #endif /* ifdef RMW_UXRCE_USE_REFS */
 
         if (!run_xrce_session(custom_node->context, publisher_req))
         {
@@ -205,26 +190,13 @@ rmw_create_publisher(
 
         rmw_publisher->data = custom_publisher;
 
+        // Create datawriter
         custom_publisher->datawriter_id = uxr_object_id(
             custom_node->context->id_datawriter++,
             UXR_DATAWRITER_ID);
         uint16_t datawriter_req = UXR_INVALID_REQUEST_ID;
 
-  #ifdef RMW_UXRCE_USE_XML
-        if (!build_datawriter_xml(
-                    topic_name, custom_publisher->type_support_callbacks,
-                    qos_policies, rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
-        {
-            RMW_SET_ERROR_MSG("failed to generate xml request for publisher creation");
-            goto fail;
-        }
-
-        datawriter_req = uxr_buffer_create_datawriter_xml(
-            &custom_publisher->owner_node->context->session,
-            *custom_node->context->creation_destroy_stream,
-            custom_publisher->datawriter_id,
-            custom_publisher->publisher_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
-  #elif defined(RMW_UXRCE_USE_REFS)
+  #ifdef RMW_UXRCE_USE_REFS
         if (!build_datawriter_profile(topic_name, rmw_uxrce_entity_naming_buffer,
                 sizeof(rmw_uxrce_entity_naming_buffer)))
         {
@@ -237,7 +209,22 @@ rmw_create_publisher(
             *custom_node->context->creation_destroy_stream,
             custom_publisher->datawriter_id,
             custom_publisher->publisher_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
-  #endif /* ifdef RMW_UXRCE_USE_XML */
+  #else
+        bool reliability = qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_RELIABLE ||
+                qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT;
+        bool history = qos_policies->history == RMW_QOS_POLICY_HISTORY_KEEP_LAST;
+
+        datawriter_req = uxr_buffer_create_datawriter_bin(
+            &custom_publisher->owner_node->context->session,
+            *custom_node->context->creation_destroy_stream,
+            custom_publisher->datawriter_id,
+            custom_publisher->publisher_id,
+            custom_publisher->topic->topic_id,
+            reliability,
+            history,
+            1,
+            UXR_REPLACE);
+  #endif /* ifdef RMW_UXRCE_USE_REFS */
 
         if (!run_xrce_session(custom_node->context, datawriter_req))
         {
@@ -245,8 +232,8 @@ rmw_create_publisher(
             goto fail;
         }
     }
-    return rmw_publisher;
 
+    return rmw_publisher;
 fail:
     rmw_uxrce_fini_publisher_memory(rmw_publisher);
     rmw_publisher = NULL;

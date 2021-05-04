@@ -17,6 +17,9 @@
 
 #include <rmw/error_handling.h>
 
+
+// TODO (pablogs9) Refactor all this file.
+
 static const char ros_topic_prefix[]   = "rt";
 static const char ros_request_prefix[] = "rq";
 static const char ros_reply_prefix[]   = "rr";
@@ -69,6 +72,43 @@ int build_participant_xml(
     }
 
     return ret;
+}
+
+int generate_service_topics(
+        const char* service_name,
+        char* request_topic,
+        char* reply_topic,
+        size_t buffer_size)
+{
+    snprintf(
+        request_topic, buffer_size, "%s%s%s", ros_request_prefix,
+        service_name, ros_request_subfix);
+
+    snprintf(
+        reply_topic, buffer_size, "%s%s%s", ros_reply_prefix,
+        service_name, ros_reply_subfix);
+
+    return 1;
+}
+
+int generate_service_types(
+        const service_type_support_callbacks_t* members,
+        char* request_type,
+        char* reply_type,
+        size_t buffer_size)
+{
+    const rosidl_message_type_support_t* req_members = members->request_members_();
+    const rosidl_message_type_support_t* res_members = members->response_members_();
+
+    const message_type_support_callbacks_t* req_callbacks =
+            (const message_type_support_callbacks_t*)req_members->data;
+    const message_type_support_callbacks_t* res_callbacks =
+            (const message_type_support_callbacks_t*)res_members->data;
+
+    generate_type_name(req_callbacks, request_type, buffer_size);
+    generate_type_name(res_callbacks, reply_type, buffer_size);
+
+    return 0;
 }
 
 int build_service_xml(
@@ -242,6 +282,24 @@ size_t generate_type_name(
         ret = full_name_size;
     }
 
+    return ret;
+}
+
+int generate_topic_name(
+        const char* topic_name,
+        char* full_topic_name,
+        size_t full_topic_name_size)
+{
+    int ret = snprintf(
+        full_topic_name,
+        full_topic_name_size,
+        "%s%s",
+        ros_topic_prefix,
+        topic_name);
+    if ((ret < 0) && (ret >= (int)full_topic_name_size))
+    {
+        return 0;
+    }
     return ret;
 }
 
