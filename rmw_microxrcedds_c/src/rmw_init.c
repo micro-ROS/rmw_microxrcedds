@@ -17,7 +17,7 @@
 #include "./types.h"
 #include "./utils.h"
 #include "./rmw_microxrcedds_c/rmw_c_macros.h"
-#include <rmw_microros/api.h>
+#include <rmw_microros/rmw_microros.h>
 #include "./rmw_node.h"
 #include "./identifiers.h"
 
