@@ -15,8 +15,6 @@
 
 #include <rmw/error_handling.h>
 
-#include "./rmw_uros/options.h"
-
 rmw_ret_t rmw_uxrce_transport_init(
         rmw_context_impl_t* context_impl,
         rmw_init_options_impl_t* init_options_impl,
