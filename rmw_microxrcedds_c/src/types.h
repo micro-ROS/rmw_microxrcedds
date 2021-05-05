@@ -33,7 +33,7 @@
 
 #include "memory.h"
 #include <rmw_microxrcedds_c/config.h>
-#include <rmw_uros/options.h>
+#include <rmw_microros/api.h>
 
 // RMW specific definitions
 #ifdef RMW_UXRCE_GRAPH

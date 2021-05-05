@@ -134,13 +134,18 @@ set(SRCS
   src/rmw_take.c
   src/rmw_topic_names_and_types.c
   src/rmw_trigger_guard_condition.c
-  src/rmw_uros_options.c
   src/rmw_wait.c
   src/rmw_wait_set.c
   src/types.c
   src/utils.c
   src/callbacks.c
   src/rmw_uxrce_transports.c
+  src/rmw_microros/continous_serialization.c
+  src/rmw_microros/init_options.c
+  src/rmw_microros/time_sync.c
+  src/rmw_microros/ping.c
+  $<$<BOOL:${RMW_UXRCE_TRANSPORT_UDP}>:src/rmw_microros/discovery.c>
+  $<$<BOOL:${RMW_UXRCE_TRANSPORT_CUSTOM}>:src/rmw_microros/custom_transport.c>
   $<$<BOOL:${RMW_UXRCE_GRAPH}>:src/rmw_graph.c>
   )
 

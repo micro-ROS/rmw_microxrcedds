@@ -28,7 +28,7 @@
 #include "test_utils.hpp"
 
 #include "rosidl_runtime_c/string.h"
-#include <rmw_uros/options.h>
+#include <rmw_microros/api.h>
 
 class TestPublisher : public RMWBaseTest
 {

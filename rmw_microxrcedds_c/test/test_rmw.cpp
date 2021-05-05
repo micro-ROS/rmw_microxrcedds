@@ -19,7 +19,7 @@
 #include <rmw/init_options.h>
 #include <rcutils/allocator.h>
 
-#include <rmw_uros/options.h>
+#include <rmw_microros/api.h>
 
 /*
  * Testing rmw init and shutdown. htps://github.com/microROS/rmw-microxrcedds/issues/14

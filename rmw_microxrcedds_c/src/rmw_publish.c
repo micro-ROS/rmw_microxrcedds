@@ -18,7 +18,7 @@
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 
-#include <rmw_uros/options.h>
+#include <rmw_microros/api.h>
 
 #include <uxr/client/profile/multithread/multithread.h>
 
