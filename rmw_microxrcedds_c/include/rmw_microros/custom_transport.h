@@ -32,8 +32,6 @@ extern "C"
 {
 #endif // if defined(__cplusplus)
 
-extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
-
 /** \addtogroup rmw micro-ROS RMW API
  *  @{
  */
