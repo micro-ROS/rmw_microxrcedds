@@ -17,6 +17,23 @@
 
 #include <rmw_microxrcedds_c/config.h>
 
+#include <rmw/rmw.h>
+#include <rmw/ret_types.h>
+#include <rmw/init_options.h>
+
+#include <rmw_microros/continous_serialization.h>
+#include <rmw_microros/init_options.h>
+#include <rmw_microros/time_sync.h>
+#include <rmw_microros/ping.h>
+
+#ifdef RMW_UXRCE_TRANSPORT_UDP
+#include <rmw_microros/discovery.h>
+#endif  // RMW_UXRCE_TRANSPORT_UDP
+
+#ifdef RMW_UXRCE_TRANSPORT_CUSTOM
+#include <rmw_microros/custom_transport.h>
+#endif  // RMW_UXRCE_TRANSPORT_CUSTOM
+
 #if defined(__cplusplus)
 extern "C"
 {
@@ -52,22 +69,5 @@ typedef struct rmw_uxrce_transport_params_t
 #if defined(__cplusplus)
 }
 #endif // if defined(__cplusplus)
-
-#include <rmw/rmw.h>
-#include <rmw/ret_types.h>
-#include <rmw/init_options.h>
-
-#include <rmw_microros/continous_serialization.h>
-#include <rmw_microros/init_options.h>
-#include <rmw_microros/time_sync.h>
-#include <rmw_microros/ping.h>
-
-#ifdef RMW_UXRCE_TRANSPORT_UDP
-#include <rmw_microros/discovery.h>
-#endif  // RMW_UXRCE_TRANSPORT_UDP
-
-#ifdef RMW_UXRCE_TRANSPORT_CUSTOM
-#include <rmw_microros/custom_transport.h>
-#endif  // RMW_UXRCE_TRANSPORT_CUSTOM
 
 #endif  // RMW_MICROROS__API_H_
