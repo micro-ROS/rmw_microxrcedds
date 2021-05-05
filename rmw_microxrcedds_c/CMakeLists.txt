@@ -32,6 +32,9 @@ find_package(microcdr REQUIRED)
 
 find_package(rmw REQUIRED)
 
+# Build options
+option(BUILD_DOCUMENTATION "Use doxygen to create product documentation" OFF)
+
 # RMW profile options
 option(RMW_UXRCE_GRAPH "Allows to perform graph-related operations to the user" OFF)
 if(RMW_UXRCE_GRAPH)
@@ -104,6 +107,15 @@ endif()
 configure_file(${PROJECT_SOURCE_DIR}/src/config.h.in
   ${PROJECT_BINARY_DIR}/include/rmw_microxrcedds_c/config.h)
 
+# Set install directories
+if(WIN32)
+    set(DOC_DIR "doc")
+else()
+    set(DOC_DIR "${DATA_INSTALL_DIR}/doc")
+endif()
+
+set(DOC_INSTALL_DIR ${DOC_DIR} CACHE PATH "Installation directory for documentation")
+
 set(SRCS
   src/identifiers.c
   src/memory.c
@@ -134,13 +146,18 @@ set(SRCS
   src/rmw_take.c
   src/rmw_topic_names_and_types.c
   src/rmw_trigger_guard_condition.c
-  src/rmw_uros_options.c
   src/rmw_wait.c
   src/rmw_wait_set.c
   src/types.c
   src/utils.c
   src/callbacks.c
   src/rmw_uxrce_transports.c
+  src/rmw_microros/continous_serialization.c
+  src/rmw_microros/init_options.c
+  src/rmw_microros/time_sync.c
+  src/rmw_microros/ping.c
+  $<$<BOOL:${RMW_UXRCE_TRANSPORT_UDP}>:src/rmw_microros/discovery.c>
+  $<$<BOOL:${RMW_UXRCE_TRANSPORT_CUSTOM}>:src/rmw_microros/custom_transport.c>
   $<$<BOOL:${RMW_UXRCE_GRAPH}>:src/rmw_graph.c>
   )
 
@@ -259,6 +276,46 @@ if(BUILD_TESTING)
   add_subdirectory(test)
 endif()
 
+# Documentation
+if(BUILD_DOCUMENTATION)
+    find_package(Doxygen)
+    if(NOT DOXYGEN_FOUND)
+        message(FATAL_ERROR "doxygen is needed to build the documentation. Please install it correctly")
+    endif()
+    if(UNIX)
+        find_program(DOXYFILE_MAKE make)
+        if(DOXYFILE_MAKE)
+            message(STATUS "Found Make: ${DOXYFILE_MAKE}")
+        else()
+            message(FATAL_ERROR "make is needed to build the documentation. Please install it correctly")
+        endif()
+    elseif(WIN32)
+        set(DOXYFILE_MAKE make.bat)
+    endif()
+
+    # Target to create documentation directories
+    file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/doc)
+    add_custom_target(docdirs
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/doc/api_reference
+        COMMENT "Creating documentation directory" VERBATIM)
+
+    ### Doxygen ########################3
+    # Configure the template doxyfile for or specific project
+    configure_file(doxyfile.in ${PROJECT_BINARY_DIR}/doxyfile @ONLY IMMEDIATE)
+    # Add custom target to run doxygen when ever the project is build
+    add_custom_target(doxygen
+        COMMAND "${DOXYGEN_EXECUTABLE}" "${PROJECT_BINARY_DIR}/doxyfile"
+        SOURCES "${PROJECT_BINARY_DIR}/doxyfile"
+        COMMENT "Generating API documentation with doxygen" VERBATIM)
+
+    add_dependencies(doxygen docdirs)
+
+    add_custom_target(doc ALL
+    COMMENT "Generated project documentation" VERBATIM)
+
+    add_dependencies(doc doxygen)
+endif()
+
 ament_package()
 
 # Install includes.
@@ -288,3 +345,11 @@ install(
   RUNTIME DESTINATION
     bin
   )
+
+if(BUILD_DOCUMENTATION)
+  # Instalation of doxygen files
+  install(DIRECTORY ${PROJECT_BINARY_DIR}/doc/api_reference
+      DESTINATION ${DOC_INSTALL_DIR}
+      COMPONENT documentation
+      )
+endif()
