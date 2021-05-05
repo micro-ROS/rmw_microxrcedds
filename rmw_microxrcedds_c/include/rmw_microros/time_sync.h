@@ -25,7 +25,6 @@
 #include <rmw/error_handling.h>
 #include <uxr/client/util/time.h>
 
-#include 
 #if defined(__cplusplus)
 extern "C"
 {
