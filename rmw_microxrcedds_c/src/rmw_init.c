@@ -35,6 +35,8 @@
 #include "./rmw_graph.h"
 #endif  // RMW_UXRCE_GRAPH
 
+extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
+
 rmw_ret_t
 rmw_init_options_init(
         rmw_init_options_t* init_options,

@@ -25,6 +25,8 @@
 #include <uxr/client/client.h>
 #include <uxr/client/util/ping.h>
 
+extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
+
 rmw_ret_t rmw_uros_ping_agent(
         const int timeout_ms,
         const uint8_t attempts)
