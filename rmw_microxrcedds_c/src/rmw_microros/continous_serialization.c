@@ -21,9 +21,9 @@
 #include <rmw/error_handling.h>
 
 void rmw_uros_set_continous_serialization_callbacks(
-    rmw_publisher_t* publisher,
-    rmw_uros_continous_serialization_size size_cb,
-    rmw_uros_continous_serialization serialization_cb)
+        rmw_publisher_t* publisher,
+        rmw_uros_continous_serialization_size size_cb,
+        rmw_uros_continous_serialization serialization_cb)
 {
     rmw_uxrce_publisher_t* custom_publisher = (rmw_uxrce_publisher_t*)publisher->data;
 

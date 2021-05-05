@@ -20,38 +20,38 @@
 #if defined(__cplusplus)
 extern "C"
 {
-#endif
+#endif // if defined(__cplusplus)
 
 #ifdef RMW_UXRCE_TRANSPORT_IPV4
   #define MAX_IP_LEN         16
 #elif defined(RMW_UXRCE_TRANSPORT_IPV6)
   #define MAX_IP_LEN         39
-#endif
+#endif // ifdef RMW_UXRCE_TRANSPORT_IPV4
 #define MAX_PORT_LEN         5
 #define MAX_SERIAL_DEVICE    50
 
 typedef struct rmw_uxrce_transport_params_t
 {
 #if defined(RMW_UXRCE_TRANSPORT_SERIAL)
-    char              serial_device[MAX_SERIAL_DEVICE];
+    char serial_device[MAX_SERIAL_DEVICE];
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
-    char              agent_address[MAX_IP_LEN];
-    char              agent_port[MAX_PORT_LEN];
+    char agent_address[MAX_IP_LEN];
+    char agent_port[MAX_PORT_LEN];
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
-    bool              framing;
+    bool framing;
     void*             args;
-    open_custom_func  open_cb;
+    open_custom_func open_cb;
     close_custom_func close_cb;
     write_custom_func write_cb;
-    read_custom_func  read_cb;
-#endif
-    uint32_t          client_key;
+    read_custom_func read_cb;
+#endif // if defined(RMW_UXRCE_TRANSPORT_SERIAL)
+    uint32_t client_key;
 } rmw_uxrce_transport_params_t;
 
 
 #if defined(__cplusplus)
 }
-#endif
+#endif // if defined(__cplusplus)
 
 #include <rmw/rmw.h>
 #include <rmw/ret_types.h>

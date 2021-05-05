@@ -22,8 +22,8 @@ rmw_ret_t rmw_uxrce_transport_init(
 {
 #ifdef RMW_UXRCE_TRANSPORT_SERIAL
     const char* serial_device = (NULL == context_impl)
-                                ? RMW_UXRCE_DEFAULT_SERIAL_DEVICE
-                                : init_options_impl->transport_params.serial_device;
+            ? RMW_UXRCE_DEFAULT_SERIAL_DEVICE
+            : init_options_impl->transport_params.serial_device;
 
     int fd;
     if (0 < (fd = open(serial_device, O_RDWR | O_NOCTTY)))
@@ -81,8 +81,8 @@ rmw_ret_t rmw_uxrce_transport_init(
         }
 
         uxrSerialTransport* serial_transport = (NULL == context_impl)
-                                               ? (uxrSerialTransport*)transport
-                                               : &context_impl->transport;
+                ? (uxrSerialTransport*)transport
+                : &context_impl->transport;
 
         if (!uxr_init_serial_transport(serial_transport, fd, 0, 1))
         {
@@ -105,14 +105,14 @@ rmw_ret_t rmw_uxrce_transport_init(
 #endif /* ifdef RMW_UXRCE_TRANSPORT_IPV4 */
 
     uxrUDPTransport* udp_transport = (NULL == context_impl)
-                                     ? (uxrUDPTransport*)transport
-                                     : &context_impl->transport;
+            ? (uxrUDPTransport*)transport
+            : &context_impl->transport;
     const char* agent_ip = (NULL == context_impl)
-                           ? RMW_UXRCE_DEFAULT_UDP_IP
-                           : init_options_impl->transport_params.agent_address;
+            ? RMW_UXRCE_DEFAULT_UDP_IP
+            : init_options_impl->transport_params.agent_address;
     const char* agent_port = (NULL == context_impl)
-                             ? RMW_UXRCE_DEFAULT_UDP_PORT
-                             : init_options_impl->transport_params.agent_port;
+            ? RMW_UXRCE_DEFAULT_UDP_PORT
+            : init_options_impl->transport_params.agent_port;
 
     if (!uxr_init_udp_transport(udp_transport, ip_protocol, agent_ip, agent_port))
     {
@@ -123,11 +123,11 @@ rmw_ret_t rmw_uxrce_transport_init(
             agent_ip, agent_port);
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
     uxrCustomTransport* custom_transport = (NULL == context_impl)
-                                           ? (uxrCustomTransport*)transport
-                                           : &context_impl->transport;
+            ? (uxrCustomTransport*)transport
+            : &context_impl->transport;
     void* args = (NULL == context_impl)
-                 ? rmw_uxrce_transport_default_params.args
-                 : init_options_impl->transport_params.args;
+            ? rmw_uxrce_transport_default_params.args
+            : init_options_impl->transport_params.args;
 
     if (!uxr_init_custom_transport(custom_transport, args))
     {

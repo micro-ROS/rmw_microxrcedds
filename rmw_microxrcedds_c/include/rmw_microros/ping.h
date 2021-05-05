@@ -33,9 +33,9 @@
 #if defined(__cplusplus)
 extern "C"
 {
-#endif
+#endif // if defined(__cplusplus)
 
-/** \addtogroup rmw micro-ROS RMW API 
+/** \addtogroup rmw micro-ROS RMW API
  *  @{
  */
 
@@ -48,12 +48,14 @@ extern "C"
  * \return RMW_RET_OK If micro-ROS Agent is available.
  * \return RMW_RET_ERROR If micro-ROS Agent is not available.
  */
-rmw_ret_t rmw_uros_ping_agent(const int timeout_ms, const uint8_t attempts);
+rmw_ret_t rmw_uros_ping_agent(
+        const int timeout_ms,
+        const uint8_t attempts);
 
 /** @}*/
 
 #if defined(__cplusplus)
 }
-#endif
+#endif // if defined(__cplusplus)
 
 #endif  // RMW_MICROROS__PING_H_

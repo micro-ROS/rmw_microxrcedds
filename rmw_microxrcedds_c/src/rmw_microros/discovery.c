@@ -23,12 +23,14 @@
 #include <uxr/client/client.h>
 
 #ifdef UCLIENT_PROFILE_DISCOVERY
-bool on_agent_found(const TransportLocator* locator, void* args)
+bool on_agent_found(
+        const TransportLocator* locator,
+        void* args)
 {
     rmw_init_options_t* rmw_options = (rmw_init_options_t*)args;
-    uxrIpProtocol       ip_protocol;
-    char     ip[MAX_IP_LEN];
-    char     port_str[MAX_PORT_LEN];
+    uxrIpProtocol ip_protocol;
+    char ip[MAX_IP_LEN];
+    char port_str[MAX_PORT_LEN];
     uint16_t port;
 
     uxr_locator_to_ip(locator, ip, sizeof(ip), &port, &ip_protocol);
@@ -50,9 +52,10 @@ bool on_agent_found(const TransportLocator* locator, void* args)
     return(false);
 }
 
-#endif
+#endif /* ifdef UCLIENT_PROFILE_DISCOVERY */
 
-rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t* rmw_options)
+rmw_ret_t rmw_uros_discover_agent(
+        rmw_init_options_t* rmw_options)
 {
 #ifdef UCLIENT_PROFILE_DISCOVERY
     if (NULL == rmw_options)
@@ -72,6 +75,5 @@ rmw_ret_t rmw_uros_discover_agent(rmw_init_options_t* rmw_options)
 
     RMW_SET_ERROR_MSG("UCLIENT_PROFILE_DISCOVERY not set.");
     return(RMW_RET_INVALID_ARGUMENT);
-#endif
+#endif /* ifdef UCLIENT_PROFILE_DISCOVERY */
 }
-

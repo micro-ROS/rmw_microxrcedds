@@ -23,17 +23,17 @@
 rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
 
 rmw_ret_t rmw_uros_set_custom_transport(
-    bool framing,
-    void* args,
-    open_custom_func open_cb,
-    close_custom_func close_cb,
-    write_custom_func write_cb,
-    read_custom_func read_cb)
+        bool framing,
+        void* args,
+        open_custom_func open_cb,
+        close_custom_func close_cb,
+        write_custom_func write_cb,
+        read_custom_func read_cb)
 {
     if (NULL != open_cb &&
-        NULL != close_cb &&
-        NULL != write_cb &&
-        NULL != read_cb)
+            NULL != close_cb &&
+            NULL != write_cb &&
+            NULL != read_cb)
     {
         rmw_uxrce_transport_default_params.framing  = framing;
         rmw_uxrce_transport_default_params.args     = args;

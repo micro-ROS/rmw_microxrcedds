@@ -21,8 +21,9 @@
 #include <rmw/error_handling.h>
 
 rmw_ret_t rmw_uros_init_options(
-    int argc, const char* const argv[],
-    rmw_init_options_t* rmw_options)
+        int argc,
+        const char* const argv[],
+        rmw_init_options_t* rmw_options)
 {
     if (NULL == rmw_options)
     {
@@ -59,11 +60,13 @@ rmw_ret_t rmw_uros_init_options(
 #else
     (void)argc;
     (void)argv;
-#endif
+#endif /* if defined(RMW_UXRCE_TRANSPORT_SERIAL) */
     return(ret);
 }
 
-rmw_ret_t rmw_uros_options_set_serial_device(const char* dev, rmw_init_options_t* rmw_options)
+rmw_ret_t rmw_uros_options_set_serial_device(
+        const char* dev,
+        rmw_init_options_t* rmw_options)
 {
 #if defined(RMW_UXRCE_TRANSPORT_SERIAL)
     if (NULL == rmw_options)
@@ -88,12 +91,13 @@ rmw_ret_t rmw_uros_options_set_serial_device(const char* dev, rmw_init_options_t
 
     RMW_SET_ERROR_MSG("RMW_UXRCE_TRANSPORT_SERIAL not set.");
     return(RMW_RET_INVALID_ARGUMENT);
-#endif
+#endif /* if defined(RMW_UXRCE_TRANSPORT_SERIAL) */
 }
 
 rmw_ret_t rmw_uros_options_set_udp_address(
-    const char* ip, const char* port,
-    rmw_init_options_t* rmw_options)
+        const char* ip,
+        const char* port,
+        rmw_init_options_t* rmw_options)
 {
 #ifdef RMW_UXRCE_TRANSPORT_UDP
     if (NULL == rmw_options)
@@ -130,10 +134,12 @@ rmw_ret_t rmw_uros_options_set_udp_address(
 
     RMW_SET_ERROR_MSG("RMW_UXRCE_TRANSPORT_UDP not set.");
     return(RMW_RET_INVALID_ARGUMENT);
-#endif
+#endif /* ifdef RMW_UXRCE_TRANSPORT_UDP */
 }
 
-rmw_ret_t rmw_uros_options_set_client_key(uint32_t client_key, rmw_init_options_t* rmw_options)
+rmw_ret_t rmw_uros_options_set_client_key(
+        uint32_t client_key,
+        rmw_init_options_t* rmw_options)
 {
     if (NULL == rmw_options)
     {

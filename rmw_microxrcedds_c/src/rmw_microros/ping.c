@@ -25,7 +25,9 @@
 #include <uxr/client/client.h>
 #include <uxr/client/util/ping.h>
 
-rmw_ret_t rmw_uros_ping_agent(const int timeout_ms, const uint8_t attempts)
+rmw_ret_t rmw_uros_ping_agent(
+        const int timeout_ms,
+        const uint8_t attempts)
 {
     bool success = false;
 
@@ -37,7 +39,7 @@ rmw_ret_t rmw_uros_ping_agent(const int timeout_ms, const uint8_t attempts)
         uxrUDPTransport transport;
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
         uxrCustomTransport transport;
-#endif
+#endif /* ifdef RMW_UXRCE_TRANSPORT_SERIAL */
         rmw_ret_t ret = rmw_uxrce_transport_init(NULL, NULL, (void*)&transport);
 
         if (RMW_RET_OK != ret)
