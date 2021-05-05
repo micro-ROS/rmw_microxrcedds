@@ -31,7 +31,6 @@ extern "C"
 #endif
 
 /** \addtogroup rmw micro-ROS RMW API 
- *  TODO
  *  @{
  */
 

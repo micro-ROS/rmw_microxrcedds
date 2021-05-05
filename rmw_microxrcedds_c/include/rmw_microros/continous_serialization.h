@@ -34,7 +34,7 @@ typedef void (* rmw_uros_continous_serialization_size)(uint32_t* topic_length);
 typedef void (* rmw_uros_continous_serialization)(ucdrBuffer* ucdr);
 
 /** \addtogroup rmw micro-ROS RMW API 
- *  TODO
+ *  @brief TODO
  *  @{
  */
 
