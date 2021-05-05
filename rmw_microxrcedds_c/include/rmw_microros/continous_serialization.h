@@ -36,7 +36,6 @@ typedef void (* rmw_uros_continous_serialization)(
         ucdrBuffer* ucdr);
 
 /** \addtogroup rmw micro-ROS RMW API
- *  @brief TODO
  *  @{
  */
 
