@@ -25,7 +25,7 @@
 bool flush_session(
         uxrSession* session)
 {
-    return uxr_run_session_until_confirm_delivery(session, 1000);
+    return uxr_run_session_until_confirm_delivery(session, RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT);
 }
 
 rmw_ret_t
