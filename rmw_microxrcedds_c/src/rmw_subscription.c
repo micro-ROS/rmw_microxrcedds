@@ -206,13 +206,13 @@ rmw_create_subscription(
         switch (qos_policies->durability)
         {
             case RMW_QOS_POLICY_DURABILITY_VOLATILE:
-                durability = UXR_DURABILITY_VOLATILE
+                durability = UXR_DURABILITY_VOLATILE;
                 break;
             case RMW_QOS_POLICY_DURABILITY_UNKNOWN:
             case RMW_QOS_POLICY_DURABILITY_SYSTEM_DEFAULT:
             case RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL:
             default:
-                durability = UXR_DURABILITY_TRANSIENT_LOCAL
+                durability = UXR_DURABILITY_TRANSIENT_LOCAL;
                 break;
         }
 
