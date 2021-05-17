@@ -60,15 +60,25 @@ rmw_send_response(
         custom_service->stream_id, custom_service->service_id, &mb,
         response_length);
 
+    if (UXR_INVALID_REQUEST_ID == rc)
+    {
+        RMW_SET_ERROR_MSG("Micro XRCE-DDS service response error.");
+        return RMW_RET_ERROR;
+    }
+
     uxr_serialize_SampleIdentity(&mb, &sample_id);
     functions->cdr_serialize(ros_response, &mb);
 
     UXR_UNLOCK_STREAM_ID(&custom_node->context->session, custom_service->stream_id);
 
-    if (UXR_INVALID_REQUEST_ID == rc)
+    if (UXR_BEST_EFFORT_STREAM == custom_service->stream_id.type)
     {
-        RMW_SET_ERROR_MSG("Micro XRCE-DDS service response error.");
-        return RMW_RET_ERROR;
+        uxr_flash_output_streams(&custom_node->context->session);
+    }
+    else
+    {
+        uxr_run_session_until_confirm_delivery(
+            &custom_node->context->session, RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT);
     }
 
     return RMW_RET_OK;

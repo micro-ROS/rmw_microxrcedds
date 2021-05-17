@@ -48,15 +48,15 @@ rmw_send_request(
         custom_client->stream_id, custom_client->client_id, &mb,
         request_length);
 
-    functions->cdr_serialize(ros_request, &mb);
-
-    UXR_UNLOCK_STREAM_ID(&custom_node->context->session, custom_client->stream_id);
-
     if (UXR_INVALID_REQUEST_ID == *sequence_id)
     {
         RMW_SET_ERROR_MSG("Micro XRCE-DDS service request error.");
         return RMW_RET_ERROR;
     }
+
+    functions->cdr_serialize(ros_request, &mb);
+
+    UXR_UNLOCK_STREAM_ID(&custom_node->context->session, custom_client->stream_id);
 
     if (UXR_BEST_EFFORT_STREAM == custom_client->stream_id.type)
     {
