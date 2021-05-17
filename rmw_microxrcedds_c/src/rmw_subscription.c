@@ -201,7 +201,7 @@ rmw_create_subscription(
         bool reliability = qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_RELIABLE ||
                 qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT;
         bool history = qos_policies->history == RMW_QOS_POLICY_HISTORY_KEEP_LAST;
-        
+
         uxrQoSDurability durability;
         switch (qos_policies->durability)
         {
