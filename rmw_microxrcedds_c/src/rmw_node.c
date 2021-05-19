@@ -102,6 +102,7 @@ rmw_node_t* create_node(
         *node_info->context->creation_destroy_stream,
         node_info->participant_id,
         domain_id,
+        name,
         UXR_REPLACE);
 #endif /* ifdef RMW_UXRCE_USE_REFS */
 

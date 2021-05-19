@@ -44,18 +44,12 @@ rmw_ret_t rmw_graph_init(
     size_t microros_domain_id     = 0;      // TODO(jamoralp): shall this Domain ID be configurabe, user wise?
     const char* graph_participant_name = "microros_graph";
 
-    if (!build_participant_xml(microros_domain_id, graph_participant_name,
-            rmw_uxrce_entity_naming_buffer, sizeof(rmw_uxrce_entity_naming_buffer)))
-    {
-        RMW_SET_ERROR_MSG("Failed to generate xml request for graph participant creation");
-        return RMW_RET_ERROR;
-    }
-
     uint16_t participant_req = uxr_buffer_create_participant_bin(
         &context->session,
         *context->creation_destroy_stream,
         graph_info->participant_id,
         (int16_t)microros_domain_id,
+        graph_participant_name,
         UXR_REPLACE);
 
     // Set graph subscription QoS policies
