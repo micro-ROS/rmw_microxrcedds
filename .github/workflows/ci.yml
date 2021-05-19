@@ -6,14 +6,14 @@ on:
         - foxy
         - main
     pull_request:
-      branches: 
+      branches:
         - '**'
 
 jobs:
     rmw_microxrcedds_ci:
         runs-on: ubuntu-20.04
         container: microros/micro-ros-agent:foxy
-    
+
         steps:
         - uses: actions/checkout@v2
           with:
@@ -21,8 +21,8 @@ jobs:
 
         - name: Download dependencies
           run: |
-            git clone -b foxy https://github.com/eProsima/Micro-CDR src/Micro-CDR 
-            git clone -b foxy https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client 
+            git clone -b foxy https://github.com/eProsima/Micro-CDR src/Micro-CDR
+            git clone -b feature/add_bin_participant_name https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client
             git clone -b foxy https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
             touch src/rosidl_typesupport_microxrcedds/test/COLCON_IGNORE
             # Install coverage tools
@@ -33,15 +33,15 @@ jobs:
           run: . /opt/ros/foxy/setup.sh && colcon build --symlink-install --cmake-args -DBUILD_SHARED_LIBS=ON -DCMAKE_CXX_FLAGS="-ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline" -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE=ON -DCMAKE_C_FLAGS="-ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline" -DCMAKE_C_OUTPUT_EXTENSION_REPLACE=ON
 
         - name: Test
-          run: | 
+          run: |
             . /opt/ros/foxy/setup.sh && . /uros_ws/install/local_setup.sh && ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v6 &
-            sleep 1 
-            . /opt/ros/foxy/setup.sh && . install/local_setup.sh 
+            sleep 1
+            . /opt/ros/foxy/setup.sh && . install/local_setup.sh
             colcon test --packages-select=rmw_microxrcedds --return-code-on-test-failure --ctest-args -E "(cpplint)|(lint_cmake)|(uncrustify)|(xmllint)"
             ./build/rmw_microxrcedds/test/test-sizes 2> memanalisys_out
 
         - name: Uncrustify
-          run: | 
+          run: |
             # Install Uncrustify
             git clone https://github.com/uncrustify/uncrustify.git --branch uncrustify-0.72.0 --single-branch uncrustify
             mkdir -p uncrustify/build
@@ -54,10 +54,10 @@ jobs:
             cd src/rmw-microxrcedds/rmw_microxrcedds_c
             curl -l https://raw.githubusercontent.com/eProsima/cpp-style/master/uncrustify.cfg -o uncrustify.cfg
             find src test include \( -name "*.cpp" -o -name "*.c" -o -name "*.h" -o -name "*.hpp" \) -exec uncrustify -c uncrustify.cfg --check {} +
-        
+
         - name: Static memory
           continue-on-error: true
-          if: github.event_name == 'pull_request' 
+          if: github.event_name == 'pull_request'
           uses: machine-learning-apps/pr-comment@master
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
