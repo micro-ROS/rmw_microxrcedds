@@ -20,11 +20,14 @@ This library defines the interface used by upper layers in the ROS 2 stack, and 
 
 #### Library configuration
 
-This RMW implementation tries to fully rely on static memory assignations.
-Because of this, assignations of the memory are upper bounded so must be configured by the user before the build process.
+This RMW implementation can be configured via CMake arguments, its usual to configure them via `colcon.meta` file in a micro-ROS enviroment.
+
+Most of these configuration are related to memory management because this RMW implementation tries to fully rely on static memory assignations. Because of this, assignations of the memory are upper bounded so must be configured by the user before the build process.
 By default, the package sets the values for all memory bounded. The upper bound is configurable by a file that sets the values during the build process.
 
 More details about RMW Micro XRCE-DDS can be found [here](https://micro.ros.org/docs/tutorials/advanced/microxrcedds_rmw_configuration/).
+
+All the configurable parameters are:
 
 | Name                                      | Description                                                                                                                                                                                    | Default |
 | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
