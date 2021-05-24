@@ -26,7 +26,6 @@ Most of these configuration are related to memory management because this RMW im
 By default, the package sets the values for all memory bounded. The upper bound is configurable by a file that sets the values during the build process.
 
 More details about RMW Micro XRCE-DDS can be found [here](https://micro.ros.org/docs/tutorials/advanced/microxrcedds_rmw_configuration/).
-s
 All the configurable parameters are:
 
 | Name                                      | Description                                                                                                                                                                                    | Default |
