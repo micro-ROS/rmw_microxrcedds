@@ -26,14 +26,14 @@ Most of these configuration are related to memory management because this RMW im
 By default, the package sets the values for all memory bounded. The upper bound is configurable by a file that sets the values during the build process.
 
 More details about RMW Micro XRCE-DDS can be found [here](https://micro.ros.org/docs/tutorials/advanced/microxrcedds_rmw_configuration/).
-
+s
 All the configurable parameters are:
 
 | Name                                      | Description                                                                                                                                                                                    | Default |
 | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
 | RMW_UXRCE_TRANSPORT                       | Sets Micro XRCE-DDS transport to use. (udp, serial, custom)                                                                                                                                    | udp     |
 | RMW_UXRCE_IPV                             | Sets Micro XRCE-DDS IP version to use. (ipv4, ipv6)                                                                                                                                            | ipv4    |
-| RMW_UXRCE_CREATION_MODE                   | Sets creation mode in Micro XRCE-DDS. (xml, refs)                                                                                                                                              | xml     |
+| RMW_UXRCE_CREATION_MODE                   | Sets creation mode in Micro XRCE-DDS. (bin, refs)                                                                                                                                              | bin     |
 | RMW_UXRCE_MAX_HISTORY                     | This value sets the number of history slots available for RMW subscriptions, </br> requests and replies                                                                                        | 8       |
 | RMW_UXRCE_MAX_SESSIONS                    | This value sets the maximum number of Micro XRCE-DDS sessions.                                                                                                                                 | 1       |
 | RMW_UXRCE_MAX_NODES                       | This value sets the maximum number of nodes.                                                                                                                                                   | 4       |
