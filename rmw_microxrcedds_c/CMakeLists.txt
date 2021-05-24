@@ -15,7 +15,7 @@
 cmake_minimum_required(VERSION 3.5)
 cmake_policy(SET CMP0057 NEW)
 
-set(PACKAGE_VERSION "0.1.0")
+set(PACKAGE_VERSION "1.0.0")
 project(rmw_microxrcedds
   VERSION
     ${PACKAGE_VERSION}
