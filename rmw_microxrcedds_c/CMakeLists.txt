@@ -15,7 +15,7 @@
 cmake_minimum_required(VERSION 3.5)
 cmake_policy(SET CMP0057 NEW)
 
-set(PACKAGE_VERSION "0.1.0")
+set(PACKAGE_VERSION "1.0.0")
 project(rmw_microxrcedds
   VERSION
     ${PACKAGE_VERSION}
@@ -43,7 +43,7 @@ endif()
 # --- RMW CONFIGURATION ---
 set(RMW_UXRCE_TRANSPORT "udp" CACHE STRING "Sets Micro XRCE-DDS transport to use. (udp | serial | custom)")
 set(RMW_UXRCE_IPV "ipv4" CACHE STRING "Sets Micro XRCE-DDS IP version to use. (ipv4 | ipv6)")
-set(RMW_UXRCE_CREATION_MODE "xml" CACHE STRING "Sets creation mode in Micro XRCE-DDS. (xml | refs)")
+set(RMW_UXRCE_CREATION_MODE "bin" CACHE STRING "Sets creation mode in Micro XRCE-DDS. (bin | refs)")
 set(RMW_UXRCE_MAX_HISTORY "8" CACHE STRING "This value sets the number of history slots available for RMW subscriptions, requests and replies")
 set(RMW_UXRCE_MAX_SESSIONS "1" CACHE STRING "This value sets the maximum number of Micro XRCE-DDS sessions.")
 set(RMW_UXRCE_MAX_NODES "4" CACHE STRING "This value sets the maximum number of nodes.")
@@ -60,9 +60,9 @@ set(RMW_UXRCE_REF_BUFFER_LENGTH "100" CACHE STRING "This value sets the maximum 
 set(RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT "1000" CACHE STRING "This value sets the maximum time to wait for an XRCE entity creation and destroy in milliseconds. If set to 0 best effort is used.")
 set(RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT "1000" CACHE STRING "This value sets the maximum time to wait for a publication in a reliable mode in milliseconds.")
 
-set(RMW_UXRCE_STREAM_HISTORY "4" CACHE STRING "This value sets the number of MTUs to buffer, both input and output. Micro XRCE-DDS client configuration provides their size")
-set(RMW_UXRCE_STREAM_HISTORY_INPUT "" CACHE STRING "This value sets the number of MTUs to input buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_OUTPUT is blank. Micro XRCE-DDS client configuration provides their size")
-set(RMW_UXRCE_STREAM_HISTORY_OUTPUT "" CACHE STRING "This value sets the number of MTUs to output buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_INPUT is blank. Micro XRCE-DDS client configuration provides their size")
+set(RMW_UXRCE_STREAM_HISTORY "4" CACHE STRING "This value sets the number of MTUs to buffer, both input and output.")
+set(RMW_UXRCE_STREAM_HISTORY_INPUT "" CACHE STRING "This value sets the number of MTUs to input buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_OUTPUT is blank.")
+set(RMW_UXRCE_STREAM_HISTORY_OUTPUT "" CACHE STRING "This value sets the number of MTUs to output buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_INPUT is blank.")
 
 if(RMW_UXRCE_STREAM_HISTORY_INPUT STREQUAL "" OR RMW_UXRCE_STREAM_HISTORY_OUTPUT STREQUAL "")
   unset(RMW_UXRCE_STREAM_HISTORY_INPUT)
