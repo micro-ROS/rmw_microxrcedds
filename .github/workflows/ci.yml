@@ -30,14 +30,14 @@ jobs:
             pip3 install gcovr
 
         - name: Build
-          run: . /opt/ros/foxy/setup.sh && colcon build --symlink-install --cmake-args -DBUILD_SHARED_LIBS=ON -DCMAKE_CXX_FLAGS="-ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline" -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE=ON -DCMAKE_C_FLAGS="-ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline" -DCMAKE_C_OUTPUT_EXTENSION_REPLACE=ON
+          run: . /opt/ros/$ROS_DISTRO/setup.sh && colcon build --symlink-install --cmake-args -DBUILD_SHARED_LIBS=ON -DCMAKE_CXX_FLAGS="-ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline" -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE=ON -DCMAKE_C_FLAGS="-ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline" -DCMAKE_C_OUTPUT_EXTENSION_REPLACE=ON
 
         - name: Test
           run: |
-            . /opt/ros/foxy/setup.sh && . /uros_ws/install/local_setup.sh && ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v6 &
+            . /opt/ros/$ROS_DISTRO/setup.sh && . /uros_ws/install/local_setup.sh && ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v4 &
             sleep 1
-            . /opt/ros/foxy/setup.sh && . install/local_setup.sh
-            colcon test --packages-select=rmw_microxrcedds --return-code-on-test-failure --ctest-args -E "(cpplint)|(lint_cmake)|(uncrustify)|(xmllint)"
+            . /opt/ros/$ROS_DISTRO/setup.sh && . install/local_setup.sh
+            colcon test --event-handlers console_direct+ --packages-select=rmw_microxrcedds --return-code-on-test-failure
             ./build/rmw_microxrcedds/test/test-sizes 2> memanalisys_out
 
         - name: Static memory
@@ -55,29 +55,4 @@ jobs:
             gcovr -x -r . -o coverage.xml ../../build --exclude-unreachable-branches --exclude rmw_microxrcedds_c/test
             curl -s https://codecov.io/bash -o codecov.bash && chmod +x codecov.bash
             ./codecov.bash -t ${{ secrets.CODECOV_TOKEN }}
-
-    rmw_microxrcedds_uncrustify:
-        runs-on: ubuntu-20.04
-        container: microros/micro-ros-agent:foxy
-
-        steps:
-        - uses: actions/checkout@v2
-          with:
-            path: src/rmw-microxrcedds
-
-        - name: Uncrustify
-          run: |
-            # Install Uncrustify
-            git clone https://github.com/uncrustify/uncrustify.git --branch uncrustify-0.72.0 --single-branch uncrustify
-            mkdir -p uncrustify/build
-            cd uncrustify/build
-            cmake -DCMAKE_INSTALL_PREFIX=../install ..
-            cmake --build . --target install -- -j$(nproc)
-            cd ../..
-            export PATH=${PWD}/uncrustify/install/bin:$PATH
-            # Check Uncrustify
-            cd src/rmw-microxrcedds/rmw_microxrcedds_c
-            curl -l https://raw.githubusercontent.com/eProsima/cpp-style/master/uncrustify.cfg -o uncrustify.cfg
-            find src test include \( -name "*.cpp" -o -name "*.c" -o -name "*.h" -o -name "*.hpp" \) -exec uncrustify -c uncrustify.cfg --check {} +
-
 

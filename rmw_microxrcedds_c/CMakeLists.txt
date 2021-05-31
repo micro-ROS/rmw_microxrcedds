@@ -21,7 +21,7 @@ project(rmw_microxrcedds
     ${PACKAGE_VERSION}
   LANGUAGES
     C
-  )
+)
 
 find_package(ament_cmake_ros REQUIRED)
 find_package(rcutils REQUIRED)
@@ -34,9 +34,8 @@ find_package(rmw REQUIRED)
 
 # Build options
 option(BUILD_DOCUMENTATION "Use doxygen to create product documentation" OFF)
-
-# RMW profile options
 option(RMW_UXRCE_GRAPH "Allows to perform graph-related operations to the user" OFF)
+
 if(RMW_UXRCE_GRAPH)
   find_package(micro_ros_msgs REQUIRED)
 endif()
@@ -159,7 +158,7 @@ set(SRCS
   $<$<BOOL:${RMW_UXRCE_TRANSPORT_UDP}>:src/rmw_microros/discovery.c>
   $<$<BOOL:${RMW_UXRCE_TRANSPORT_CUSTOM}>:src/rmw_microros/custom_transport.c>
   $<$<BOOL:${RMW_UXRCE_GRAPH}>:src/rmw_graph.c>
-  )
+)
 
 add_library(${PROJECT_NAME}
   ${SRCS})
@@ -175,7 +174,7 @@ if(RMW_UXRCE_GRAPH)
 
   ament_target_dependencies(${PROJECT_NAME}
     "micro_ros_msgs"
-  )
+)
 endif()
 
 target_link_libraries(${PROJECT_NAME}
@@ -189,11 +188,11 @@ find_package(rosidl_typesupport_microxrcedds_c)
 if(rosidl_typesupport_microxrcedds_c_FOUND)
   ament_target_dependencies(${PROJECT_NAME}
     "rosidl_typesupport_microxrcedds_c"
-  )
+)
   target_compile_definitions(${PROJECT_NAME}
     PUBLIC
       HAVE_C_TYPESUPPORT
-  )
+)
   find_package(rosidl_typesupport_microxrcedds_cpp)
 else()
   find_package(rosidl_typesupport_microxrcedds_cpp REQUIRED)
@@ -201,32 +200,35 @@ endif()
 if(rosidl_typesupport_microxrcedds_cpp_FOUND)
   ament_target_dependencies(${PROJECT_NAME}
     "rosidl_typesupport_microxrcedds_cpp"
-  )
+)
   target_compile_definitions(${PROJECT_NAME}
     PUBLIC
       HAVE_CPP_TYPESUPPORT
-  )
+)
 endif()
 
 ament_target_dependencies(${PROJECT_NAME}
   "rcutils"
   "rmw"
   "microxrcedds_client"
-  )
+)
 
 configure_rmw_library(${PROJECT_NAME})
 
 target_include_directories(${PROJECT_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>)
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
+  PRIVATE
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
   C_STANDARD
     99
   C_STANDARD_REQUIRED
     YES
-  )
+)
 
 target_compile_options(${PROJECT_NAME}
   PRIVATE
@@ -237,7 +239,7 @@ target_compile_options(${PROJECT_NAME}
     $<$<C_COMPILER_ID:GNU>:$<$<VERSION_GREATER:$<C_COMPILER_VERSION>,8.1>:-Wcast-align=strict>>
     $<$<C_COMPILER_ID:GNU>:-Wvla>
     $<$<C_COMPILER_ID:MSVC>:/Wall>
-  )
+)
 
 file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/include)
 
@@ -250,7 +252,7 @@ ament_export_dependencies(
   rcutils
   rmw
   microxrcedds_client
-  )
+)
 
 if(rosidl_typesupport_microxrcedds_c_FOUND)
   ament_export_dependencies(rosidl_typesupport_microxrcedds_c)
@@ -261,13 +263,13 @@ if(rosidl_typesupport_microxrcedds_cpp_FOUND)
   set(implementations
     ${implementations}
     "cpp:rosidl_typesupport_cpp:rosidl_typesupport_microxrcedds_cpp"
-  )
+)
 endif()
 
 register_rmw_implementation(${implementations})
 
 if(BUILD_TESTING)
-  # Pedantic in CI 
+  # Pedantic in CI
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
 
@@ -324,7 +326,7 @@ install(
     ${PROJECT_SOURCE_DIR}/include/
   DESTINATION
     include
-  )
+)
 
 # Install config.h file.
 install(
@@ -332,7 +334,7 @@ install(
     ${PROJECT_BINARY_DIR}/include/rmw_microxrcedds_c/config.h
   DESTINATION
     include/rmw_microxrcedds_c
-  )
+)
 
 # Install library.
 install(
@@ -344,12 +346,11 @@ install(
     lib
   RUNTIME DESTINATION
     bin
-  )
+)
 
 if(BUILD_DOCUMENTATION)
   # Instalation of doxygen files
   install(DIRECTORY ${PROJECT_BINARY_DIR}/doc/api_reference
       DESTINATION ${DOC_INSTALL_DIR}
-      COMPONENT documentation
-      )
+      COMPONENT documentation)
 endif()

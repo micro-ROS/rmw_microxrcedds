@@ -12,137 +12,123 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "utils.h"
-
 #include <rmw/rmw.h>
 #include <rmw/error_handling.h>
-
 #include <uxr/client/profile/multithread/multithread.h>
+
+#include "./utils.h"
 
 rmw_ret_t
 rmw_send_request(
-        const rmw_client_t* client,
-        const void* ros_request,
-        int64_t* sequence_id)
+  const rmw_client_t * client,
+  const void * ros_request,
+  int64_t * sequence_id)
 {
-    EPROS_PRINT_TRACE();
+  if (!is_uxrce_rmw_identifier_valid(client->implementation_identifier)) {
+    RMW_SET_ERROR_MSG("Wrong implementation");
+    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
+  }
 
-    if (!is_uxrce_rmw_identifier_valid(client->implementation_identifier))
-    {
-        RMW_SET_ERROR_MSG("Wrong implementation");
-        return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
-    }
+  rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
+  rmw_uxrce_node_t * custom_node = custom_client->owner_node;
 
-    rmw_uxrce_client_t* custom_client = (rmw_uxrce_client_t*)client->data;
-    rmw_uxrce_node_t*   custom_node   = custom_client->owner_node;
+  const rosidl_message_type_support_t * req_members =
+    custom_client->type_support_callbacks->request_members_();
+  const message_type_support_callbacks_t * functions =
+    (const message_type_support_callbacks_t *)req_members->data;
 
-    const rosidl_message_type_support_t* req_members =
-            custom_client->type_support_callbacks->request_members_();
-    const message_type_support_callbacks_t* functions =
-            (const message_type_support_callbacks_t*)req_members->data;
+  ucdrBuffer mb;
+  uint32_t request_length = functions->get_serialized_size(ros_request);
+  *sequence_id = uxr_prepare_output_stream(
+    &custom_node->context->session,
+    custom_client->stream_id, custom_client->client_id, &mb,
+    request_length);
 
-    ucdrBuffer mb;
-    uint32_t request_length = functions->get_serialized_size(ros_request);
-    *sequence_id = uxr_prepare_output_stream(
-        &custom_node->context->session,
-        custom_client->stream_id, custom_client->client_id, &mb,
-        request_length);
+  if (UXR_INVALID_REQUEST_ID == *sequence_id) {
+    RMW_SET_ERROR_MSG("Micro XRCE-DDS service request error.");
+    return RMW_RET_ERROR;
+  }
 
-    if (UXR_INVALID_REQUEST_ID == *sequence_id)
-    {
-        RMW_SET_ERROR_MSG("Micro XRCE-DDS service request error.");
-        return RMW_RET_ERROR;
-    }
+  functions->cdr_serialize(ros_request, &mb);
 
-    functions->cdr_serialize(ros_request, &mb);
+  UXR_UNLOCK_STREAM_ID(&custom_node->context->session, custom_client->stream_id);
 
-    UXR_UNLOCK_STREAM_ID(&custom_node->context->session, custom_client->stream_id);
+  if (UXR_BEST_EFFORT_STREAM == custom_client->stream_id.type) {
+    uxr_flash_output_streams(&custom_node->context->session);
+  } else {
+    uxr_run_session_until_confirm_delivery(
+      &custom_node->context->session, RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT);
+  }
 
-    if (UXR_BEST_EFFORT_STREAM == custom_client->stream_id.type)
-    {
-        uxr_flash_output_streams(&custom_node->context->session);
-    }
-    else
-    {
-        uxr_run_session_until_confirm_delivery(
-            &custom_node->context->session, RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT);
-    }
-
-    return RMW_RET_OK;
+  return RMW_RET_OK;
 }
 
 rmw_ret_t
 rmw_take_request(
-        const rmw_service_t* service,
-        rmw_service_info_t* request_header,
-        void* ros_request,
-        bool* taken)
+  const rmw_service_t * service,
+  rmw_service_info_t * request_header,
+  void * ros_request,
+  bool * taken)
 {
-    EPROS_PRINT_TRACE();
+  if (taken != NULL) {
+    *taken = false;
+  }
 
-    if (taken != NULL)
-    {
-        *taken = false;
-    }
+  if (!is_uxrce_rmw_identifier_valid(service->implementation_identifier)) {
+    RMW_SET_ERROR_MSG("Wrong implementation");
+    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
+  }
 
-    if (!is_uxrce_rmw_identifier_valid(service->implementation_identifier))
-    {
-        RMW_SET_ERROR_MSG("Wrong implementation");
-        return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
-    }
+  rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
 
-    rmw_uxrce_service_t* custom_service = (rmw_uxrce_service_t*)service->data;
+  // Find first related item in static buffer memory pool
+  rmw_uxrce_mempool_item_t * static_buffer_item =
+    rmw_uxrce_find_static_input_buffer_by_owner((void *) custom_service);
+  if (static_buffer_item == NULL) {
+    return RMW_RET_ERROR;
+  }
 
-    // Find first related item in static buffer memory pool
-    rmw_uxrce_mempool_item_t* static_buffer_item = rmw_uxrce_find_static_input_buffer_by_owner((void*) custom_service);
-    if (static_buffer_item == NULL)
-    {
-        return RMW_RET_ERROR;
-    }
+  rmw_uxrce_static_input_buffer_t * static_buffer =
+    (rmw_uxrce_static_input_buffer_t *)static_buffer_item->data;
 
-    rmw_uxrce_static_input_buffer_t* static_buffer = (rmw_uxrce_static_input_buffer_t*)static_buffer_item->data;
+  // Conversion from SampleIdentity to rmw_request_id_t
+  request_header->request_id.sequence_number =
+    (((int64_t)static_buffer->related.sample_id.sequence_number.high) << 32) |
+    static_buffer->related.sample_id.sequence_number.low;
+  request_header->request_id.writer_guid[0] =
+    (int8_t)static_buffer->related.sample_id.writer_guid.entityId.entityKind;
 
-    // Conversion from SampleIdentity to rmw_request_id_t
-    request_header->request_id.sequence_number =
-            (((int64_t)static_buffer->related.sample_id.sequence_number.high) << 32)
-            | static_buffer->related.sample_id.sequence_number.low;
-    request_header->request_id.writer_guid[0] =
-            (int8_t)static_buffer->related.sample_id.writer_guid.entityId.entityKind;
+  memcpy(
+    &request_header->request_id.writer_guid[1],
+    static_buffer->related.sample_id.writer_guid.entityId.entityKey,
+    3);
+  memcpy(
+    &request_header->request_id.writer_guid[4],
+    static_buffer->related.sample_id.writer_guid.guidPrefix.data, 12);
 
-    memcpy(
-        &request_header->request_id.writer_guid[1],
-        static_buffer->related.sample_id.writer_guid.entityId.entityKey,
-        3);
-    memcpy(
-        &request_header->request_id.writer_guid[4],
-        static_buffer->related.sample_id.writer_guid.guidPrefix.data, 12);
+  const rosidl_message_type_support_t * req_members =
+    custom_service->type_support_callbacks->request_members_();
+  const message_type_support_callbacks_t * functions =
+    (const message_type_support_callbacks_t *)req_members->data;
 
-    const rosidl_message_type_support_t* req_members =
-            custom_service->type_support_callbacks->request_members_();
-    const message_type_support_callbacks_t* functions =
-            (const message_type_support_callbacks_t*)req_members->data;
+  ucdrBuffer temp_buffer;
+  ucdr_init_buffer(
+    &temp_buffer,
+    static_buffer->buffer,
+    static_buffer->length);
 
-    ucdrBuffer temp_buffer;
-    ucdr_init_buffer(
-        &temp_buffer,
-        static_buffer->buffer,
-        static_buffer->length);
+  bool deserialize_rv = functions->cdr_deserialize(&temp_buffer, ros_request);
 
-    bool deserialize_rv = functions->cdr_deserialize(&temp_buffer, ros_request);
+  put_memory(&static_buffer_memory, static_buffer_item);
 
-    put_memory(&static_buffer_memory, static_buffer_item);
+  if (taken != NULL) {
+    *taken = deserialize_rv;
+  }
 
-    if (taken != NULL)
-    {
-        *taken = deserialize_rv;
-    }
+  if (!deserialize_rv) {
+    RMW_SET_ERROR_MSG("Typesupport desserialize error.");
+    return RMW_RET_ERROR;
+  }
 
-    if (!deserialize_rv)
-    {
-        RMW_SET_ERROR_MSG("Typesupport desserialize error.");
-        return RMW_RET_ERROR;
-    }
-
-    EPROS_PRINT_TRACE()
-    return RMW_RET_OK;
+  return RMW_RET_OK;
 }

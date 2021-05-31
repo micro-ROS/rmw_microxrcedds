@@ -12,79 +12,73 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-#include "../types.h"
-
 #include <rmw/rmw.h>
 #include <rmw/ret_types.h>
 #include <rmw/error_handling.h>
 
 #include <uxr/client/util/time.h>
 
+#include "../types.h"
+
 bool rmw_uros_epoch_synchronized()
 {
-    // Check session is initialized
-    if (NULL == session_memory.allocateditems)
-    {
-        RMW_SET_ERROR_MSG("Uninitialized session.");
-        return false;
-    }
-    rmw_uxrce_mempool_item_t* item = session_memory.allocateditems;
-    rmw_context_impl_t* context = (rmw_context_impl_t*)item->data;
+  // Check session is initialized
+  if (NULL == session_memory.allocateditems) {
+    RMW_SET_ERROR_MSG("Uninitialized session.");
+    return false;
+  }
+  rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
+  rmw_context_impl_t * context = (rmw_context_impl_t *)item->data;
 
-    return context->session.synchronized;
+  return context->session.synchronized;
 }
 
 int64_t rmw_uros_epoch_millis()
 {
-    // Check session is initialized
-    if (NULL == session_memory.allocateditems)
-    {
-        RMW_SET_ERROR_MSG("Uninitialized session.");
-        return 0;
-    }
+  // Check session is initialized
+  if (NULL == session_memory.allocateditems) {
+    RMW_SET_ERROR_MSG("Uninitialized session.");
+    return 0;
+  }
 
-    rmw_uxrce_mempool_item_t* item = session_memory.allocateditems;
-    rmw_context_impl_t* context = (rmw_context_impl_t*)item->data;
+  rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
+  rmw_context_impl_t * context = (rmw_context_impl_t *)item->data;
 
-    return uxr_epoch_millis(&context->session);
+  return uxr_epoch_millis(&context->session);
 }
 
 int64_t rmw_uros_epoch_nanos()
 {
-    // Check session is initialized
-    if (NULL == session_memory.allocateditems)
-    {
-        RMW_SET_ERROR_MSG("Uninitialized session.");
-        return 0;
-    }
+  // Check session is initialized
+  if (NULL == session_memory.allocateditems) {
+    RMW_SET_ERROR_MSG("Uninitialized session.");
+    return 0;
+  }
 
-    rmw_uxrce_mempool_item_t* item = session_memory.allocateditems;
-    rmw_context_impl_t* context = (rmw_context_impl_t*)item->data;
+  rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
+  rmw_context_impl_t * context = (rmw_context_impl_t *)item->data;
 
-    return uxr_epoch_nanos(&context->session);
+  return uxr_epoch_nanos(&context->session);
 }
 
 rmw_ret_t rmw_uros_sync_session(
-        const int timeout_ms)
+  const int timeout_ms)
 {
-    rmw_ret_t ret = RMW_RET_OK;
+  rmw_ret_t ret = RMW_RET_OK;
 
-    // Check session is initialized
-    if (NULL == session_memory.allocateditems)
-    {
-        RMW_SET_ERROR_MSG("Uninitialized session.");
-        return RMW_RET_ERROR;
-    }
+  // Check session is initialized
+  if (NULL == session_memory.allocateditems) {
+    RMW_SET_ERROR_MSG("Uninitialized session.");
+    return RMW_RET_ERROR;
+  }
 
-    rmw_uxrce_mempool_item_t* item = session_memory.allocateditems;
-    rmw_context_impl_t* context = (rmw_context_impl_t*)item->data;
+  rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
+  rmw_context_impl_t * context = (rmw_context_impl_t *)item->data;
 
-    if (!uxr_sync_session(&context->session, timeout_ms))
-    {
-        RMW_SET_ERROR_MSG("Time synchronization failed.");
-        return RMW_RET_ERROR;
-    }
+  if (!uxr_sync_session(&context->session, timeout_ms)) {
+    RMW_SET_ERROR_MSG("Time synchronization failed.");
+    return RMW_RET_ERROR;
+  }
 
-    return ret;
+  return ret;
 }

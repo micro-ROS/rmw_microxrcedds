@@ -16,14 +16,13 @@
 #include <rmw/rmw.h>
 #include <rmw/validate_namespace.h>
 #include <rmw/validate_node_name.h>
+#include <rmw_microxrcedds_c/config.h>
 
 #include <vector>
 #include <memory>
 
-#include <rmw_microxrcedds_c/config.h>
-#include "rmw_base_test.hpp"
-
-#include "test_utils.hpp"
+#include "./rmw_base_test.hpp"
+#include "./test_utils.hpp"
 
 class TestNode : public RMWBaseTest
 {
@@ -34,24 +33,24 @@ class TestNode : public RMWBaseTest
  */
 TEST_F(TestNode, construction_and_destruction)
 {
-    // Success creation
-    rmw_node_t* node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
+  // Success creation
+  rmw_node_t * node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
 
-    ASSERT_NE(node, nullptr);
-    rmw_ret_t ret = rmw_destroy_node(node);
-    ASSERT_EQ(ret, RMW_RET_OK);
-    ASSERT_EQ(CheckErrorState(), false);
+  ASSERT_NE(node, nullptr);
+  rmw_ret_t ret = rmw_destroy_node(node);
+  ASSERT_EQ(ret, RMW_RET_OK);
+  ASSERT_EQ(CheckErrorState(), false);
 
-    // Unsuccess creation
-    node = rmw_create_node(&test_context, "", "/ns", 0, false);
-    ASSERT_EQ(node, nullptr);
-    ASSERT_EQ(CheckErrorState(), true);
-    rcutils_reset_error();
+  // Unsuccess creation
+  node = rmw_create_node(&test_context, "", "/ns", 0, false);
+  ASSERT_EQ(node, nullptr);
+  ASSERT_EQ(CheckErrorState(), true);
+  rcutils_reset_error();
 
-    // Unsuccess creation
-    node = rmw_create_node(&test_context, "my_node", "", 0, false);
-    ASSERT_EQ(node, nullptr);
-    rcutils_reset_error();
+  // Unsuccess creation
+  node = rmw_create_node(&test_context, "my_node", "", 0, false);
+  ASSERT_EQ(node, nullptr);
+  rcutils_reset_error();
 }
 
 /*
@@ -59,60 +58,56 @@ TEST_F(TestNode, construction_and_destruction)
  */
 TEST_F(TestNode, memory_poll)
 {
-    std::vector <rmw_node_t*> nodes;
-    rmw_ret_t ret;
-    rmw_node_t* node;
+  std::vector<rmw_node_t *> nodes;
+  rmw_ret_t ret;
+  rmw_node_t * node;
 
-    // Get all available nodes
-    for (size_t i = 0; i < RMW_UXRCE_MAX_NODES; i++)
-    {
-        node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
-        ASSERT_NE(node, nullptr);
-        nodes.push_back(node);
-    }
-
-    // Try to get one
-    node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
-    ASSERT_EQ(node, nullptr);
-    ASSERT_EQ(CheckErrorState(), true);
-    rcutils_reset_error();
-
-    // Relese one
-    ret = rmw_destroy_node(nodes.back());
-    ASSERT_EQ(ret, RMW_RET_OK);
-    nodes.pop_back();
-
-    // Get one
+  // Get all available nodes
+  for (size_t i = 0; i < RMW_UXRCE_MAX_NODES; i++) {
     node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
     ASSERT_NE(node, nullptr);
     nodes.push_back(node);
+  }
 
-    // Release all
-    for (size_t i = 0; i < nodes.size(); i++)
-    {
-        ret = rmw_destroy_node(nodes.at(i));
-        ASSERT_EQ(ret, RMW_RET_OK);
-    }
-    nodes.clear();
+  // Try to get one
+  node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
+  ASSERT_EQ(node, nullptr);
+  ASSERT_EQ(CheckErrorState(), true);
+  rcutils_reset_error();
 
-    // Get all available nodes
-    for (size_t i = 0; i < RMW_UXRCE_MAX_NODES; i++)
-    {
-        node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
-        ASSERT_NE(node, nullptr);
-        nodes.push_back(node);
-    }
+  // Relese one
+  ret = rmw_destroy_node(nodes.back());
+  ASSERT_EQ(ret, RMW_RET_OK);
+  nodes.pop_back();
 
-    // Release all
-    for (size_t i = 0; i < nodes.size(); i++)
-    {
-        ret = rmw_destroy_node(nodes.at(i));
-        ASSERT_EQ(ret, RMW_RET_OK);
-    }
+  // Get one
+  node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
+  ASSERT_NE(node, nullptr);
+  nodes.push_back(node);
 
-    // Destroy an already detroyed node
-    ret = rmw_destroy_node(nodes.at(0));
-    ASSERT_EQ(ret, RMW_RET_ERROR);
+  // Release all
+  for (size_t i = 0; i < nodes.size(); i++) {
+    ret = rmw_destroy_node(nodes.at(i));
+    ASSERT_EQ(ret, RMW_RET_OK);
+  }
+  nodes.clear();
 
-    nodes.clear();
+  // Get all available nodes
+  for (size_t i = 0; i < RMW_UXRCE_MAX_NODES; i++) {
+    node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
+    ASSERT_NE(node, nullptr);
+    nodes.push_back(node);
+  }
+
+  // Release all
+  for (size_t i = 0; i < nodes.size(); i++) {
+    ret = rmw_destroy_node(nodes.at(i));
+    ASSERT_EQ(ret, RMW_RET_OK);
+  }
+
+  // Destroy an already detroyed node
+  ret = rmw_destroy_node(nodes.at(0));
+  ASSERT_EQ(ret, RMW_RET_ERROR);
+
+  nodes.clear();
 }

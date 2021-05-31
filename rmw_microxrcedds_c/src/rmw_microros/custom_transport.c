@@ -12,40 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "../types.h"
-
 #include <rmw_microxrcedds_c/config.h>
 #include <rmw/rmw.h>
 #include <rmw/allocators.h>
 #include <rmw/ret_types.h>
 #include <rmw/error_handling.h>
 
+#include "../types.h"
+
 rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
 
 rmw_ret_t rmw_uros_set_custom_transport(
-        bool framing,
-        void* args,
-        open_custom_func open_cb,
-        close_custom_func close_cb,
-        write_custom_func write_cb,
-        read_custom_func read_cb)
+  bool framing,
+  void * args,
+  open_custom_func open_cb,
+  close_custom_func close_cb,
+  write_custom_func write_cb,
+  read_custom_func read_cb)
 {
-    if (NULL != open_cb &&
-            NULL != close_cb &&
-            NULL != write_cb &&
-            NULL != read_cb)
-    {
-        rmw_uxrce_transport_default_params.framing  = framing;
-        rmw_uxrce_transport_default_params.args     = args;
-        rmw_uxrce_transport_default_params.open_cb  = open_cb;
-        rmw_uxrce_transport_default_params.close_cb = close_cb;
-        rmw_uxrce_transport_default_params.write_cb = write_cb;
-        rmw_uxrce_transport_default_params.read_cb  = read_cb;
-    }
-    else
-    {
-        RMW_SET_ERROR_MSG("Uninitialised arguments.");
-        return(RMW_RET_INVALID_ARGUMENT);
-    }
-    return(RMW_RET_OK);
+  if (NULL != open_cb &&
+    NULL != close_cb &&
+    NULL != write_cb &&
+    NULL != read_cb)
+  {
+    rmw_uxrce_transport_default_params.framing = framing;
+    rmw_uxrce_transport_default_params.args = args;
+    rmw_uxrce_transport_default_params.open_cb = open_cb;
+    rmw_uxrce_transport_default_params.close_cb = close_cb;
+    rmw_uxrce_transport_default_params.write_cb = write_cb;
+    rmw_uxrce_transport_default_params.read_cb = read_cb;
+  } else {
+    RMW_SET_ERROR_MSG("Uninitialised arguments.");
+    return RMW_RET_INVALID_ARGUMENT;
+  }
+  return RMW_RET_OK;
 }
