@@ -44,25 +44,33 @@ endif()
 set(RMW_UXRCE_TRANSPORT "udp" CACHE STRING "Sets Micro XRCE-DDS transport to use. (udp | serial | custom)")
 set(RMW_UXRCE_IPV "ipv4" CACHE STRING "Sets Micro XRCE-DDS IP version to use. (ipv4 | ipv6)")
 set(RMW_UXRCE_CREATION_MODE "bin" CACHE STRING "Sets creation mode in Micro XRCE-DDS. (bin | refs)")
-set(RMW_UXRCE_MAX_HISTORY "8" CACHE STRING "This value sets the number of history slots available for RMW subscriptions, requests and replies")
+set(RMW_UXRCE_MAX_HISTORY "8" CACHE STRING
+  "This value sets the number of history slots available for RMW subscriptions, requests and replies")
 set(RMW_UXRCE_MAX_SESSIONS "1" CACHE STRING "This value sets the maximum number of Micro XRCE-DDS sessions.")
 set(RMW_UXRCE_MAX_NODES "4" CACHE STRING "This value sets the maximum number of nodes.")
 set(RMW_UXRCE_MAX_PUBLISHERS "4" CACHE STRING "This value sets the maximum number of publishers for an application.")
 set(RMW_UXRCE_MAX_SUBSCRIPTIONS "4" CACHE STRING "This value sets the maximum number of subscriptions for an application.")
 set(RMW_UXRCE_MAX_SERVICES "4" CACHE STRING "This value sets the maximum number of services for an application.")
 set(RMW_UXRCE_MAX_CLIENTS "4" CACHE STRING "This value sets the maximum number of clients for an application.")
-set(RMW_UXRCE_MAX_TOPICS "-1" CACHE STRING "This value sets the maximum number of topics for an application. If set to -1 RMW_UXRCE_MAX_TOPICS = RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_SUBSCRIPTIONS + RMW_UXRCE_MAX_NODES.")
+set(RMW_UXRCE_MAX_TOPICS "-1" CACHE STRING
+  "This value sets the maximum number of topics for an application.
+  If set to -1 RMW_UXRCE_MAX_TOPICS = RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_SUBSCRIPTIONS + RMW_UXRCE_MAX_NODES.")
 option(RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS "Enables increasing static pools with dynamic allocation when needed." OFF)
 set(RMW_UXRCE_NODE_NAME_MAX_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a node name.")
 set(RMW_UXRCE_TOPIC_NAME_MAX_LENGTH "100" CACHE STRING "This value sets the maximum number of characters for a topic name.")
 set(RMW_UXRCE_TYPE_NAME_MAX_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a type name.")
 set(RMW_UXRCE_REF_BUFFER_LENGTH "100" CACHE STRING "This value sets the maximum number of characters for a reference buffer.")
-set(RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT "1000" CACHE STRING "This value sets the maximum time to wait for an XRCE entity creation and destroy in milliseconds. If set to 0 best effort is used.")
-set(RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT "1000" CACHE STRING "This value sets the maximum time to wait for a publication in a reliable mode in milliseconds.")
+set(RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT "1000" CACHE STRING
+  "This value sets the maximum time to wait for an XRCE entity creation and destroy in milliseconds.
+  If set to 0 best effort is used.")
+set(RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT "1000" CACHE STRING
+  "This value sets the maximum time to wait for a publication in a reliable mode in milliseconds.")
 
 set(RMW_UXRCE_STREAM_HISTORY "4" CACHE STRING "This value sets the number of MTUs to buffer, both input and output.")
-set(RMW_UXRCE_STREAM_HISTORY_INPUT "" CACHE STRING "This value sets the number of MTUs to input buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_OUTPUT is blank.")
-set(RMW_UXRCE_STREAM_HISTORY_OUTPUT "" CACHE STRING "This value sets the number of MTUs to output buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_INPUT is blank.")
+set(RMW_UXRCE_STREAM_HISTORY_INPUT "" CACHE STRING
+  "This value sets the number of MTUs to input buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_OUTPUT is blank.")
+set(RMW_UXRCE_STREAM_HISTORY_OUTPUT "" CACHE STRING
+  "This value sets the number of MTUs to output buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_INPUT is blank.")
 
 if(RMW_UXRCE_STREAM_HISTORY_INPUT STREQUAL "" OR RMW_UXRCE_STREAM_HISTORY_OUTPUT STREQUAL "")
   unset(RMW_UXRCE_STREAM_HISTORY_INPUT)
