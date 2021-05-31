@@ -33,7 +33,7 @@ protected:
   {
     RMWBaseTest::SetUp();
 
-    node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
+    node = rmw_create_node(&test_context, "my_node", "/ns");
     ASSERT_NE((void *)node, (void *)NULL);
   }
 

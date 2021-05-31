@@ -34,7 +34,7 @@ class TestNode : public RMWBaseTest
 TEST_F(TestNode, construction_and_destruction)
 {
   // Success creation
-  rmw_node_t * node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
+  rmw_node_t * node = rmw_create_node(&test_context, "my_node", "/ns");
 
   ASSERT_NE(node, nullptr);
   rmw_ret_t ret = rmw_destroy_node(node);
@@ -42,13 +42,13 @@ TEST_F(TestNode, construction_and_destruction)
   ASSERT_EQ(CheckErrorState(), false);
 
   // Unsuccess creation
-  node = rmw_create_node(&test_context, "", "/ns", 0, false);
+  node = rmw_create_node(&test_context, "", "/ns");
   ASSERT_EQ(node, nullptr);
   ASSERT_EQ(CheckErrorState(), true);
   rcutils_reset_error();
 
   // Unsuccess creation
-  node = rmw_create_node(&test_context, "my_node", "", 0, false);
+  node = rmw_create_node(&test_context, "my_node", "");
   ASSERT_EQ(node, nullptr);
   rcutils_reset_error();
 }
@@ -64,13 +64,13 @@ TEST_F(TestNode, memory_poll)
 
   // Get all available nodes
   for (size_t i = 0; i < RMW_UXRCE_MAX_NODES; i++) {
-    node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
+    node = rmw_create_node(&test_context, "my_node", "/ns");
     ASSERT_NE(node, nullptr);
     nodes.push_back(node);
   }
 
   // Try to get one
-  node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
+  node = rmw_create_node(&test_context, "my_node", "/ns");
   ASSERT_EQ(node, nullptr);
   ASSERT_EQ(CheckErrorState(), true);
   rcutils_reset_error();
@@ -81,7 +81,7 @@ TEST_F(TestNode, memory_poll)
   nodes.pop_back();
 
   // Get one
-  node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
+  node = rmw_create_node(&test_context, "my_node", "/ns");
   ASSERT_NE(node, nullptr);
   nodes.push_back(node);
 
@@ -94,7 +94,7 @@ TEST_F(TestNode, memory_poll)
 
   // Get all available nodes
   for (size_t i = 0; i < RMW_UXRCE_MAX_NODES; i++) {
-    node = rmw_create_node(&test_context, "my_node", "/ns", 0, false);
+    node = rmw_create_node(&test_context, "my_node", "/ns");
     ASSERT_NE(node, nullptr);
     nodes.push_back(node);
   }
