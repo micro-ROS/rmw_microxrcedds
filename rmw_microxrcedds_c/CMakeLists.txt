@@ -126,6 +126,8 @@ set(SRCS
   src/rmw_get_implementation_identifier.c
   src/rmw_get_serialization_format.c
   src/rmw_get_topic_endpoint_info.c
+  src/rmw_get_endpoint_network_flow.c
+  src/rmw_qos_profile_check_compatible.c
   src/rmw_guard_condition.c
   src/rmw_init.c
   src/rmw_logging.c
