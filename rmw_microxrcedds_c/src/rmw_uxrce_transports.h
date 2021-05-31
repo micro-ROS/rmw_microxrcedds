@@ -14,21 +14,20 @@
 #ifndef RMW_UXRCE_TRANSPORTS_H_
 #define RMW_UXRCE_TRANSPORTS_H_
 
-#include "./types.h"
-
 #include <uxr/client/client.h>
-
 #include <rmw_microxrcedds_c/config.h>
 
 #ifdef RMW_UXRCE_TRANSPORT_CUSTOM
 #include <uxr/client/profile/transport/custom/custom_transport.h>
-#endif //  RMW_UXRCE_TRANSPORT_CUSTOM
+#endif  //  RMW_UXRCE_TRANSPORT_CUSTOM
 
 #ifdef RMW_UXRCE_TRANSPORT_SERIAL
 #include <stdio.h>
 #include <fcntl.h>
 #include <termios.h>
-#endif //  RMW_UXRCE_TRANSPORT_SERIAL
+#endif  //  RMW_UXRCE_TRANSPORT_SERIAL
+
+#include "./types.h"
 
 /**
  * @brief   Takes care of initializing the micro XRCE-DDS transport layer,
@@ -47,9 +46,9 @@
  *          if some argument was not initialized as expected.
  */
 rmw_ret_t rmw_uxrce_transport_init(
-        rmw_context_impl_t* context,
-        rmw_init_options_impl_t* init_options,
-        void* transport);
+  rmw_context_impl_t * context,
+  rmw_init_options_impl_t * init_options,
+  void * transport);
 
 /**
  * @brief   Helper macros for closing an open micro XRCE-DDS transport.
@@ -63,6 +62,6 @@ rmw_ret_t rmw_uxrce_transport_init(
 #define CLOSE_TRANSPORT(transport)    uxr_close_custom_transport(transport)
 #else
 #define CLOSE_TRANSPORT(transport)
-#endif // if defined(RMW_UXRCE_TRANSPORT_SERIAL)
+#endif  // if defined(RMW_UXRCE_TRANSPORT_SERIAL)
 
-#endif //  RMW_UXRCE_TRANSPORTS_H_
+#endif  //  RMW_UXRCE_TRANSPORTS_H_

@@ -12,34 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "utils.h"
-
 #include <rmw/rmw.h>
 #include <rmw/error_handling.h>
 #include <rmw/allocators.h>
 
-rmw_wait_set_t*
+#include "./utils.h"
+
+rmw_wait_set_t *
 rmw_create_wait_set(
-        rmw_context_t* context,
-        size_t max_conditions)
+  rmw_context_t * context,
+  size_t max_conditions)
 {
-    (void)context;
-    (void)max_conditions;
-    EPROS_PRINT_TRACE()
+  (void)context;
+  (void)max_conditions;
 
-    rmw_wait_set_t* rmw_wait_set = (rmw_wait_set_t*)rmw_allocate(
-        sizeof(rmw_wait_set_t));
+  rmw_wait_set_t * rmw_wait_set = (rmw_wait_set_t *)rmw_allocate(
+    sizeof(rmw_wait_set_t));
 
-    return rmw_wait_set;
+  return rmw_wait_set;
 }
 
 rmw_ret_t
 rmw_destroy_wait_set(
-        rmw_wait_set_t* wait_set)
+  rmw_wait_set_t * wait_set)
 {
-    EPROS_PRINT_TRACE()
+  rmw_free(wait_set);
 
-    rmw_free(wait_set);
-
-    return RMW_RET_OK;
+  return RMW_RET_OK;
 }

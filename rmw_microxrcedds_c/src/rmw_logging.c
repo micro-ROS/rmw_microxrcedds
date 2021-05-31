@@ -17,9 +17,9 @@
 
 rmw_ret_t
 rmw_set_log_severity(
-        rmw_log_severity_t severity)
+  rmw_log_severity_t severity)
 {
-    (void)severity;
-    RMW_SET_ERROR_MSG("function not implemented");
-    return RMW_RET_UNSUPPORTED;
+  (void)severity;
+  RMW_SET_ERROR_MSG("function not implemented");
+  return RMW_RET_UNSUPPORTED;
 }

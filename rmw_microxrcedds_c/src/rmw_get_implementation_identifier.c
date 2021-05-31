@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "identifiers.h"
-#include "utils.h"
+#include "./identifiers.h"
+#include "./utils.h"
 
-const char*
+const char *
 rmw_get_implementation_identifier()
 {
-    EPROS_PRINT_TRACE()
-    return eprosima_microxrcedds_identifier;
+  return eprosima_microxrcedds_identifier;
 }

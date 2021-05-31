@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "utils.h"
+#include "./utils.h"
 
 #ifdef HAVE_C_TYPESUPPORT
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>
@@ -25,232 +25,200 @@
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
 
-#include "./utils.h"
-
-rmw_service_t*
+rmw_service_t *
 rmw_create_service(
-        const rmw_node_t* node,
-        const rosidl_service_type_support_t* type_support,
-        const char* service_name,
-        const rmw_qos_profile_t* qos_policies)
+  const rmw_node_t * node,
+  const rosidl_service_type_support_t * type_support,
+  const char * service_name,
+  const rmw_qos_profile_t * qos_policies)
 {
-    EPROS_PRINT_TRACE()
-    rmw_service_t* rmw_service = NULL;
-    if (!node)
-    {
-        RMW_SET_ERROR_MSG("node handle is null");
-    }
-    else if (!type_support)
-    {
-        RMW_SET_ERROR_MSG("type support is null");
-    }
-    else if (!is_uxrce_rmw_identifier_valid(node->implementation_identifier))
-    {
-        RMW_SET_ERROR_MSG("node handle not from this implementation");
-    }
-    else if (!service_name || strlen(service_name) == 0)
-    {
-        RMW_SET_ERROR_MSG("service name is null or empty string");
-    }
-    else if (!qos_policies)
-    {
-        RMW_SET_ERROR_MSG("qos_profile is null");
-    }
-    else
-    {
-        rmw_service = (rmw_service_t*)rmw_allocate(
-            sizeof(rmw_service_t));
-        rmw_service->data = NULL;
-        rmw_service->implementation_identifier = rmw_get_implementation_identifier();
+  rmw_service_t * rmw_service = NULL;
+  if (!node) {
+    RMW_SET_ERROR_MSG("node handle is null");
+  } else if (!type_support) {
+    RMW_SET_ERROR_MSG("type support is null");
+  } else if (!is_uxrce_rmw_identifier_valid(node->implementation_identifier)) {
+    RMW_SET_ERROR_MSG("node handle not from this implementation");
+  } else if (!service_name || strlen(service_name) == 0) {
+    RMW_SET_ERROR_MSG("service name is null or empty string");
+  } else if (!qos_policies) {
+    RMW_SET_ERROR_MSG("qos_profile is null");
+  } else {
+    rmw_service = (rmw_service_t *)rmw_allocate(
+      sizeof(rmw_service_t));
+    rmw_service->data = NULL;
+    rmw_service->implementation_identifier = rmw_get_implementation_identifier();
 
-        rmw_service->service_name =
-                (const char*)(rmw_allocate(sizeof(char) * (strlen(service_name) + 1)));
-        if (!rmw_service->service_name)
-        {
-            RMW_SET_ERROR_MSG("failed to allocate memory");
-            goto fail;
-        }
-        memcpy((void*)rmw_service->service_name, service_name, strlen(service_name) + 1);
+    rmw_service->service_name =
+      (const char *)(rmw_allocate(sizeof(char) * (strlen(service_name) + 1)));
+    if (!rmw_service->service_name) {
+      RMW_SET_ERROR_MSG("failed to allocate memory");
+      goto fail;
+    }
+    memcpy((void *)rmw_service->service_name, service_name, strlen(service_name) + 1);
 
-        rmw_uxrce_node_t*         custom_node = (rmw_uxrce_node_t*)node->data;
-        rmw_uxrce_mempool_item_t* memory_node = get_memory(&service_memory);
-        if (!memory_node)
-        {
-            RMW_SET_ERROR_MSG("Not available memory node");
-            goto fail;
-        }
+    rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
+    rmw_uxrce_mempool_item_t * memory_node = get_memory(&service_memory);
+    if (!memory_node) {
+      RMW_SET_ERROR_MSG("Not available memory node");
+      goto fail;
+    }
 
-        rmw_uxrce_service_t* custom_service = (rmw_uxrce_service_t*)memory_node->data;
-        custom_service->rmw_handle = rmw_service;
+    rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)memory_node->data;
+    custom_service->rmw_handle = rmw_service;
 
-        custom_service->owner_node = custom_node;
-        custom_service->history_write_index = 0;
-        custom_service->history_read_index  = 0;
+    custom_service->owner_node = custom_node;
+    custom_service->history_write_index = 0;
+    custom_service->history_read_index = 0;
 
-        const rosidl_service_type_support_t* type_support_xrce = NULL;
+    const rosidl_service_type_support_t * type_support_xrce = NULL;
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
-        type_support_xrce = get_service_typesupport_handle(
-            type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
+    type_support_xrce = get_service_typesupport_handle(
+      type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
 #endif /* ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE */
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE
-        if (NULL == type_support_xrce)
-        {
-            type_support_xrce = get_service_typesupport_handle(
-                type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
-        }
+    if (NULL == type_support_xrce) {
+      type_support_xrce = get_service_typesupport_handle(
+        type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
+    }
 #endif /* ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE */
-        if (NULL == type_support_xrce)
-        {
-            RMW_SET_ERROR_MSG("Undefined type support");
-            goto fail;
-        }
+    if (NULL == type_support_xrce) {
+      RMW_SET_ERROR_MSG("Undefined type support");
+      goto fail;
+    }
 
-        custom_service->type_support_callbacks =
-                (const service_type_support_callbacks_t*)type_support_xrce->data;
+    custom_service->type_support_callbacks =
+      (const service_type_support_callbacks_t *)type_support_xrce->data;
 
-        if (custom_service->type_support_callbacks == NULL)
-        {
-            RMW_SET_ERROR_MSG("type support data is NULL");
-            goto fail;
-        }
+    if (custom_service->type_support_callbacks == NULL) {
+      RMW_SET_ERROR_MSG("type support data is NULL");
+      goto fail;
+    }
 
-        custom_service->service_id = uxr_object_id(custom_node->context->id_replier++, UXR_REPLIER_ID);
+    custom_service->service_id = uxr_object_id(custom_node->context->id_replier++, UXR_REPLIER_ID);
 
-        uint16_t service_req = UXR_INVALID_REQUEST_ID;
+    uint16_t service_req = UXR_INVALID_REQUEST_ID;
 
 #ifdef RMW_UXRCE_USE_REFS
-        // TODO(pablogs9): Use here true references
-        // service_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
-        //     *custom_node->context->creation_destroy_stream, custom_service->subscriber_id,
-        //     custom_node->participant_id, "", UXR_REPLACE);
-        char service_name_id[20];
-        generate_name(&custom_service->service_id, service_name_id, sizeof(service_name_id));
-        if (!build_service_xml(
-                    service_name_id, service_name, false,
-                    custom_service->type_support_callbacks, qos_policies, rmw_uxrce_entity_naming_buffer,
-                    sizeof(rmw_uxrce_entity_naming_buffer)))
-        {
-            RMW_SET_ERROR_MSG("failed to generate xml request for service creation");
-            goto fail;
-        }
-        service_req = uxr_buffer_create_replier_xml(
-            &custom_node->context->session,
-            *custom_node->context->creation_destroy_stream, custom_service->service_id,
-            custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+    // TODO(pablogs9): Use here true references
+    // service_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
+    //     *custom_node->context->creation_destroy_stream, custom_service->subscriber_id,
+    //     custom_node->participant_id, "", UXR_REPLACE);
+    char service_name_id[20];
+    generate_name(&custom_service->service_id, service_name_id, sizeof(service_name_id));
+    if (!build_service_xml(
+        service_name_id, service_name, false,
+        custom_service->type_support_callbacks, qos_policies, rmw_uxrce_entity_naming_buffer,
+        sizeof(rmw_uxrce_entity_naming_buffer)))
+    {
+      RMW_SET_ERROR_MSG("failed to generate xml request for service creation");
+      goto fail;
+    }
+    service_req = uxr_buffer_create_replier_xml(
+      &custom_node->context->session,
+      *custom_node->context->creation_destroy_stream, custom_service->service_id,
+      custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
 #else
-        char req_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
-        char res_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
-        generate_service_types(custom_service->type_support_callbacks, req_type_name, res_type_name,
-                RMW_UXRCE_TYPE_NAME_MAX_LENGTH);
+    char req_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
+    char res_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
+    generate_service_types(
+      custom_service->type_support_callbacks, req_type_name, res_type_name,
+      RMW_UXRCE_TYPE_NAME_MAX_LENGTH);
 
-        char req_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
-        char res_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
-        generate_service_topics(service_name, req_topic_name, res_topic_name, RMW_UXRCE_TOPIC_NAME_MAX_LENGTH);
+    char req_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
+    char res_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
+    generate_service_topics(
+      service_name, req_topic_name, res_topic_name,
+      RMW_UXRCE_TOPIC_NAME_MAX_LENGTH);
 
-        service_req = uxr_buffer_create_replier_bin(
-            &custom_node->context->session,
-            *custom_node->context->creation_destroy_stream,
-            custom_service->service_id,
-            custom_node->participant_id,
-            (char*) service_name,
-            req_type_name,
-            res_type_name,
-            req_topic_name,
-            res_topic_name,
-            UXR_REPLACE);
+    service_req = uxr_buffer_create_replier_bin(
+      &custom_node->context->session,
+      *custom_node->context->creation_destroy_stream,
+      custom_service->service_id,
+      custom_node->participant_id,
+      (char *) service_name,
+      req_type_name,
+      res_type_name,
+      req_topic_name,
+      res_topic_name,
+      UXR_REPLACE);
 #endif /* ifdef RMW_UXRCE_USE_XML */
 
-        rmw_service->data = custom_service;
+    rmw_service->data = custom_service;
 
-        if (!run_xrce_session(custom_node->context, service_req))
-        {
-            RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
-            put_memory(&service_memory, &custom_service->mem);
-            goto fail;
-        }
-
-        uxrDeliveryControl delivery_control;
-        delivery_control.max_samples          = UXR_MAX_SAMPLES_UNLIMITED;
-        delivery_control.min_pace_period      = 0;
-        delivery_control.max_elapsed_time     = UXR_MAX_ELAPSED_TIME_UNLIMITED;
-        delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
-
-        custom_service->stream_id =
-                (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
-                custom_node->context->best_effort_output :
-                custom_node->context->reliable_output;
-
-        uxrStreamId data_request_stream_id =
-                (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
-                custom_node->context->best_effort_input :
-                custom_node->context->reliable_input;
-
-        custom_service->service_data_resquest = uxr_buffer_request_data(
-            &custom_node->context->session,
-            *custom_node->context->creation_destroy_stream, custom_service->service_id,
-            data_request_stream_id, &delivery_control);
+    if (!run_xrce_session(custom_node->context, service_req)) {
+      RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
+      put_memory(&service_memory, &custom_service->mem);
+      goto fail;
     }
-    return rmw_service;
+
+    uxrDeliveryControl delivery_control;
+    delivery_control.max_samples = UXR_MAX_SAMPLES_UNLIMITED;
+    delivery_control.min_pace_period = 0;
+    delivery_control.max_elapsed_time = UXR_MAX_ELAPSED_TIME_UNLIMITED;
+    delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
+
+    custom_service->stream_id =
+      (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+      custom_node->context->best_effort_output :
+      custom_node->context->reliable_output;
+
+    uxrStreamId data_request_stream_id =
+      (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+      custom_node->context->best_effort_input :
+      custom_node->context->reliable_input;
+
+    custom_service->service_data_resquest = uxr_buffer_request_data(
+      &custom_node->context->session,
+      *custom_node->context->creation_destroy_stream, custom_service->service_id,
+      data_request_stream_id, &delivery_control);
+  }
+  return rmw_service;
 
 fail:
-    rmw_uxrce_fini_service_memory(rmw_service);
-    rmw_service = NULL;
-    return rmw_service;
+  rmw_uxrce_fini_service_memory(rmw_service);
+  rmw_service = NULL;
+  return rmw_service;
 }
 
 rmw_ret_t
 rmw_destroy_service(
-        rmw_node_t* node,
-        rmw_service_t* service)
+  rmw_node_t * node,
+  rmw_service_t * service)
 {
-    EPROS_PRINT_TRACE()
-    rmw_ret_t result_ret = RMW_RET_OK;
-    if (!node)
-    {
-        RMW_SET_ERROR_MSG("node handle is null");
-        result_ret = RMW_RET_ERROR;
-    }
-    else if (!is_uxrce_rmw_identifier_valid(node->implementation_identifier))
-    {
-        RMW_SET_ERROR_MSG("node handle not from this implementation");
-        result_ret = RMW_RET_ERROR;
-    }
-    else if (!node->data)
-    {
-        RMW_SET_ERROR_MSG("node imp is null");
-        result_ret = RMW_RET_ERROR;
-    }
-    else if (!service)
-    {
-        RMW_SET_ERROR_MSG("service handle is null");
-        result_ret = RMW_RET_ERROR;
-    }
-    else if (!is_uxrce_rmw_identifier_valid(service->implementation_identifier))
-    {
-        RMW_SET_ERROR_MSG("service handle not from this implementation");
-        result_ret = RMW_RET_ERROR;
-    }
-    else if (!service->data)
-    {
-        RMW_SET_ERROR_MSG("service imp is null");
-        result_ret = RMW_RET_ERROR;
-    }
-    else
-    {
-        rmw_uxrce_node_t*    custom_node    = (rmw_uxrce_node_t*)node->data;
-        rmw_uxrce_service_t* custom_service = (rmw_uxrce_service_t*)service->data;
-        uint16_t delete_service =
-                uxr_buffer_delete_entity(
-            &custom_node->context->session,
-            *custom_node->context->creation_destroy_stream,
-            custom_service->service_id);
+  rmw_ret_t result_ret = RMW_RET_OK;
+  if (!node) {
+    RMW_SET_ERROR_MSG("node handle is null");
+    result_ret = RMW_RET_ERROR;
+  } else if (!is_uxrce_rmw_identifier_valid(node->implementation_identifier)) {
+    RMW_SET_ERROR_MSG("node handle not from this implementation");
+    result_ret = RMW_RET_ERROR;
+  } else if (!node->data) {
+    RMW_SET_ERROR_MSG("node imp is null");
+    result_ret = RMW_RET_ERROR;
+  } else if (!service) {
+    RMW_SET_ERROR_MSG("service handle is null");
+    result_ret = RMW_RET_ERROR;
+  } else if (!is_uxrce_rmw_identifier_valid(service->implementation_identifier)) {
+    RMW_SET_ERROR_MSG("service handle not from this implementation");
+    result_ret = RMW_RET_ERROR;
+  } else if (!service->data) {
+    RMW_SET_ERROR_MSG("service imp is null");
+    result_ret = RMW_RET_ERROR;
+  } else {
+    rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
+    rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
+    uint16_t delete_service =
+      uxr_buffer_delete_entity(
+      &custom_node->context->session,
+      *custom_node->context->creation_destroy_stream,
+      custom_service->service_id);
 
-        if (!run_xrce_session(custom_node->context, delete_service))
-        {
-            result_ret = RMW_RET_ERROR;
-        }
-        rmw_uxrce_fini_service_memory(service);
+    if (!run_xrce_session(custom_node->context, delete_service)) {
+      result_ret = RMW_RET_ERROR;
     }
+    rmw_uxrce_fini_service_memory(service);
+  }
 
-    return result_ret;
+  return result_ret;
 }

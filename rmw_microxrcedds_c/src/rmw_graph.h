@@ -12,27 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMW_UXRCE_GRAPH_H_
-#define RMW_UXRCE_GRAPH_H_
+#ifndef RMW_GRAPH_H_
+#define RMW_GRAPH_H_
 
 #include <rmw/types.h>
-
-#include "./types.h"
-
 #include <uxr/client/client.h>
-
 #include <micro_ros_msgs/msg/graph.h>
 #include <micro_ros_msgs/msg/node.h>
 #include <micro_ros_msgs/msg/entity.h>
-// #include <micro_ros_msgs/msg/node.h>
-// #include <micro_ros_msgs/msg/entity.h>
+
+#include "./types.h"
 
 rmw_ret_t rmw_graph_init(
-        rmw_context_impl_t* context,
-        rmw_graph_info_t* graph_info);
+  rmw_context_impl_t * context,
+  rmw_graph_info_t * graph_info);
 
 rmw_ret_t rmw_graph_fill_data_from_buffer(
-        rmw_graph_info_t* graph_info,
-        micro_ros_msgs__msg__Graph* graph_data);
+  rmw_graph_info_t * graph_info,
+  micro_ros_msgs__msg__Graph * graph_data);
 
-#endif  // RMW_UXRCE_GRAPH_H_
+#endif  // RMW_GRAPH_H_

@@ -13,25 +13,25 @@
 // limitations under the License.
 
 #include <gtest/gtest.h>
-#include <ctime>
 
 #include <rmw/rmw.h>
 #include <rmw/init_options.h>
 #include <rcutils/allocator.h>
-
 #include <rmw_microros/rmw_microros.h>
+
+#include <ctime>
 
 /*
  * Testing rmw init and shutdown. htps://github.com/microROS/rmw-microxrcedds/issues/14
  */
 TEST(rmw_microxrcedds, init_shutdown)
 {
-    rmw_context_t test_context = rmw_get_zero_initialized_context();
-    rmw_init_options_t test_options = rmw_get_zero_initialized_init_options();
+  rmw_context_t test_context = rmw_get_zero_initialized_context();
+  rmw_init_options_t test_options = rmw_get_zero_initialized_init_options();
 
-    ASSERT_EQ(rmw_init_options_init(&test_options, rcutils_get_default_allocator()), RMW_RET_OK);
-    ASSERT_EQ(rmw_init(&test_options, &test_context), RMW_RET_OK);
-    ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
+  ASSERT_EQ(rmw_init_options_init(&test_options, rcutils_get_default_allocator()), RMW_RET_OK);
+  ASSERT_EQ(rmw_init(&test_options, &test_context), RMW_RET_OK);
+  ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
 }
 
 /*
@@ -39,13 +39,13 @@ TEST(rmw_microxrcedds, init_shutdown)
  */
 TEST(rmw_microxrcedds, autodiscover)
 {
-    rmw_context_t test_context = rmw_get_zero_initialized_context();
-    rmw_init_options_t test_options = rmw_get_zero_initialized_init_options();
+  rmw_context_t test_context = rmw_get_zero_initialized_context();
+  rmw_init_options_t test_options = rmw_get_zero_initialized_init_options();
 
-    ASSERT_EQ(rmw_init_options_init(&test_options, rcutils_get_default_allocator()), RMW_RET_OK);
-    ASSERT_EQ(rmw_uros_discover_agent(&test_options), RMW_RET_OK);
-    ASSERT_EQ(rmw_init(&test_options, &test_context), RMW_RET_OK);
-    ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
+  ASSERT_EQ(rmw_init_options_init(&test_options, rcutils_get_default_allocator()), RMW_RET_OK);
+  ASSERT_EQ(rmw_uros_discover_agent(&test_options), RMW_RET_OK);
+  ASSERT_EQ(rmw_init(&test_options, &test_context), RMW_RET_OK);
+  ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
 }
 
 /*
@@ -53,17 +53,17 @@ TEST(rmw_microxrcedds, autodiscover)
  */
 TEST(rmw_microxrcedds, agent_ping)
 {
-    rmw_context_t test_context = rmw_get_zero_initialized_context();
-    rmw_init_options_t test_options = rmw_get_zero_initialized_init_options();
+  rmw_context_t test_context = rmw_get_zero_initialized_context();
+  rmw_init_options_t test_options = rmw_get_zero_initialized_init_options();
 
-    ASSERT_EQ(rmw_init_options_init(&test_options, rcutils_get_default_allocator()), RMW_RET_OK);
-    ASSERT_EQ(rmw_init(&test_options, &test_context), RMW_RET_OK);
+  ASSERT_EQ(rmw_init_options_init(&test_options, rcutils_get_default_allocator()), RMW_RET_OK);
+  ASSERT_EQ(rmw_init(&test_options, &test_context), RMW_RET_OK);
 
-    ASSERT_EQ(rmw_uros_ping_agent(100, 1), RMW_RET_OK);
+  ASSERT_EQ(rmw_uros_ping_agent(100, 1), RMW_RET_OK);
 
-    ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
+  ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
 
-    ASSERT_EQ(rmw_uros_ping_agent(100, 1), RMW_RET_OK);
+  ASSERT_EQ(rmw_uros_ping_agent(100, 1), RMW_RET_OK);
 }
 
 /*
@@ -71,20 +71,20 @@ TEST(rmw_microxrcedds, agent_ping)
  */
 TEST(rmw_microxrcedds, sync_session)
 {
-    rmw_context_t test_context = rmw_get_zero_initialized_context();
-    rmw_init_options_t test_options = rmw_get_zero_initialized_init_options();
+  rmw_context_t test_context = rmw_get_zero_initialized_context();
+  rmw_init_options_t test_options = rmw_get_zero_initialized_init_options();
 
-    ASSERT_EQ(rmw_init_options_init(&test_options, rcutils_get_default_allocator()), RMW_RET_OK);
-    ASSERT_EQ(rmw_init(&test_options, &test_context), RMW_RET_OK);
+  ASSERT_EQ(rmw_init_options_init(&test_options, rcutils_get_default_allocator()), RMW_RET_OK);
+  ASSERT_EQ(rmw_init(&test_options, &test_context), RMW_RET_OK);
 
-    std::time_t timestamp_seconds = std::time(nullptr);
-    ASSERT_EQ(rmw_uros_sync_session(500), RMW_RET_OK);
+  std::time_t timestamp_seconds = std::time(nullptr);
+  ASSERT_EQ(rmw_uros_sync_session(500), RMW_RET_OK);
 
-    int64_t time_diff_ns = abs(rmw_uros_epoch_nanos() / 1000000000 - timestamp_seconds);
-    ASSERT_LE(time_diff_ns, 5);
+  int64_t time_diff_ns = abs(rmw_uros_epoch_nanos() / 1000000000 - timestamp_seconds);
+  ASSERT_LE(time_diff_ns, 5);
 
-    int64_t time_diff_ms = abs(rmw_uros_epoch_millis() / 1000 - timestamp_seconds);
-    ASSERT_LE(time_diff_ms, 5);
+  int64_t time_diff_ms = abs(rmw_uros_epoch_millis() / 1000 - timestamp_seconds);
+  ASSERT_LE(time_diff_ms, 5);
 
-    ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
+  ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
 }
