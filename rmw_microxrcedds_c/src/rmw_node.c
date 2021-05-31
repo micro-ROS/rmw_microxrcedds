@@ -119,19 +119,17 @@ rmw_node_t *
 rmw_create_node(
   rmw_context_t * context,
   const char * name,
-  const char * namespace_,
-  size_t domain_id,
-  bool localhost_only)
+  const char * namespace_)
 {
   (void)context;
-  (void)localhost_only;
+
   rmw_node_t * rmw_node = NULL;
   if (!name || strlen(name) == 0) {
     RMW_SET_ERROR_MSG("name is null");
   } else if (!namespace_ || strlen(namespace_) == 0) {
     RMW_SET_ERROR_MSG("node handle not from this implementation");
   } else {
-    rmw_node = create_node(name, namespace_, domain_id, context);
+    rmw_node = create_node(name, namespace_, context->actual_domain_id, context);
   }
   return rmw_node;
 }
