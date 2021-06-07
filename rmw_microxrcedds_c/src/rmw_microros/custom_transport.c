@@ -20,19 +20,24 @@
 #include <rmw/ret_types.h>
 #include <rmw/error_handling.h>
 
-bool __attribute__((weak)) custom_transport_open(struct uxrCustomTransport * transport) 
+bool __attribute__((weak)) custom_transport_open(struct uxrCustomTransport * transport);
+bool __attribute__((weak)) custom_transport_close(struct uxrCustomTransport * transport);
+size_t __attribute__((weak)) custom_transport_write(struct uxrCustomTransport* transport, const uint8_t * buf, size_t len, uint8_t * err);
+size_t __attribute__((weak)) custom_transport_read(struct uxrCustomTransport* transport, uint8_t* buf, size_t len, int timeout, uint8_t* err);
+
+bool custom_transport_open(struct uxrCustomTransport * transport) 
 {
     (void) transport;
     return false;
 }
 
-bool __attribute__((weak)) custom_transport_close(struct uxrCustomTransport * transport)
+bool custom_transport_close(struct uxrCustomTransport * transport)
 {
     (void) transport;
     return false;
 }
 
-size_t __attribute__((weak)) custom_transport_write(struct uxrCustomTransport* transport, const uint8_t * buf, size_t len, uint8_t * err)
+size_t custom_transport_write(struct uxrCustomTransport* transport, const uint8_t * buf, size_t len, uint8_t * err)
 {
     (void) transport;
     (void) buf;
@@ -41,7 +46,7 @@ size_t __attribute__((weak)) custom_transport_write(struct uxrCustomTransport* t
     return 0;
 }
 
-size_t __attribute__((weak)) custom_transport_read(struct uxrCustomTransport* transport, uint8_t* buf, size_t len, int timeout, uint8_t* err)
+size_t custom_transport_read(struct uxrCustomTransport* transport, uint8_t* buf, size_t len, int timeout, uint8_t* err)
 {
     (void) transport;
     (void) buf;
