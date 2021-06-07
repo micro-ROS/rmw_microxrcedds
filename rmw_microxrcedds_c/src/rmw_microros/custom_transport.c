@@ -55,10 +55,10 @@ rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params =
 { 
     .framing = false,
     .args = NULL,
-    .open_custom_func = custom_transport_open,
-    .close_custom_func = custom_transport_close,
-    .write_custom_func = custom_transport_write,
-    .read_custom_func = custom_transport_read
+    .open_cb = custom_transport_open,
+    .close_cb = custom_transport_close,
+    .write_cb = custom_transport_write,
+    .read_cb = custom_transport_read
 };
 
 rmw_ret_t rmw_uros_set_custom_transport(
