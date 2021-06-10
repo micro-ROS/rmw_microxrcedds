@@ -53,8 +53,9 @@ rmw_uxrce_mempool_item_t * get_memory(
     }
     item->prev = NULL;
     mem->allocateditems = item;
-  } else {
+  }
 #ifdef RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS
+  else if(mem.is_dynamic_allowed) {
     item = (rmw_uxrce_mempool_item_t *)rmw_allocate(sizeof(rmw_uxrce_mempool_item_t));
     item->prev = NULL;
     item->next = NULL;
@@ -64,8 +65,8 @@ rmw_uxrce_mempool_item_t * get_memory(
     put_memory(mem, item);
     item->is_dynamic_memory = true;
     item = get_memory(mem);
-#endif /* ifdef RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS */
   }
+#endif /* ifdef RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS */
 
   UXR_UNLOCK(&mem->mutex);
 
