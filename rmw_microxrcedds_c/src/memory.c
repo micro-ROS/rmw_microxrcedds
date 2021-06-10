@@ -53,7 +53,7 @@ rmw_uxrce_mempool_item_t * get_memory(
     }
     item->prev = NULL;
     mem->allocateditems = item;
-  } else if (mem.is_dynamic_allowed) {
+  } else if (mem->is_dynamic_allowed) {
 #ifdef RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS
     item = (rmw_uxrce_mempool_item_t *)rmw_allocate(sizeof(rmw_uxrce_mempool_item_t));
     item->prev = NULL;
