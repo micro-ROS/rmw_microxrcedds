@@ -172,6 +172,7 @@ rmw_init(
   rmw_uxrce_init_static_input_buffer_memory(
     &static_buffer_memory, custom_static_buffers,
     RMW_UXRCE_MAX_HISTORY);
+  static_buffer_memory.is_dynamic_allowed = false;
 
   rmw_uxrce_mempool_item_t * memory_node = get_memory(&session_memory);
   if (!memory_node) {

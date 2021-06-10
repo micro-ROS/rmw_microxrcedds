@@ -72,6 +72,7 @@ rmw_uxrce_static_input_buffer_t custom_static_buffers[RMW_UXRCE_MAX_HISTORY];
       memory->element_size = sizeof(*array); \
       memory->allocateditems = NULL; \
       memory->freeitems = NULL; \
+      memory->is_dynamic_allowed = true; \
  \
       for (size_t i = 0; i < size; i++) { \
         put_memory(memory, &array[i].mem); \

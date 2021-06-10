@@ -22,10 +22,10 @@
 
 typedef struct rmw_uxrce_mempool_item_t
 {
-  bool is_dynamic_memory;
   struct rmw_uxrce_mempool_item_t * prev;
   struct rmw_uxrce_mempool_item_t * next;
   void * data;
+  bool is_dynamic_memory;
 } rmw_uxrce_mempool_item_t;
 
 typedef struct rmw_uxrce_mempool_t
@@ -33,8 +33,9 @@ typedef struct rmw_uxrce_mempool_t
   struct rmw_uxrce_mempool_item_t * allocateditems;
   struct rmw_uxrce_mempool_item_t * freeitems;
 
-  bool is_initialized;
   size_t element_size;
+  bool is_initialized;
+  bool is_dynamic_allowed;
 
 #ifdef UCLIENT_PROFILE_MULTITHREAD
   uxrMutex mutex;
