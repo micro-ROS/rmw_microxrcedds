@@ -203,7 +203,6 @@ if(rosidl_typesupport_microxrcedds_c_FOUND)
     PUBLIC
       HAVE_C_TYPESUPPORT
 )
-  find_package(rosidl_typesupport_microxrcedds_cpp)
 else()
   find_package(rosidl_typesupport_microxrcedds_cpp REQUIRED)
 endif()
