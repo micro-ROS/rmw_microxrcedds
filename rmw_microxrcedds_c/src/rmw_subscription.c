@@ -343,8 +343,7 @@ rmw_destroy_subscription(
     bool ret = run_xrce_session(custom_node->context, delete_datareader);
     ret &= run_xrce_session(custom_node->context, delete_subscriber);
     if (!ret) {
-      RMW_SET_ERROR_MSG("unable to remove publisher from the server");
-      result_ret = RMW_RET_ERROR;
+      result_ret = RMW_RET_TIMEOUT;
     }
     rmw_uxrce_fini_subscription_memory(subscription);
   }

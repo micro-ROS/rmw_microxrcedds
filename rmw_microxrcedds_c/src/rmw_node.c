@@ -202,7 +202,7 @@ rmw_ret_t rmw_destroy_node(
     custom_node->participant_id);
 
   if (!run_xrce_session(custom_node->context, delete_participant)) {
-    ret = RMW_RET_ERROR;
+    ret = RMW_RET_TIMEOUT;
   }
 
   rmw_uxrce_fini_node_memory(node);
