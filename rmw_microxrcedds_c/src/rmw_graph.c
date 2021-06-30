@@ -48,7 +48,7 @@ rmw_ret_t rmw_graph_init(
     graph_info->participant_id,
     (int16_t)microros_domain_id,
     graph_participant_name,
-    UXR_REPLACE);
+    UXR_REPLACE | UXR_REUSE);
 
   // Set graph subscription QoS policies
   // TODO(jamoralp): most of these QoS are not even being used.
@@ -80,7 +80,7 @@ rmw_ret_t rmw_graph_init(
 
   uint16_t subscriber_req = uxr_buffer_create_subscriber_xml(
     &context->session, *context->creation_destroy_stream, graph_info->subscriber_id,
-    graph_info->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+    graph_info->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 
   graph_info->datareader_id = uxr_object_id(context->id_datareader++, UXR_DATAREADER_ID);
   const char * graph_topic_name = "ros_to_microros_graph";
@@ -102,7 +102,7 @@ rmw_ret_t rmw_graph_init(
 
   uint16_t topic_req = uxr_buffer_create_topic_xml(
     &context->session, *context->creation_destroy_stream, graph_info->topic_id,
-    graph_info->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+    graph_info->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 
   // Create graph datareader request
   if (!build_datareader_xml(
@@ -118,7 +118,7 @@ rmw_ret_t rmw_graph_init(
 
   uint16_t datareader_req = uxr_buffer_create_datareader_xml(
     &context->session, *context->creation_destroy_stream, graph_info->datareader_id,
-    graph_info->subscriber_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+    graph_info->subscriber_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 
   // Run session
   uint16_t requests[] = {
