@@ -89,7 +89,7 @@ rmw_node_t * create_node(
     *node_info->context->creation_destroy_stream,
     node_info->participant_id,
     (uint16_t)domain_id,
-    rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+    rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 #else
   participant_req = uxr_buffer_create_participant_bin(
     &node_info->context->session,
@@ -97,7 +97,7 @@ rmw_node_t * create_node(
     node_info->participant_id,
     domain_id,
     name,
-    UXR_REPLACE);
+    UXR_REPLACE | UXR_REUSE);
 #endif /* ifdef RMW_UXRCE_USE_REFS */
 
   if (!run_xrce_session(node_info->context, participant_req)) {
