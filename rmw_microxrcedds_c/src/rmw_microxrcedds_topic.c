@@ -99,19 +99,22 @@ rmw_ret_t destroy_topic(
   rmw_uxrce_topic_t * topic)
 {
   rmw_ret_t result_ret = RMW_RET_OK;
-  rmw_uxrce_node_t * custom_node = topic->owner_node;
+  if (topic->owner_node != NULL) {
+    rmw_uxrce_node_t * custom_node = topic->owner_node;
 
-  uint16_t delete_topic = uxr_buffer_delete_entity(
-    &custom_node->context->session,
-    *custom_node->context->creation_destroy_stream,
-    topic->topic_id);
+    uint16_t delete_topic = uxr_buffer_delete_entity(
+      &custom_node->context->session,
+      *custom_node->context->creation_destroy_stream,
+      topic->topic_id);
 
-  if (!run_xrce_session(custom_node->context, delete_topic)) {
-    result_ret = RMW_RET_ERROR;
-  } else {
+    if (!run_xrce_session(custom_node->context, delete_topic)) {
+      result_ret = RMW_RET_TIMEOUT;
+    }
     rmw_uxrce_fini_topic_memory(topic);
-    result_ret = RMW_RET_OK;
+  } else {
+    result_ret = RMW_RET_ERROR;
   }
+
   return result_ret;
 }
 
