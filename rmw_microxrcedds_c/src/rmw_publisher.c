@@ -369,7 +369,7 @@ rmw_destroy_publisher(
     bool ret = run_xrce_session(custom_node->context, delete_writer);
     ret &= run_xrce_session(custom_node->context, delete_publisher);
     if (!ret) {
-      result_ret = RMW_RET_ERROR;
+      result_ret = RMW_RET_TIMEOUT;
     }
 
     rmw_uxrce_fini_publisher_memory(publisher);
