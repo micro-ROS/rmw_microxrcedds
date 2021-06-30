@@ -229,6 +229,7 @@ void rmw_uxrce_fini_topic_memory(
   rmw_uxrce_topic_t * topic)
 {
   put_memory(&topics_memory, &topic->mem);
+  topic->owner_node = NULL;
 }
 
 rmw_uxrce_mempool_item_t * rmw_uxrce_find_static_input_buffer_by_owner(
