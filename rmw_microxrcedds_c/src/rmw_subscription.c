@@ -147,14 +147,14 @@ rmw_create_subscription(
     subscriber_req = uxr_buffer_create_subscriber_xml(
       &custom_node->context->session,
       *custom_node->context->creation_destroy_stream, custom_subscription->subscriber_id,
-      custom_node->participant_id, "", UXR_REPLACE);
+      custom_node->participant_id, "", UXR_REPLACE | UXR_REUSE);
 #else
     subscriber_req = uxr_buffer_create_subscriber_bin(
       &custom_node->context->session,
       *custom_node->context->creation_destroy_stream,
       custom_subscription->subscriber_id,
       custom_node->participant_id,
-      UXR_REPLACE);
+      UXR_REPLACE | UXR_REUSE);
 #endif /* ifdef RMW_UXRCE_USE_REFS */
 
     if (!run_xrce_session(custom_node->context, subscriber_req)) {
@@ -180,7 +180,7 @@ rmw_create_subscription(
     datareader_req = uxr_buffer_create_datareader_ref(
       &custom_node->context->session,
       *custom_node->context->creation_destroy_stream, custom_subscription->datareader_id,
-      custom_subscription->subscriber_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+      custom_subscription->subscriber_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 #else
     bool reliability = qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_RELIABLE ||
       qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT;
@@ -208,7 +208,7 @@ rmw_create_subscription(
       reliability,
       history,
       durability,
-      UXR_REPLACE);
+      UXR_REPLACE | UXR_REUSE);
 #endif /* ifdef RMW_UXRCE_USE_XML */
 
     if (!run_xrce_session(custom_node->context, datareader_req)) {

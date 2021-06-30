@@ -156,14 +156,14 @@ rmw_create_publisher(
       &custom_publisher->owner_node->context->session,
       *custom_node->context->creation_destroy_stream,
       custom_publisher->publisher_id,
-      custom_node->participant_id, "", UXR_REPLACE);
+      custom_node->participant_id, "", UXR_REPLACE | UXR_REUSE);
   #else
     publisher_req = uxr_buffer_create_publisher_bin(
       &custom_publisher->owner_node->context->session,
       *custom_node->context->creation_destroy_stream,
       custom_publisher->publisher_id,
       custom_node->participant_id,
-      UXR_REPLACE);
+      UXR_REPLACE | UXR_REUSE);
   #endif /* ifdef RMW_UXRCE_USE_REFS */
 
     if (!run_xrce_session(custom_node->context, publisher_req)) {
@@ -192,7 +192,7 @@ rmw_create_publisher(
       &custom_publisher->owner_node->context->session,
       *custom_node->context->creation_destroy_stream,
       custom_publisher->datawriter_id,
-      custom_publisher->publisher_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+      custom_publisher->publisher_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
   #else
     bool reliability = qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_RELIABLE ||
       qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT;
@@ -220,7 +220,7 @@ rmw_create_publisher(
       reliability,
       history,
       durability,
-      UXR_REPLACE);
+      UXR_REPLACE | UXR_REUSE);
   #endif /* ifdef RMW_UXRCE_USE_REFS */
 
     if (!run_xrce_session(custom_node->context, datawriter_req)) {

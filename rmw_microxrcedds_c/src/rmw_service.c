@@ -103,7 +103,7 @@ rmw_create_service(
     // TODO(pablogs9): Use here true references
     // service_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
     //     *custom_node->context->creation_destroy_stream, custom_service->subscriber_id,
-    //     custom_node->participant_id, "", UXR_REPLACE);
+    //     custom_node->participant_id, "", UXR_REPLACE | UXR_REUSE);
     char service_name_id[20];
     generate_name(&custom_service->service_id, service_name_id, sizeof(service_name_id));
     if (!build_service_xml(
@@ -117,7 +117,7 @@ rmw_create_service(
     service_req = uxr_buffer_create_replier_xml(
       &custom_node->context->session,
       *custom_node->context->creation_destroy_stream, custom_service->service_id,
-      custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+      custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 #else
     char req_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
     char res_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
@@ -141,7 +141,7 @@ rmw_create_service(
       res_type_name,
       req_topic_name,
       res_topic_name,
-      UXR_REPLACE);
+      UXR_REPLACE | UXR_REUSE);
 #endif /* ifdef RMW_UXRCE_USE_XML */
 
     rmw_service->data = custom_service;
