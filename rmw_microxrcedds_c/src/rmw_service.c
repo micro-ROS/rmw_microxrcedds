@@ -215,7 +215,7 @@ rmw_destroy_service(
       custom_service->service_id);
 
     if (!run_xrce_session(custom_node->context, delete_service)) {
-      result_ret = RMW_RET_ERROR;
+      result_ret = RMW_RET_TIMEOUT;
     }
     rmw_uxrce_fini_service_memory(service);
   }
