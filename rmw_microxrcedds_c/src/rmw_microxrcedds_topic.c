@@ -67,7 +67,7 @@ create_topic(
   topic_req = uxr_buffer_create_topic_ref(
     &custom_node->context->session,
     *custom_node->context->creation_destroy_stream, custom_topic->topic_id,
-    custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE);
+    custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 #else
   char full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
   char type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
@@ -82,7 +82,7 @@ create_topic(
     custom_node->participant_id,
     full_topic_name,
     type_name,
-    UXR_REPLACE);
+    UXR_REPLACE | UXR_REUSE);
 #endif /* ifdef RMW_UXRCE_USE_XML */
 
   if (!run_xrce_session(custom_node->context, topic_req)) {
