@@ -107,11 +107,10 @@ rmw_ret_t destroy_topic(
     topic->topic_id);
 
   if (!run_xrce_session(custom_node->context, delete_topic)) {
-    result_ret = RMW_RET_ERROR;
-  } else {
-    rmw_uxrce_fini_topic_memory(topic);
-    result_ret = RMW_RET_OK;
+    result_ret = RMW_RET_TIMEOUT;
   }
+  rmw_uxrce_fini_topic_memory(topic);
+
   return result_ret;
 }
 
