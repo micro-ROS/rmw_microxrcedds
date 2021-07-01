@@ -91,7 +91,7 @@ rmw_node_t * create_node(
     (uint16_t)domain_id,
     rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 #else
-  static xrce_node_name[RMW_UXRCE_NODE_NAME_MAX_LENGTH];
+  static char xrce_node_name[RMW_UXRCE_NODE_NAME_MAX_LENGTH];
   snprintf(xrce_node_name, RMW_UXRCE_NODE_NAME_MAX_LENGTH, "%s/%s", namespace_, name);
 
   participant_req = uxr_buffer_create_participant_bin(
