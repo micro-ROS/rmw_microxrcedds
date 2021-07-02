@@ -92,7 +92,15 @@ rmw_node_t * create_node(
     rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 #else
   static char xrce_node_name[RMW_UXRCE_NODE_NAME_MAX_LENGTH];
-  snprintf(xrce_node_name, RMW_UXRCE_NODE_NAME_MAX_LENGTH, "%s/%s", namespace_, name);
+
+  if (strcmp(namespace_, "/") == 0)
+  {
+    snprintf(xrce_node_name, RMW_UXRCE_NODE_NAME_MAX_LENGTH, "%s", name);
+  }
+  else
+  {
+    snprintf(xrce_node_name, RMW_UXRCE_NODE_NAME_MAX_LENGTH, "%s/%s", namespace_, name);
+  }
 
   participant_req = uxr_buffer_create_participant_bin(
     &node_info->context->session,
@@ -130,7 +138,7 @@ rmw_create_node(
   if (!name || strlen(name) == 0) {
     RMW_SET_ERROR_MSG("name is null");
   } else if (!namespace_ || strlen(namespace_) == 0) {
-    RMW_SET_ERROR_MSG("node handle not from this implementation");
+    RMW_SET_ERROR_MSG("namespace is null");
   } else {
     rmw_node = create_node(name, namespace_, context->actual_domain_id, context);
   }
