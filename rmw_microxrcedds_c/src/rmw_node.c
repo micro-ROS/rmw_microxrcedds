@@ -93,12 +93,9 @@ rmw_node_t * create_node(
 #else
   static char xrce_node_name[RMW_UXRCE_NODE_NAME_MAX_LENGTH];
 
-  if (strcmp(namespace_, "/") == 0)
-  {
+  if (strcmp(namespace_, "/") == 0) {
     snprintf(xrce_node_name, RMW_UXRCE_NODE_NAME_MAX_LENGTH, "%s", name);
-  }
-  else
-  {
+  } else {
     snprintf(xrce_node_name, RMW_UXRCE_NODE_NAME_MAX_LENGTH, "%s/%s", namespace_, name);
   }
 
