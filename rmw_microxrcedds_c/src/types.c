@@ -41,7 +41,7 @@ rmw_uxrce_mempool_t node_memory;
 rmw_uxrce_node_t custom_nodes[RMW_UXRCE_MAX_NODES];
 
 rmw_uxrce_mempool_t publisher_memory;
-rmw_uxrce_publisher_t custom_publishers[RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_NODES];
+rmw_uxrce_publisher_t custom_publishers[RMW_UXRCE_MAX_PUBLISHERS];
 
 rmw_uxrce_mempool_t subscription_memory;
 rmw_uxrce_subscription_t custom_subscriptions[RMW_UXRCE_MAX_SUBSCRIPTIONS];
