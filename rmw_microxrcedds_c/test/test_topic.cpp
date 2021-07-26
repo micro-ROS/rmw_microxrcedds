@@ -44,7 +44,7 @@ protected:
   }
 
   rmw_node_t * node;
-  const size_t attempts = 10;
+  const size_t attempts = RMW_UXRCE_MAX_TOPICS_INTERNAL;
   size_t id_gen = 0;
 
   const char * topic_type = "topic_type";
