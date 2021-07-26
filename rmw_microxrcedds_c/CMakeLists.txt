@@ -64,7 +64,7 @@ set(RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT "1000" CACHE STRING
   "This value sets the maximum time to wait for an XRCE entity creation and destroy in milliseconds.
   If set to 0 best effort is used.")
 set(RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT "1000" CACHE STRING
-  "This value sets the maximum time to wait for a publication in a reliable mode in milliseconds.")
+  "This value sets the default time to wait for a publication in a reliable mode in milliseconds.")
 
 set(RMW_UXRCE_STREAM_HISTORY "4" CACHE STRING "This value sets the number of MTUs to buffer, both input and output.")
 set(RMW_UXRCE_STREAM_HISTORY_INPUT "" CACHE STRING
