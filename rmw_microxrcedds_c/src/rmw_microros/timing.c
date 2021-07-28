@@ -20,29 +20,35 @@
 
 #include "../types.h"
 
-void rmw_uros_set_publisher_session_timeout(
+rmw_ret_t rmw_uros_set_publisher_session_timeout(
   rmw_publisher_t * publisher,
   int session_timeout)
 {
+  RMW_CHECK_ARGUMENT_FOR_NULL(publisher, RMW_RET_INVALID_ARGUMENT);
   rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
 
   custom_publisher->session_timeout = session_timeout;
+  return RMW_RET_OK;
 }
 
-void rmw_uros_set_service_session_timeout(
+rmw_ret_t rmw_uros_set_service_session_timeout(
   rmw_service_t * service,
   int session_timeout)
 {
+  RMW_CHECK_ARGUMENT_FOR_NULL(service, RMW_RET_INVALID_ARGUMENT);
   rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
 
   custom_service->session_timeout = session_timeout;
+  return RMW_RET_OK;
 }
 
-void rmw_uros_set_client_session_timeout(
+rmw_ret_t rmw_uros_set_client_session_timeout(
   rmw_client_t * client,
   int session_timeout)
 {
+  RMW_CHECK_ARGUMENT_FOR_NULL(client, RMW_RET_INVALID_ARGUMENT);
   rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
 
   custom_client->session_timeout = session_timeout;
+  return RMW_RET_OK;
 }
