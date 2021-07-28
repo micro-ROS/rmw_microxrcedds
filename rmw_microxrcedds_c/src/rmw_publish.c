@@ -21,9 +21,11 @@
 #include "./utils.h"
 
 bool flush_session(
-  uxrSession * session)
+  uxrSession * session,
+  void * args)
 {
-  return uxr_run_session_until_confirm_delivery(session, RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT);
+  rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)args;
+  return uxr_run_session_until_confirm_delivery(session, custom_publisher->session_timeout);
 }
 
 rmw_ret_t
@@ -64,7 +66,7 @@ rmw_publish(
       uxr_prepare_output_stream_fragmented(
         &custom_publisher->owner_node->context->session,
         custom_publisher->stream_id, custom_publisher->datawriter_id, &mb,
-        topic_length, flush_session))
+        topic_length, flush_session, custom_publisher))
     {
       written = functions->cdr_serialize(ros_message, &mb);
       if (custom_publisher->cs_cb_serialization) {
@@ -79,7 +81,7 @@ rmw_publish(
         uxr_flash_output_streams(&custom_publisher->owner_node->context->session);
       } else {
         written &= uxr_run_session_until_confirm_delivery(
-          &custom_publisher->owner_node->context->session, RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT);
+          &custom_publisher->owner_node->context->session, custom_publisher->session_timeout);
       }
     }
     if (!written) {

@@ -69,6 +69,7 @@ rmw_create_client(
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)memory_node->data;
     custom_client->rmw_handle = rmw_client;
     custom_client->owner_node = custom_node;
+    custom_client->session_timeout = RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT;
 
     const rosidl_service_type_support_t * type_support_xrce = NULL;
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
