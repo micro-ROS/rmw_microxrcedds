@@ -165,6 +165,7 @@ set(SRCS
   src/rmw_microros/init_options.c
   src/rmw_microros/time_sync.c
   src/rmw_microros/ping.c
+  src/rmw_microros/timing.c
   $<$<BOOL:${RMW_UXRCE_TRANSPORT_UDP}>:src/rmw_microros/discovery.c>
   $<$<BOOL:${RMW_UXRCE_TRANSPORT_CUSTOM}>:src/rmw_microros/custom_transport.c>
   $<$<BOOL:${RMW_UXRCE_GRAPH}>:src/rmw_graph.c>
