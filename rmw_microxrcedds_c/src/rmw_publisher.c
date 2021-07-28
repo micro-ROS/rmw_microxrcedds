@@ -101,6 +101,8 @@ rmw_create_publisher(
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)memory_node->data;
     custom_publisher->rmw_handle = rmw_publisher;
     custom_publisher->owner_node = custom_node;
+    custom_publisher->session_timeout = RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT;
+
     memcpy(&custom_publisher->qos, qos_policies, sizeof(rmw_qos_profile_t));
 
     custom_publisher->stream_id =
