@@ -57,7 +57,7 @@ rmw_send_request(
     uxr_flash_output_streams(&custom_node->context->session);
   } else {
     uxr_run_session_until_confirm_delivery(
-      &custom_node->context->session, RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT);
+      &custom_node->context->session, custom_client->session_timeout);
   }
 
   return RMW_RET_OK;
