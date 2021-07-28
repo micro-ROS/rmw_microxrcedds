@@ -122,11 +122,8 @@ typedef struct rmw_uxrce_service_t
   const service_type_support_callbacks_t * type_support_callbacks;
   uint16_t service_data_resquest;
 
-  uint8_t history_write_index;
-  uint8_t history_read_index;
-  bool micro_buffer_in_use;
-
   uxrStreamId stream_id;
+  int session_timeout;
   struct rmw_uxrce_node_t * owner_node;
 } rmw_uxrce_service_t;
 
@@ -139,6 +136,7 @@ typedef struct rmw_uxrce_client_t
   uint16_t client_data_request;
 
   uxrStreamId stream_id;
+  int session_timeout;
   struct rmw_uxrce_node_t * owner_node;
 } rmw_uxrce_client_t;
 
@@ -173,6 +171,7 @@ typedef struct rmw_uxrce_publisher_t
 
   rmw_qos_profile_t qos;
   uxrStreamId stream_id;
+  int session_timeout;
 
   struct rmw_uxrce_node_t * owner_node;
 } rmw_uxrce_publisher_t;
