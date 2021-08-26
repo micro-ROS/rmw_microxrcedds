@@ -118,3 +118,15 @@ rmw_publish_loaned_message(
   RMW_SET_ERROR_MSG("function not implemented");
   return RMW_RET_UNSUPPORTED;
 }
+
+rmw_ret_t
+rmw_publisher_wait_for_all_acked(
+  const rmw_publisher_t * publisher,
+  rmw_time_t wait_timeout)
+{
+  (void)publisher;
+  (void)wait_timeout;
+
+  RMW_SET_ERROR_MSG("function not implemented");
+  return RMW_RET_UNSUPPORTED;
+}
