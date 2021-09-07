@@ -67,3 +67,35 @@ rmw_ret_t rmw_uros_ping_agent(
 
   return success ? RMW_RET_OK : RMW_RET_ERROR;
 }
+
+rmw_ret_t rmw_uros_ping_agent_options(
+  const int timeout_ms,
+  const uint8_t attempts,
+  rmw_init_options_t * rmw_options)
+{
+  bool success = false;
+
+#ifdef RMW_UXRCE_TRANSPORT_SERIAL
+    uxrSerialTransport transport;
+#elif defined(RMW_UXRCE_TRANSPORT_UDP)
+    uxrUDPTransport transport;
+#elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
+    uxrCustomTransport transport;
+    transport.framing = rmw_options->impl->transport_params.framing;
+    transport.args = rmw_options->impl->transport_params.args;
+    transport.open = rmw_options->impl->transport_params.open_cb;
+    transport.close = rmw_options->impl->transport_params.close_cb;
+    transport.write = rmw_options->impl->transport_params.write_cb;
+    transport.read =  rmw_options->impl->transport_params.read_cb;
+#endif /* ifdef RMW_UXRCE_TRANSPORT_SERIAL */
+    rmw_ret_t ret = rmw_uxrce_transport_init(NULL, rmw_options->impl, (void *)&transport);
+
+    if (RMW_RET_OK != ret) {
+      return ret;
+    }
+
+    success = uxr_ping_agent_attempts(&transport.comm, timeout_ms, attempts);
+    CLOSE_TRANSPORT(&transport);
+
+  return success ? RMW_RET_OK : RMW_RET_ERROR;
+}

@@ -47,3 +47,32 @@ rmw_ret_t rmw_uros_set_custom_transport(
   }
   return RMW_RET_OK;
 }
+
+rmw_ret_t rmw_uros_options_set_custom_transport(
+  bool framing,
+  void * args,
+  open_custom_func open_cb,
+  close_custom_func close_cb,
+  write_custom_func write_cb,
+  read_custom_func read_cb,
+  rmw_init_options_t * rmw_options)
+{
+  if (NULL != open_cb &&
+    NULL != close_cb &&
+    NULL != write_cb &&
+    NULL != read_cb &&
+    NULL != rmw_options)
+  {
+    rmw_options->impl->transport_params.framing = framing;
+    rmw_options->impl->transport_params.args = args;
+    rmw_options->impl->transport_params.open_cb = open_cb;
+    rmw_options->impl->transport_params.close_cb = close_cb;
+    rmw_options->impl->transport_params.write_cb = write_cb;
+    rmw_options->impl->transport_params.read_cb = read_cb;
+  } else {
+    RMW_SET_ERROR_MSG("Uninitialised arguments.");
+    return RMW_RET_INVALID_ARGUMENT;
+  }
+
+  return RMW_RET_OK;
+}
