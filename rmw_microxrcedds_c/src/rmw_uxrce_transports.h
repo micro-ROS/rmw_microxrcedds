@@ -35,7 +35,7 @@
  * @param   context The RMW context, holding in its implementation the
  *          XRCE transport entity, if it has been initialized.
  * @param   init_options Pointer to struct holding the provided init options for
- *          micro-ROS, if context has been initialized.
+ *          micro-ROS.
  * @param   transport Älternative opaque transport structure, which will
  *          must come as NULL and will be given as a handle to the user.
  *          This structure is filled when the context_impl pointer is NULL.
