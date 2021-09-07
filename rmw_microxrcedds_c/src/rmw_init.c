@@ -308,9 +308,9 @@ rmw_context_fini(
   if (NULL != context->impl) {
     uxr_delete_session(&context->impl->session);
     rmw_uxrce_fini_session_memory(context->impl);
+    CLOSE_TRANSPORT(&context->impl->transport);
   }
 
-  CLOSE_TRANSPORT(&context->impl->transport);
 
   context->impl = NULL;
 
