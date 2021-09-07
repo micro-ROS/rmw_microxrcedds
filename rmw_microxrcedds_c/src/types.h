@@ -193,6 +193,8 @@ typedef struct rmw_uxrce_static_input_buffer_t
   size_t length;
   void * owner;
 
+  int64_t timestamp;
+
   union {
     int64_t reply_id;
     SampleIdentity sample_id;
@@ -261,6 +263,11 @@ void rmw_uxrce_fini_service_memory(
 void rmw_uxrce_fini_topic_memory(
   rmw_uxrce_topic_t * topic);
 
+// Memory pools functions
+
+rmw_uxrce_mempool_item_t * rmw_uxrce_get_static_input_buffer_for_entity(
+  void * entity,
+  const rmw_qos_profile_t qos);
 rmw_uxrce_mempool_item_t * rmw_uxrce_find_static_input_buffer_by_owner(
   void * owner);
 

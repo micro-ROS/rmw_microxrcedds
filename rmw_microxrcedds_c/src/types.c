@@ -232,17 +232,79 @@ void rmw_uxrce_fini_topic_memory(
   topic->owner_node = NULL;
 }
 
+size_t rmw_uxrce_count_static_input_buffer_for_entity(
+  void * entity)
+{
+  size_t count = 0;
+  rmw_uxrce_mempool_item_t * item = static_buffer_memory.allocateditems;
+
+  UXR_LOCK(&static_buffer_memory.mutex);
+  while (item != NULL){
+    rmw_uxrce_static_input_buffer_t * data = (rmw_uxrce_static_input_buffer_t *)item->data;
+    if (data->owner == entity) {
+      count++;
+    }
+    item = item->next;
+  }
+  UXR_UNLOCK(&static_buffer_memory.mutex);
+
+  return count;
+}
+
+rmw_uxrce_mempool_item_t * rmw_uxrce_get_static_input_buffer_for_entity(
+  void * entity,
+  const rmw_qos_profile_t qos)
+{
+  rmw_uxrce_mempool_item_t * ret = NULL;
+
+  UXR_LOCK(&static_buffer_memory.mutex);
+  size_t count = rmw_uxrce_count_static_input_buffer_for_entity(entity);
+  switch (qos.history)
+  {
+    case RMW_QOS_POLICY_HISTORY_UNKNOWN:
+    case RMW_QOS_POLICY_HISTORY_SYSTEM_DEFAULT:
+    case RMW_QOS_POLICY_HISTORY_KEEP_LAST:
+      if (count < qos.depth) {
+        ret = get_memory(&static_buffer_memory);
+      } else {
+        ret = rmw_uxrce_find_static_input_buffer_by_owner(entity);
+      }
+      break;
+    case RMW_QOS_POLICY_HISTORY_KEEP_ALL:
+      if (count < qos.depth) {
+        ret = get_memory(&static_buffer_memory);
+      } else {
+        // There aren't more slots for this entity
+      }
+      break;
+    default:
+      break;
+  }
+  UXR_UNLOCK(&static_buffer_memory.mutex);
+
+  return ret;
+}
+
 rmw_uxrce_mempool_item_t * rmw_uxrce_find_static_input_buffer_by_owner(
   void * owner)
 {
+  rmw_uxrce_mempool_item_t * ret = NULL;
+  int64_t min_time = INT64_MAX;
+
+  UXR_LOCK(&static_buffer_memory.mutex);
+
+  // Return the oldest
   rmw_uxrce_mempool_item_t * static_buffer_item = static_buffer_memory.allocateditems;
   while (static_buffer_item != NULL) {
-    rmw_uxrce_static_input_buffer_t * data =
-      (rmw_uxrce_static_input_buffer_t *)static_buffer_item->data;
-    if (data->owner == owner) {
-      return static_buffer_item;
+    rmw_uxrce_static_input_buffer_t * data = (rmw_uxrce_static_input_buffer_t *)static_buffer_item->data;
+
+    if (data->owner == owner && data->timestamp < min_time) {
+      ret = static_buffer_item;
     }
+
     static_buffer_item = static_buffer_item->next;
   }
-  return NULL;
+  UXR_UNLOCK(&static_buffer_memory.mutex);
+
+  return ret;
 }
