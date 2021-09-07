@@ -64,7 +64,7 @@ rmw_ret_t rmw_uros_ping_agent(
  */
 rmw_ret_t rmw_uros_ping_agent_options(
   const int timeout_ms,
-  const uint8_t attempts
+  const uint8_t attempts,
   rmw_init_options_t * rmw_options);
 
 /** @}*/
