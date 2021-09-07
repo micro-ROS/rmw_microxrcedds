@@ -24,7 +24,7 @@ rmw_ret_t rmw_uxrce_transport_init(
   void * transport)
 {
 #ifdef RMW_UXRCE_TRANSPORT_SERIAL
-  const char * serial_device = (NULL == context_impl) ?
+  const char * serial_device = (NULL == init_options_impl) ?
     RMW_UXRCE_DEFAULT_SERIAL_DEVICE :
     init_options_impl->transport_params.serial_device;
 
@@ -92,9 +92,6 @@ rmw_ret_t rmw_uxrce_transport_init(
     RMW_SET_ERROR_MSG("rmw_transport_init SERIAL: invalid serial device file descriptor");
     return RMW_RET_ERROR;
   }
-  printf(
-    "micro-ROS transport: connected using serial mode, dev: '%s'\n",
-    serial_device);
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
 #ifdef RMW_UXRCE_TRANSPORT_IPV4
   uxrIpProtocol ip_protocol = UXR_IPv4;
@@ -105,10 +102,10 @@ rmw_ret_t rmw_uxrce_transport_init(
   uxrUDPTransport * udp_transport = (NULL == context_impl) ?
     (uxrUDPTransport *)transport :
     &context_impl->transport;
-  const char * agent_ip = (NULL == context_impl) ?
+  const char * agent_ip = (NULL == init_options_impl) ?
     RMW_UXRCE_DEFAULT_UDP_IP :
     init_options_impl->transport_params.agent_address;
-  const char * agent_port = (NULL == context_impl) ?
+  const char * agent_port = (NULL == init_options_impl) ?
     RMW_UXRCE_DEFAULT_UDP_PORT :
     init_options_impl->transport_params.agent_port;
 
@@ -116,14 +113,11 @@ rmw_ret_t rmw_uxrce_transport_init(
     RMW_SET_ERROR_MSG("rmw_transport_init UDP: cannot init XRCE transport");
     return RMW_RET_ERROR;
   }
-  printf(
-    "micro-ROS transport: connected using UDP mode, ip: '%s', port: '%s'\n",
-    agent_ip, agent_port);
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
   uxrCustomTransport * custom_transport = (NULL == context_impl) ?
     (uxrCustomTransport *)transport :
     &context_impl->transport;
-  void * args = (NULL == context_impl) ?
+  void * args = (NULL == init_options_impl) ?
     rmw_uxrce_transport_default_params.args :
     init_options_impl->transport_params.args;
 
