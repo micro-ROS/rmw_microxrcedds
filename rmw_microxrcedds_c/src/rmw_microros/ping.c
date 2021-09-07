@@ -86,7 +86,7 @@ rmw_ret_t rmw_uros_ping_agent_options(
   transport.open = rmw_options->impl->transport_params.open_cb;
   transport.close = rmw_options->impl->transport_params.close_cb;
   transport.write = rmw_options->impl->transport_params.write_cb;
-  transport.read =  rmw_options->impl->transport_params.read_cb;
+  transport.read = rmw_options->impl->transport_params.read_cb;
 #endif /* ifdef RMW_UXRCE_TRANSPORT_SERIAL */
   rmw_ret_t ret = rmw_uxrce_transport_init(NULL, rmw_options->impl, (void *)&transport);
 
