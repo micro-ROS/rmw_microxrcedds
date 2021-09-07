@@ -229,38 +229,20 @@ extern rmw_uxrce_static_input_buffer_t custom_static_buffers[RMW_UXRCE_MAX_HISTO
 
 // Memory init functions
 
-void rmw_uxrce_init_session_memory(
-  rmw_uxrce_mempool_t * memory,
-  rmw_context_impl_t * sessions,
-  size_t size);
-void rmw_uxrce_init_node_memory(
-  rmw_uxrce_mempool_t * memory,
-  rmw_uxrce_node_t * nodes,
-  size_t size);
-void rmw_uxrce_init_service_memory(
-  rmw_uxrce_mempool_t * memory,
-  rmw_uxrce_service_t * services,
-  size_t size);
-void rmw_uxrce_init_client_memory(
-  rmw_uxrce_mempool_t * memory,
-  rmw_uxrce_client_t * clients,
-  size_t size);
-void rmw_uxrce_init_publisher_memory(
-  rmw_uxrce_mempool_t * memory,
-  rmw_uxrce_publisher_t * publishers,
-  size_t size);
-void rmw_uxrce_init_subscription_memory(
-  rmw_uxrce_mempool_t * memory,
-  rmw_uxrce_subscription_t * subscribers,
-  size_t size);
-void rmw_uxrce_init_topic_memory(
-  rmw_uxrce_mempool_t * memory,
-  rmw_uxrce_topic_t * topics,
-  size_t size);
-void rmw_uxrce_init_static_input_buffer_memory(
-  rmw_uxrce_mempool_t * memory,
-  rmw_uxrce_static_input_buffer_t * buffers,
-  size_t size);
+#define RMW_INIT_DEFINE_MEMORY(X) \
+  void rmw_uxrce_init_ ## X ## _memory( \
+    rmw_uxrce_mempool_t * memory, \
+    rmw_uxrce_ ## X ## _t * array, \
+    size_t size);
+
+RMW_INIT_DEFINE_MEMORY(service)
+RMW_INIT_DEFINE_MEMORY(client)
+RMW_INIT_DEFINE_MEMORY(publisher)
+RMW_INIT_DEFINE_MEMORY(subscription)
+RMW_INIT_DEFINE_MEMORY(node)
+RMW_INIT_DEFINE_MEMORY(session)
+RMW_INIT_DEFINE_MEMORY(topic)
+RMW_INIT_DEFINE_MEMORY(static_input_buffer)
 
 // Memory management functions
 
