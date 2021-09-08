@@ -317,7 +317,7 @@ void rmw_uxrce_clean_expired_static_input_buffer(void)
   UXR_LOCK(&static_buffer_memory.mutex);
 
   rmw_uxrce_mempool_item_t * static_buffer_item = static_buffer_memory.allocateditems;
-  int64_t now_ns = uxr_nanos();
+  int64_t now_ns = rmw_uros_epoch_nanos();
 
   while (static_buffer_item != NULL) {
     rmw_uxrce_static_input_buffer_t * data =
