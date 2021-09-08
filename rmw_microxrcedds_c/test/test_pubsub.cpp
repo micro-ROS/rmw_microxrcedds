@@ -106,7 +106,7 @@ public:
       };
   }
 
-  rmw_publisher_t * create_publisher(rmw_qos_profile_t qos)
+  rmw_publisher_t * create_publisher(const rmw_qos_profile_t qos)
   {
     rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
     rmw_publisher_t * pub = rmw_create_publisher(
