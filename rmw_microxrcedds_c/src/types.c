@@ -263,14 +263,14 @@ rmw_uxrce_mempool_item_t * rmw_uxrce_get_static_input_buffer_for_entity(
     case RMW_QOS_POLICY_HISTORY_UNKNOWN:
     case RMW_QOS_POLICY_HISTORY_SYSTEM_DEFAULT:
     case RMW_QOS_POLICY_HISTORY_KEEP_LAST:
-      if (count < qos.depth) {
+      if (qos.depth == 0 || count < qos.depth) {
         ret = get_memory(&static_buffer_memory);
       } else {
         ret = rmw_uxrce_find_static_input_buffer_by_owner(entity);
       }
       break;
     case RMW_QOS_POLICY_HISTORY_KEEP_ALL:
-      if (count < qos.depth) {
+      if (qos.depth == 0 || count < qos.depth) {
         ret = get_memory(&static_buffer_memory);
       } else {
         // There aren't more slots for this entity
@@ -287,6 +287,8 @@ rmw_uxrce_mempool_item_t * rmw_uxrce_get_static_input_buffer_for_entity(
 rmw_uxrce_mempool_item_t * rmw_uxrce_find_static_input_buffer_by_owner(
   void * owner)
 {
+  rmw_uxrce_clean_expired_static_input_buffer();
+
   rmw_uxrce_mempool_item_t * ret = NULL;
   int64_t min_time = INT64_MAX;
 
@@ -300,6 +302,7 @@ rmw_uxrce_mempool_item_t * rmw_uxrce_find_static_input_buffer_by_owner(
 
     if (data->owner == owner && data->timestamp < min_time) {
       ret = static_buffer_item;
+      min_time = data->timestamp;
     }
 
     static_buffer_item = static_buffer_item->next;

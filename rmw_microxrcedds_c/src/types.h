@@ -189,7 +189,7 @@ typedef struct rmw_uxrce_node_t
   uxrObjectId participant_id;
 } rmw_uxrce_node_t;
 
-#define RMW_UXRCE_QOS_LIFESPAN_DEFAULT {4LL, 0LL}
+#define RMW_UXRCE_QOS_LIFESPAN_DEFAULT {30LL, 0LL}
 
 typedef enum rmw_uxrce_entity_type_t
 {
