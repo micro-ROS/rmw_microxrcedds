@@ -45,11 +45,11 @@ public:
 
   void TearDown() override
   {
-    for(auto pub: publishers){
+    for (auto pub: publishers) {
       EXPECT_EQ(rmw_destroy_publisher(node, pub), RMW_RET_OK);
     }
 
-    for(auto sub: subscribers){
+    for (auto sub: subscribers) {
       EXPECT_EQ(rmw_destroy_subscription(node, sub), RMW_RET_OK);
     }
 
@@ -106,23 +106,32 @@ public:
       };
   }
 
-  rmw_publisher_t * create_publisher(rmw_qos_profile_t qos) {
+  rmw_publisher_t * create_publisher(rmw_qos_profile_t qos)
+  {
     rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
-    rmw_publisher_t * pub = rmw_create_publisher(node, &dummy_type_support.type_support, topic_name, &qos, &default_publisher_options);
+    rmw_publisher_t * pub = rmw_create_publisher(
+      node, &dummy_type_support.type_support, topic_name,
+      &qos, &default_publisher_options);
     EXPECT_NE(pub, nullptr);
     publishers.push_back(pub);
     return pub;
   }
 
-  rmw_subscription_t * create_subscriber(const rmw_qos_profile_t qos) {
-    rmw_subscription_options_t default_subscription_options = rmw_get_default_subscription_options();
-    rmw_subscription_t * sub = rmw_create_subscription(node, &dummy_type_support.type_support, topic_name, &qos, &default_subscription_options);
+  rmw_subscription_t * create_subscriber(const rmw_qos_profile_t qos)
+  {
+    rmw_subscription_options_t default_subscription_options =
+      rmw_get_default_subscription_options();
+    rmw_subscription_t * sub = rmw_create_subscription(
+      node, &dummy_type_support.type_support,
+      topic_name, &qos,
+      &default_subscription_options);
     EXPECT_NE(sub, nullptr);
     subscribers.push_back(sub);
     return sub;
   }
 
-  void publish_string(const char * data, rmw_publisher_t * pub) {
+  void publish_string(const char * data, rmw_publisher_t * pub)
+  {
     rosidl_runtime_c__String ros_message;
     ros_message.data = const_cast<char *>(data);
     ros_message.capacity = strlen(ros_message.data);
@@ -131,7 +140,8 @@ public:
     EXPECT_EQ(rmw_publish(pub, &ros_message, NULL), RMW_RET_OK);
   }
 
-  rmw_ret_t wait_for_subscription(rmw_subscription_t * sub){
+  rmw_ret_t wait_for_subscription(rmw_subscription_t * sub)
+  {
     rmw_subscriptions_t subscriptions;
     void * subs[1] = {sub->data};
     subscriptions.subscribers = subs;
@@ -144,18 +154,22 @@ public:
 
     rmw_time_t wait_timeout = (rmw_time_t) {1LL, 1LL};
 
-    return rmw_wait(&subscriptions, &guard_conditions,
-        &services, &clients, events, wait_set,
-        &wait_timeout);
+    return rmw_wait(
+      &subscriptions, &guard_conditions,
+      &services, &clients, events, wait_set,
+      &wait_timeout);
   }
 
-  rmw_ret_t take_from_subscription(rmw_subscription_t * sub, char * buff, size_t buff_size, bool & taken) {
+  rmw_ret_t take_from_subscription(
+    rmw_subscription_t * sub, char * buff, size_t buff_size,
+    bool & taken)
+  {
     rosidl_runtime_c__String read_ros_message;
     read_ros_message.data = buff;
     read_ros_message.capacity = buff_size;
     read_ros_message.size = 0;
 
-    return rmw_take_with_info(sub, &read_ros_message, &taken, NULL,NULL);
+    return rmw_take_with_info(sub, &read_ros_message, &taken, NULL, NULL);
   }
 
 protected:
@@ -209,7 +223,7 @@ TEST_F(TestPubSub, take_expired)
   rmw_publisher_t * pub = create_publisher(rmw_qos_profile_default);
 
   rmw_qos_profile_t qos = rmw_qos_profile_default;
-  qos.lifespan = (rmw_time_t) {1LL, 0LL};;
+  qos.lifespan = (rmw_time_t) {1LL, 0LL};
   rmw_subscription_t * sub = create_subscriber(qos);
 
   std::string send_data = "hello";
@@ -234,7 +248,7 @@ TEST_F(TestPubSub, take_expired_two_subscriber)
   rmw_subscription_t * sub_1 = create_subscriber(rmw_qos_profile_default);
 
   rmw_qos_profile_t qos = rmw_qos_profile_default;
-  qos.lifespan = (rmw_time_t) {2LL, 0LL};;
+  qos.lifespan = (rmw_time_t) {2LL, 0LL};
   rmw_subscription_t * sub_2 = create_subscriber(qos);
 
   std::string send_data = "hello";
@@ -267,19 +281,17 @@ TEST_F(TestPubSub, take_order_with_expired)
   rmw_qos_profile_t qos = rmw_qos_profile_default;
   qos.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
   qos.depth = 0;
-  qos.lifespan = (rmw_time_t) {1LL, 0LL};;
+  qos.lifespan = (rmw_time_t) {1LL, 0LL};
   rmw_subscription_t * sub = create_subscriber(qos);
 
-  for (size_t i = 0; i < 5; i++)
-  {
+  for (size_t i = 0; i < 5; i++) {
     std::string send_data = "hello_" + std::to_string(i);
     publish_string(send_data.c_str(), pub);
   }
 
   EXPECT_EQ(wait_for_subscription(sub), RMW_RET_OK);
 
-  for (size_t i = 0; i < 2; i++)
-  {
+  for (size_t i = 0; i < 2; i++) {
     bool taken = false;
     char recv_data[100] = {0};
     EXPECT_EQ(take_from_subscription(sub, recv_data, sizeof(recv_data), taken), RMW_RET_OK);
@@ -292,8 +304,7 @@ TEST_F(TestPubSub, take_order_with_expired)
 
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-  for (int i = 2; i < 5; i++)
-  {
+  for (int i = 2; i < 5; i++) {
     bool taken = false;
     char recv_data[100] = {0};
     EXPECT_EQ(take_from_subscription(sub, recv_data, sizeof(recv_data), taken), RMW_RET_ERROR);
@@ -314,19 +325,20 @@ TEST_F(TestPubSub, subscriber_depth_keep_all)
   qos.depth = 4;
   rmw_subscription_t * sub = create_subscriber(qos);
 
-  for (size_t i = 0; i < 10; i++)
-  {
+  for (size_t i = 0; i < 10; i++) {
     std::string send_data = "hello_" + std::to_string(i);
     publish_string(send_data.c_str(), pub);
   }
 
   EXPECT_EQ(wait_for_subscription(sub), RMW_RET_OK);
 
-  for (size_t i = 0; i < 10; i++)
-  {
+  for (size_t i = 0; i < 10; i++) {
     bool taken = false;
     char recv_data[100] = {0};
-    EXPECT_EQ(take_from_subscription(sub, recv_data, sizeof(recv_data), taken), (i < qos.depth) ? RMW_RET_OK : RMW_RET_ERROR);
+    EXPECT_EQ(
+      take_from_subscription(
+        sub, recv_data, sizeof(recv_data),
+        taken), (i < qos.depth) ? RMW_RET_OK : RMW_RET_ERROR);
 
     EXPECT_EQ(taken, (i < qos.depth) ? true : false);
     std::string send_data = "hello_" + std::to_string(i);
@@ -344,20 +356,21 @@ TEST_F(TestPubSub, subscriber_depth_keep_last)
   rmw_subscription_t * sub = create_subscriber(qos);
 
   size_t sent_topics = 10;
-  for (size_t i = 0; i < sent_topics; i++)
-  {
+  for (size_t i = 0; i < sent_topics; i++) {
     std::string send_data = "hello_" + std::to_string(i);
     publish_string(send_data.c_str(), pub);
   }
 
   EXPECT_EQ(wait_for_subscription(sub), RMW_RET_OK);
 
-  for (size_t i = 0; i < sent_topics; i++)
-  {
+  for (size_t i = 0; i < sent_topics; i++) {
     size_t expected_no = (sent_topics - qos.depth) + i;
     bool taken = false;
     char recv_data[100] = {0};
-    EXPECT_EQ(take_from_subscription(sub, recv_data, sizeof(recv_data), taken), (i < qos.depth) ? RMW_RET_OK : RMW_RET_ERROR);
+    EXPECT_EQ(
+      take_from_subscription(
+        sub, recv_data, sizeof(recv_data),
+        taken), (i < qos.depth) ? RMW_RET_OK : RMW_RET_ERROR);
 
     EXPECT_EQ(taken, (i < qos.depth) ? true : false);
     std::string send_data = "hello_" + std::to_string(expected_no);
