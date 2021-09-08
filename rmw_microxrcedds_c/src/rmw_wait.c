@@ -16,6 +16,7 @@
 #include <math.h>
 
 #include <rmw/rmw.h>
+#include <rmw/time.h>
 #include <rmw/error_handling.h>
 
 #include "./utils.h"
@@ -30,41 +31,20 @@ rmw_wait(
   rmw_wait_set_t * wait_set,
   const rmw_time_t * wait_timeout)
 {
-  (void)services;
-  (void)clients;
   (void)events;
   (void)wait_set;
 
   // Check if timeout
-  uint64_t timeout;
-  if (wait_timeout != NULL) {
-    // Convert to int (checking overflow)
-    if (wait_timeout->sec >= (UINT64_MAX / 1000)) {
-      // Overflow
-      timeout = INT_MAX;
-      RMW_SET_ERROR_MSG("Wait timeout overflow");
-    } else {
-      timeout = wait_timeout->sec * 1000;
-      uint64_t timeout_ms = wait_timeout->nsec / 1000000;
-      if ((UINT64_MAX - timeout) <= timeout_ms) {
-        // Overflow
-        timeout = INT_MAX;
-        RMW_SET_ERROR_MSG("Wait timeout overflow");
-      } else {
-        timeout += timeout_ms;
-        if (timeout > INT_MAX) {
-          // Overflow
-          timeout = INT_MAX;
-          RMW_SET_ERROR_MSG("Wait timeout overflow");
-        }
-      }
-    }
-  } else {
+  uint64_t timeout = (uint64_t) rmw_time_total_nsec(*wait_timeout);
+  if (rmw_time_equal(*wait_timeout, (rmw_time_t)RMW_DURATION_INFINITE))
+  {
     timeout = (uint64_t)UXR_TIMEOUT_INF;
   }
 
-  // Run every XRCE session
+  // Clean expired buffers
+  rmw_uxrce_clean_expired_static_input_buffer();
 
+  // Run every XRCE session
   uint8_t available_contexts = 0;
   rmw_uxrce_mempool_item_t * item = NULL;
 

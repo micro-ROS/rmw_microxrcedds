@@ -90,6 +90,7 @@ void on_topic(
       static_buffer->owner = (void *) custom_subscription;
       static_buffer->length = length;
       static_buffer->timestamp = uxr_nanos();
+      static_buffer->entity_type = RMW_UXRCE_ENTITY_TYPE_SUBSCRIPTION;
 
       break;
     }
@@ -137,6 +138,7 @@ void on_request(
       static_buffer->length = length;
       static_buffer->related.sample_id = *sample_id;
       static_buffer->timestamp = uxr_nanos();
+      static_buffer->entity_type = RMW_UXRCE_ENTITY_TYPE_SERVICE;
 
       break;
     }
@@ -184,6 +186,7 @@ void on_reply(
       static_buffer->length = length;
       static_buffer->related.reply_id = reply_id;
       static_buffer->timestamp = uxr_nanos();
+      static_buffer->entity_type = RMW_UXRCE_ENTITY_TYPE_CLIENT;
 
       break;
     }

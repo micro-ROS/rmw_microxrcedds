@@ -101,9 +101,8 @@ rmw_create_subscription(
 
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)memory_node->data;
     custom_subscription->rmw_handle = rmw_subscription;
-
     custom_subscription->owner_node = custom_node;
-    memcpy(&custom_subscription->qos, qos_policies, sizeof(rmw_qos_profile_t));
+    custom_subscription->qos = *qos_policies;
 
     const rosidl_message_type_support_t * type_support_xrce = NULL;
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE

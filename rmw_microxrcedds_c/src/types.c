@@ -308,3 +308,45 @@ rmw_uxrce_mempool_item_t * rmw_uxrce_find_static_input_buffer_by_owner(
 
   return ret;
 }
+
+void rmw_uxrce_clean_expired_static_input_buffer(void) {
+  UXR_LOCK(&static_buffer_memory.mutex);
+
+  rmw_uxrce_mempool_item_t * static_buffer_item = static_buffer_memory.allocateditems;
+  int64_t now_ns = uxr_nanos();
+
+  while (static_buffer_item != NULL) {
+    rmw_uxrce_static_input_buffer_t * data = (rmw_uxrce_static_input_buffer_t *)static_buffer_item->data;
+    rmw_time_t lifespan;
+    switch (data->entity_type)
+    {
+      case RMW_UXRCE_ENTITY_TYPE_SUBSCRIPTION:
+        lifespan = ((rmw_uxrce_subscription_t *)data->owner)->qos.lifespan;
+        break;
+      case RMW_UXRCE_ENTITY_TYPE_CLIENT:
+        lifespan = ((rmw_uxrce_client_t *)data->owner)->qos.lifespan;
+        break;
+      case RMW_UXRCE_ENTITY_TYPE_SERVICE:
+        lifespan = ((rmw_uxrce_service_t *)data->owner)->qos.lifespan;
+        break;
+      default:
+        // Not recognized, clean this buffer as soon as possible
+        lifespan = (rmw_time_t){0LL, 1LL};
+        break;
+    }
+
+    if (rmw_time_equal(lifespan, (rmw_time_t)RMW_DURATION_UNSPECIFIED)) {
+      lifespan = (rmw_time_t) RMW_UXRCE_QOS_LIFESPAN_DEFAULT;
+    }
+
+    rmw_uxrce_mempool_item_t * aux_next = static_buffer_item->next;
+
+    int64_t expiration_time = data->timestamp + rmw_time_total_nsec(lifespan);
+    if (expiration_time < now_ns) {
+      put_memory(&static_buffer_memory, static_buffer_item);
+    }
+
+    static_buffer_item = aux_next;
+  }
+  UXR_UNLOCK(&static_buffer_memory.mutex);
+}
