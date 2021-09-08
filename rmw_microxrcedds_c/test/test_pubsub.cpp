@@ -227,6 +227,39 @@ TEST_F(TestPubSub, take_expired)
   ASSERT_NE(strcmp(send_data.c_str(), recv_data), 0);
 }
 
+TEST_F(TestPubSub, take_expired_two_subscriber)
+{
+  rmw_publisher_t * pub = create_publisher(rmw_qos_profile_default);
+
+  rmw_subscription_t * sub_1 = create_subscriber(rmw_qos_profile_default);
+
+  rmw_qos_profile_t qos = rmw_qos_profile_default;
+  qos.lifespan = (rmw_time_t) {2LL, 0LL};;
+  rmw_subscription_t * sub_2 = create_subscriber(qos);
+
+  std::string send_data = "hello";
+  publish_string(send_data.c_str(), pub);
+
+  EXPECT_EQ(wait_for_subscription(sub_1), RMW_RET_OK);
+  EXPECT_EQ(wait_for_subscription(sub_2), RMW_RET_OK);
+
+  bool taken = false;
+  char recv_data[100];
+  EXPECT_EQ(take_from_subscription(sub_1, recv_data, sizeof(recv_data), taken), RMW_RET_OK);
+
+  EXPECT_TRUE(taken);
+  EXPECT_EQ(strcmp(send_data.c_str(), recv_data), 0);
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+  taken = false;
+  memset(recv_data, 0, sizeof(recv_data));
+  EXPECT_EQ(take_from_subscription(sub_2, recv_data, sizeof(recv_data), taken), RMW_RET_ERROR);
+
+  EXPECT_FALSE(taken);
+  EXPECT_NE(strcmp(send_data.c_str(), recv_data), 0);
+}
+
 TEST_F(TestPubSub, take_order_with_expired)
 {
   rmw_publisher_t * pub = create_publisher(rmw_qos_profile_default);
