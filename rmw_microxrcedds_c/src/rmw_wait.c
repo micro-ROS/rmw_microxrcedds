@@ -36,8 +36,7 @@ rmw_wait(
 
   // Check if timeout
   uint64_t timeout = (uint64_t) rmw_time_total_nsec(*wait_timeout);
-  if (rmw_time_equal(*wait_timeout, (rmw_time_t)RMW_DURATION_INFINITE))
-  {
+  if (rmw_time_equal(*wait_timeout, (rmw_time_t)RMW_DURATION_INFINITE)) {
     timeout = (uint64_t)UXR_TIMEOUT_INF;
   }
 

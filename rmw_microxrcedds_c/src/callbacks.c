@@ -70,7 +70,8 @@ void on_topic(
     if ((custom_subscription->datareader_id.id == object_id.id) &&
       (custom_subscription->datareader_id.type == object_id.type))
     {
-      rmw_uxrce_mempool_item_t * memory_node = rmw_uxrce_get_static_input_buffer_for_entity(custom_subscription, custom_subscription->qos);
+      rmw_uxrce_mempool_item_t * memory_node = rmw_uxrce_get_static_input_buffer_for_entity(
+        custom_subscription, custom_subscription->qos);
       if (!memory_node) {
         RMW_SET_ERROR_MSG("Not available static buffer memory node");
         return;
@@ -117,7 +118,8 @@ void on_request(
     // Check if request is related to the service
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service_item->data;
     if (custom_service->service_data_resquest == request_id) {
-      rmw_uxrce_mempool_item_t * memory_node = rmw_uxrce_get_static_input_buffer_for_entity(custom_service, custom_service->qos);
+      rmw_uxrce_mempool_item_t * memory_node = rmw_uxrce_get_static_input_buffer_for_entity(
+        custom_service, custom_service->qos);
       if (!memory_node) {
         RMW_SET_ERROR_MSG("Not available static buffer memory node");
         return;
@@ -165,7 +167,8 @@ void on_reply(
     // Check if reply is related to the client
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client_item->data;
     if (custom_client->client_data_request == request_id) {
-      rmw_uxrce_mempool_item_t * memory_node = rmw_uxrce_get_static_input_buffer_for_entity(custom_client, custom_client->qos);
+      rmw_uxrce_mempool_item_t * memory_node = rmw_uxrce_get_static_input_buffer_for_entity(
+        custom_client, custom_client->qos);
       if (!memory_node) {
         RMW_SET_ERROR_MSG("Not available static buffer memory node");
         return;

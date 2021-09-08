@@ -239,7 +239,7 @@ size_t rmw_uxrce_count_static_input_buffer_for_entity(
   rmw_uxrce_mempool_item_t * item = static_buffer_memory.allocateditems;
 
   UXR_LOCK(&static_buffer_memory.mutex);
-  while (item != NULL){
+  while (item != NULL) {
     rmw_uxrce_static_input_buffer_t * data = (rmw_uxrce_static_input_buffer_t *)item->data;
     if (data->owner == entity) {
       count++;
@@ -259,8 +259,7 @@ rmw_uxrce_mempool_item_t * rmw_uxrce_get_static_input_buffer_for_entity(
 
   UXR_LOCK(&static_buffer_memory.mutex);
   size_t count = rmw_uxrce_count_static_input_buffer_for_entity(entity);
-  switch (qos.history)
-  {
+  switch (qos.history) {
     case RMW_QOS_POLICY_HISTORY_UNKNOWN:
     case RMW_QOS_POLICY_HISTORY_SYSTEM_DEFAULT:
     case RMW_QOS_POLICY_HISTORY_KEEP_LAST:
@@ -296,7 +295,8 @@ rmw_uxrce_mempool_item_t * rmw_uxrce_find_static_input_buffer_by_owner(
   // Return the oldest
   rmw_uxrce_mempool_item_t * static_buffer_item = static_buffer_memory.allocateditems;
   while (static_buffer_item != NULL) {
-    rmw_uxrce_static_input_buffer_t * data = (rmw_uxrce_static_input_buffer_t *)static_buffer_item->data;
+    rmw_uxrce_static_input_buffer_t * data =
+      (rmw_uxrce_static_input_buffer_t *)static_buffer_item->data;
 
     if (data->owner == owner && data->timestamp < min_time) {
       ret = static_buffer_item;
@@ -309,17 +309,18 @@ rmw_uxrce_mempool_item_t * rmw_uxrce_find_static_input_buffer_by_owner(
   return ret;
 }
 
-void rmw_uxrce_clean_expired_static_input_buffer(void) {
+void rmw_uxrce_clean_expired_static_input_buffer(void)
+{
   UXR_LOCK(&static_buffer_memory.mutex);
 
   rmw_uxrce_mempool_item_t * static_buffer_item = static_buffer_memory.allocateditems;
   int64_t now_ns = uxr_nanos();
 
   while (static_buffer_item != NULL) {
-    rmw_uxrce_static_input_buffer_t * data = (rmw_uxrce_static_input_buffer_t *)static_buffer_item->data;
+    rmw_uxrce_static_input_buffer_t * data =
+      (rmw_uxrce_static_input_buffer_t *)static_buffer_item->data;
     rmw_time_t lifespan;
-    switch (data->entity_type)
-    {
+    switch (data->entity_type) {
       case RMW_UXRCE_ENTITY_TYPE_SUBSCRIPTION:
         lifespan = ((rmw_uxrce_subscription_t *)data->owner)->qos.lifespan;
         break;
@@ -331,7 +332,7 @@ void rmw_uxrce_clean_expired_static_input_buffer(void) {
         break;
       default:
         // Not recognized, clean this buffer as soon as possible
-        lifespan = (rmw_time_t){0LL, 1LL};
+        lifespan = (rmw_time_t) {0LL, 1LL};
         break;
     }
 
