@@ -107,10 +107,9 @@ public:
       };
   }
 
-  rmw_publisher_t * create_publisher(rmw_qos_profile_t qos)
+  rmw_publisher_t * create_publisher(const rmw_qos_profile_t qos)
   {
     rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
-    qos.reliability = RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
     rmw_publisher_t * pub = rmw_create_publisher(
       node, &dummy_type_support.type_support, topic_name,
       &qos, &default_publisher_options);
@@ -119,11 +118,10 @@ public:
     return pub;
   }
 
-  rmw_subscription_t * create_subscriber(rmw_qos_profile_t qos)
+  rmw_subscription_t * create_subscriber(const rmw_qos_profile_t qos)
   {
     rmw_subscription_options_t default_subscription_options =
       rmw_get_default_subscription_options();
-    qos.reliability = RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
     rmw_subscription_t * sub = rmw_create_subscription(
       node, &dummy_type_support.type_support,
       topic_name, &qos,
