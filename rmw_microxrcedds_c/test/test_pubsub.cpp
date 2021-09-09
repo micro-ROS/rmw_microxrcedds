@@ -265,12 +265,12 @@ TEST_F(TestPubSub, take_expired_two_subscriber)
 
   bool received_1 = false, received_2 = false;
   size_t iterations = 0;
-  while ((!received_1 || !received_2) && iterations < 10) {
+  while ((!received_1 || !received_2) && iterations < 100) {
     rmw_subscriptions_t subscriptions;
     void * subs[] = {sub_1->data, sub_2->data};
     subscriptions.subscribers = subs;
     subscriptions.subscriber_count = 2;
-    rmw_time_t wait_timeout = (rmw_time_t) {0LL, 100000000LL};
+    rmw_time_t wait_timeout = (rmw_time_t) {0LL, 1000000LL};
     (void) !rmw_wait(&subscriptions, NULL, NULL, NULL, NULL, NULL, &wait_timeout);
     received_1 = subscriptions.subscribers[0] != NULL;
     received_2 = subscriptions.subscribers[1] != NULL;
