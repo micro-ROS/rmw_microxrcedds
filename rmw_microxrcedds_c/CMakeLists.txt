@@ -110,10 +110,6 @@ if(${RMW_UXRCE_CREATION_MODE} STREQUAL "refs")
   set(RMW_UXRCE_USE_REFS ON)
 endif()
 
-# Create source files with the define
-configure_file(${PROJECT_SOURCE_DIR}/src/config.h.in
-  ${PROJECT_BINARY_DIR}/include/rmw_microxrcedds_c/config.h)
-
 # Set install directories
 if(WIN32)
     set(DOC_DIR "doc")
@@ -282,11 +278,16 @@ if(BUILD_TESTING)
   # Pedantic in CI
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
+  set(RMW_UXRCE_TEST_SESSIONS "2" CACHE STRING "")
 
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
   add_subdirectory(test)
 endif()
+
+# Create source files with the define
+configure_file(${PROJECT_SOURCE_DIR}/src/config.h.in
+  ${PROJECT_BINARY_DIR}/include/rmw_microxrcedds_c/config.h)
 
 # Documentation
 if(BUILD_DOCUMENTATION)
