@@ -223,7 +223,7 @@ TEST_F(TestPubSub, take_expired)
   rmw_publisher_t * pub = create_publisher(rmw_qos_profile_default);
 
   rmw_qos_profile_t qos = rmw_qos_profile_default;
-  qos.lifespan = (rmw_time_t) {1LL, 0LL};
+  qos.lifespan = (rmw_time_t) {0LL, 500000LL};
   rmw_subscription_t * sub = create_subscriber(qos);
 
   std::string send_data = "hello";
@@ -231,7 +231,7 @@ TEST_F(TestPubSub, take_expired)
 
   EXPECT_EQ(wait_for_subscription(sub), RMW_RET_OK);
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
   bool taken = false;
   char recv_data[100] = {0};
@@ -248,14 +248,27 @@ TEST_F(TestPubSub, take_expired_two_subscriber)
   rmw_subscription_t * sub_1 = create_subscriber(rmw_qos_profile_default);
 
   rmw_qos_profile_t qos = rmw_qos_profile_default;
-  qos.lifespan = (rmw_time_t) {2LL, 0LL};
+  qos.lifespan = (rmw_time_t) {1LL, 0LL};
   rmw_subscription_t * sub_2 = create_subscriber(qos);
 
   std::string send_data = "hello";
   publish_string(send_data.c_str(), pub);
 
-  EXPECT_EQ(wait_for_subscription(sub_1), RMW_RET_OK);
-  EXPECT_EQ(wait_for_subscription(sub_2), RMW_RET_OK);
+  bool received_1, received_2 = false;
+  size_t iterations = 0;
+  while ((!received_1 || !received_2) && iterations < 10)
+  {
+    rmw_subscriptions_t subscriptions;
+    void * subs[] = {sub_1->data, sub_2->data};
+    subscriptions.subscribers = subs;
+    subscriptions.subscriber_count = 2;
+    rmw_time_t wait_timeout = (rmw_time_t) {0LL, 100000000LL};
+    (void)! rmw_wait(&subscriptions, NULL, NULL, NULL, NULL, NULL, &wait_timeout);
+    received_1 = subscriptions.subscribers[0] != NULL;
+    received_2 = subscriptions.subscribers[1] != NULL;
+    iterations++;
+  }
+  printf("Wait done\n");
 
   bool taken = false;
   char recv_data[100];
@@ -264,7 +277,7 @@ TEST_F(TestPubSub, take_expired_two_subscriber)
   EXPECT_TRUE(taken);
   EXPECT_EQ(strcmp(send_data.c_str(), recv_data), 0);
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
   taken = false;
   memset(recv_data, 0, sizeof(recv_data));
@@ -281,7 +294,7 @@ TEST_F(TestPubSub, take_order_with_expired)
   rmw_qos_profile_t qos = rmw_qos_profile_default;
   qos.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
   qos.depth = 0;
-  qos.lifespan = (rmw_time_t) {1LL, 0LL};
+  qos.lifespan = (rmw_time_t) {0LL, 500000LL};
   rmw_subscription_t * sub = create_subscriber(qos);
 
   for (size_t i = 0; i < 5; i++) {
@@ -302,7 +315,7 @@ TEST_F(TestPubSub, take_order_with_expired)
     std::cout << "recv_data: " << recv_data << std::endl;
   }
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
   for (int i = 2; i < 5; i++) {
     bool taken = false;
