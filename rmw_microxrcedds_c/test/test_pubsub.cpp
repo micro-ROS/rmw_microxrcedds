@@ -153,7 +153,7 @@ public:
     rmw_events_t * events = NULL;
     rmw_wait_set_t * wait_set = NULL;
 
-    rmw_time_t wait_timeout = (rmw_time_t) {1LL, 1LL};
+    rmw_time_t wait_timeout = (rmw_time_t) {2LL, 1LL};
 
     return rmw_wait(
       &subscriptions, &guard_conditions,
@@ -224,7 +224,7 @@ TEST_F(TestPubSub, take_expired)
   rmw_publisher_t * pub = create_publisher(rmw_qos_profile_default);
 
   rmw_qos_profile_t qos = rmw_qos_profile_default;
-  qos.lifespan = (rmw_time_t) {0LL, 500000LL};
+  qos.lifespan = (rmw_time_t) {1LL, 0LL};
   rmw_subscription_t * sub = create_subscriber(qos);
 
   std::string send_data = "hello";
@@ -232,7 +232,7 @@ TEST_F(TestPubSub, take_expired)
 
   EXPECT_EQ(wait_for_subscription(sub), RMW_RET_OK);
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
   bool taken = false;
   char recv_data[100] = {0};
