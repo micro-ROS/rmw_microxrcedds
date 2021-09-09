@@ -24,6 +24,8 @@
 #include <string>
 #include <chrono>
 #include <thread>
+#include <vector>
+#include <map>
 
 #include "./rmw_base_test.hpp"
 #include "./test_utils.hpp"
@@ -48,11 +50,11 @@ public:
 
   void TearDown() override
   {
-    for (auto srv: services) {
+    for (auto srv : services) {
       EXPECT_EQ(rmw_destroy_service(node, srv), RMW_RET_OK);
     }
 
-    for (auto cli: clients) {
+    for (auto cli : clients) {
       EXPECT_EQ(rmw_destroy_client(node, cli), RMW_RET_OK);
     }
 

@@ -16,6 +16,7 @@
 #include <string>
 #include <chrono>
 #include <thread>
+#include <vector>
 
 #include "rmw/error_handling.h"
 #include "rmw/rmw.h"
@@ -45,11 +46,11 @@ public:
 
   void TearDown() override
   {
-    for (auto pub: publishers) {
+    for (auto pub : publishers) {
       EXPECT_EQ(rmw_destroy_publisher(node, pub), RMW_RET_OK);
     }
 
-    for (auto sub: subscribers) {
+    for (auto sub : subscribers) {
       EXPECT_EQ(rmw_destroy_subscription(node, sub), RMW_RET_OK);
     }
 
@@ -254,16 +255,15 @@ TEST_F(TestPubSub, take_expired_two_subscriber)
   std::string send_data = "hello";
   publish_string(send_data.c_str(), pub);
 
-  bool received_1, received_2 = false;
+  bool received_1 = false, received_2 = false;
   size_t iterations = 0;
-  while ((!received_1 || !received_2) && iterations < 10)
-  {
+  while ((!received_1 || !received_2) && iterations < 10) {
     rmw_subscriptions_t subscriptions;
     void * subs[] = {sub_1->data, sub_2->data};
     subscriptions.subscribers = subs;
     subscriptions.subscriber_count = 2;
     rmw_time_t wait_timeout = (rmw_time_t) {0LL, 100000000LL};
-    (void)! rmw_wait(&subscriptions, NULL, NULL, NULL, NULL, NULL, &wait_timeout);
+    (void) !rmw_wait(&subscriptions, NULL, NULL, NULL, NULL, NULL, &wait_timeout);
     received_1 = subscriptions.subscribers[0] != NULL;
     received_2 = subscriptions.subscribers[1] != NULL;
     iterations++;
