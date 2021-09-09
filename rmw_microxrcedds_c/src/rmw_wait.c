@@ -86,8 +86,7 @@ rmw_wait(
   item = session_memory.allocateditems;
   while (item != NULL) {
     rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
-    if (custom_context->need_to_be_ran)
-    {
+    if (custom_context->need_to_be_ran) {
       uxr_run_session_until_data(&custom_context->session, per_session_timeout);
     }
     item = item->next;

@@ -187,7 +187,7 @@ protected:
   rmw_node_t * node_pub;
 
   rmw_context_t context_sub = rmw_get_zero_initialized_context();
-  rmw_init_options_t options_sub= rmw_get_zero_initialized_init_options();
+  rmw_init_options_t options_sub = rmw_get_zero_initialized_init_options();
   rmw_node_t * node_sub;
 
   std::vector<rmw_publisher_t *> publishers;
@@ -309,8 +309,7 @@ TEST_F(TestPubSub, take_order_with_expired)
     publish_string(send_data.c_str(), pub);
   }
 
-  for (size_t i = 0; i < 5; i++)
-  {
+  for (size_t i = 0; i < 5; i++) {
     EXPECT_EQ(wait_for_subscription(sub), RMW_RET_OK);
   }
 
@@ -353,8 +352,7 @@ TEST_F(TestPubSub, subscriber_depth_keep_all)
     publish_string(send_data.c_str(), pub);
   }
 
-  for (size_t i = 0; i < 10; i++)
-  {
+  for (size_t i = 0; i < 10; i++) {
     wait_for_subscription(sub);
   }
 
@@ -387,8 +385,7 @@ TEST_F(TestPubSub, subscriber_depth_keep_last)
     publish_string(send_data.c_str(), pub);
   }
 
-  for (size_t i = 0; i < qos.depth; i++)
-  {
+  for (size_t i = 0; i < qos.depth; i++) {
     EXPECT_EQ(wait_for_subscription(sub), RMW_RET_OK);
   }
 

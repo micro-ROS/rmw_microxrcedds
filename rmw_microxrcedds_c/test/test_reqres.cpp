@@ -444,8 +444,7 @@ TEST_F(TestReqRes, request_order_keep_last)
     sequence_map[req_data] = sequence_id;
   }
 
-  for (size_t i = 0; i < qos_service.depth; i++)
-  {
+  for (size_t i = 0; i < qos_service.depth; i++) {
     ASSERT_EQ(wait_for_request(service), RMW_RET_OK);
   }
 
