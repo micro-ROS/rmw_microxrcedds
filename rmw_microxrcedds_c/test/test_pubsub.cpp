@@ -28,42 +28,50 @@
 
 #include "rosidl_runtime_c/string.h"
 
-#define MICROXRCEDDS_PADDING    sizeof(uint32_t)
+#define MICROXRCEDDS_PADDING sizeof(uint32_t)
 
-
-class TestPubSub : public RMWBaseTest
+class TestPubSub : public ::testing::Test
 {
 public:
   void SetUp() override
   {
-    RMWBaseTest::SetUp();
+    ASSERT_EQ(rmw_init_options_init(&options_pub, rcutils_get_default_allocator()), RMW_RET_OK);
+    ASSERT_EQ(rmw_init(&options_pub, &context_pub), RMW_RET_OK);
+
+    ASSERT_EQ(rmw_init_options_init(&options_sub, rcutils_get_default_allocator()), RMW_RET_OK);
+    ASSERT_EQ(rmw_init(&options_sub, &context_sub), RMW_RET_OK);
 
     configure_typesupport();
 
-    node = rmw_create_node(&test_context, "node_pubsub", "/ns");
-    EXPECT_NE(node, nullptr);
+    node_pub = rmw_create_node(&context_pub, "node_pub", "/ns");
+    node_sub = rmw_create_node(&context_sub, "node_sub", "/ns");
+
+    EXPECT_NE(node_pub, nullptr);
+    EXPECT_NE(node_sub, nullptr);
   }
 
   void TearDown() override
   {
     for (auto pub : publishers) {
-      EXPECT_EQ(rmw_destroy_publisher(node, pub), RMW_RET_OK);
+      EXPECT_EQ(rmw_destroy_publisher(node_pub, pub), RMW_RET_OK);
     }
 
     for (auto sub : subscribers) {
-      EXPECT_EQ(rmw_destroy_subscription(node, sub), RMW_RET_OK);
+      EXPECT_EQ(rmw_destroy_subscription(node_sub, sub), RMW_RET_OK);
     }
 
-    EXPECT_EQ(rmw_destroy_node(node), RMW_RET_OK);
+    EXPECT_EQ(rmw_destroy_node(node_pub), RMW_RET_OK);
+    EXPECT_EQ(rmw_destroy_node(node_sub), RMW_RET_OK);
 
-    RMWBaseTest::TearDown();
+    ASSERT_EQ(rmw_shutdown(&context_pub), RMW_RET_OK);
+    ASSERT_EQ(rmw_shutdown(&context_sub), RMW_RET_OK);
   }
 
   void configure_typesupport()
   {
     ConfigureDummyTypeSupport(
       topic_type,
-      topic_type,
+      topic_name,
       message_namespace,
       id_gen++,
       &dummy_type_support);
@@ -111,7 +119,7 @@ public:
   {
     rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
     rmw_publisher_t * pub = rmw_create_publisher(
-      node, &dummy_type_support.type_support, topic_name,
+      node_pub, &dummy_type_support.type_support, topic_name,
       &qos, &default_publisher_options);
     EXPECT_NE(pub, nullptr);
     publishers.push_back(pub);
@@ -123,7 +131,7 @@ public:
     rmw_subscription_options_t default_subscription_options =
       rmw_get_default_subscription_options();
     rmw_subscription_t * sub = rmw_create_subscription(
-      node, &dummy_type_support.type_support,
+      node_sub, &dummy_type_support.type_support,
       topic_name, &qos,
       &default_subscription_options);
     EXPECT_NE(sub, nullptr);
@@ -147,18 +155,10 @@ public:
     void * subs[1] = {sub->data};
     subscriptions.subscribers = subs;
     subscriptions.subscriber_count = 1;
-    rmw_guard_conditions_t guard_conditions = {};
-    rmw_services_t services = {};
-    rmw_clients_t clients = {};
-    rmw_events_t * events = NULL;
-    rmw_wait_set_t * wait_set = NULL;
 
     rmw_time_t wait_timeout = (rmw_time_t) {2LL, 1LL};
 
-    return rmw_wait(
-      &subscriptions, &guard_conditions,
-      &services, &clients, events, wait_set,
-      &wait_timeout);
+    return rmw_wait(&subscriptions, NULL, NULL, NULL, NULL, NULL, &wait_timeout);
   }
 
   rmw_ret_t take_from_subscription(
@@ -182,7 +182,13 @@ protected:
 
   dummy_type_support_t dummy_type_support;
 
-  rmw_node_t * node;
+  rmw_context_t context_pub = rmw_get_zero_initialized_context();
+  rmw_init_options_t options_pub = rmw_get_zero_initialized_init_options();
+  rmw_node_t * node_pub;
+
+  rmw_context_t context_sub = rmw_get_zero_initialized_context();
+  rmw_init_options_t options_sub= rmw_get_zero_initialized_init_options();
+  rmw_node_t * node_sub;
 
   std::vector<rmw_publisher_t *> publishers;
   std::vector<rmw_subscription_t *> subscribers;
@@ -227,6 +233,8 @@ TEST_F(TestPubSub, take_expired)
   qos.lifespan = (rmw_time_t) {1LL, 0LL};
   rmw_subscription_t * sub = create_subscriber(qos);
 
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
   std::string send_data = "hello";
   publish_string(send_data.c_str(), pub);
 
@@ -268,7 +276,6 @@ TEST_F(TestPubSub, take_expired_two_subscriber)
     received_2 = subscriptions.subscribers[1] != NULL;
     iterations++;
   }
-  printf("Wait done\n");
 
   bool taken = false;
   char recv_data[100];
@@ -294,7 +301,7 @@ TEST_F(TestPubSub, take_order_with_expired)
   rmw_qos_profile_t qos = rmw_qos_profile_default;
   qos.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
   qos.depth = 0;
-  qos.lifespan = (rmw_time_t) {0LL, 500000LL};
+  qos.lifespan = (rmw_time_t) {0LL, 500000000LL};
   rmw_subscription_t * sub = create_subscriber(qos);
 
   for (size_t i = 0; i < 5; i++) {
@@ -302,7 +309,10 @@ TEST_F(TestPubSub, take_order_with_expired)
     publish_string(send_data.c_str(), pub);
   }
 
-  EXPECT_EQ(wait_for_subscription(sub), RMW_RET_OK);
+  for (size_t i = 0; i < 5; i++)
+  {
+    EXPECT_EQ(wait_for_subscription(sub), RMW_RET_OK);
+  }
 
   for (size_t i = 0; i < 2; i++) {
     bool taken = false;
@@ -343,7 +353,10 @@ TEST_F(TestPubSub, subscriber_depth_keep_all)
     publish_string(send_data.c_str(), pub);
   }
 
-  EXPECT_EQ(wait_for_subscription(sub), RMW_RET_OK);
+  for (size_t i = 0; i < 10; i++)
+  {
+    wait_for_subscription(sub);
+  }
 
   for (size_t i = 0; i < 10; i++) {
     bool taken = false;
@@ -374,7 +387,10 @@ TEST_F(TestPubSub, subscriber_depth_keep_last)
     publish_string(send_data.c_str(), pub);
   }
 
-  EXPECT_EQ(wait_for_subscription(sub), RMW_RET_OK);
+  for (size_t i = 0; i < qos.depth; i++)
+  {
+    EXPECT_EQ(wait_for_subscription(sub), RMW_RET_OK);
+  }
 
   for (size_t i = 0; i < sent_topics; i++) {
     size_t expected_no = (sent_topics - qos.depth) + i;

@@ -93,6 +93,8 @@ typedef struct rmw_context_impl_t
   uint16_t id_datareader;
   uint16_t id_requester;
   uint16_t id_replier;
+
+  bool need_to_be_ran;
 } rmw_context_impl_t;
 
 typedef struct rmw_context_impl_t rmw_uxrce_session_t;

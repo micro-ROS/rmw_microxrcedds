@@ -178,18 +178,10 @@ public:
     void * servs[1] = {serv->data};
     services.services = servs;
     services.service_count = 1;
-    rmw_subscriptions_t subscriptions = {};
-    rmw_guard_conditions_t guard_conditions = {};
-    rmw_clients_t clients = {};
-    rmw_events_t * events = NULL;
-    rmw_wait_set_t * wait_set = NULL;
 
     rmw_time_t wait_timeout = (rmw_time_t) {1LL, 1LL};
 
-    return rmw_wait(
-      &subscriptions, &guard_conditions,
-      &services, &clients, events, wait_set,
-      &wait_timeout);
+    return rmw_wait(NULL, NULL, &services, NULL, NULL, NULL, &wait_timeout);
   }
 
   rmw_ret_t wait_for_response(rmw_client_t * client)
@@ -198,18 +190,10 @@ public:
     void * clis[1] = {client->data};
     clients.clients = clis;
     clients.client_count = 1;
-    rmw_services_t services = {};
-    rmw_subscriptions_t subscriptions = {};
-    rmw_guard_conditions_t guard_conditions = {};
-    rmw_events_t * events = NULL;
-    rmw_wait_set_t * wait_set = NULL;
 
     rmw_time_t wait_timeout = (rmw_time_t) {1LL, 1LL};
 
-    return rmw_wait(
-      &subscriptions, &guard_conditions,
-      &services, &clients, events, wait_set,
-      &wait_timeout);
+    return rmw_wait(NULL, NULL, NULL, &clients, NULL, NULL, &wait_timeout);
   }
 
   rmw_ret_t take_request(
@@ -460,7 +444,10 @@ TEST_F(TestReqRes, request_order_keep_last)
     sequence_map[req_data] = sequence_id;
   }
 
-  ASSERT_EQ(wait_for_request(service), RMW_RET_OK);
+  for (size_t i = 0; i < qos_service.depth; i++)
+  {
+    ASSERT_EQ(wait_for_request(service), RMW_RET_OK);
+  }
 
   for (size_t i = 0; i < sent_requests; i++) {
     size_t expected_no = (sent_requests - qos_service.depth) + i;

@@ -220,6 +220,7 @@ rmw_create_publisher(
       custom_publisher->topic->topic_id,
       reliability,
       history,
+      qos_policies->depth,
       durability,
       UXR_REPLACE | UXR_REUSE);
   #endif /* ifdef RMW_UXRCE_USE_REFS */

@@ -287,8 +287,6 @@ rmw_uxrce_mempool_item_t * rmw_uxrce_get_static_input_buffer_for_entity(
 rmw_uxrce_mempool_item_t * rmw_uxrce_find_static_input_buffer_by_owner(
   void * owner)
 {
-  rmw_uxrce_clean_expired_static_input_buffer();
-
   rmw_uxrce_mempool_item_t * ret = NULL;
   int64_t min_time = INT64_MAX;
 

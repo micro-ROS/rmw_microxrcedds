@@ -206,6 +206,7 @@ rmw_create_subscription(
       custom_subscription->topic->topic_id,
       reliability,
       history,
+      qos_policies->depth,
       durability,
       UXR_REPLACE | UXR_REUSE);
 #endif /* ifdef RMW_UXRCE_USE_XML */
