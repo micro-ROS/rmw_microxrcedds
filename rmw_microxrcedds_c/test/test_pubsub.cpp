@@ -302,8 +302,9 @@ TEST_F(TestPubSub, take_order_with_expired)
     publish_string(send_data.c_str(), pub);
   }
 
+  EXPECT_EQ(wait_for_subscription(sub), RMW_RET_OK);
+
   for (size_t i = 0; i < 2; i++) {
-    wait_for_subscription(sub);
     bool taken = false;
     char recv_data[100] = {0};
     EXPECT_EQ(take_from_subscription(sub, recv_data, sizeof(recv_data), taken), RMW_RET_OK);
