@@ -168,7 +168,10 @@ rmw_create_publisher(
       UXR_REPLACE | UXR_REUSE);
   #endif /* ifdef RMW_UXRCE_USE_REFS */
 
-    if (!run_xrce_session(custom_node->context, publisher_req, custom_node->context->creation_timeout)) {
+    if (!run_xrce_session(
+        custom_node->context, publisher_req,
+        custom_node->context->creation_timeout))
+    {
       put_memory(&publisher_memory, &custom_publisher->mem);
       goto fail;
     }
@@ -225,7 +228,10 @@ rmw_create_publisher(
       UXR_REPLACE | UXR_REUSE);
   #endif /* ifdef RMW_UXRCE_USE_REFS */
 
-    if (!run_xrce_session(custom_node->context, datawriter_req, custom_node->context->creation_timeout)) {
+    if (!run_xrce_session(
+        custom_node->context, datawriter_req,
+        custom_node->context->creation_timeout))
+    {
       put_memory(&publisher_memory, &custom_publisher->mem);
       goto fail;
     }
@@ -368,8 +374,12 @@ rmw_destroy_publisher(
       *custom_publisher->owner_node->context->creation_destroy_stream,
       custom_publisher->publisher_id);
 
-    bool ret = run_xrce_session(custom_node->context, delete_writer, custom_node->context->destroy_timeout);
-    ret &= run_xrce_session(custom_node->context, delete_publisher, custom_node->context->destroy_timeout);
+    bool ret = run_xrce_session(
+      custom_node->context, delete_writer,
+      custom_node->context->destroy_timeout);
+    ret &= run_xrce_session(
+      custom_node->context, delete_publisher,
+      custom_node->context->destroy_timeout);
     if (!ret) {
       result_ret = RMW_RET_TIMEOUT;
     }

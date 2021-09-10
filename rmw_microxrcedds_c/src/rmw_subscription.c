@@ -157,7 +157,10 @@ rmw_create_subscription(
       UXR_REPLACE | UXR_REUSE);
 #endif /* ifdef RMW_UXRCE_USE_REFS */
 
-    if (!run_xrce_session(custom_node->context, subscriber_req, custom_node->context->creation_timeout)) {
+    if (!run_xrce_session(
+        custom_node->context, subscriber_req,
+        custom_node->context->creation_timeout))
+    {
       put_memory(&subscription_memory, &custom_subscription->mem);
       goto fail;
     }
@@ -211,7 +214,10 @@ rmw_create_subscription(
       UXR_REPLACE | UXR_REUSE);
 #endif /* ifdef RMW_UXRCE_USE_XML */
 
-    if (!run_xrce_session(custom_node->context, datareader_req, custom_node->context->creation_timeout)) {
+    if (!run_xrce_session(
+        custom_node->context, datareader_req,
+        custom_node->context->creation_timeout))
+    {
       RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
       put_memory(&subscription_memory, &custom_subscription->mem);
       goto fail;
@@ -340,8 +346,12 @@ rmw_destroy_subscription(
       *custom_subscription->owner_node->context->creation_destroy_stream,
       custom_subscription->subscriber_id);
 
-    bool ret = run_xrce_session(custom_node->context, delete_datareader, custom_node->context->destroy_timeout);
-    ret &= run_xrce_session(custom_node->context, delete_subscriber, custom_node->context->destroy_timeout);
+    bool ret = run_xrce_session(
+      custom_node->context, delete_datareader,
+      custom_node->context->destroy_timeout);
+    ret &= run_xrce_session(
+      custom_node->context, delete_subscriber,
+      custom_node->context->destroy_timeout);
     if (!ret) {
       result_ret = RMW_RET_TIMEOUT;
     }
