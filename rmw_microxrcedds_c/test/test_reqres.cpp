@@ -53,7 +53,8 @@ public:
 
 
     EXPECT_NE(node_srv, nullptr);
-    EXPECT_NE(node_cli, nullptr);  }
+    EXPECT_NE(node_cli, nullptr);
+  }
 
   void TearDown() override
   {
@@ -74,8 +75,10 @@ public:
 
   void configure_typesupport()
   {
-    std::string service_type_test = std::string(service_type) + ::testing::UnitTest::GetInstance()->current_test_info()->name();
-    std::string service_name_test = std::string(service_name) + ::testing::UnitTest::GetInstance()->current_test_info()->name();
+    std::string service_type_test = std::string(service_type) +
+      ::testing::UnitTest::GetInstance()->current_test_info()->name();
+    std::string service_name_test = std::string(service_name) +
+      ::testing::UnitTest::GetInstance()->current_test_info()->name();
 
     ConfigureDummyServiceTypeSupport(
       service_type_test.c_str(),
