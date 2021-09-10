@@ -123,6 +123,7 @@ public:
       &qos, &default_publisher_options);
     EXPECT_NE(pub, nullptr);
     publishers.push_back(pub);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return pub;
   }
 
@@ -136,6 +137,7 @@ public:
       &default_subscription_options);
     EXPECT_NE(sub, nullptr);
     subscribers.push_back(sub);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return sub;
   }
 

@@ -35,39 +35,51 @@
 
 static dummy_service_type_support_t dummy_type_support;
 
-class TestReqRes : public RMWBaseTest
+class TestReqRes : public ::testing::Test
 {
 public:
   void SetUp() override
   {
-    RMWBaseTest::SetUp();
+    ASSERT_EQ(rmw_init_options_init(&options_srv, rcutils_get_default_allocator()), RMW_RET_OK);
+    ASSERT_EQ(rmw_init(&options_srv, &context_srv), RMW_RET_OK);
+
+    ASSERT_EQ(rmw_init_options_init(&options_cli, rcutils_get_default_allocator()), RMW_RET_OK);
+    ASSERT_EQ(rmw_init(&options_cli, &context_cli), RMW_RET_OK);
 
     configure_typesupport();
 
-    node = rmw_create_node(&test_context, "node_reqres", "/ns");
-    EXPECT_NE(node, nullptr);
-  }
+    node_srv = rmw_create_node(&context_srv, "node_srv", "/ns");
+    node_cli = rmw_create_node(&context_cli, "node_cli", "/ns");
+
+
+    EXPECT_NE(node_srv, nullptr);
+    EXPECT_NE(node_cli, nullptr);  }
 
   void TearDown() override
   {
     for (auto srv : services) {
-      EXPECT_EQ(rmw_destroy_service(node, srv), RMW_RET_OK);
+      EXPECT_EQ(rmw_destroy_service(node_srv, srv), RMW_RET_OK);
     }
 
     for (auto cli : clients) {
-      EXPECT_EQ(rmw_destroy_client(node, cli), RMW_RET_OK);
+      EXPECT_EQ(rmw_destroy_client(node_cli, cli), RMW_RET_OK);
     }
 
-    EXPECT_EQ(rmw_destroy_node(node), RMW_RET_OK);
+    EXPECT_EQ(rmw_destroy_node(node_srv), RMW_RET_OK);
+    EXPECT_EQ(rmw_destroy_node(node_cli), RMW_RET_OK);
 
-    RMWBaseTest::TearDown();
+    ASSERT_EQ(rmw_shutdown(&context_srv), RMW_RET_OK);
+    ASSERT_EQ(rmw_shutdown(&context_cli), RMW_RET_OK);
   }
 
   void configure_typesupport()
   {
+    std::string service_type_test = std::string(service_type) + ::testing::UnitTest::GetInstance()->current_test_info()->name();
+    std::string service_name_test = std::string(service_name) + ::testing::UnitTest::GetInstance()->current_test_info()->name();
+
     ConfigureDummyServiceTypeSupport(
-      service_type,
-      service_name,
+      service_type_test.c_str(),
+      service_name_test.c_str(),
       "",
       id_gen++,
       &dummy_type_support);
@@ -132,20 +144,22 @@ public:
   rmw_service_t * create_service(rmw_qos_profile_t qos)
   {
     rmw_service_t * serv = rmw_create_service(
-      node, &dummy_type_support.type_support,
+      node_srv, &dummy_type_support.type_support,
       "test_service", &qos);
     EXPECT_NE(serv, nullptr);
     services.push_back(serv);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return serv;
   }
 
   rmw_client_t * create_client(rmw_qos_profile_t qos)
   {
     rmw_client_t * client = rmw_create_client(
-      node, &dummy_type_support.type_support,
+      node_cli, &dummy_type_support.type_support,
       "test_service", &qos);
     EXPECT_NE(client, nullptr);
     clients.push_back(client);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return client;
   }
 
@@ -179,7 +193,7 @@ public:
     services.services = servs;
     services.service_count = 1;
 
-    rmw_time_t wait_timeout = (rmw_time_t) {1LL, 1LL};
+    rmw_time_t wait_timeout = (rmw_time_t) {4LL, 0LL};
 
     return rmw_wait(NULL, NULL, &services, NULL, NULL, NULL, &wait_timeout);
   }
@@ -191,7 +205,7 @@ public:
     clients.clients = clis;
     clients.client_count = 1;
 
-    rmw_time_t wait_timeout = (rmw_time_t) {1LL, 1LL};
+    rmw_time_t wait_timeout = (rmw_time_t) {4LL, 0LL};
 
     return rmw_wait(NULL, NULL, NULL, &clients, NULL, NULL, &wait_timeout);
   }
@@ -227,7 +241,13 @@ protected:
   const char * service_name = "topic_name";
   const char * message_namespace = "package_name";
 
-  rmw_node_t * node;
+  rmw_context_t context_srv = rmw_get_zero_initialized_context();
+  rmw_init_options_t options_srv = rmw_get_zero_initialized_init_options();
+  rmw_node_t * node_srv;
+
+  rmw_context_t context_cli = rmw_get_zero_initialized_context();
+  rmw_init_options_t options_cli = rmw_get_zero_initialized_init_options();
+  rmw_node_t * node_cli;
 
   std::vector<rmw_client_t *> clients;
   std::vector<rmw_service_t *> services;
@@ -351,146 +371,147 @@ TEST_F(TestReqRes, reply_expired)
   ASSERT_NE(strcmp(res_data.c_str(), res_recv_data), 0);
 }
 
-TEST_F(TestReqRes, request_order_keep_all)
-{
-  rmw_qos_profile_t qos_service = rmw_qos_profile_services_default;
-  qos_service.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
-  qos_service.depth = 6;
+// NOTE: Services are keep_last history 1 by default in the Agent
+// Those tests will require Client API modifications
 
-  rmw_qos_profile_t qos_client = rmw_qos_profile_services_default;
-  qos_client.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
-  qos_client.depth = 4;
+// TEST_F(TestReqRes, request_order_keep_all)
+// {
+//   rmw_qos_profile_t qos_service = rmw_qos_profile_services_default;
+//   qos_service.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
+//   qos_service.depth = 6;
 
-  rmw_service_t * service = create_service(qos_service);
-  rmw_client_t * client = create_client(qos_client);
+//   rmw_qos_profile_t qos_client = rmw_qos_profile_services_default;
+//   qos_client.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
+//   qos_client.depth = 4;
 
-  // Requests
-  std::map<std::string, int64_t> sequence_map;
-  for (size_t i = 0; i < 10; i++) {
-    std::string req_data = "test_request_" + std::to_string(i);
-    int64_t sequence_id = -1;
-    send_request(req_data.c_str(), client, sequence_id);
-    sequence_map[req_data] = sequence_id;
-  }
+//   rmw_service_t * service = create_service(qos_service);
+//   rmw_client_t * client = create_client(qos_client);
 
-  ASSERT_EQ(wait_for_request(service), RMW_RET_OK);
+//   // Requests
+//   std::map<std::string, int64_t> sequence_map;
+//   for (size_t i = 0; i < 10; i++) {
+//     std::string req_data = "test_request_" + std::to_string(i);
+//     int64_t sequence_id = -1;
+//     send_request(req_data.c_str(), client, sequence_id);
+//     sequence_map[req_data] = sequence_id;
+//   }
 
-  for (size_t i = 0; i < 10; i++) {
-    bool taken = false;
-    rmw_service_info_t request_header;
-    char req_recv_data[100] = {0};
-    ASSERT_EQ(
-      take_request(service, req_recv_data, sizeof(req_recv_data), taken, request_header),
-      (i < qos_service.depth) ? RMW_RET_OK : RMW_RET_ERROR);
+//   for (size_t i = 0; i < 10; i++) {
+//     wait_for_request(service);
+//     bool taken = false;
+//     rmw_service_info_t request_header;
+//     char req_recv_data[100] = {0};
+//     ASSERT_EQ(
+//       take_request(service, req_recv_data, sizeof(req_recv_data), taken, request_header),
+//       (i < qos_service.depth) ? RMW_RET_OK : RMW_RET_ERROR);
 
-    EXPECT_EQ(taken, (i < qos_service.depth) ? true : false);
-    std::string expected_data = "test_request_" + std::to_string(i);
-    EXPECT_EQ(
-      0 == strcmp(
-        expected_data.c_str(), req_recv_data), (i < qos_service.depth) ? true : false);
+//     EXPECT_EQ(taken, (i < qos_service.depth) ? true : false);
+//     std::string expected_data = "test_request_" + std::to_string(i);
+//     EXPECT_EQ(
+//       0 == strcmp(
+//         expected_data.c_str(), req_recv_data), (i < qos_service.depth) ? true : false);
 
-    if (taken) {
-      std::string res_data = "test_response_" + std::to_string(i);
-      send_response(res_data.c_str(), service, request_header);
-    }
-  }
+//     if (taken) {
+//       std::string res_data = "test_response_" + std::to_string(i);
+//       send_response(res_data.c_str(), service, request_header);
+//     }
+//   }
 
-  // Response
-  ASSERT_EQ(wait_for_response(client), RMW_RET_OK);
+//   // Response
+//   for (size_t i = 0; i < 10; i++) {
+//     wait_for_response(client);
+//     bool taken = false;
+//     rmw_service_info_t response_header = {};
+//     char res_recv_data[100] = {0};
+//     ASSERT_EQ(
+//       take_response(client, res_recv_data, sizeof(res_recv_data), taken, response_header),
+//       (i < qos_client.depth) ? RMW_RET_OK : RMW_RET_ERROR);
 
-  for (size_t i = 0; i < 10; i++) {
-    bool taken = false;
-    rmw_service_info_t response_header = {};
-    char res_recv_data[100] = {0};
-    ASSERT_EQ(
-      take_response(client, res_recv_data, sizeof(res_recv_data), taken, response_header),
-      (i < qos_client.depth) ? RMW_RET_OK : RMW_RET_ERROR);
+//     EXPECT_EQ(taken, (i < qos_client.depth) ? true : false);
 
-    EXPECT_EQ(taken, (i < qos_client.depth) ? true : false);
+//     std::string expected_data = "test_response_" + std::to_string(i);
+//     EXPECT_EQ(
+//       0 == strcmp(
+//         expected_data.c_str(), res_recv_data), (i < qos_client.depth) ? true : false);
 
-    std::string expected_data = "test_response_" + std::to_string(i);
-    EXPECT_EQ(
-      0 == strcmp(
-        expected_data.c_str(), res_recv_data), (i < qos_client.depth) ? true : false);
-
-    if (taken) {
-      std::string request_data = "test_request_" + std::to_string(i);
-      ASSERT_EQ(sequence_map[request_data], response_header.request_id.sequence_number);
-    }
-  }
-}
+//     if (taken) {
+//       std::string request_data = "test_request_" + std::to_string(i);
+//       ASSERT_EQ(sequence_map[request_data], response_header.request_id.sequence_number);
+//     }
+//   }
+// }
 
 
-TEST_F(TestReqRes, request_order_keep_last)
-{
-  rmw_qos_profile_t qos_service = rmw_qos_profile_services_default;
-  qos_service.history = RMW_QOS_POLICY_HISTORY_KEEP_LAST;
-  qos_service.depth = 6;
+// TEST_F(TestReqRes, request_order_keep_last)
+// {
+//   rmw_qos_profile_t qos_service = rmw_qos_profile_services_default;
+//   qos_service.history = RMW_QOS_POLICY_HISTORY_KEEP_LAST;
+//   qos_service.depth = 6;
 
-  rmw_qos_profile_t qos_client = rmw_qos_profile_services_default;
-  qos_client.history = RMW_QOS_POLICY_HISTORY_KEEP_LAST;
-  qos_client.depth = 4;
+//   rmw_qos_profile_t qos_client = rmw_qos_profile_services_default;
+//   qos_client.history = RMW_QOS_POLICY_HISTORY_KEEP_LAST;
+//   qos_client.depth = 4;
 
-  rmw_service_t * service = create_service(qos_service);
-  rmw_client_t * client = create_client(qos_client);
+//   rmw_service_t * service = create_service(qos_service);
+//   rmw_client_t * client = create_client(qos_client);
 
-  // Requests
-  std::map<std::string, int64_t> sequence_map;
-  size_t sent_requests = 10;
-  for (size_t i = 0; i < sent_requests; i++) {
-    std::string req_data = "test_request_" + std::to_string(i);
-    int64_t sequence_id = -1;
-    send_request(req_data.c_str(), client, sequence_id);
-    sequence_map[req_data] = sequence_id;
-  }
+//   // Requests
+//   std::map<std::string, int64_t> sequence_map;
+//   size_t sent_requests = 10;
+//   for (size_t i = 0; i < sent_requests; i++) {
+//     std::string req_data = "test_request_" + std::to_string(i);
+//     int64_t sequence_id = -1;
+//     send_request(req_data.c_str(), client, sequence_id);
+//     sequence_map[req_data] = sequence_id;
+//   }
 
-  for (size_t i = 0; i < qos_service.depth; i++) {
-    ASSERT_EQ(wait_for_request(service), RMW_RET_OK);
-  }
+//   for (size_t i = 0; i < qos_service.depth; i++) {
+//     ASSERT_EQ(wait_for_request(service), RMW_RET_OK);
+//   }
 
-  for (size_t i = 0; i < sent_requests; i++) {
-    size_t expected_no = (sent_requests - qos_service.depth) + i;
-    bool taken = false;
-    rmw_service_info_t request_header;
-    char req_recv_data[100] = {0};
-    ASSERT_EQ(
-      take_request(service, req_recv_data, sizeof(req_recv_data), taken, request_header),
-      (i < qos_service.depth) ? RMW_RET_OK : RMW_RET_ERROR);
+//   for (size_t i = 0; i < sent_requests; i++) {
+//     size_t expected_no = (sent_requests - qos_service.depth) + i;
+//     bool taken = false;
+//     rmw_service_info_t request_header;
+//     char req_recv_data[100] = {0};
+//     ASSERT_EQ(
+//       take_request(service, req_recv_data, sizeof(req_recv_data), taken, request_header),
+//       (i < qos_service.depth) ? RMW_RET_OK : RMW_RET_ERROR);
 
-    EXPECT_EQ(taken, (i < qos_service.depth) ? true : false);
-    std::string expected_data = "test_request_" + std::to_string(expected_no);
-    EXPECT_EQ(
-      0 == strcmp(
-        expected_data.c_str(), req_recv_data), (i < qos_service.depth) ? true : false);
+//     EXPECT_EQ(taken, (i < qos_service.depth) ? true : false);
+//     std::string expected_data = "test_request_" + std::to_string(expected_no);
+//     EXPECT_EQ(
+//       0 == strcmp(
+//         expected_data.c_str(), req_recv_data), (i < qos_service.depth) ? true : false);
 
-    if (taken) {
-      std::string res_data = "test_response_" + std::to_string(expected_no);
-      send_response(res_data.c_str(), service, request_header);
-    }
-  }
+//     if (taken) {
+//       std::string res_data = "test_response_" + std::to_string(expected_no);
+//       send_response(res_data.c_str(), service, request_header);
+//     }
+//   }
 
-  // Response
-  ASSERT_EQ(wait_for_response(client), RMW_RET_OK);
+//   // Response
+//   ASSERT_EQ(wait_for_response(client), RMW_RET_OK);
 
-  for (size_t i = 0; i < sent_requests; i++) {
-    size_t expected_no = (sent_requests - qos_client.depth) + i;
-    bool taken = false;
-    rmw_service_info_t response_header = {};
-    char res_recv_data[100] = {0};
-    ASSERT_EQ(
-      take_response(client, res_recv_data, sizeof(res_recv_data), taken, response_header),
-      (i < qos_client.depth) ? RMW_RET_OK : RMW_RET_ERROR);
+//   for (size_t i = 0; i < sent_requests; i++) {
+//     size_t expected_no = (sent_requests - qos_client.depth) + i;
+//     bool taken = false;
+//     rmw_service_info_t response_header = {};
+//     char res_recv_data[100] = {0};
+//     ASSERT_EQ(
+//       take_response(client, res_recv_data, sizeof(res_recv_data), taken, response_header),
+//       (i < qos_client.depth) ? RMW_RET_OK : RMW_RET_ERROR);
 
-    EXPECT_EQ(taken, (i < qos_client.depth) ? true : false);
+//     EXPECT_EQ(taken, (i < qos_client.depth) ? true : false);
 
-    std::string expected_data = "test_response_" + std::to_string(expected_no);
-    EXPECT_EQ(
-      0 == strcmp(
-        expected_data.c_str(), res_recv_data), (i < qos_client.depth) ? true : false);
+//     std::string expected_data = "test_response_" + std::to_string(expected_no);
+//     EXPECT_EQ(
+//       0 == strcmp(
+//         expected_data.c_str(), res_recv_data), (i < qos_client.depth) ? true : false);
 
-    if (taken) {
-      std::string request_data = "test_request_" + std::to_string(expected_no);
-      ASSERT_EQ(sequence_map[request_data], response_header.request_id.sequence_number);
-    }
-  }
-}
+//     if (taken) {
+//       std::string request_data = "test_request_" + std::to_string(expected_no);
+//       ASSERT_EQ(sequence_map[request_data], response_header.request_id.sequence_number);
+//     }
+//   }
+// }
