@@ -42,9 +42,9 @@ rmw_node_t * create_node(
     goto fail;
   }
 
-  rmw_uxrce_node_t * node_info = (rmw_uxrce_node_t *)memory_node->data;
+  rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)memory_node->data;
 
-  node_info->context = context->impl;
+  custom_node->context = context->impl;
 
   node_handle = rmw_node_allocate();
   if (!node_handle) {
@@ -52,10 +52,10 @@ rmw_node_t * create_node(
     return NULL;
   }
 
-  node_info->rmw_handle = node_handle;
+  custom_node->rmw_handle = node_handle;
 
   node_handle->implementation_identifier = rmw_get_implementation_identifier();
-  node_handle->data = node_info;
+  node_handle->data = custom_node;
   node_handle->name = (const char *)(rmw_allocate(sizeof(char) * (strlen(name) + 1)));
   if (!node_handle->name) {
     RMW_SET_ERROR_MSG("failed to allocate memory");
@@ -72,8 +72,8 @@ rmw_node_t * create_node(
   }
   memcpy((char *)node_handle->namespace_, namespace_, strlen(namespace_) + 1);
 
-  node_info->participant_id =
-    uxr_object_id(node_info->context->id_participant++, UXR_PARTICIPANT_ID);
+  custom_node->participant_id =
+    uxr_object_id(custom_node->context->id_participant++, UXR_PARTICIPANT_ID);
   uint16_t participant_req = UXR_INVALID_REQUEST_ID;
 
 #ifdef RMW_UXRCE_USE_REFS
@@ -85,9 +85,9 @@ rmw_node_t * create_node(
     return NULL;
   }
   participant_req = uxr_buffer_create_participant_ref(
-    &node_info->context->session,
-    *node_info->context->creation_destroy_stream,
-    node_info->participant_id,
+    &custom_node->context->session,
+    *custom_node->context->creation_destroy_stream,
+    custom_node->participant_id,
     (uint16_t)domain_id,
     rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 #else
@@ -100,15 +100,15 @@ rmw_node_t * create_node(
   }
 
   participant_req = uxr_buffer_create_participant_bin(
-    &node_info->context->session,
-    *node_info->context->creation_destroy_stream,
-    node_info->participant_id,
+    &custom_node->context->session,
+    *custom_node->context->creation_destroy_stream,
+    custom_node->participant_id,
     domain_id,
     xrce_node_name,
     UXR_REPLACE | UXR_REUSE);
 #endif /* ifdef RMW_UXRCE_USE_REFS */
 
-  if (!run_xrce_session(node_info->context, participant_req)) {
+  if (!run_xrce_session(custom_node->context, participant_req, custom_node->context->creation_timeout)) {
     rmw_uxrce_fini_node_memory(node_handle);
     return NULL;
   }
@@ -207,7 +207,7 @@ rmw_ret_t rmw_destroy_node(
     *custom_node->context->creation_destroy_stream,
     custom_node->participant_id);
 
-  if (!run_xrce_session(custom_node->context, delete_participant)) {
+  if (!run_xrce_session(custom_node->context, delete_participant, custom_node->context->destroy_timeout)) {
     ret = RMW_RET_TIMEOUT;
   }
 

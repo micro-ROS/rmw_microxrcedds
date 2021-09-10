@@ -80,6 +80,8 @@ typedef struct rmw_context_impl_t
   uxrStreamId best_effort_input;
 
   uxrStreamId * creation_destroy_stream;
+  int creation_timeout;
+  int destroy_timeout;
 
   uint8_t input_reliable_stream_buffer[RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
   uint8_t output_reliable_stream_buffer[RMW_UXRCE_MAX_OUTPUT_BUFFER_SIZE];
