@@ -81,7 +81,7 @@ rmw_ret_t rmw_uxrce_transport_init(
     }
 
     uxrSerialTransport * serial_transport = (NULL == context_impl) ?
-      (uxrSerialTransport *)transport :
+      (uxrSerialTransport *)override_transport :
       &context_impl->transport;
 
     if (!uxr_init_serial_transport(serial_transport, fd, 0, 1)) {
@@ -125,7 +125,7 @@ rmw_ret_t rmw_uxrce_transport_init(
 #undef TRANSPORT_INIT_FUNTION
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
   uxrCustomTransport * custom_transport = (NULL == context_impl) ?
-    (uxrCustomTransport *)transport :
+    (uxrCustomTransport *)override_transport :
     &context_impl->transport;
   void * args = (NULL == init_options_impl) ?
     rmw_uxrce_transport_default_params.args :
