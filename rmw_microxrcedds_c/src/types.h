@@ -64,6 +64,8 @@ typedef struct rmw_context_impl_t
   uxrSerialTransport transport;
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
   uxrUDPTransport transport;
+#elif defined(RMW_UXRCE_TRANSPORT_TCP)
+  uxrTCPTransport transport;
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
   uxrCustomTransport transport;
 #endif  // if defined(RMW_UXRCE_TRANSPORT_SERIAL)

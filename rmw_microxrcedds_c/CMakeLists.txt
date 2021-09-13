@@ -41,7 +41,7 @@ if(RMW_UXRCE_GRAPH)
 endif()
 
 # --- RMW CONFIGURATION ---
-set(RMW_UXRCE_TRANSPORT "udp" CACHE STRING "Sets Micro XRCE-DDS transport to use. (udp | serial | custom)")
+set(RMW_UXRCE_TRANSPORT "udp" CACHE STRING "Sets Micro XRCE-DDS transport to use. (udp | tcp | serial | custom)")
 set(RMW_UXRCE_IPV "ipv4" CACHE STRING "Sets Micro XRCE-DDS IP version to use. (ipv4 | ipv6)")
 set(RMW_UXRCE_CREATION_MODE "bin" CACHE STRING "Sets creation mode in Micro XRCE-DDS. (bin | refs)")
 set(RMW_UXRCE_MAX_HISTORY "8" CACHE STRING
@@ -82,6 +82,7 @@ endif()
 # Transport handle define macros.
 set(RMW_UXRCE_TRANSPORT_SERIAL OFF)
 set(RMW_UXRCE_TRANSPORT_UDP OFF)
+set(RMW_UXRCE_TRANSPORT_TCP OFF)
 set(RMW_UXRCE_TRANSPORT_IPV4 OFF)
 set(RMW_UXRCE_TRANSPORT_IPV6 OFF)
 set(RMW_UXRCE_TRANSPORT_CUSTOM OFF)
@@ -98,6 +99,16 @@ elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "udp")
     set(RMW_UXRCE_DEFAULT_UDP_IP "::1" CACHE STRING "Sets the agent IP address.")
   endif()
   set(RMW_UXRCE_DEFAULT_UDP_PORT "8888" CACHE STRING "Sets the agent IP port.")
+elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "tcp")
+  set(RMW_UXRCE_TRANSPORT_TCP ON)
+  if(${RMW_UXRCE_IPV} STREQUAL "ipv4")
+    set(RMW_UXRCE_TRANSPORT_IPV4 ON)
+    set(RMW_UXRCE_DEFAULT_TCP_IP "127.0.0.1" CACHE STRING "Sets the agent IP address.")
+  elseif(${RMW_UXRCE_IPV} STREQUAL "ipv6")
+    set(RMW_UXRCE_TRANSPORT_IPV6 ON)
+    set(RMW_UXRCE_DEFAULT_TCP_IP "::1" CACHE STRING "Sets the agent IP address.")
+  endif()
+  set(RMW_UXRCE_DEFAULT_TCP_PORT "8888" CACHE STRING "Sets the agent IP port.")
 elseif(${RMW_UXRCE_TRANSPORT} STREQUAL "custom")
   set(RMW_UXRCE_TRANSPORT_CUSTOM ON)
 else()
@@ -166,7 +177,7 @@ set(SRCS
   src/rmw_microros/time_sync.c
   src/rmw_microros/ping.c
   src/rmw_microros/timing.c
-  $<$<BOOL:${RMW_UXRCE_TRANSPORT_UDP}>:src/rmw_microros/discovery.c>
+  $<$<OR:$<BOOL:${RMW_UXRCE_TRANSPORT_UDP}>,$<BOOL:${RMW_UXRCE_TRANSPORT_TCP}>>:src/rmw_microros/discovery.c>
   $<$<BOOL:${RMW_UXRCE_TRANSPORT_CUSTOM}>:src/rmw_microros/custom_transport.c>
   $<$<BOOL:${RMW_UXRCE_GRAPH}>:src/rmw_graph.c>
 )
