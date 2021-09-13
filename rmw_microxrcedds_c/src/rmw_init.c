@@ -68,22 +68,22 @@ rmw_init_options_init(
     RMW_SET_ERROR_MSG("default serial port configuration overflow");
     return RMW_RET_INVALID_ARGUMENT;
   }
-#elif defined(RMW_UXRCE_TRANSPORT_UDP)
-  if (strlen(RMW_UXRCE_DEFAULT_UDP_IP) <= MAX_IP_LEN) {
+#elif defined(RMW_UXRCE_TRANSPORT_UDP) || defined(RMW_UXRCE_TRANSPORT_TCP)
+  if (strlen(RMW_UXRCE_DEFAULT_IP) <= MAX_IP_LEN) {
     snprintf(
       init_options->impl->transport_params.agent_address,
       MAX_IP_LEN,
       "%s",
-      RMW_UXRCE_DEFAULT_UDP_IP);
+      RMW_UXRCE_DEFAULT_IP);
   } else {
     RMW_SET_ERROR_MSG("default ip configuration overflow");
     return RMW_RET_INVALID_ARGUMENT;
   }
 
-  if (strlen(RMW_UXRCE_DEFAULT_UDP_PORT) <= MAX_PORT_LEN) {
+  if (strlen(RMW_UXRCE_DEFAULT_PORT) <= MAX_PORT_LEN) {
     snprintf(
       init_options->impl->transport_params.agent_port,
-      MAX_PORT_LEN, "%s", RMW_UXRCE_DEFAULT_UDP_PORT);
+      MAX_PORT_LEN, "%s", RMW_UXRCE_DEFAULT_PORT);
   } else {
     RMW_SET_ERROR_MSG("default port configuration overflow");
     return RMW_RET_INVALID_ARGUMENT;

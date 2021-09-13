@@ -36,7 +36,7 @@
  *          XRCE transport entity, if it has been initialized.
  * @param   init_options Pointer to struct holding the provided init options for
  *          micro-ROS.
- * @param   transport Älternative opaque transport structure, which will
+ * @param   override_transport Alternative opaque transport structure, which will
  *          must come as NULL and will be given as a handle to the user.
  *          This structure is filled when the context_impl pointer is NULL.
  *          Useful for some utilities, such as the "ping" functionality.
@@ -48,7 +48,7 @@
 rmw_ret_t rmw_uxrce_transport_init(
   rmw_context_impl_t * context,
   rmw_init_options_impl_t * init_options,
-  void * transport);
+  void * override_transport);
 
 /**
  * @brief   Helper macros for closing an open micro XRCE-DDS transport.

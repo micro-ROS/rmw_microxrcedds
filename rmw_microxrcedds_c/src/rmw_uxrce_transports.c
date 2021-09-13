@@ -21,7 +21,7 @@ extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
 rmw_ret_t rmw_uxrce_transport_init(
   rmw_context_impl_t * context_impl,
   rmw_init_options_impl_t * init_options_impl,
-  void * transport)
+  void * override_transport)
 {
 #ifdef RMW_UXRCE_TRANSPORT_SERIAL
   const char * serial_device = (NULL == init_options_impl) ?
@@ -81,7 +81,7 @@ rmw_ret_t rmw_uxrce_transport_init(
     }
 
     uxrSerialTransport * serial_transport = (NULL == context_impl) ?
-      (uxrSerialTransport *)transport :
+      (uxrSerialTransport *)override_transport :
       &context_impl->transport;
 
     if (!uxr_init_serial_transport(serial_transport, fd, 0, 1)) {
@@ -92,30 +92,40 @@ rmw_ret_t rmw_uxrce_transport_init(
     RMW_SET_ERROR_MSG("rmw_transport_init SERIAL: invalid serial device file descriptor");
     return RMW_RET_ERROR;
   }
-#elif defined(RMW_UXRCE_TRANSPORT_UDP)
+#elif defined(RMW_UXRCE_TRANSPORT_UDP) || defined(RMW_UXRCE_TRANSPORT_TCP)
+  const char * agent_ip = (NULL == init_options_impl) ?
+    RMW_UXRCE_DEFAULT_IP :
+    init_options_impl->transport_params.agent_address;
+  const char * agent_port = (NULL == init_options_impl) ?
+    RMW_UXRCE_DEFAULT_PORT :
+    init_options_impl->transport_params.agent_port;
+
 #ifdef RMW_UXRCE_TRANSPORT_IPV4
   uxrIpProtocol ip_protocol = UXR_IPv4;
 #elif defined(RMW_UXRCE_TRANSPORT_IPV6)
   uxrIpProtocol ip_protocol = UXR_IPv6;
 #endif /* ifdef RMW_UXRCE_TRANSPORT_IPV4 */
 
-  uxrUDPTransport * udp_transport = (NULL == context_impl) ?
-    (uxrUDPTransport *)transport :
-    &context_impl->transport;
-  const char * agent_ip = (NULL == init_options_impl) ?
-    RMW_UXRCE_DEFAULT_UDP_IP :
-    init_options_impl->transport_params.agent_address;
-  const char * agent_port = (NULL == init_options_impl) ?
-    RMW_UXRCE_DEFAULT_UDP_PORT :
-    init_options_impl->transport_params.agent_port;
+#ifdef RMW_UXRCE_TRANSPORT_UDP
+#define TRANSPORT_TYPE uxrUDPTransport
+#define TRANSPORT_INIT_FUNTION uxr_init_udp_transport
+#elif defined(RMW_UXRCE_TRANSPORT_TCP)
+#define TRANSPORT_TYPE uxrTCPTransport
+#define TRANSPORT_INIT_FUNTION uxr_init_tcp_transport
+#endif /* ifdef RMW_UXRCE_TRANSPORT_IPV4 */
 
-  if (!uxr_init_udp_transport(udp_transport, ip_protocol, agent_ip, agent_port)) {
-    RMW_SET_ERROR_MSG("rmw_transport_init UDP: cannot init XRCE transport");
+  TRANSPORT_TYPE * transport = (NULL == context_impl) ?
+    (TRANSPORT_TYPE *)override_transport : &context_impl->transport;
+
+  if (!TRANSPORT_INIT_FUNTION(transport, ip_protocol, agent_ip, agent_port)) {
+    RMW_SET_ERROR_MSG("rmw_transport_init UDP/TCP: cannot init XRCE transport");
     return RMW_RET_ERROR;
   }
+#undef TRANSPORT_TYPE
+#undef TRANSPORT_INIT_FUNTION
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
   uxrCustomTransport * custom_transport = (NULL == context_impl) ?
-    (uxrCustomTransport *)transport :
+    (uxrCustomTransport *)override_transport :
     &context_impl->transport;
   void * args = (NULL == init_options_impl) ?
     rmw_uxrce_transport_default_params.args :
