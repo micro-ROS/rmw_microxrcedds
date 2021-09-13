@@ -38,6 +38,8 @@ rmw_ret_t rmw_uros_ping_agent(
     uxrSerialTransport transport;
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
     uxrUDPTransport transport;
+#elif defined(RMW_UXRCE_TRANSPORT_TCP)
+    uxrTCPTransport transport;
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
     uxrCustomTransport transport;
     transport.framing = rmw_uxrce_transport_default_params.framing;
@@ -79,6 +81,8 @@ rmw_ret_t rmw_uros_ping_agent_options(
   uxrSerialTransport transport;
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
   uxrUDPTransport transport;
+#elif defined(RMW_UXRCE_TRANSPORT_TCP)
+  uxrTCPTransport transport;
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
   uxrCustomTransport transport;
   transport.framing = rmw_options->impl->transport_params.framing;
