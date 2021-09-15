@@ -182,7 +182,7 @@ typedef struct rmw_uxrce_node_t
 {
   rmw_uxrce_mempool_item_t mem;
   rmw_node_t * rmw_handle;
-  rmw_context_impl_t * context;
+  rmw_uxrce_session_t * context;
 
   uxrObjectId participant_id;
 } rmw_uxrce_node_t;
@@ -206,7 +206,7 @@ typedef struct rmw_uxrce_static_input_buffer_t
 extern char rmw_uxrce_entity_naming_buffer[RMW_UXRCE_ENTITY_NAMING_BUFFER_LENGTH];
 
 extern rmw_uxrce_mempool_t session_memory;
-extern rmw_context_impl_t custom_sessions[RMW_UXRCE_MAX_SESSIONS];
+extern rmw_uxrce_session_t custom_sessions[RMW_UXRCE_MAX_SESSIONS];
 
 extern rmw_uxrce_mempool_t node_memory;
 extern rmw_uxrce_node_t custom_nodes[RMW_UXRCE_MAX_NODES];
