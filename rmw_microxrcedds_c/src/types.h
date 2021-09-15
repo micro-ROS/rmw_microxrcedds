@@ -56,7 +56,7 @@ typedef struct rmw_graph_info_t
 } rmw_graph_info_t;
 #endif  // RMW_UXRCE_GRAPH
 
-typedef struct rmw_context_impl_t
+typedef struct rmw_context_impl_s
 {
   rmw_uxrce_mempool_item_t mem;
 
@@ -97,9 +97,9 @@ typedef struct rmw_context_impl_t
   uint16_t id_replier;
 } rmw_context_impl_t;
 
-typedef struct rmw_context_impl_t rmw_uxrce_session_t;
+typedef struct rmw_context_impl_s rmw_uxrce_session_t;
 
-struct  rmw_init_options_impl_t
+struct  rmw_init_options_impl_s
 {
   struct rmw_uxrce_transport_params_t transport_params;
 };
