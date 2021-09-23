@@ -33,11 +33,10 @@ rmw_wait(
   (void)events;
   (void)wait_set;
 
-  if ( !services && !clients && !subscriptions && !guard_conditions )
-  {
+  if (!services && !clients && !subscriptions && !guard_conditions) {
     return RMW_RET_OK;
   }
-  
+
   // Check if timeout
   uint64_t timeout;
   if (wait_timeout != NULL) {
