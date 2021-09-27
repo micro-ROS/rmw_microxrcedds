@@ -30,10 +30,12 @@ rmw_wait(
   rmw_wait_set_t * wait_set,
   const rmw_time_t * wait_timeout)
 {
-  (void)services;
-  (void)clients;
   (void)events;
   (void)wait_set;
+
+  if (!services && !clients && !subscriptions && !guard_conditions) {
+    return RMW_RET_OK;
+  }
 
   // Check if timeout
   uint64_t timeout;
