@@ -86,9 +86,9 @@ create_topic(
 #endif /* ifdef RMW_UXRCE_USE_XML */
 
   if (!run_xrce_session(
-        custom_node->context, topic_req, 
-        custom_node->context->creation_timeout)) 
-    {
+      custom_node->context, topic_req,
+      custom_node->context->creation_timeout))
+  {
     rmw_uxrce_fini_topic_memory(custom_topic);
     custom_topic = NULL;
     goto fail;
