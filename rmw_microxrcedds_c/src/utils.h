@@ -21,7 +21,8 @@
 
 bool run_xrce_session(
   rmw_context_impl_t * context,
-  uint16_t requests);
+  uint16_t requests,
+  int timeout);
 
 int generate_name(
   const uxrObjectId * id,
