@@ -232,17 +232,123 @@ void rmw_uxrce_fini_topic_memory(
   topic->owner_node = NULL;
 }
 
+size_t rmw_uxrce_count_static_input_buffer_for_entity(
+  void * entity)
+{
+  size_t count = 0;
+  rmw_uxrce_mempool_item_t * item = static_buffer_memory.allocateditems;
+
+  UXR_LOCK(&static_buffer_memory.mutex);
+  while (item != NULL) {
+    rmw_uxrce_static_input_buffer_t * data = (rmw_uxrce_static_input_buffer_t *)item->data;
+    if (data->owner == entity) {
+      count++;
+    }
+    item = item->next;
+  }
+  UXR_UNLOCK(&static_buffer_memory.mutex);
+
+  return count;
+}
+
+rmw_uxrce_mempool_item_t * rmw_uxrce_get_static_input_buffer_for_entity(
+  void * entity,
+  const rmw_qos_profile_t qos)
+{
+  rmw_uxrce_mempool_item_t * ret = NULL;
+
+  UXR_LOCK(&static_buffer_memory.mutex);
+  size_t count = rmw_uxrce_count_static_input_buffer_for_entity(entity);
+  switch (qos.history) {
+    case RMW_QOS_POLICY_HISTORY_UNKNOWN:
+    case RMW_QOS_POLICY_HISTORY_SYSTEM_DEFAULT:
+    case RMW_QOS_POLICY_HISTORY_KEEP_LAST:
+      if (qos.depth == 0 || count < qos.depth) {
+        ret = get_memory(&static_buffer_memory);
+      } else {
+        ret = rmw_uxrce_find_static_input_buffer_by_owner(entity);
+      }
+      break;
+    case RMW_QOS_POLICY_HISTORY_KEEP_ALL:
+      if (qos.depth == 0 || count < qos.depth) {
+        ret = get_memory(&static_buffer_memory);
+      } else {
+        // There aren't more slots for this entity
+      }
+      break;
+    default:
+      break;
+  }
+  UXR_UNLOCK(&static_buffer_memory.mutex);
+
+  return ret;
+}
+
 rmw_uxrce_mempool_item_t * rmw_uxrce_find_static_input_buffer_by_owner(
   void * owner)
 {
+  rmw_uxrce_mempool_item_t * ret = NULL;
+  int64_t min_time = INT64_MAX;
+
+  UXR_LOCK(&static_buffer_memory.mutex);
+
+  // Return the oldest
   rmw_uxrce_mempool_item_t * static_buffer_item = static_buffer_memory.allocateditems;
   while (static_buffer_item != NULL) {
     rmw_uxrce_static_input_buffer_t * data =
       (rmw_uxrce_static_input_buffer_t *)static_buffer_item->data;
-    if (data->owner == owner) {
-      return static_buffer_item;
+
+    if (data->owner == owner && data->timestamp < min_time) {
+      ret = static_buffer_item;
+      min_time = data->timestamp;
     }
+
     static_buffer_item = static_buffer_item->next;
   }
-  return NULL;
+  UXR_UNLOCK(&static_buffer_memory.mutex);
+
+  return ret;
+}
+
+void rmw_uxrce_clean_expired_static_input_buffer(void)
+{
+  UXR_LOCK(&static_buffer_memory.mutex);
+
+  rmw_uxrce_mempool_item_t * static_buffer_item = static_buffer_memory.allocateditems;
+  int64_t now_ns = rmw_uros_epoch_nanos();
+
+  while (static_buffer_item != NULL) {
+    rmw_uxrce_static_input_buffer_t * data =
+      (rmw_uxrce_static_input_buffer_t *)static_buffer_item->data;
+    rmw_time_t lifespan;
+    switch (data->entity_type) {
+      case RMW_UXRCE_ENTITY_TYPE_SUBSCRIPTION:
+        lifespan = ((rmw_uxrce_subscription_t *)data->owner)->qos.lifespan;
+        break;
+      case RMW_UXRCE_ENTITY_TYPE_CLIENT:
+        lifespan = ((rmw_uxrce_client_t *)data->owner)->qos.lifespan;
+        break;
+      case RMW_UXRCE_ENTITY_TYPE_SERVICE:
+        lifespan = ((rmw_uxrce_service_t *)data->owner)->qos.lifespan;
+        break;
+      default:
+        // Not recognized, clean this buffer as soon as possible
+        lifespan = (rmw_time_t) {0LL, 1LL};
+        break;
+    }
+
+    if (rmw_time_equal(lifespan, (rmw_time_t)RMW_DURATION_UNSPECIFIED)) {
+      lifespan = (rmw_time_t) RMW_UXRCE_QOS_LIFESPAN_DEFAULT;
+    }
+
+    rmw_uxrce_mempool_item_t * aux_next = static_buffer_item->next;
+
+    int64_t expiration_time = data->timestamp + rmw_time_total_nsec(lifespan);
+    if (expiration_time < now_ns || data->timestamp > now_ns) {
+      put_memory(&static_buffer_memory, static_buffer_item);
+    }
+
+    static_buffer_item = aux_next;
+  }
+  UXR_UNLOCK(&static_buffer_memory.mutex);
 }
