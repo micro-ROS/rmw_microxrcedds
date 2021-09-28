@@ -204,19 +204,6 @@ TEST_F(TestPubSub, publish_and_receive)
   std::string send_data = "hello";
   publish_string(send_data.c_str(), pub);
 
-  rmw_node_t * node_pub;
-  node_pub = rmw_create_node(&test_context, "pub_node", "/ns", 0, false);
-  ASSERT_NE((void *)node_pub, (void *)NULL);
-
-  rmw_publisher_options_t default_publisher_options = rmw_get_default_publisher_options();
-  rmw_publisher_t * pub = rmw_create_publisher(
-    node_pub, &dummy_type_support.type_support,
-    topic_name, &dummy_qos_policies, &default_publisher_options);
-  ASSERT_NE((void *)pub, (void *)NULL);
-
-  rmw_node_t * node_sub;
-  node_sub = rmw_create_node(&test_context, "sub_node", "/ns", 0, false);
-  ASSERT_NE((void *)node_sub, (void *)NULL);
   EXPECT_EQ(wait_for_subscription(sub), RMW_RET_OK);
 
   bool taken = false;
