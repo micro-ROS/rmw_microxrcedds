@@ -342,7 +342,7 @@ void rmw_uxrce_clean_expired_static_input_buffer(void)
 
     rmw_uxrce_mempool_item_t * aux_next = static_buffer_item->next;
 
-    int64_t expiration_time = data->timestamp + (lifespan->sec * 1000LL) + RCUTILS_NS_TO_MS(lifespan->nsec);
+    int64_t expiration_time = data->timestamp + (lifespan.sec * 1000LL) + RCUTILS_NS_TO_MS(lifespan.nsec);
     if (expiration_time < now_ns || data->timestamp > now_ns) {
       put_memory(&static_buffer_memory, static_buffer_item);
     }
