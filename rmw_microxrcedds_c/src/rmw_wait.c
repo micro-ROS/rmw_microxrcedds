@@ -35,10 +35,16 @@ rmw_wait(
   (void)wait_set;
 
   // Check if timeout
-  uint64_t timeout = (uint64_t) rmw_time_total_nsec(*wait_timeout) / 1000000ULL;
+  union {
+    int64_t i64;
+    int32_t i32;
+  } timeout;
 
   if (rmw_time_equal(*wait_timeout, (rmw_time_t)RMW_DURATION_INFINITE)) {
-    timeout = (uint64_t)UXR_TIMEOUT_INF;
+    timeout.i32 = UXR_TIMEOUT_INF;
+  } else {
+    timeout.i64 = rmw_time_total_nsec(*wait_timeout) / 1000000ULL;
+    timeout.i32 = (timeout.i64 > INT32_MAX) ? INT32_MAX : timeout.i64;
   }
 
   // Clean expired buffers
@@ -82,7 +88,10 @@ rmw_wait(
 
   rmw_uxrce_clean_expired_static_input_buffer();
 
-  uint64_t per_session_timeout = (uint64_t)((float)timeout / (float)available_contexts);
+  int32_t per_session_timeout =
+    (timeout.i32 == UXR_TIMEOUT_INF) ? UXR_TIMEOUT_INF :
+    (int32_t)((float)timeout.i32 / (float)available_contexts);
+
   item = session_memory.allocateditems;
   while (item != NULL) {
     rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
