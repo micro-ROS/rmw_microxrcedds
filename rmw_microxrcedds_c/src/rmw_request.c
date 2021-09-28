@@ -81,6 +81,8 @@ rmw_take_request(
 
   rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
 
+  rmw_uxrce_clean_expired_static_input_buffer();
+
   // Find first related item in static buffer memory pool
   rmw_uxrce_mempool_item_t * static_buffer_item =
     rmw_uxrce_find_static_input_buffer_by_owner((void *) custom_service);

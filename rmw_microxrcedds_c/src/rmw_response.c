@@ -95,6 +95,8 @@ rmw_take_response(
 
   rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
 
+  rmw_uxrce_clean_expired_static_input_buffer();
+
   // Find first related item in static buffer memory pool
   rmw_uxrce_mempool_item_t * static_buffer_item =
     rmw_uxrce_find_static_input_buffer_by_owner((void *) custom_client);

@@ -16,6 +16,7 @@
 #include <math.h>
 
 #include <rmw/rmw.h>
+#include <rcutils/time.h>
 #include <rmw/error_handling.h>
 
 #include "./utils.h"
@@ -38,104 +39,116 @@ rmw_wait(
   }
 
   // Check if timeout
-  uint64_t timeout;
-  if (wait_timeout != NULL) {
-    // Convert to int (checking overflow)
-    if (wait_timeout->sec >= (UINT64_MAX / 1000)) {
-      // Overflow
-      timeout = INT_MAX;
-      RMW_SET_ERROR_MSG("Wait timeout overflow");
-    } else {
-      timeout = wait_timeout->sec * 1000;
-      uint64_t timeout_ms = wait_timeout->nsec / 1000000;
-      if ((UINT64_MAX - timeout) <= timeout_ms) {
-        // Overflow
-        timeout = INT_MAX;
-        RMW_SET_ERROR_MSG("Wait timeout overflow");
-      } else {
-        timeout += timeout_ms;
-        if (timeout > INT_MAX) {
-          // Overflow
-          timeout = INT_MAX;
-          RMW_SET_ERROR_MSG("Wait timeout overflow");
-        }
-      }
-    }
+  union {
+    int64_t i64;
+    int32_t i32;
+  } timeout;
+
+  if (NULL == wait_timeout) {
+    timeout.i32 = UXR_TIMEOUT_INF;
   } else {
-    timeout = (uint64_t)UXR_TIMEOUT_INF;
+    timeout.i64 = (wait_timeout->sec * 1000LL) + RCUTILS_NS_TO_MS(wait_timeout->nsec);
+    timeout.i32 = (timeout.i64 > INT32_MAX) ? INT32_MAX : timeout.i64;
   }
 
-  // Run every XRCE session
+  // Clean expired buffers
+  rmw_uxrce_clean_expired_static_input_buffer();
 
-  uint8_t available_contexts = 0;
   rmw_uxrce_mempool_item_t * item = NULL;
 
-  item = session_memory.allocateditems;
-  while (item != NULL) {
-    item = item->next;
-    available_contexts++;
-  }
-
-  uint64_t per_session_timeout = (uint64_t)((float)timeout / (float)available_contexts);
+  // Clear run flag for all sessions
   item = session_memory.allocateditems;
   while (item != NULL) {
     rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
-    uxr_run_session_until_data(&custom_context->session, per_session_timeout);
+    custom_context->need_to_be_ran = false;
+    item = item->next;
+  }
+
+  // Enable flag for every XRCE session available in the entities
+  for (size_t i = 0; services && i < services->service_count; ++i) {
+    rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)services->services[i];
+    custom_service->owner_node->context->need_to_be_ran = true;
+  }
+
+  for (size_t i = 0; clients && i < clients->client_count; ++i) {
+    rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)clients->clients[i];
+    custom_client->owner_node->context->need_to_be_ran = true;
+  }
+
+  for (size_t i = 0; subscriptions && i < subscriptions->subscriber_count; ++i) {
+    rmw_uxrce_subscription_t * custom_subscription =
+      (rmw_uxrce_subscription_t *)subscriptions->subscribers[i];
+    custom_subscription->owner_node->context->need_to_be_ran = true;
+  }
+
+  // Count sessions to be ran
+  uint8_t available_contexts = 0;
+  item = session_memory.allocateditems;
+  while (item != NULL) {
+    rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
+    available_contexts += custom_context->need_to_be_ran ? 1 : 0;
+    item = item->next;
+  }
+
+  rmw_uxrce_clean_expired_static_input_buffer();
+
+  int32_t per_session_timeout =
+    (timeout.i32 == UXR_TIMEOUT_INF) ? UXR_TIMEOUT_INF :
+    (int32_t)((float)timeout.i32 / (float)available_contexts);
+
+  item = session_memory.allocateditems;
+  while (item != NULL) {
+    rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
+    if (custom_context->need_to_be_ran) {
+      uxr_run_session_until_data(&custom_context->session, per_session_timeout);
+    }
     item = item->next;
   }
 
   bool buffered_status = false;
 
   // Check services
-  if (services) {
-    for (size_t i = 0; i < services->service_count; ++i) {
-      rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)services->services[i];
+  for (size_t i = 0; services && i < services->service_count; ++i) {
+    rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)services->services[i];
 
-      if (NULL == rmw_uxrce_find_static_input_buffer_by_owner((void *) custom_service)) {
-        services->services[i] = NULL;
-      } else {
-        buffered_status = true;
-      }
+    if (NULL == rmw_uxrce_find_static_input_buffer_by_owner((void *) custom_service)) {
+      services->services[i] = NULL;
+    } else {
+      buffered_status = true;
     }
   }
 
   // Check clients
-  if (clients) {
-    for (size_t i = 0; i < clients->client_count; ++i) {
-      rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)clients->clients[i];
+  for (size_t i = 0; clients && i < clients->client_count; ++i) {
+    rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)clients->clients[i];
 
-      if (NULL == rmw_uxrce_find_static_input_buffer_by_owner((void *) custom_client)) {
-        clients->clients[i] = NULL;
-      } else {
-        buffered_status = true;
-      }
+    if (NULL == rmw_uxrce_find_static_input_buffer_by_owner((void *) custom_client)) {
+      clients->clients[i] = NULL;
+    } else {
+      buffered_status = true;
     }
   }
 
   // Check subscriptions
-  if (subscriptions) {
-    for (size_t i = 0; i < subscriptions->subscriber_count; ++i) {
-      rmw_uxrce_subscription_t * custom_subscription =
-        (rmw_uxrce_subscription_t *)subscriptions->subscribers[i];
+  for (size_t i = 0; subscriptions && i < subscriptions->subscriber_count; ++i) {
+    rmw_uxrce_subscription_t * custom_subscription =
+      (rmw_uxrce_subscription_t *)subscriptions->subscribers[i];
 
-      if (NULL == rmw_uxrce_find_static_input_buffer_by_owner((void *) custom_subscription)) {
-        subscriptions->subscribers[i] = NULL;
-      } else {
-        buffered_status = true;
-      }
+    if (NULL == rmw_uxrce_find_static_input_buffer_by_owner((void *) custom_subscription)) {
+      subscriptions->subscribers[i] = NULL;
+    } else {
+      buffered_status = true;
     }
   }
 
   // Check guard conditions
-  if (guard_conditions) {
-    for (size_t i = 0; i < guard_conditions->guard_condition_count; ++i) {
-      bool * hasTriggered = (bool *)guard_conditions->guard_conditions[i];
-      if ((*hasTriggered) == false) {
-        guard_conditions->guard_conditions[i] = NULL;
-      } else {
-        *hasTriggered = false;
-        buffered_status = true;
-      }
+  for (size_t i = 0; guard_conditions && i < guard_conditions->guard_condition_count; ++i) {
+    bool * hasTriggered = (bool *)guard_conditions->guard_conditions[i];
+    if ((*hasTriggered) == false) {
+      guard_conditions->guard_conditions[i] = NULL;
+    } else {
+      *hasTriggered = false;
+      buffered_status = true;
     }
   }
 

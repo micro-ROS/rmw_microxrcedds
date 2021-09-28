@@ -69,6 +69,7 @@ rmw_create_service(
 
     custom_service->owner_node = custom_node;
     custom_service->session_timeout = RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT;
+    custom_service->qos = *qos_policies;
 
     const rosidl_service_type_support_t * type_support_xrce = NULL;
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
