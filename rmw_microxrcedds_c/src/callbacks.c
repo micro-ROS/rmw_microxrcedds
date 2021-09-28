@@ -135,6 +135,7 @@ void on_request(
           length))
       {
         put_memory(&static_buffer_memory, memory_node);
+        return;
       }
 
       static_buffer->owner = (void *) custom_service;
@@ -143,7 +144,7 @@ void on_request(
       static_buffer->timestamp = rmw_uros_epoch_nanos();
       static_buffer->entity_type = RMW_UXRCE_ENTITY_TYPE_SERVICE;
 
-      break;
+      return;
     }
     service_item = service_item->next;
   }
@@ -184,6 +185,7 @@ void on_reply(
           length))
       {
         put_memory(&static_buffer_memory, memory_node);
+        return;
       }
 
       static_buffer->owner = (void *) custom_client;
@@ -192,7 +194,7 @@ void on_reply(
       static_buffer->timestamp = rmw_uros_epoch_nanos();
       static_buffer->entity_type = RMW_UXRCE_ENTITY_TYPE_CLIENT;
 
-      break;
+      return;
     }
     client_item = client_item->next;
   }
