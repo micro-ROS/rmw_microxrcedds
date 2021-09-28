@@ -193,6 +193,9 @@ rmw_init(
     options->impl->transport_params.read_cb);
   #endif  // RMW_UXRCE_TRANSPORT_CUSTOM
 
+  context_impl->creation_timeout = RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT;
+  context_impl->destroy_timeout = RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT;
+
   context_impl->id_participant = 0;
   context_impl->id_topic = 0;
   context_impl->id_publisher = 0;
