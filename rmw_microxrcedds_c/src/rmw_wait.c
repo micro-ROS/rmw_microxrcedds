@@ -16,7 +16,7 @@
 #include <math.h>
 
 #include <rmw/rmw.h>
-#include <rmw/time.h>
+#include <rcutils/time.h>
 #include <rmw/error_handling.h>
 
 #include "./utils.h"
@@ -44,10 +44,10 @@ rmw_wait(
     int32_t i32;
   } timeout;
 
-  if (rmw_time_equal(*wait_timeout, (rmw_time_t)RMW_DURATION_INFINITE)) {
+  if (NULL == wait_timeout) {
     timeout.i32 = UXR_TIMEOUT_INF;
   } else {
-    timeout.i64 = rmw_time_total_nsec(*wait_timeout) / 1000000ULL;
+    timeout.i64 = (wait_timeout->sec * 1000LL) + RCUTILS_NS_TO_MS(wait_timeout->nsec);
     timeout.i32 = (timeout.i64 > INT32_MAX) ? INT32_MAX : timeout.i64;
   }
 
