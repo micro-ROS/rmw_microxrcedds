@@ -97,6 +97,8 @@ struct rmw_context_impl_s
   uint16_t id_datareader;
   uint16_t id_requester;
   uint16_t id_replier;
+
+  bool need_to_be_ran;
 };
 
 typedef struct rmw_context_impl_s rmw_uxrce_session_t;
@@ -126,6 +128,8 @@ typedef struct rmw_uxrce_service_t
   const service_type_support_callbacks_t * type_support_callbacks;
   uint16_t service_data_resquest;
 
+  rmw_qos_profile_t qos;
+
   uxrStreamId stream_id;
   int session_timeout;
   struct rmw_uxrce_node_t * owner_node;
@@ -138,6 +142,8 @@ typedef struct rmw_uxrce_client_t
   uxrObjectId client_id;
   const service_type_support_callbacks_t * type_support_callbacks;
   uint16_t client_data_request;
+
+  rmw_qos_profile_t qos;
 
   uxrStreamId stream_id;
   int session_timeout;
@@ -189,6 +195,19 @@ typedef struct rmw_uxrce_node_t
   uxrObjectId participant_id;
 } rmw_uxrce_node_t;
 
+#define RMW_UXRCE_QOS_LIFESPAN_DEFAULT {30LL, 0LL}
+
+typedef enum rmw_uxrce_entity_type_t
+{
+  RMW_UXRCE_ENTITY_TYPE_UNKNOWN = 0,
+  RMW_UXRCE_ENTITY_TYPE_NODE,
+  RMW_UXRCE_ENTITY_TYPE_TOPIC,
+  RMW_UXRCE_ENTITY_TYPE_SERVICE,
+  RMW_UXRCE_ENTITY_TYPE_CLIENT,
+  RMW_UXRCE_ENTITY_TYPE_SUBSCRIPTION,
+  RMW_UXRCE_ENTITY_TYPE_PUBLISHER
+} rmw_uxrce_entity_type_t;
+
 typedef struct rmw_uxrce_static_input_buffer_t
 {
   rmw_uxrce_mempool_item_t mem;
@@ -196,6 +215,9 @@ typedef struct rmw_uxrce_static_input_buffer_t
   uint8_t buffer[RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
   size_t length;
   void * owner;
+
+  int64_t timestamp;
+  rmw_uxrce_entity_type_t entity_type;
 
   union {
     int64_t reply_id;
@@ -265,7 +287,13 @@ void rmw_uxrce_fini_service_memory(
 void rmw_uxrce_fini_topic_memory(
   rmw_uxrce_topic_t * topic);
 
+// Memory pools functions
+
+rmw_uxrce_mempool_item_t * rmw_uxrce_get_static_input_buffer_for_entity(
+  void * entity,
+  const rmw_qos_profile_t qos);
 rmw_uxrce_mempool_item_t * rmw_uxrce_find_static_input_buffer_by_owner(
   void * owner);
+void rmw_uxrce_clean_expired_static_input_buffer(void);
 
 #endif  // TYPES_H_

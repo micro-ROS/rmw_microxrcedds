@@ -102,8 +102,7 @@ rmw_create_publisher(
     custom_publisher->rmw_handle = rmw_publisher;
     custom_publisher->owner_node = custom_node;
     custom_publisher->session_timeout = RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT;
-
-    memcpy(&custom_publisher->qos, qos_policies, sizeof(rmw_qos_profile_t));
+    custom_publisher->qos = *qos_policies;
 
     custom_publisher->stream_id =
       (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
@@ -224,6 +223,7 @@ rmw_create_publisher(
       custom_publisher->topic->topic_id,
       reliability,
       history,
+      qos_policies->depth,
       durability,
       UXR_REPLACE | UXR_REUSE);
   #endif /* ifdef RMW_UXRCE_USE_REFS */

@@ -49,6 +49,8 @@ rmw_take_with_info(
 
   rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
 
+  rmw_uxrce_clean_expired_static_input_buffer();
+
   // Find first related item in static buffer memory pool
   rmw_uxrce_mempool_item_t * static_buffer_item = rmw_uxrce_find_static_input_buffer_by_owner(
     (void *) custom_subscription);
