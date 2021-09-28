@@ -336,13 +336,13 @@ void rmw_uxrce_clean_expired_static_input_buffer(void)
         break;
     }
 
-    if (rmw_time_equal(lifespan, (rmw_time_t)RMW_DURATION_UNSPECIFIED)) {
+    if (lifespan.sec == 0 && lifespan.nsec == 0) {
       lifespan = (rmw_time_t) RMW_UXRCE_QOS_LIFESPAN_DEFAULT;
     }
 
     rmw_uxrce_mempool_item_t * aux_next = static_buffer_item->next;
 
-    int64_t expiration_time = data->timestamp + rmw_time_total_nsec(lifespan);
+    int64_t expiration_time = data->timestamp + (lifespan->sec * 1000LL) + RCUTILS_NS_TO_MS(lifespan->nsec);
     if (expiration_time < now_ns || data->timestamp > now_ns) {
       put_memory(&static_buffer_memory, static_buffer_item);
     }
