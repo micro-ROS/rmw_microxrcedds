@@ -278,7 +278,9 @@ if(BUILD_TESTING)
   # Pedantic in CI
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
-  set(RMW_UXRCE_TEST_SESSIONS "2" CACHE STRING "")
+  if(RMW_UXRCE_MAX_SESSIONS STREQUAL "1")
+    set(RMW_UXRCE_MAX_SESSIONS "2")
+  endif()
 
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
