@@ -86,6 +86,7 @@ void on_topic(
           length))
       {
         put_memory(&static_buffer_memory, memory_node);
+        return;
       }
 
       static_buffer->owner = (void *) custom_subscription;
@@ -93,7 +94,7 @@ void on_topic(
       static_buffer->timestamp = rmw_uros_epoch_nanos();
       static_buffer->entity_type = RMW_UXRCE_ENTITY_TYPE_SUBSCRIPTION;
 
-      break;
+      return;
     }
     subscription_item = subscription_item->next;
   }
