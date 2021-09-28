@@ -44,7 +44,7 @@ rmw_wait(
     int32_t i32;
   } timeout;
 
-  if (rmw_time_equal(*wait_timeout, (rmw_time_t)RMW_DURATION_INFINITE)) {
+  if (NULL == wait_timeout || rmw_time_equal(*wait_timeout, (rmw_time_t)RMW_DURATION_INFINITE)) {
     timeout.i32 = UXR_TIMEOUT_INF;
   } else {
     timeout.i64 = rmw_time_total_nsec(*wait_timeout) / 1000000ULL;
