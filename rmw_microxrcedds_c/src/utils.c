@@ -29,7 +29,8 @@ static const char ros_reply_subfix[] = "Reply";
 
 bool run_xrce_session(
   rmw_context_impl_t * context,
-  uint16_t requests)
+  uint16_t request,
+  int timeout)
 {
   if (context->creation_destroy_stream->type == UXR_BEST_EFFORT_STREAM) {
     uxr_flash_output_streams(&context->session);
@@ -38,8 +39,7 @@ bool run_xrce_session(
     uint8_t status;
     if (!uxr_run_session_until_all_status(
         &context->session,
-        RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT,
-        &requests, &status, 1))
+        timeout, &request, &status, 1))
     {
       RMW_SET_ERROR_MSG("Issues running micro XRCE-DDS session");
       return false;
@@ -207,7 +207,6 @@ int build_publisher_xml(
   (void)publisher_name;
   (void)buffer_size;
 
-  // TODO(pablogs9): Check if there is any case where this xml should be filled for FastDDS
   xml[0] = '\0';
   return 1;
 }
@@ -220,7 +219,6 @@ int build_subscriber_xml(
   (void)subscriber_name;
   (void)buffer_size;
 
-  // TODO(pablogs9): Check if there is any case where this xml should be filled for FastDDS
   xml[0] = '\0';
   return 1;
 }

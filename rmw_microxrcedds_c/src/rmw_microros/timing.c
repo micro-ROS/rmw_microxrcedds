@@ -52,3 +52,25 @@ rmw_ret_t rmw_uros_set_client_session_timeout(
   custom_client->session_timeout = session_timeout;
   return RMW_RET_OK;
 }
+
+rmw_ret_t rmw_uros_set_context_entity_creation_session_timeout(
+  rmw_context_t * context,
+  int session_timeout)
+{
+  RMW_CHECK_ARGUMENT_FOR_NULL(context, RMW_RET_INVALID_ARGUMENT);
+  rmw_uxrce_session_t * custom_session = (rmw_uxrce_session_t *)context->impl;
+
+  custom_session->creation_timeout = session_timeout;
+  return RMW_RET_OK;
+}
+
+rmw_ret_t rmw_uros_set_context_entity_destroy_session_timeout(
+  rmw_context_t * context,
+  int session_timeout)
+{
+  RMW_CHECK_ARGUMENT_FOR_NULL(context, RMW_RET_INVALID_ARGUMENT);
+  rmw_uxrce_session_t * custom_session = (rmw_uxrce_session_t *)context->impl;
+
+  custom_session->destroy_timeout = session_timeout;
+  return RMW_RET_OK;
+}
