@@ -95,13 +95,9 @@ struct rmw_context_impl_s
   uint16_t id_datareader;
   uint16_t id_requester;
   uint16_t id_replier;
-<<<<<<< HEAD
-};
-=======
 
   bool need_to_be_ran;
 } rmw_context_impl_t;
->>>>>>> b1531c7 (RMW QoS incoming buffer handling (#165))
 
 typedef struct rmw_context_impl_s rmw_uxrce_session_t;
 
