@@ -280,6 +280,14 @@ rmw_shutdown(
     *context = rmw_get_zero_initialized_context();
   }
 
+  rmw_uxrce_mempool_item_t * item = static_buffer_memory.allocateditems;
+
+  while (item != NULL) {
+    rmw_uxrce_mempool_item_t * aux_next = item->next;
+    put_memory(&static_buffer_memory, item);
+    item = aux_next;
+  }
+
   return ret;
 }
 
