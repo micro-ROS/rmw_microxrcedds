@@ -48,8 +48,8 @@ public:
 
     configure_typesupport();
 
-    node_srv = rmw_create_node(&context_srv, "node_srv", "/ns");
-    node_cli = rmw_create_node(&context_cli, "node_cli", "/ns");
+    node_srv = rmw_create_node(&context_srv, "node_srv", "/ns", 0, false);
+    node_cli = rmw_create_node(&context_cli, "node_cli", "/ns", 0, false);
 
 
     EXPECT_NE(node_srv, nullptr);

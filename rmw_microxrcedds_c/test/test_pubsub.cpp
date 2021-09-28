@@ -43,8 +43,8 @@ public:
 
     configure_typesupport();
 
-    node_pub = rmw_create_node(&context_pub, "node_pub", "/ns");
-    node_sub = rmw_create_node(&context_sub, "node_sub", "/ns");
+    node_pub = rmw_create_node(&context_pub, "node_pub", "/ns", 0, false);
+    node_sub = rmw_create_node(&context_sub, "node_sub", "/ns", 0, false);
 
     EXPECT_NE(node_pub, nullptr);
     EXPECT_NE(node_sub, nullptr);
