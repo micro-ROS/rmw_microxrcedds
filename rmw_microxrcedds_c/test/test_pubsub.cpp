@@ -204,7 +204,6 @@ TEST_F(TestPubSub, publish_and_receive)
   std::string send_data = "hello";
   publish_string(send_data.c_str(), pub);
 
-<<<<<<< HEAD
   rmw_node_t * node_pub;
   node_pub = rmw_create_node(&test_context, "pub_node", "/ns", 0, false);
   ASSERT_NE((void *)node_pub, (void *)NULL);
@@ -218,13 +217,11 @@ TEST_F(TestPubSub, publish_and_receive)
   rmw_node_t * node_sub;
   node_sub = rmw_create_node(&test_context, "sub_node", "/ns", 0, false);
   ASSERT_NE((void *)node_sub, (void *)NULL);
-=======
   EXPECT_EQ(wait_for_subscription(sub), RMW_RET_OK);
 
   bool taken = false;
   char recv_data[100];
   ASSERT_EQ(take_from_subscription(sub, recv_data, sizeof(recv_data), taken), RMW_RET_OK);
->>>>>>> b1531c7 (RMW QoS incoming buffer handling (#165))
 
   ASSERT_TRUE(taken);
   ASSERT_EQ(strcmp(send_data.c_str(), recv_data), 0);

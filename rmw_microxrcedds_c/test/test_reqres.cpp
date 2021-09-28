@@ -258,7 +258,6 @@ protected:
 
 TEST_F(TestReqRes, request_and_reply)
 {
-<<<<<<< HEAD
   // CREATE FAKE TYPESUPPORT
 
   ConfigureDummyServiceTypeSupport(
@@ -345,10 +344,8 @@ TEST_F(TestReqRes, request_and_reply)
     &dummy_qos_policies);
 
   ASSERT_NE((void *)client, (void *)NULL);
-=======
   rmw_service_t * service = create_service(rmw_qos_profile_services_default);
   rmw_client_t * client = create_client(rmw_qos_profile_services_default);
->>>>>>> b1531c7 (RMW QoS incoming buffer handling (#165))
 
   // Request
   std::string req_data = "test_request";
