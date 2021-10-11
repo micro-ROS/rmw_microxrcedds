@@ -30,7 +30,7 @@ jobs:
             pip3 install gcovr
 
         - name: Build
-          run: . /opt/ros/$ROS_DISTRO/setup.sh && colcon build --symlink-install --cmake-args -DBUILD_SHARED_LIBS=ON -DCMAKE_CXX_FLAGS="-ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline" -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE=ON -DCMAKE_C_FLAGS="-ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline" -DCMAKE_C_OUTPUT_EXTENSION_REPLACE=ON
+          run: . /opt/ros/$ROS_DISTRO/setup.sh && colcon build --symlink-install --cmake-args -DBUILD_SHARED_LIBS=ON -DCMAKE_CXX_FLAGS="-ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline" -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE=ON -DCMAKE_CXX_CPPLINT=cpplint;--linelength=100 -DCMAKE_C_FLAGS="-ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline" -DCMAKE_C_OUTPUT_EXTENSION_REPLACE=ON
 
         - name: Test
           run: |
