@@ -16,7 +16,7 @@
 #include <rmw/names_and_types.h>
 #include <rmw/error_handling.h>
 
-#include "./utils.h"
+#include "./rmw_microros_internal/utils.h"
 
 rmw_ret_t
 rmw_trigger_guard_condition(

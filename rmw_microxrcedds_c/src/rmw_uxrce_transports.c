@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rmw_uxrce_transports.h>
+#include <rmw_microros_internal/rmw_uxrce_transports.h>
 
 #include <rmw/error_handling.h>
 

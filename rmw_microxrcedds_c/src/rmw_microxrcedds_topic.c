@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rmw_microxrcedds_topic.h>
+#include <rmw_microros_internal/rmw_microxrcedds_topic.h>
 
 #include <string.h>
 
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
 
-#include "./utils.h"
+#include "./rmw_microros_internal/utils.h"
 
 
 rmw_uxrce_topic_t *

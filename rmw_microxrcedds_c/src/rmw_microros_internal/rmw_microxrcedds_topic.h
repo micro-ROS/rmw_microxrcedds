@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMW_MICROXRCEDDS_TOPIC_H_
-#define RMW_MICROXRCEDDS_TOPIC_H_
+#ifndef RMW_MICROROS_INTERNAL__RMW_MICROXRCEDDS_TOPIC_H_
+#define RMW_MICROROS_INTERNAL__RMW_MICROXRCEDDS_TOPIC_H_
 
 #include <stddef.h>
 #include <uxr/client/client.h>
 
-#include "./types.h"
+#include "./rmw_microros_internal/types.h"
 
 #if defined(__cplusplus)
 extern "C"
 {
-#endif  // if defined(__cplusplus)
+#endif  // RMW_MICROROS_INTERNAL__if defined(__cplusplus)
 
 rmw_uxrce_topic_t *
 create_topic(
@@ -39,6 +39,6 @@ size_t topic_count(
 
 #if defined(__cplusplus)
 }
-#endif  // if defined(__cplusplus)
+#endif  // RMW_MICROROS_INTERNAL__if defined(__cplusplus)
 
-#endif  // RMW_MICROXRCEDDS_TOPIC_H_
+#endif  // RMW_MICROROS_INTERNAL__RMW_MICROXRCEDDS_TOPIC_H_

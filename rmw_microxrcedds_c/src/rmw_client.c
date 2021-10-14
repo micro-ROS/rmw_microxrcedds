@@ -24,7 +24,7 @@
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
 
-#include "./utils.h"
+#include "./rmw_microros_internal/utils.h"
 
 rmw_client_t *
 rmw_create_client(

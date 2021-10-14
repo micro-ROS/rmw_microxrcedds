@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef TYPES_H_
-#define TYPES_H_
+#ifndef RMW_MICROROS_INTERNAL__TYPES_H_
+#define RMW_MICROROS_INTERNAL__TYPES_H_
 
 #include <stddef.h>
 
@@ -23,7 +23,7 @@
 
 #ifdef RMW_UXRCE_TRANSPORT_CUSTOM
 #include <uxr/client/profile/transport/custom/custom_transport.h>
-#endif  // RMW_UXRCE_TRANSPORT_CUSTOM
+#endif  // RMW_MICROROS_INTERNAL__RMW_UXRCE_TRANSPORT_CUSTOM
 
 #include <rosidl_runtime_c/message_type_support_struct.h>
 #include <rosidl_typesupport_microxrcedds_c/message_type_support.h>
@@ -34,7 +34,7 @@
 #include <rmw_microxrcedds_c/config.h>
 #include <rmw_microros/rmw_microros.h>
 
-#include "./memory.h"
+#include "./rmw_microros_internal/memory.h"
 
 // RMW specific definitions
 #ifdef RMW_UXRCE_GRAPH
@@ -54,7 +54,7 @@ typedef struct rmw_graph_info_t
 
   const rosidl_message_type_support_t * graph_type_support;
 } rmw_graph_info_t;
-#endif  // RMW_UXRCE_GRAPH
+#endif  // RMW_MICROROS_INTERNAL__RMW_UXRCE_GRAPH
 
 struct rmw_context_impl_s
 {
@@ -68,12 +68,12 @@ struct rmw_context_impl_s
   uxrTCPTransport transport;
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
   uxrCustomTransport transport;
-#endif  // if defined(RMW_UXRCE_TRANSPORT_SERIAL)
+#endif  // RMW_MICROROS_INTERNAL__if defined(RMW_UXRCE_TRANSPORT_SERIAL)
   uxrSession session;
 
 #ifdef RMW_UXRCE_GRAPH
   rmw_graph_info_t graph_info;
-#endif  // ifdef RMW_UXRCE_GRAPH
+#endif  // RMW_MICROROS_INTERNAL__ifdef RMW_UXRCE_GRAPH
   rmw_guard_condition_t graph_guard_condition;
 
   uxrStreamId reliable_input;
@@ -195,7 +195,7 @@ typedef struct rmw_uxrce_node_t
   uxrObjectId participant_id;
 } rmw_uxrce_node_t;
 
-#define RMW_UXRCE_QOS_LIFESPAN_DEFAULT {30LL, 0LL}
+#define RMW_MICROROS_INTERNAL__RMW_UXRCE_QOS_LIFESPAN_DEFAULT {30LL, 0LL}
 
 typedef enum rmw_uxrce_entity_type_t
 {
@@ -296,4 +296,4 @@ rmw_uxrce_mempool_item_t * rmw_uxrce_find_static_input_buffer_by_owner(
   void * owner);
 void rmw_uxrce_clean_expired_static_input_buffer(void);
 
-#endif  // TYPES_H_
+#endif  // RMW_MICROROS_INTERNAL__TYPES_H_

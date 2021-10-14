@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CALLBACKS_H_
-#define CALLBACKS_H_
+#ifndef RMW_MICROROS_INTERNAL__CALLBACKS_H_
+#define RMW_MICROROS_INTERNAL__CALLBACKS_H_
 
-#include "./callbacks.h"
 #include <rmw_microxrcedds_c/config.h>
 
-#include "./types.h"
+#include "./rmw_microros_internal/types.h"
 
 void on_status(
   struct uxrSession * session,
@@ -54,4 +53,4 @@ void on_reply(
   uint16_t length,
   void * args);
 
-#endif  // CALLBACKS_H_
+#endif  // RMW_MICROROS_INTERNAL__CALLBACKS_H_
