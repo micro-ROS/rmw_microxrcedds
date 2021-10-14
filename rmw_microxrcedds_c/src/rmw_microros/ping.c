@@ -22,8 +22,8 @@
 #include <uxr/client/client.h>
 #include <uxr/client/util/ping.h>
 
-#include "../rmw_uxrce_transports.h"
-#include "../types.h"
+#include "../rmw_microros_internal/rmw_uxrce_transports.h"
+#include "../rmw_microros_internal/types.h"
 
 extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
 

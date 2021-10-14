@@ -15,7 +15,7 @@
 #include <rmw/rmw.h>
 #include <rmw/error_handling.h>
 
-#include "./types.h"
+#include "./rmw_microros_internal/types.h"
 
 rmw_ret_t
 rmw_get_gid_for_publisher(

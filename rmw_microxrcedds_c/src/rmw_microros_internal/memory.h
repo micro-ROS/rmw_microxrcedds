@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MEMORY_H_
-#define MEMORY_H_
+#ifndef RMW_MICROROS_INTERNAL__MEMORY_H_
+#define RMW_MICROROS_INTERNAL__MEMORY_H_
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -39,7 +39,7 @@ typedef struct rmw_uxrce_mempool_t
 
 #ifdef UCLIENT_PROFILE_MULTITHREAD
   uxrMutex mutex;
-#endif  // UCLIENT_PROFILE_MULTITHREAD
+#endif  // RMW_MICROROS_INTERNAL__UCLIENT_PROFILE_MULTITHREAD
 } rmw_uxrce_mempool_t;
 
 bool has_memory(
@@ -50,4 +50,4 @@ void put_memory(
   rmw_uxrce_mempool_t * mem,
   rmw_uxrce_mempool_item_t * item);
 
-#endif  // MEMORY_H_
+#endif  // RMW_MICROROS_INTERNAL__MEMORY_H_

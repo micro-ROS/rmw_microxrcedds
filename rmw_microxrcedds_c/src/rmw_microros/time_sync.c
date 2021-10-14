@@ -18,7 +18,7 @@
 
 #include <uxr/client/util/time.h>
 
-#include "../types.h"
+#include "../rmw_microros_internal/types.h"
 
 bool rmw_uros_epoch_synchronized()
 {

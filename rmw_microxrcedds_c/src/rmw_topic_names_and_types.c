@@ -19,11 +19,11 @@
 #include <rmw_microxrcedds_c/config.h>
 #include <rmw_microxrcedds_c/rmw_c_macros.h>
 
-#include "./types.h"
-#include "./identifiers.h"
+#include "./rmw_microros_internal/types.h"
+#include "./rmw_microros_internal/identifiers.h"
 
 #ifdef RMW_UXRCE_GRAPH
-#include "./rmw_graph.h"
+#include "./rmw_microros_internal/rmw_graph.h"
 #endif  // RMW_UXRCE_GRAPH
 
 rmw_ret_t

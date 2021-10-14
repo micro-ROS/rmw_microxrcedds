@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <utils.h>
+#include <rmw_microros_internal/utils.h>
 
 #include <rmw/error_handling.h>
 
-#include "./types.h"
+#include "./rmw_microros_internal/types.h"
 
 
 // TODO(pablogs9) Refactor all this file.
