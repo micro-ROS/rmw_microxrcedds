@@ -23,7 +23,7 @@
 #if defined(__cplusplus)
 extern "C"
 {
-#endif  // RMW_MICROROS_INTERNAL__if defined(__cplusplus)
+#endif  // if defined(__cplusplus)
 
 rmw_uxrce_topic_t *
 create_topic(
@@ -39,6 +39,6 @@ size_t topic_count(
 
 #if defined(__cplusplus)
 }
-#endif  // RMW_MICROROS_INTERNAL__if defined(__cplusplus)
+#endif  // if defined(__cplusplus)
 
 #endif  // RMW_MICROROS_INTERNAL__RMW_MICROXRCEDDS_TOPIC_H_

@@ -68,12 +68,12 @@ struct rmw_context_impl_s
   uxrTCPTransport transport;
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
   uxrCustomTransport transport;
-#endif  // RMW_MICROROS_INTERNAL__if defined(RMW_UXRCE_TRANSPORT_SERIAL)
+#endif  // if defined(RMW_UXRCE_TRANSPORT_SERIAL)
   uxrSession session;
 
 #ifdef RMW_UXRCE_GRAPH
   rmw_graph_info_t graph_info;
-#endif  // RMW_MICROROS_INTERNAL__ifdef RMW_UXRCE_GRAPH
+#endif  // if RMW_UXRCE_GRAPH
   rmw_guard_condition_t graph_guard_condition;
 
   uxrStreamId reliable_input;
@@ -195,7 +195,7 @@ typedef struct rmw_uxrce_node_t
   uxrObjectId participant_id;
 } rmw_uxrce_node_t;
 
-#define RMW_MICROROS_INTERNAL__RMW_UXRCE_QOS_LIFESPAN_DEFAULT {30LL, 0LL}
+#define RMW_UXRCE_QOS_LIFESPAN_DEFAULT {30LL, 0LL}
 
 typedef enum rmw_uxrce_entity_type_t
 {

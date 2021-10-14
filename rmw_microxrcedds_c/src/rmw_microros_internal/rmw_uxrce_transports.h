@@ -62,6 +62,6 @@ rmw_ret_t rmw_uxrce_transport_init(
 #define CLOSE_TRANSPORT(transport)    uxr_close_custom_transport(transport)
 #else
 #define CLOSE_TRANSPORT(transport)
-#endif  // RMW_MICROROS_INTERNAL__if defined(RMW_UXRCE_TRANSPORT_SERIAL)
+#endif  // defined(RMW_UXRCE_TRANSPORT_SERIAL)
 
-#endif  // RMW_MICROROS_INTERNAL__ RMW_UXRCE_TRANSPORTS_H_
+#endif  // RMW_MICROROS_INTERNAL__RMW_UXRCE_TRANSPORTS_H_
