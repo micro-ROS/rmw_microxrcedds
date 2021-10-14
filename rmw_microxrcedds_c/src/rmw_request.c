@@ -16,7 +16,7 @@
 #include <rmw/error_handling.h>
 #include <uxr/client/profile/multithread/multithread.h>
 
-#include "./utils.h"
+#include "./rmw_microros_internal/utils.h"
 
 rmw_ret_t
 rmw_send_request(

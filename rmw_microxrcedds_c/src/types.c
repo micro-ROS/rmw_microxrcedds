@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <types.h>
+#include <rmw_microros_internal/types.h>
 
 #ifdef HAVE_C_TYPESUPPORT
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>
@@ -26,9 +26,9 @@
 
 #include <uxr/client/profile/multithread/multithread.h>
 
-#include "./utils.h"
-#include "./memory.h"
-#include "./rmw_microxrcedds_topic.h"
+#include "./rmw_microros_internal/utils.h"
+#include "./rmw_microros_internal/memory.h"
+#include "./rmw_microros_internal/rmw_microxrcedds_topic.h"
 
 // Static memory pools
 

@@ -19,7 +19,7 @@
 #include <rcutils/time.h>
 #include <rmw/error_handling.h>
 
-#include "./utils.h"
+#include "./rmw_microros_internal/utils.h"
 
 rmw_ret_t
 rmw_wait(

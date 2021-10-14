@@ -18,7 +18,7 @@
 #include <rmw/ret_types.h>
 #include <rmw/error_handling.h>
 
-#include "../types.h"
+#include "../rmw_microros_internal/types.h"
 
 rmw_ret_t rmw_uros_init_options(
   int argc,

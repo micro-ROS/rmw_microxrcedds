@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef IDENTIFIERS_H_
-#define IDENTIFIERS_H_
+#ifndef RMW_MICROROS_INTERNAL__IDENTIFIERS_H_
+#define RMW_MICROROS_INTERNAL__IDENTIFIERS_H_
 
 extern const char * const eprosima_microxrcedds_identifier;
 extern const char * const eprosima_microxrcedds_serialization_format;
 
-#endif  // IDENTIFIERS_H_
+#endif  // RMW_MICROROS_INTERNAL__IDENTIFIERS_H_

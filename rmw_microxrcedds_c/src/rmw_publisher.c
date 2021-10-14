@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rmw_publisher.h>
+#include <rmw_microros_internal/rmw_publisher.h>
 
 #include <rmw_microxrcedds_c/config.h>
 
@@ -32,8 +32,8 @@
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 
-#include "./utils.h"
-#include "./rmw_microxrcedds_topic.h"
+#include "./rmw_microros_internal/utils.h"
+#include "./rmw_microros_internal/rmw_microxrcedds_topic.h"
 
 rmw_ret_t
 rmw_init_publisher_allocation(

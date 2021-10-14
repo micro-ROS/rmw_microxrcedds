@@ -17,8 +17,8 @@
 #include <rmw_microros/rmw_microros.h>
 #include <uxr/client/profile/multithread/multithread.h>
 
-#include "./types.h"
-#include "./utils.h"
+#include "./rmw_microros_internal/types.h"
+#include "./rmw_microros_internal/utils.h"
 
 bool flush_session(
   uxrSession * session,

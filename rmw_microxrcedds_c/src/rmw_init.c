@@ -22,16 +22,16 @@
 #include <rmw/allocators.h>
 #include <uxr/client/util/time.h>
 
-#include "./callbacks.h"
-#include "./types.h"
-#include "./utils.h"
-#include "./rmw_node.h"
-#include "./identifiers.h"
-#include "./rmw_uxrce_transports.h"
+#include "./rmw_microros_internal/callbacks.h"
+#include "./rmw_microros_internal/types.h"
+#include "./rmw_microros_internal/utils.h"
+#include "./rmw_microros_internal/rmw_node.h"
+#include "./rmw_microros_internal/identifiers.h"
+#include "./rmw_microros_internal/rmw_uxrce_transports.h"
 
 
 #ifdef RMW_UXRCE_GRAPH
-#include "./rmw_graph.h"
+#include "./rmw_microros_internal/rmw_graph.h"
 #endif  // RMW_UXRCE_GRAPH
 
 extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
