@@ -30,8 +30,8 @@
 #include <rmw/types.h>
 #include <rmw/allocators.h>
 
-#include "./utils.h"
-#include "./rmw_microxrcedds_topic.h"
+#include "./rmw_microros_internal/utils.h"
+#include "./rmw_microros_internal/rmw_microxrcedds_topic.h"
 
 rmw_ret_t
 rmw_init_subscription_allocation(

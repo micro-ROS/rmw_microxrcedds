@@ -23,11 +23,11 @@
 #include <rmw/get_topic_endpoint_info.h>
 #include <rmw/types.h>
 
-#include "./types.h"
-#include "./identifiers.h"
+#include "./rmw_microros_internal/types.h"
+#include "./rmw_microros_internal/identifiers.h"
 
 #ifdef RMW_UXRCE_GRAPH
-#include "./rmw_graph.h"
+#include "./rmw_microros_internal/rmw_graph.h"
 #endif  // RMW_UXRCE_GRAPH
 
 #ifdef RMW_UXRCE_GRAPH

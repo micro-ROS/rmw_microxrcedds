@@ -15,7 +15,7 @@
 #include <rmw/rmw.h>
 #include <rmw/allocators.h>
 
-#include "./utils.h"
+#include "./rmw_microros_internal/utils.h"
 
 rmw_guard_condition_t *
 rmw_create_guard_condition(

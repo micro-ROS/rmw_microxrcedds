@@ -16,7 +16,7 @@
 #include <rmw/error_handling.h>
 #include <rmw/allocators.h>
 
-#include "./utils.h"
+#include "./rmw_microros_internal/utils.h"
 
 rmw_wait_set_t *
 rmw_create_wait_set(

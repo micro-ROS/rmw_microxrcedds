@@ -12,18 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMW_NODE_H_
-#define RMW_NODE_H_
+#ifndef RMW_MICROROS_INTERNAL__RMW_PUBLISHER_H_
+#define RMW_MICROROS_INTERNAL__RMW_PUBLISHER_H_
 
 #include <rmw/types.h>
+#include <rosidl_runtime_c/message_type_support_struct.h>
 
-#include "./types.h"
+rmw_publisher_t * create_publisher(
+  const rmw_node_t * node,
+  const rosidl_message_type_support_t * type_support,
+  const char * topic_name,
+  const rmw_qos_profile_t * qos_policies);
 
-
-rmw_node_t * create_node(
-  const char * name,
-  const char * namespace_,
-  size_t domain_id,
-  const rmw_context_t * context);
-
-#endif  // RMW_NODE_H_
+#endif  // RMW_MICROROS_INTERNAL__RMW_PUBLISHER_H_

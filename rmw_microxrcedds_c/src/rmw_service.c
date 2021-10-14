@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "./utils.h"
+#include "./rmw_microros_internal/utils.h"
 
 #ifdef HAVE_C_TYPESUPPORT
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>

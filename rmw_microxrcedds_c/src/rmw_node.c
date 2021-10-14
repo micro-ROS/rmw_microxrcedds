@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rmw_node.h>
+#include <rmw_microros_internal/rmw_node.h>
 
 #include <rmw_microxrcedds_c/config.h>
 #include <rmw/allocators.h>
 #include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 
-#include "./types.h"
-#include "./utils.h"
-#include "./identifiers.h"
+#include "./rmw_microros_internal/types.h"
+#include "./rmw_microros_internal/utils.h"
+#include "./rmw_microros_internal/identifiers.h"
 
 rmw_node_t * create_node(
   const char * name,

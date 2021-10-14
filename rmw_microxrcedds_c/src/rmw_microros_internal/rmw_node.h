@@ -1,4 +1,4 @@
-// Copyright 2019 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2018 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,11 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "./rmw_microros_internal/identifiers.h"
-#include "./rmw_microros_internal/utils.h"
+#ifndef RMW_MICROROS_INTERNAL__RMW_NODE_H_
+#define RMW_MICROROS_INTERNAL__RMW_NODE_H_
 
-const char *
-rmw_get_serialization_format()
-{
-  return eprosima_microxrcedds_serialization_format;
-}
+#include <rmw/types.h>
+
+#include "./rmw_microros_internal/types.h"
+
+
+rmw_node_t * create_node(
+  const char * name,
+  const char * namespace_,
+  size_t domain_id,
+  const rmw_context_t * context);
+
+#endif  // RMW_MICROROS_INTERNAL__RMW_NODE_H_
