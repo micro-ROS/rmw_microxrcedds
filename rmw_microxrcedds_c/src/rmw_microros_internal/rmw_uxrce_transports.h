@@ -55,13 +55,13 @@ rmw_ret_t rmw_uxrce_transport_init(
  * @param   transport The uxrXXXTransport struct pointer used to close the connection.
  */
 #if defined(RMW_UXRCE_TRANSPORT_SERIAL)
-#define RMW_MICROROS_INTERNAL__CLOSE_TRANSPORT(transport)    uxr_close_serial_transport(transport)
+#define CLOSE_TRANSPORT(transport)    uxr_close_serial_transport(transport)
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
-#define RMW_MICROROS_INTERNAL__CLOSE_TRANSPORT(transport)    uxr_close_udp_transport(transport)
+#define CLOSE_TRANSPORT(transport)    uxr_close_udp_transport(transport)
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
-#define RMW_MICROROS_INTERNAL__CLOSE_TRANSPORT(transport)    uxr_close_custom_transport(transport)
+#define CLOSE_TRANSPORT(transport)    uxr_close_custom_transport(transport)
 #else
-#define RMW_MICROROS_INTERNAL__CLOSE_TRANSPORT(transport)
+#define CLOSE_TRANSPORT(transport)
 #endif  // RMW_MICROROS_INTERNAL__if defined(RMW_UXRCE_TRANSPORT_SERIAL)
 
 #endif  // RMW_MICROROS_INTERNAL__ RMW_UXRCE_TRANSPORTS_H_
