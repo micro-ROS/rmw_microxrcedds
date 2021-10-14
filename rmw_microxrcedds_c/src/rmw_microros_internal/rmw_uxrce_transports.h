@@ -11,23 +11,23 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#ifndef RMW_UXRCE_TRANSPORTS_H_
-#define RMW_UXRCE_TRANSPORTS_H_
+#ifndef RMW_MICROROS_INTERNAL__RMW_UXRCE_TRANSPORTS_H_
+#define RMW_MICROROS_INTERNAL__RMW_UXRCE_TRANSPORTS_H_
 
 #include <uxr/client/client.h>
 #include <rmw_microxrcedds_c/config.h>
 
 #ifdef RMW_UXRCE_TRANSPORT_CUSTOM
 #include <uxr/client/profile/transport/custom/custom_transport.h>
-#endif  //  RMW_UXRCE_TRANSPORT_CUSTOM
+#endif  // RMW_MICROROS_INTERNAL__ RMW_UXRCE_TRANSPORT_CUSTOM
 
 #ifdef RMW_UXRCE_TRANSPORT_SERIAL
 #include <stdio.h>
 #include <fcntl.h>
 #include <termios.h>
-#endif  //  RMW_UXRCE_TRANSPORT_SERIAL
+#endif  // RMW_MICROROS_INTERNAL__ RMW_UXRCE_TRANSPORT_SERIAL
 
-#include "./types.h"
+#include "./rmw_microros_internal/types.h"
 
 /**
  * @brief   Takes care of initializing the micro XRCE-DDS transport layer,
@@ -62,6 +62,6 @@ rmw_ret_t rmw_uxrce_transport_init(
 #define CLOSE_TRANSPORT(transport)    uxr_close_custom_transport(transport)
 #else
 #define CLOSE_TRANSPORT(transport)
-#endif  // if defined(RMW_UXRCE_TRANSPORT_SERIAL)
+#endif  // defined(RMW_UXRCE_TRANSPORT_SERIAL)
 
-#endif  //  RMW_UXRCE_TRANSPORTS_H_
+#endif  // RMW_MICROROS_INTERNAL__RMW_UXRCE_TRANSPORTS_H_

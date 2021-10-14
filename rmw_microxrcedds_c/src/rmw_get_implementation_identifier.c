@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "./identifiers.h"
-#include "./utils.h"
+#include "./rmw_microros_internal/identifiers.h"
+#include "./rmw_microros_internal/utils.h"
 
 const char *
 rmw_get_implementation_identifier()

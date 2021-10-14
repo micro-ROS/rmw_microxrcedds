@@ -20,7 +20,7 @@
 
 #include <uxr/client/client.h>
 
-#include "../types.h"
+#include "../rmw_microros_internal/types.h"
 
 #ifdef UCLIENT_PROFILE_DISCOVERY
 bool on_agent_found(
