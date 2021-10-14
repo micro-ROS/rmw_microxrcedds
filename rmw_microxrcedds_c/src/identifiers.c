@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <identifiers.h>
+#include <rmw_microros_internal/identifiers.h>
 
 const char * const eprosima_microxrcedds_identifier = "rmw_microxrcedds";
 const char * const eprosima_microxrcedds_serialization_format = "cdr";

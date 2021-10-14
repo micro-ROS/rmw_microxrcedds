@@ -12,16 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RMW_PUBLISHER_H_
-#define RMW_PUBLISHER_H_
+#ifndef RMW_MICROROS_INTERNAL__RMW_MICROXRCEDDS_TOPIC_H_
+#define RMW_MICROROS_INTERNAL__RMW_MICROXRCEDDS_TOPIC_H_
 
-#include <rmw/types.h>
-#include <rosidl_runtime_c/message_type_support_struct.h>
+#include <stddef.h>
+#include <uxr/client/client.h>
 
-rmw_publisher_t * create_publisher(
-  const rmw_node_t * node,
-  const rosidl_message_type_support_t * type_support,
+#include "./rmw_microros_internal/types.h"
+
+#if defined(__cplusplus)
+extern "C"
+{
+#endif  // if defined(__cplusplus)
+
+rmw_uxrce_topic_t *
+create_topic(
+  struct rmw_uxrce_node_t * custom_node,
   const char * topic_name,
+  const message_type_support_callbacks_t * message_type_support_callbacks,
   const rmw_qos_profile_t * qos_policies);
 
-#endif  // RMW_PUBLISHER_H_
+rmw_ret_t destroy_topic(
+  rmw_uxrce_topic_t * topic);
+size_t topic_count(
+  rmw_uxrce_node_t * custom_node);
+
+#if defined(__cplusplus)
+}
+#endif  // if defined(__cplusplus)
+
+#endif  // RMW_MICROROS_INTERNAL__RMW_MICROXRCEDDS_TOPIC_H_

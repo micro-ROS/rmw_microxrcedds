@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rmw_graph.h>
+#include <rmw_microros_internal/rmw_graph.h>
 
 #include <rmw/error_handling.h>
 #include <rosidl_runtime_c/string_functions.h>
 #include <micro_ros_msgs/msg/detail/graph__rosidl_typesupport_microxrcedds_c.h>
 
-#include "./utils.h"
+#include "./rmw_microros_internal/utils.h"
 
 rmw_ret_t rmw_graph_init(
   rmw_context_impl_t * context,

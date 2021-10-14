@@ -17,7 +17,7 @@
 #include <rmw/validate_namespace.h>
 #include <rmw/validate_node_name.h>
 #include <rmw_microxrcedds_c/config.h>
-#include <rmw_microxrcedds_topic.h>
+#include <rmw_microros_internal/rmw_microxrcedds_topic.h>
 
 #include <vector>
 #include <memory>
