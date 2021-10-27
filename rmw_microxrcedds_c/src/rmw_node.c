@@ -46,30 +46,28 @@ rmw_node_t * create_node(
 
   custom_node->context = context->impl;
 
-  node_handle = rmw_node_allocate();
-  if (!node_handle) {
-    RMW_SET_ERROR_MSG("failed to allocate rmw_node_t");
-    return NULL;
-  }
+  node_handle = &custom_node->rmw_node;
 
   custom_node->rmw_handle = node_handle;
 
   node_handle->implementation_identifier = rmw_get_implementation_identifier();
   node_handle->data = custom_node;
-  node_handle->name = (const char *)(rmw_allocate(sizeof(char) * (strlen(name) + 1)));
-  if (!node_handle->name) {
-    RMW_SET_ERROR_MSG("failed to allocate memory");
-    rmw_uxrce_fini_node_memory(node_handle);
-    return NULL;
+  node_handle->name = custom_node->node_name;
+
+  if ((strlen(name) + 1 )> sizeof(custom_node->node_name)){
+    RMW_SET_ERROR_MSG("failed to allocate string");
+    goto fail;
   }
+
   memcpy((char *)node_handle->name, name, strlen(name) + 1);
 
-  node_handle->namespace_ = rmw_allocate(sizeof(char) * (strlen(namespace_) + 1));
-  if (!node_handle->namespace_) {
-    RMW_SET_ERROR_MSG("failed to allocate memory");
-    rmw_uxrce_fini_node_memory(node_handle);
-    return NULL;
+  node_handle->namespace_ =  custom_node->node_namespace;
+
+  if ((strlen(namespace_) + 1 )> sizeof(custom_node->node_namespace)){
+    RMW_SET_ERROR_MSG("failed to allocate string");
+    goto fail;
   }
+
   memcpy((char *)node_handle->namespace_, namespace_, strlen(namespace_) + 1);
 
   custom_node->participant_id =

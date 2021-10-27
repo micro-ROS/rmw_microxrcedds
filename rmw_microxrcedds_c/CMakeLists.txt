@@ -52,6 +52,8 @@ set(RMW_UXRCE_MAX_PUBLISHERS "4" CACHE STRING "This value sets the maximum numbe
 set(RMW_UXRCE_MAX_SUBSCRIPTIONS "4" CACHE STRING "This value sets the maximum number of subscriptions for an application.")
 set(RMW_UXRCE_MAX_SERVICES "4" CACHE STRING "This value sets the maximum number of services for an application.")
 set(RMW_UXRCE_MAX_CLIENTS "4" CACHE STRING "This value sets the maximum number of clients for an application.")
+set(RMW_UXRCE_MAX_WAIT_SETS "4" CACHE STRING "This value sets the maximum number of wait sets for an application.")
+set(RMW_UXRCE_MAX_GUARD_CONDITION "4" CACHE STRING "This value sets the maximum number of guard conditions for an application.")
 set(RMW_UXRCE_MAX_TOPICS "-1" CACHE STRING
   "This value sets the maximum number of topics for an application.
   If set to -1 RMW_UXRCE_MAX_TOPICS = RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_SUBSCRIPTIONS + RMW_UXRCE_MAX_NODES.")

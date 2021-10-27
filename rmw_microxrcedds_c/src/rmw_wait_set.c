@@ -26,17 +26,30 @@ rmw_create_wait_set(
   (void)context;
   (void)max_conditions;
 
-  rmw_wait_set_t * rmw_wait_set = (rmw_wait_set_t *)rmw_allocate(
-    sizeof(rmw_wait_set_t));
+  rmw_uxrce_mempool_item_t * memory_node = get_memory(&wait_set_memory);
+  if (!memory_node) {
+    RMW_SET_ERROR_MSG("Not available memory node");
+    return NULL;
+  }
+  rmw_uxrce_wait_set_t * custom_wait_set = (rmw_uxrce_wait_set_t *)memory_node->data;
 
-  return rmw_wait_set;
+  return &custom_wait_set->rmw_wait_set;
 }
 
 rmw_ret_t
 rmw_destroy_wait_set(
   rmw_wait_set_t * wait_set)
 {
-  rmw_free(wait_set);
+  rmw_uxrce_mempool_item_t * item = wait_set_memory.allocateditems;
 
-  return RMW_RET_OK;
+  while(NULL != item) {
+    rmw_uxrce_wait_set_t * custom_wait_set = (rmw_uxrce_wait_set_t *)item->data;
+    if(&custom_wait_set->rmw_wait_set == wait_set) {
+      put_memory(&wait_set_memory, item);
+      return RMW_RET_OK;
+    }
+    item = item->next;
+  }
+
+  return RMW_RET_ERROR;
 }

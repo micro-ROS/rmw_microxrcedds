@@ -79,26 +79,25 @@ rmw_create_publisher(
   } else if (!qos_policies) {
     RMW_SET_ERROR_MSG("qos_profile is null");
   } else {
-    rmw_publisher = (rmw_publisher_t *)rmw_allocate(sizeof(rmw_publisher_t));
-    rmw_publisher->data = NULL;
-    rmw_publisher->implementation_identifier = rmw_get_implementation_identifier();
-    size_t topic_name_size = strlen(topic_name) + 1;
-    rmw_publisher->topic_name =
-      (const char *)(rmw_allocate(sizeof(char) * topic_name_size));
-    if (!rmw_publisher->topic_name) {
-      RMW_SET_ERROR_MSG("failed to allocate memory");
-      goto fail;
-    }
-    snprintf((char *)rmw_publisher->topic_name, topic_name_size, "%s", topic_name);
-
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     rmw_uxrce_mempool_item_t * memory_node = get_memory(&publisher_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
       goto fail;
     }
-
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)memory_node->data;
+
+    rmw_publisher = &custom_publisher->rmw_publisher;
+    rmw_publisher->data = NULL;
+    rmw_publisher->implementation_identifier = rmw_get_implementation_identifier();
+    rmw_publisher->topic_name = custom_publisher->topic_name;
+
+    if ((strlen(topic_name) + 1 )> sizeof(custom_publisher->topic_name)){
+      RMW_SET_ERROR_MSG("failed to allocate string");
+      goto fail;
+    }
+    snprintf((char *)rmw_publisher->topic_name, sizeof(custom_publisher->topic_name), "%s", topic_name);
+
     custom_publisher->rmw_handle = rmw_publisher;
     custom_publisher->owner_node = custom_node;
     custom_publisher->session_timeout = RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT;

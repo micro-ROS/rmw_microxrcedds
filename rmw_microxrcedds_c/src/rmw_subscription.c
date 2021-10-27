@@ -79,27 +79,25 @@ rmw_create_subscription(
     RMW_SET_ERROR_MSG("qos_profile is null");
     return NULL;
   } else {
-    rmw_subscription = (rmw_subscription_t *)rmw_allocate(
-      sizeof(rmw_subscription_t));
-    rmw_subscription->data = NULL;
-    rmw_subscription->implementation_identifier = rmw_get_implementation_identifier();
-    size_t topic_name_size = strlen(topic_name) + 1;
-    rmw_subscription->topic_name =
-      (const char *)(rmw_allocate(sizeof(char) * topic_name_size));
-    if (!rmw_subscription->topic_name) {
-      RMW_SET_ERROR_MSG("failed to allocate memory");
-      goto fail;
-    }
-    snprintf((char *)rmw_subscription->topic_name, topic_name_size, "%s", topic_name);
-
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     rmw_uxrce_mempool_item_t * memory_node = get_memory(&subscription_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
       goto fail;
     }
-
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)memory_node->data;
+
+    rmw_subscription = &custom_subscription->rmw_subscription;
+    rmw_subscription->data = NULL;
+    rmw_subscription->implementation_identifier = rmw_get_implementation_identifier();
+    rmw_subscription->topic_name = custom_subscription->topic_name;
+    if ((strlen(topic_name) + 1 )> sizeof(custom_subscription->topic_name)){
+      RMW_SET_ERROR_MSG("failed to allocate string");
+      goto fail;
+    }
+
+    snprintf((char *)rmw_subscription->topic_name, sizeof(custom_subscription->topic_name), "%s", topic_name);
+
     custom_subscription->rmw_handle = rmw_subscription;
     custom_subscription->owner_node = custom_node;
     custom_subscription->qos = *qos_policies;
