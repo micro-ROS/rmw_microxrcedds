@@ -92,11 +92,13 @@ rmw_create_publisher(
     rmw_publisher->implementation_identifier = rmw_get_implementation_identifier();
     rmw_publisher->topic_name = custom_publisher->topic_name;
 
-    if ((strlen(topic_name) + 1 )> sizeof(custom_publisher->topic_name)){
+    if ((strlen(topic_name) + 1 ) > sizeof(custom_publisher->topic_name)) {
       RMW_SET_ERROR_MSG("failed to allocate string");
       goto fail;
     }
-    snprintf((char *)rmw_publisher->topic_name, sizeof(custom_publisher->topic_name), "%s", topic_name);
+    snprintf(
+      (char *)rmw_publisher->topic_name, sizeof(custom_publisher->topic_name), "%s",
+      topic_name);
 
     custom_publisher->rmw_handle = rmw_publisher;
     custom_publisher->owner_node = custom_node;

@@ -59,7 +59,9 @@ rmw_init_options_init(
   init_options->localhost_only = RMW_LOCALHOST_ONLY_DEFAULT;
 
   // This can be call before rmw_init()
-  rmw_uxrce_init_init_options_impl_memory(&init_options_memory, custom_init_options, RMW_UXRCE_MAX_SESSIONS);
+  rmw_uxrce_init_init_options_impl_memory(
+    &init_options_memory, custom_init_options,
+    RMW_UXRCE_MAX_SESSIONS);
 
   rmw_uxrce_mempool_item_t * memory_node = get_memory(&init_options_memory);
   if (!memory_node) {
@@ -165,17 +167,17 @@ rmw_init_options_fini(
 
   rmw_uxrce_mempool_item_t * item = init_options_memory.allocateditems;
 
-  while(NULL != item) {
-    rmw_uxrce_init_options_impl_t * custom_init_options = (rmw_uxrce_init_options_impl_t *)item->data;
-    if(custom_init_options == init_options->impl) {
+  while (NULL != item) {
+    rmw_uxrce_init_options_impl_t * custom_init_options =
+      (rmw_uxrce_init_options_impl_t *)item->data;
+    if (custom_init_options == init_options->impl) {
       put_memory(&init_options_memory, item);
       break;
     }
     item = item->next;
   }
 
-  if (NULL == item)
-  {
+  if (NULL == item) {
     return RMW_RET_ERROR;
   }
 
@@ -252,7 +254,9 @@ rmw_init(
   rmw_uxrce_init_service_memory(&service_memory, custom_services, RMW_UXRCE_MAX_SERVICES);
   rmw_uxrce_init_client_memory(&client_memory, custom_clients, RMW_UXRCE_MAX_CLIENTS);
   rmw_uxrce_init_topic_memory(&topics_memory, custom_topics, RMW_UXRCE_MAX_TOPICS_INTERNAL);
-  rmw_uxrce_init_init_options_impl_memory(&init_options_memory, custom_init_options, RMW_UXRCE_MAX_SESSIONS);
+  rmw_uxrce_init_init_options_impl_memory(
+    &init_options_memory, custom_init_options,
+    RMW_UXRCE_MAX_SESSIONS);
   rmw_uxrce_init_wait_set_memory(&wait_set_memory, custom_wait_set, RMW_UXRCE_MAX_WAIT_SETS);
 
   // Micro-XRCE-DDS Client transport initialization

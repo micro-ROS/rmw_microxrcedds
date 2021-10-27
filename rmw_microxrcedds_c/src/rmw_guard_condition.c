@@ -28,7 +28,8 @@ rmw_create_guard_condition(
     RMW_SET_ERROR_MSG("Not available memory node");
     return NULL;
   }
-  rmw_uxrce_guard_condition_t * custom_guard_condition = (rmw_uxrce_guard_condition_t *)memory_node->data;
+  rmw_uxrce_guard_condition_t * custom_guard_condition =
+    (rmw_uxrce_guard_condition_t *)memory_node->data;
   custom_guard_condition->hasTriggered = false;
 
   return &custom_guard_condition->rmw_guard_condition;
@@ -40,9 +41,10 @@ rmw_destroy_guard_condition(
 {
   rmw_uxrce_mempool_item_t * item = guard_condition_memory.allocateditems;
 
-  while(NULL != item) {
-    rmw_uxrce_guard_condition_t * custom_guard_condition = (rmw_uxrce_guard_condition_t *)item->data;
-    if(&custom_guard_condition->rmw_guard_condition == guard_condition) {
+  while (NULL != item) {
+    rmw_uxrce_guard_condition_t * custom_guard_condition =
+      (rmw_uxrce_guard_condition_t *)item->data;
+    if (&custom_guard_condition->rmw_guard_condition == guard_condition) {
       put_memory(&guard_condition_memory, item);
       return RMW_RET_OK;
     }

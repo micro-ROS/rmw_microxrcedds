@@ -56,7 +56,7 @@ rmw_create_service(
     rmw_service->data = NULL;
     rmw_service->implementation_identifier = rmw_get_implementation_identifier();
     rmw_service->service_name = custom_service->service_name;
-    if ((strlen(service_name) + 1 )> sizeof(custom_service->service_name)){
+    if ((strlen(service_name) + 1 ) > sizeof(custom_service->service_name)) {
       RMW_SET_ERROR_MSG("failed to allocate string");
       goto fail;
     }

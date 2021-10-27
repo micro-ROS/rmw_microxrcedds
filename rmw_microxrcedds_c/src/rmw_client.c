@@ -57,7 +57,7 @@ rmw_create_client(
     rmw_client->data = NULL;
     rmw_client->implementation_identifier = rmw_get_implementation_identifier();
     rmw_client->service_name = custom_client->service_name;
-    if ((strlen(service_name) + 1 )> sizeof(custom_client->service_name)){
+    if ((strlen(service_name) + 1 ) > sizeof(custom_client->service_name)) {
       RMW_SET_ERROR_MSG("failed to allocate string");
       goto fail;
     }

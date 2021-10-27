@@ -91,12 +91,14 @@ rmw_create_subscription(
     rmw_subscription->data = NULL;
     rmw_subscription->implementation_identifier = rmw_get_implementation_identifier();
     rmw_subscription->topic_name = custom_subscription->topic_name;
-    if ((strlen(topic_name) + 1 )> sizeof(custom_subscription->topic_name)){
+    if ((strlen(topic_name) + 1 ) > sizeof(custom_subscription->topic_name)) {
       RMW_SET_ERROR_MSG("failed to allocate string");
       goto fail;
     }
 
-    snprintf((char *)rmw_subscription->topic_name, sizeof(custom_subscription->topic_name), "%s", topic_name);
+    snprintf(
+      (char *)rmw_subscription->topic_name, sizeof(custom_subscription->topic_name), "%s",
+      topic_name);
 
     custom_subscription->rmw_handle = rmw_subscription;
     custom_subscription->owner_node = custom_node;

@@ -42,9 +42,9 @@ rmw_destroy_wait_set(
 {
   rmw_uxrce_mempool_item_t * item = wait_set_memory.allocateditems;
 
-  while(NULL != item) {
+  while (NULL != item) {
     rmw_uxrce_wait_set_t * custom_wait_set = (rmw_uxrce_wait_set_t *)item->data;
-    if(&custom_wait_set->rmw_wait_set == wait_set) {
+    if (&custom_wait_set->rmw_wait_set == wait_set) {
       put_memory(&wait_set_memory, item);
       return RMW_RET_OK;
     }

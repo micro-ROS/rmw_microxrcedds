@@ -54,16 +54,16 @@ rmw_node_t * create_node(
   node_handle->data = custom_node;
   node_handle->name = custom_node->node_name;
 
-  if ((strlen(name) + 1 )> sizeof(custom_node->node_name)){
+  if ((strlen(name) + 1 ) > sizeof(custom_node->node_name)) {
     RMW_SET_ERROR_MSG("failed to allocate string");
     goto fail;
   }
 
   memcpy((char *)node_handle->name, name, strlen(name) + 1);
 
-  node_handle->namespace_ =  custom_node->node_namespace;
+  node_handle->namespace_ = custom_node->node_namespace;
 
-  if ((strlen(namespace_) + 1 )> sizeof(custom_node->node_namespace)){
+  if ((strlen(namespace_) + 1 ) > sizeof(custom_node->node_namespace)) {
     RMW_SET_ERROR_MSG("failed to allocate string");
     goto fail;
   }

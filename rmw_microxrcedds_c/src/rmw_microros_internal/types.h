@@ -246,13 +246,15 @@ typedef struct rmw_uxrce_static_input_buffer_t
   } related;
 } rmw_uxrce_static_input_buffer_t;
 
-typedef struct rmw_uxrce_wait_set_t {
+typedef struct rmw_uxrce_wait_set_t
+{
   rmw_uxrce_mempool_item_t mem;
 
   rmw_wait_set_t rmw_wait_set;
 } rmw_uxrce_wait_set_t;
 
-typedef struct rmw_uxrce_guard_condition_t {
+typedef struct rmw_uxrce_guard_condition_t
+{
   rmw_uxrce_mempool_item_t mem;
 
   bool hasTriggered;
