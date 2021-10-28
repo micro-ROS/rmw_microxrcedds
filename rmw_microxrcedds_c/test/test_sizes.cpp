@@ -35,6 +35,7 @@ TEST_F(RMWBaseTest, estimate_default_static_memory)
   uint64_t subscription_size = sizeof(rmw_uxrce_subscription_t);
   uint64_t publisher_size = sizeof(rmw_uxrce_publisher_t);
   uint64_t node_size = sizeof(rmw_uxrce_node_t);
+  uint64_t static_input_buffer_size = sizeof(rmw_uxrce_static_input_buffer_t);
   uint64_t init_options_impl_size = sizeof(rmw_uxrce_init_options_impl_t);
   uint64_t wait_sets_size = sizeof(rmw_uxrce_wait_set_t);
   uint64_t guard_conditions_size = sizeof(rmw_uxrce_guard_condition_t);
