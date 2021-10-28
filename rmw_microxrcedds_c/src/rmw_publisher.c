@@ -83,7 +83,7 @@ rmw_create_publisher(
     rmw_uxrce_mempool_item_t * memory_node = get_memory(&publisher_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
-      goto fail;
+      return NULL;
     }
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)memory_node->data;
 

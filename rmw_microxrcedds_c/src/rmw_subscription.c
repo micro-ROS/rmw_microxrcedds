@@ -83,7 +83,7 @@ rmw_create_subscription(
     rmw_uxrce_mempool_item_t * memory_node = get_memory(&subscription_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
-      goto fail;
+      return NULL;
     }
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)memory_node->data;
 

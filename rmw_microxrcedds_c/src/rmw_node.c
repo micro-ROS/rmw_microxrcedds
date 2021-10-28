@@ -39,7 +39,7 @@ rmw_node_t * create_node(
   rmw_uxrce_mempool_item_t * memory_node = get_memory(&node_memory);
   if (!memory_node) {
     RMW_SET_ERROR_MSG("Not available memory node");
-    goto fail;
+    return NULL;
   }
 
   rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)memory_node->data;

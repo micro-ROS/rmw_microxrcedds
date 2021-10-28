@@ -48,7 +48,7 @@ rmw_create_service(
     rmw_uxrce_mempool_item_t * memory_node = get_memory(&service_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
-      goto fail;
+      return NULL;
     }
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)memory_node->data;
 

@@ -49,7 +49,7 @@ rmw_create_client(
     rmw_uxrce_mempool_item_t * memory_node = get_memory(&client_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
-      goto fail;
+      return NULL;
     }
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)memory_node->data;
 
