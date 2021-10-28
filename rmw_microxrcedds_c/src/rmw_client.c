@@ -64,7 +64,6 @@ rmw_create_client(
 
     memcpy((void *)rmw_client->service_name, service_name, strlen(service_name) + 1);
 
-    custom_client->rmw_handle = rmw_client;
     custom_client->owner_node = custom_node;
     custom_client->session_timeout = RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT;
     custom_client->qos = *qos_policies;

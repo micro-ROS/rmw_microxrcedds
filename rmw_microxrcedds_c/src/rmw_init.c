@@ -345,7 +345,6 @@ rmw_ret_t
 rmw_context_fini(
   rmw_context_t * context)
 {
-  // TODO(pablogs9): Should we manage not closed XRCE sessions?
   rmw_ret_t ret = RMW_RET_OK;
 
   rmw_uxrce_mempool_item_t * item = node_memory.allocateditems;
@@ -354,7 +353,7 @@ rmw_context_fini(
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)item->data;
     item = item->next;
     if (custom_node->context == context->impl) {
-      ret = rmw_destroy_node(custom_node->rmw_handle);
+      ret = rmw_destroy_node(&custom_node->rmw_node);
     }
   }
 

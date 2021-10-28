@@ -127,7 +127,6 @@ typedef struct rmw_uxrce_topic_t
 typedef struct rmw_uxrce_service_t
 {
   rmw_uxrce_mempool_item_t mem;
-  rmw_service_t * rmw_handle;
   uxrObjectId service_id;
   const service_type_support_callbacks_t * type_support_callbacks;
   uint16_t service_data_resquest;
@@ -145,7 +144,6 @@ typedef struct rmw_uxrce_service_t
 typedef struct rmw_uxrce_client_t
 {
   rmw_uxrce_mempool_item_t mem;
-  rmw_client_t * rmw_handle;
   uxrObjectId client_id;
   const service_type_support_callbacks_t * type_support_callbacks;
   uint16_t client_data_request;
@@ -163,7 +161,6 @@ typedef struct rmw_uxrce_client_t
 typedef struct rmw_uxrce_subscription_t
 {
   rmw_uxrce_mempool_item_t mem;
-  rmw_subscription_t * rmw_handle;
   uxrObjectId subscriber_id;
   uxrObjectId datareader_id;
 
@@ -181,7 +178,6 @@ typedef struct rmw_uxrce_subscription_t
 typedef struct rmw_uxrce_publisher_t
 {
   rmw_uxrce_mempool_item_t mem;
-  rmw_publisher_t * rmw_handle;
   uxrObjectId publisher_id;
   uxrObjectId datawriter_id;
 
@@ -205,8 +201,6 @@ typedef struct rmw_uxrce_publisher_t
 typedef struct rmw_uxrce_node_t
 {
   rmw_uxrce_mempool_item_t mem;
-  // TODO: remove rmw_handle;
-  rmw_node_t * rmw_handle;
   rmw_context_impl_t * context;
 
   uxrObjectId participant_id;

@@ -48,8 +48,6 @@ rmw_node_t * create_node(
 
   node_handle = &custom_node->rmw_node;
 
-  custom_node->rmw_handle = node_handle;
-
   node_handle->implementation_identifier = rmw_get_implementation_identifier();
   node_handle->data = custom_node;
   node_handle->name = custom_node->node_name;
@@ -172,7 +170,7 @@ rmw_ret_t rmw_destroy_node(
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)item->data;
     item = item->next;
     if (custom_publisher->owner_node == custom_node) {
-      ret = rmw_destroy_publisher(node, custom_publisher->rmw_handle);
+      ret = rmw_destroy_publisher(node, &custom_publisher->rmw_publisher);
     }
   }
 
@@ -181,7 +179,7 @@ rmw_ret_t rmw_destroy_node(
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)item->data;
     item = item->next;
     if (custom_subscription->owner_node == custom_node) {
-      ret = rmw_destroy_subscription(node, custom_subscription->rmw_handle);
+      ret = rmw_destroy_subscription(node, &custom_subscription->rmw_subscription);
     }
   }
 
@@ -190,7 +188,7 @@ rmw_ret_t rmw_destroy_node(
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)item->data;
     item = item->next;
     if (custom_service->owner_node == custom_node) {
-      ret = rmw_destroy_service(node, custom_service->rmw_handle);
+      ret = rmw_destroy_service(node, &custom_service->rmw_service);
     }
   }
 
@@ -199,7 +197,7 @@ rmw_ret_t rmw_destroy_node(
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)item->data;
     item = item->next;
     if (custom_client->owner_node == custom_node) {
-      ret = rmw_destroy_client(node, custom_client->rmw_handle);
+      ret = rmw_destroy_client(node, &custom_client->rmw_client);
     }
   }
 

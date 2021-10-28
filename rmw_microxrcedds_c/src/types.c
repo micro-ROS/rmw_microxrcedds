@@ -124,7 +124,6 @@ void rmw_uxrce_fini_node_memory(
   }
   if (node->data) {
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
-    custom_node->rmw_handle = NULL;
     custom_node->context = NULL;
 
     put_memory(&node_memory, &custom_node->mem);
@@ -148,8 +147,6 @@ void rmw_uxrce_fini_publisher_memory(
   if (publisher->data) {
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
 
-    custom_publisher->rmw_handle = NULL;
-
     put_memory(&publisher_memory, &custom_publisher->mem);
     publisher->data = NULL;
   }
@@ -170,8 +167,6 @@ void rmw_uxrce_fini_subscription_memory(
   if (subscriber->data) {
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscriber->data;
 
-    custom_subscription->rmw_handle = NULL;
-
     put_memory(&subscription_memory, &custom_subscription->mem);
     subscriber->data = NULL;
   }
@@ -191,7 +186,6 @@ void rmw_uxrce_fini_service_memory(
   }
   if (service->data) {
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
-    custom_service->rmw_handle = NULL;
 
     put_memory(&service_memory, &custom_service->mem);
     service->data = NULL;
@@ -212,7 +206,6 @@ void rmw_uxrce_fini_client_memory(
   }
   if (client->data) {
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
-    custom_client->rmw_handle = NULL;
 
     put_memory(&client_memory, &custom_client->mem);
     client->data = NULL;

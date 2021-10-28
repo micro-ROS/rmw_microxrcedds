@@ -63,8 +63,6 @@ rmw_create_service(
 
     memcpy((void *)rmw_service->service_name, service_name, strlen(service_name) + 1);
 
-    custom_service->rmw_handle = rmw_service;
-
     custom_service->owner_node = custom_node;
     custom_service->session_timeout = RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT;
     custom_service->qos = *qos_policies;

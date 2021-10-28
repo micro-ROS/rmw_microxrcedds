@@ -100,7 +100,6 @@ rmw_create_publisher(
       (char *)rmw_publisher->topic_name, sizeof(custom_publisher->topic_name), "%s",
       topic_name);
 
-    custom_publisher->rmw_handle = rmw_publisher;
     custom_publisher->owner_node = custom_node;
     custom_publisher->session_timeout = RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT;
     custom_publisher->qos = *qos_policies;
@@ -256,7 +255,7 @@ rmw_publisher_count_matched_subscriptions(
   rcutils_allocator_t allocator = rcutils_get_default_allocator();
 
   rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
-  const rmw_node_t * node = custom_publisher->owner_node->rmw_handle;
+  const rmw_node_t * node = &custom_publisher->owner_node->rmw_node;
 
   rmw_topic_endpoint_info_array_t subscriptions_info =
     rmw_get_zero_initialized_topic_endpoint_info_array();

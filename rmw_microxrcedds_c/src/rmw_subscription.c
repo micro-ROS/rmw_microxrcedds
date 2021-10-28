@@ -100,7 +100,6 @@ rmw_create_subscription(
       (char *)rmw_subscription->topic_name, sizeof(custom_subscription->topic_name), "%s",
       topic_name);
 
-    custom_subscription->rmw_handle = rmw_subscription;
     custom_subscription->owner_node = custom_node;
     custom_subscription->qos = *qos_policies;
 
@@ -260,7 +259,7 @@ rmw_subscription_count_matched_publishers(
   rcutils_allocator_t allocator = rcutils_get_default_allocator();
 
   rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
-  const rmw_node_t * node = custom_subscription->owner_node->rmw_handle;
+  const rmw_node_t * node = &custom_subscription->owner_node->rmw_node;
 
   rmw_topic_endpoint_info_array_t publishers_info =
     rmw_get_zero_initialized_topic_endpoint_info_array();
