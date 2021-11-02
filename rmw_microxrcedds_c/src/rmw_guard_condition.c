@@ -31,6 +31,9 @@ rmw_create_guard_condition(
   rmw_uxrce_guard_condition_t * custom_guard_condition =
     (rmw_uxrce_guard_condition_t *)memory_node->data;
   custom_guard_condition->hasTriggered = false;
+  custom_guard_condition->rmw_guard_condition.context = context;
+  custom_guard_condition->rmw_guard_condition.implementation_identifier =
+    rmw_get_implementation_identifier();
 
   return &custom_guard_condition->rmw_guard_condition;
 }
