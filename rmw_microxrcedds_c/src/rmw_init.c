@@ -258,6 +258,9 @@ rmw_init(
     &init_options_memory, custom_init_options,
     RMW_UXRCE_MAX_SESSIONS);
   rmw_uxrce_init_wait_set_memory(&wait_set_memory, custom_wait_set, RMW_UXRCE_MAX_WAIT_SETS);
+  rmw_uxrce_init_wait_set_memory(
+    &guard_condition_memory, custom_guard_condition,
+    RMW_UXRCE_MAX_GUARD_CONDITION);
 
   // Micro-XRCE-DDS Client transport initialization
   rmw_ret_t transport_init_ret = rmw_uxrce_transport_init(
