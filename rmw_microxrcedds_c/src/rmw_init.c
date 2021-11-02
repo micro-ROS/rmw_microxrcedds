@@ -61,7 +61,7 @@ rmw_init_options_init(
   // This can be call before rmw_init()
   rmw_uxrce_init_init_options_impl_memory(
     &init_options_memory, custom_init_options,
-    RMW_UXRCE_MAX_SESSIONS);
+    RMW_UXRCE_MAX_OPTIONS);
 
   rmw_uxrce_mempool_item_t * memory_node = get_memory(&init_options_memory);
   if (!memory_node) {
@@ -256,7 +256,7 @@ rmw_init(
   rmw_uxrce_init_topic_memory(&topics_memory, custom_topics, RMW_UXRCE_MAX_TOPICS_INTERNAL);
   rmw_uxrce_init_init_options_impl_memory(
     &init_options_memory, custom_init_options,
-    RMW_UXRCE_MAX_SESSIONS);
+    RMW_UXRCE_MAX_OPTIONS);
   rmw_uxrce_init_wait_set_memory(&wait_set_memory, custom_wait_set, RMW_UXRCE_MAX_WAIT_SETS);
   rmw_uxrce_init_wait_set_memory(
     &guard_condition_memory, custom_guard_condition,

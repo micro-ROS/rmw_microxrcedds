@@ -66,7 +66,7 @@ TEST_F(RMWBaseTest, estimate_default_static_memory)
     stderr, "| Static input buffer | %d | %ld B | \n", RMW_UXRCE_MAX_HISTORY,
     static_input_buffer_size);
   fprintf(
-    stderr, "| Init options | %d | %ld B | \n", RMW_UXRCE_MAX_SESSIONS,
+    stderr, "| Init options | %d | %ld B | \n", RMW_UXRCE_MAX_OPTIONS,
     init_options_impl_size);
   fprintf(stderr, "| Wait sets | %d | %ld B | \n", RMW_UXRCE_MAX_WAIT_SETS, wait_sets_size);
   fprintf(
@@ -82,7 +82,7 @@ TEST_F(RMWBaseTest, estimate_default_static_memory)
     RMW_UXRCE_MAX_PUBLISHERS * publisher_size +
     RMW_UXRCE_MAX_NODES * node_size +
     RMW_UXRCE_MAX_HISTORY * static_input_buffer_size +
-    RMW_UXRCE_MAX_SESSIONS * init_options_impl_size +
+    RMW_UXRCE_MAX_OPTIONS * init_options_impl_size +
     RMW_UXRCE_MAX_WAIT_SETS * wait_sets_size +
     RMW_UXRCE_MAX_GUARD_CONDITION * guard_conditions_size;
 

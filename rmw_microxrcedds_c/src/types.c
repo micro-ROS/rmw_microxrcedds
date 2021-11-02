@@ -59,7 +59,7 @@ rmw_uxrce_mempool_t static_buffer_memory;
 rmw_uxrce_static_input_buffer_t custom_static_buffers[RMW_UXRCE_MAX_HISTORY];
 
 rmw_uxrce_mempool_t init_options_memory;
-rmw_uxrce_init_options_impl_t custom_init_options[RMW_UXRCE_MAX_SESSIONS];
+rmw_uxrce_init_options_impl_t custom_init_options[RMW_UXRCE_MAX_OPTIONS];
 
 rmw_uxrce_mempool_t wait_set_memory;
 rmw_uxrce_wait_set_t custom_wait_set[RMW_UXRCE_MAX_WAIT_SETS];
