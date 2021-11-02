@@ -258,7 +258,7 @@ rmw_init(
     &init_options_memory, custom_init_options,
     RMW_UXRCE_MAX_OPTIONS);
   rmw_uxrce_init_wait_set_memory(&wait_set_memory, custom_wait_set, RMW_UXRCE_MAX_WAIT_SETS);
-  rmw_uxrce_init_wait_set_memory(
+  rmw_uxrce_init_guard_condition_memory(
     &guard_condition_memory, custom_guard_condition,
     RMW_UXRCE_MAX_GUARD_CONDITION);
 
