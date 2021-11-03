@@ -66,7 +66,7 @@ create_topic(
 
   topic_req = uxr_buffer_create_topic_ref(
     &custom_node->context->session,
-    *custom_node->context->creation_destroy_stream, custom_topic->topic_id,
+    *custom_node->context->creation_stream, custom_topic->topic_id,
     custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 #else
   static char full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
@@ -77,7 +77,7 @@ create_topic(
 
   topic_req = uxr_buffer_create_topic_bin(
     &custom_node->context->session,
-    *custom_node->context->creation_destroy_stream,
+    *custom_node->context->creation_stream,
     custom_topic->topic_id,
     custom_node->participant_id,
     full_topic_name,
@@ -86,7 +86,7 @@ create_topic(
 #endif /* ifdef RMW_UXRCE_USE_XML */
 
   if (!run_xrce_session(
-      custom_node->context, topic_req,
+      custom_node->context->creation_stream, topic_req,
       custom_node->context->creation_timeout))
   {
     rmw_uxrce_fini_topic_memory(custom_topic);
@@ -107,11 +107,11 @@ rmw_ret_t destroy_topic(
 
     uint16_t delete_topic = uxr_buffer_delete_entity(
       &custom_node->context->session,
-      *custom_node->context->creation_destroy_stream,
+      *custom_node->context->destroy_stream,
       topic->topic_id);
 
     if (!run_xrce_session(
-        custom_node->context, delete_topic,
+        custom_node->context->destroy_stream, delete_topic,
         custom_node->context->destroy_timeout))
     {
       result_ret = RMW_RET_TIMEOUT;
