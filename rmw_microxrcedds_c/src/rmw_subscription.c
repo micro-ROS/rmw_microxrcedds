@@ -145,19 +145,19 @@ rmw_create_subscription(
 #ifdef RMW_UXRCE_USE_REFS
     subscriber_req = uxr_buffer_create_subscriber_xml(
       &custom_node->context->session,
-      *custom_node->context->creation_destroy_stream, custom_subscription->subscriber_id,
+      *custom_node->context->creation_stream, custom_subscription->subscriber_id,
       custom_node->participant_id, "", UXR_REPLACE | UXR_REUSE);
 #else
     subscriber_req = uxr_buffer_create_subscriber_bin(
       &custom_node->context->session,
-      *custom_node->context->creation_destroy_stream,
+      *custom_node->context->creation_stream,
       custom_subscription->subscriber_id,
       custom_node->participant_id,
       UXR_REPLACE | UXR_REUSE);
 #endif /* ifdef RMW_UXRCE_USE_REFS */
 
     if (!run_xrce_session(
-        custom_node->context, subscriber_req,
+        custom_node->context, custom_node->context->creation_stream, subscriber_req,
         custom_node->context->creation_timeout))
     {
       put_memory(&subscription_memory, &custom_subscription->mem);
@@ -181,7 +181,7 @@ rmw_create_subscription(
 
     datareader_req = uxr_buffer_create_datareader_ref(
       &custom_node->context->session,
-      *custom_node->context->creation_destroy_stream, custom_subscription->datareader_id,
+      *custom_node->context->creation_stream, custom_subscription->datareader_id,
       custom_subscription->subscriber_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 #else
     bool reliability = qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_RELIABLE ||
@@ -203,7 +203,7 @@ rmw_create_subscription(
 
     datareader_req = uxr_buffer_create_datareader_bin(
       &custom_node->context->session,
-      *custom_node->context->creation_destroy_stream,
+      *custom_node->context->creation_stream,
       custom_subscription->datareader_id,
       custom_subscription->subscriber_id,
       custom_subscription->topic->topic_id,
@@ -215,7 +215,7 @@ rmw_create_subscription(
 #endif /* ifdef RMW_UXRCE_USE_XML */
 
     if (!run_xrce_session(
-        custom_node->context, datareader_req,
+        custom_node->context, custom_node->context->creation_stream, datareader_req,
         custom_node->context->creation_timeout))
     {
       RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
@@ -238,7 +238,7 @@ rmw_create_subscription(
 
     uxr_buffer_request_data(
       &custom_node->context->session,
-      *custom_node->context->creation_destroy_stream, custom_subscription->datareader_id,
+      *custom_node->context->creation_stream, custom_subscription->datareader_id,
       data_request_stream_id, &delivery_control);
   }
   return rmw_subscription;
@@ -338,19 +338,19 @@ rmw_destroy_subscription(
     uint16_t delete_datareader =
       uxr_buffer_delete_entity(
       &custom_subscription->owner_node->context->session,
-      *custom_subscription->owner_node->context->creation_destroy_stream,
+      *custom_subscription->owner_node->context->destroy_stream,
       custom_subscription->datareader_id);
     uint16_t delete_subscriber =
       uxr_buffer_delete_entity(
       &custom_subscription->owner_node->context->session,
-      *custom_subscription->owner_node->context->creation_destroy_stream,
+      *custom_subscription->owner_node->context->destroy_stream,
       custom_subscription->subscriber_id);
 
     bool ret = run_xrce_session(
-      custom_node->context, delete_datareader,
+      custom_node->context, custom_node->context->destroy_stream, delete_datareader,
       custom_node->context->destroy_timeout);
     ret &= run_xrce_session(
-      custom_node->context, delete_subscriber,
+      custom_node->context, custom_node->context->destroy_stream, delete_subscriber,
       custom_node->context->destroy_timeout);
     if (!ret) {
       result_ret = RMW_RET_TIMEOUT;

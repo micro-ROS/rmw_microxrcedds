@@ -44,7 +44,7 @@ rmw_ret_t rmw_graph_init(
 
   uint16_t participant_req = uxr_buffer_create_participant_bin(
     &context->session,
-    *context->creation_destroy_stream,
+    *context->creation_stream,
     graph_info->participant_id,
     (int16_t)microros_domain_id,
     graph_participant_name,
@@ -79,7 +79,7 @@ rmw_ret_t rmw_graph_init(
   }
 
   uint16_t subscriber_req = uxr_buffer_create_subscriber_xml(
-    &context->session, *context->creation_destroy_stream, graph_info->subscriber_id,
+    &context->session, *context->creation_stream, graph_info->subscriber_id,
     graph_info->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 
   graph_info->datareader_id = uxr_object_id(context->id_datareader++, UXR_DATAREADER_ID);
@@ -101,7 +101,7 @@ rmw_ret_t rmw_graph_init(
   }
 
   uint16_t topic_req = uxr_buffer_create_topic_xml(
-    &context->session, *context->creation_destroy_stream, graph_info->topic_id,
+    &context->session, *context->creation_stream, graph_info->topic_id,
     graph_info->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 
   // Create graph datareader request
@@ -117,7 +117,7 @@ rmw_ret_t rmw_graph_init(
   }
 
   uint16_t datareader_req = uxr_buffer_create_datareader_xml(
-    &context->session, *context->creation_destroy_stream, graph_info->datareader_id,
+    &context->session, *context->creation_stream, graph_info->datareader_id,
     graph_info->subscriber_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 
   // Run session

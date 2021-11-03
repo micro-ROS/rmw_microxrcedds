@@ -104,7 +104,7 @@ rmw_create_client(
 #ifdef RMW_UXRCE_USE_REFS
     // TODO(pablogs9): Use here true references
     // client_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
-    //     *custom_node->context->creation_destroy_stream, custom_service->subscriber_id,
+    //     *custom_node->context->creation_stream, custom_service->subscriber_id,
     //     custom_node->participant_id, "", UXR_REPLACE | UXR_REUSE);
     char service_name_id[20];
     generate_name(&custom_client->client_id, service_name_id, sizeof(service_name_id));
@@ -118,7 +118,7 @@ rmw_create_client(
     }
     client_req = uxr_buffer_create_requester_xml(
       &custom_node->context->session,
-      *custom_node->context->creation_destroy_stream,
+      *custom_node->context->creation_stream,
       custom_client->client_id,
       custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 #else
@@ -136,7 +136,7 @@ rmw_create_client(
 
     client_req = uxr_buffer_create_requester_bin(
       &custom_node->context->session,
-      *custom_node->context->creation_destroy_stream,
+      *custom_node->context->creation_stream,
       custom_client->client_id,
       custom_node->participant_id,
       (char *) service_name,
@@ -150,7 +150,7 @@ rmw_create_client(
     rmw_client->data = custom_client;
 
     if (!run_xrce_session(
-        custom_node->context, client_req,
+        custom_node->context, custom_node->context->creation_stream, client_req,
         custom_node->context->creation_timeout))
     {
       put_memory(&client_memory, &custom_client->mem);
@@ -175,7 +175,7 @@ rmw_create_client(
 
     custom_client->client_data_request = uxr_buffer_request_data(
       &custom_node->context->session,
-      *custom_node->context->creation_destroy_stream, custom_client->client_id,
+      *custom_node->context->creation_stream, custom_client->client_id,
       data_request_stream_id, &delivery_control);
   }
   return rmw_client;
@@ -216,11 +216,11 @@ rmw_destroy_client(
     uint16_t delete_client =
       uxr_buffer_delete_entity(
       &custom_node->context->session,
-      *custom_node->context->creation_destroy_stream,
+      *custom_node->context->destroy_stream,
       custom_client->client_id);
 
     if (!run_xrce_session(
-        custom_node->context, delete_client,
+        custom_node->context, custom_node->context->destroy_stream, delete_client,
         custom_node->context->destroy_timeout))
     {
       result_ret = RMW_RET_TIMEOUT;
