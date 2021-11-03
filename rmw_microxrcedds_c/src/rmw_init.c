@@ -163,6 +163,7 @@ rmw_init(
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
   context->instance_id = options->instance_id;
   context->implementation_identifier = eprosima_microxrcedds_identifier;
+  context->options.domain_id = options->domain_id;
 
   rmw_uxrce_init_session_memory(&session_memory, custom_sessions, RMW_UXRCE_MAX_SESSIONS);
   rmw_uxrce_init_static_input_buffer_memory(
