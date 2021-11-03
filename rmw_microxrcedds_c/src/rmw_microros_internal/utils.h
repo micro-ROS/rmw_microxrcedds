@@ -21,6 +21,7 @@
 
 bool run_xrce_session(
   rmw_context_impl_t * context,
+  uxrStreamId * target_stream,
   uint16_t requests,
   int timeout);
 

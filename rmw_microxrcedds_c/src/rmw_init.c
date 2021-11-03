@@ -188,8 +188,16 @@ rmw_init(
     options->impl->transport_params.read_cb);
   #endif  // RMW_UXRCE_TRANSPORT_CUSTOM
 
-  context_impl->creation_timeout = RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT;
-  context_impl->destroy_timeout = RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT;
+  context_impl->creation_timeout = RMW_UXRCE_ENTITY_CREATION_TIMEOUT;
+  context_impl->destroy_timeout = RMW_UXRCE_ENTITY_DESTROY_TIMEOUT;
+
+  context_impl->creation_stream = (RMW_UXRCE_ENTITY_CREATION_TIMEOUT > 0) ?
+    &context_impl->reliable_output :
+    &context_impl->best_effort_output;
+
+  context_impl->destroy_stream = (RMW_UXRCE_ENTITY_DESTROY_TIMEOUT > 0) ?
+    &context_impl->reliable_output :
+    &context_impl->best_effort_output;
 
   context_impl->id_participant = 0;
   context_impl->id_topic = 0;
@@ -244,10 +252,6 @@ rmw_init(
   context_impl->best_effort_output = uxr_create_output_best_effort_stream(
     &context_impl->session,
     context_impl->output_best_effort_stream_buffer, context_impl->transport.comm.mtu);
-
-  context_impl->creation_destroy_stream = (RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT > 0) ?
-    &context_impl->reliable_output :
-    &context_impl->best_effort_output;
 
   if (!uxr_create_session(&context_impl->session)) {
     CLOSE_TRANSPORT(&context_impl->transport);
@@ -312,7 +316,14 @@ rmw_context_fini(
   }
 
   if (NULL != context->impl) {
-    uxr_delete_session(&context->impl->session);
+    size_t retries = UXR_CONFIG_MAX_SESSION_CONNECTION_ATTEMPTS;
+
+    rmw_context_impl_t * context_impl = context->impl;
+    if (context_impl->destroy_stream->type == UXR_BEST_EFFORT_STREAM) {
+      retries = 0;
+    }
+
+    uxr_delete_session_retries(&context->impl->session, retries);
     rmw_uxrce_fini_session_memory(context->impl);
     CLOSE_TRANSPORT(&context->impl->transport);
   }
