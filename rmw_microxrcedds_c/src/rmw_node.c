@@ -134,7 +134,6 @@ rmw_create_node(
   size_t domain_id,
   bool localhost_only)
 {
-  (void)context;
   (void)localhost_only;
   rmw_node_t * rmw_node = NULL;
   if (!name || strlen(name) == 0) {
@@ -142,6 +141,9 @@ rmw_create_node(
   } else if (!namespace_ || strlen(namespace_) == 0) {
     RMW_SET_ERROR_MSG("namespace is null");
   } else {
+    if (domain_id == 0 && context->options.domain_id != 0) {
+      domain_id = context->options.domain_id;
+    }
     rmw_node = create_node(name, namespace_, domain_id, context);
   }
   return rmw_node;
