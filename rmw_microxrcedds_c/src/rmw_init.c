@@ -321,7 +321,14 @@ rmw_context_fini(
   }
 
   if (NULL != context->impl) {
-    uxr_delete_session(&context->impl->session);
+    size_t retries = UXR_CONFIG_MAX_SESSION_CONNECTION_ATTEMPTS;
+
+    rmw_context_impl_t * context_impl = context->impl;
+    if (context_impl->destroy_stream->type == UXR_BEST_EFFORT_STREAM) {
+      retries = 0;
+    }
+
+    uxr_delete_session_retries(&context->impl->session, retries);
     rmw_uxrce_fini_session_memory(context->impl);
     CLOSE_TRANSPORT(&context->impl->transport);
   }
