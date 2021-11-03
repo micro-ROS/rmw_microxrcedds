@@ -150,7 +150,7 @@ rmw_create_client(
     rmw_client->data = custom_client;
 
     if (!run_xrce_session(
-        custom_node->context->creation_stream, client_req,
+        custom_node->context, custom_node->context->creation_stream, client_req,
         custom_node->context->creation_timeout))
     {
       put_memory(&client_memory, &custom_client->mem);
@@ -220,7 +220,7 @@ rmw_destroy_client(
       custom_client->client_id);
 
     if (!run_xrce_session(
-        custom_node->context->destroy_stream, delete_client,
+        custom_node->context, custom_node->context->destroy_stream, delete_client,
         custom_node->context->destroy_timeout))
     {
       result_ret = RMW_RET_TIMEOUT;

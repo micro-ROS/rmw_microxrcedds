@@ -20,7 +20,8 @@
 #include "./rmw_microros_internal/types.h"
 
 bool run_xrce_session(
-  uxrStreamId * context,
+  rmw_context_impl_t * context,
+  uxrStreamId * target_stream,
   uint16_t requests,
   int timeout);
 

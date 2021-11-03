@@ -86,7 +86,7 @@ create_topic(
 #endif /* ifdef RMW_UXRCE_USE_XML */
 
   if (!run_xrce_session(
-      custom_node->context->creation_stream, topic_req,
+      custom_node->context, custom_node->context->creation_stream, topic_req,
       custom_node->context->creation_timeout))
   {
     rmw_uxrce_fini_topic_memory(custom_topic);
@@ -111,7 +111,7 @@ rmw_ret_t destroy_topic(
       topic->topic_id);
 
     if (!run_xrce_session(
-        custom_node->context->destroy_stream, delete_topic,
+        custom_node->context, custom_node->context->destroy_stream, delete_topic,
         custom_node->context->destroy_timeout))
     {
       result_ret = RMW_RET_TIMEOUT;

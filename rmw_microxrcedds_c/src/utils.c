@@ -28,11 +28,12 @@ static const char ros_request_subfix[] = "Request";
 static const char ros_reply_subfix[] = "Reply";
 
 bool run_xrce_session(
-  uxrStreamId * stream,
+  rmw_context_impl_t * context,
+  uxrStreamId * target_stream,
   uint16_t request,
   int timeout)
 {
-  if (stream->type == UXR_BEST_EFFORT_STREAM) {
+  if (target_stream->type == UXR_BEST_EFFORT_STREAM) {
     uxr_flash_output_streams(&context->session);
   } else {
     // This only handles one request at time

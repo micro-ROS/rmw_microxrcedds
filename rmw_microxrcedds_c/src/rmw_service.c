@@ -147,7 +147,7 @@ rmw_create_service(
     rmw_service->data = custom_service;
 
     if (!run_xrce_session(
-        custom_node->context->creation_stream, service_req,
+        custom_node->context, custom_node->context->creation_stream, service_req,
         custom_node->context->creation_timeout))
     {
       RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
@@ -218,7 +218,7 @@ rmw_destroy_service(
       custom_service->service_id);
 
     if (!run_xrce_session(
-        custom_node->context->destroy_stream, delete_service,
+        custom_node->context, custom_node->context->destroy_stream, delete_service,
         custom_node->context->destroy_timeout))
     {
       result_ret = RMW_RET_TIMEOUT;

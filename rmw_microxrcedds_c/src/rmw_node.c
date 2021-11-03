@@ -109,7 +109,7 @@ rmw_node_t * create_node(
 #endif /* ifdef RMW_UXRCE_USE_REFS */
 
   if (!run_xrce_session(
-      custom_node->context->creation_stream, participant_req,
+      custom_node->context, custom_node->context->creation_stream, participant_req,
       custom_node->context->creation_timeout))
   {
     rmw_uxrce_fini_node_memory(node_handle);
@@ -211,7 +211,7 @@ rmw_ret_t rmw_destroy_node(
     custom_node->participant_id);
 
   if (!run_xrce_session(
-      custom_node->context->destroy_stream, delete_participant,
+      custom_node->context, custom_node->context->destroy_stream, delete_participant,
       custom_node->context->destroy_timeout))
   {
     ret = RMW_RET_TIMEOUT;
