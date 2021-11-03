@@ -102,7 +102,7 @@ rmw_create_service(
 #ifdef RMW_UXRCE_USE_REFS
     // TODO(pablogs9): Use here true references
     // service_req = uxr_buffer_create_replier_ref(&custom_node->context->session,
-    //     *custom_node->context->creation_destroy_stream, custom_service->subscriber_id,
+    //     *custom_node->context->creation_stream, custom_service->subscriber_id,
     //     custom_node->participant_id, "", UXR_REPLACE | UXR_REUSE);
     char service_name_id[20];
     generate_name(&custom_service->service_id, service_name_id, sizeof(service_name_id));
@@ -116,7 +116,7 @@ rmw_create_service(
     }
     service_req = uxr_buffer_create_replier_xml(
       &custom_node->context->session,
-      *custom_node->context->creation_destroy_stream, custom_service->service_id,
+      *custom_node->context->creation_stream, custom_service->service_id,
       custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 #else
     static char req_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
@@ -133,7 +133,7 @@ rmw_create_service(
 
     service_req = uxr_buffer_create_replier_bin(
       &custom_node->context->session,
-      *custom_node->context->creation_destroy_stream,
+      *custom_node->context->creation_stream,
       custom_service->service_id,
       custom_node->participant_id,
       (char *) service_name,
@@ -147,7 +147,7 @@ rmw_create_service(
     rmw_service->data = custom_service;
 
     if (!run_xrce_session(
-        custom_node->context, service_req,
+        custom_node->context, custom_node->context->creation_stream, service_req,
         custom_node->context->creation_timeout))
     {
       RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
@@ -173,7 +173,7 @@ rmw_create_service(
 
     custom_service->service_data_resquest = uxr_buffer_request_data(
       &custom_node->context->session,
-      *custom_node->context->creation_destroy_stream, custom_service->service_id,
+      *custom_node->context->creation_stream, custom_service->service_id,
       data_request_stream_id, &delivery_control);
   }
   return rmw_service;
@@ -214,11 +214,11 @@ rmw_destroy_service(
     uint16_t delete_service =
       uxr_buffer_delete_entity(
       &custom_node->context->session,
-      *custom_node->context->creation_destroy_stream,
+      *custom_node->context->destroy_stream,
       custom_service->service_id);
 
     if (!run_xrce_session(
-        custom_node->context, delete_service,
+        custom_node->context, custom_node->context->destroy_stream, delete_service,
         custom_node->context->destroy_timeout))
     {
       result_ret = RMW_RET_TIMEOUT;
