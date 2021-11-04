@@ -81,7 +81,8 @@ struct rmw_context_impl_s
   uxrStreamId best_effort_output;
   uxrStreamId best_effort_input;
 
-  uxrStreamId * creation_destroy_stream;
+  uxrStreamId * creation_stream;
+  uxrStreamId * destroy_stream;
   int creation_timeout;
   int destroy_timeout;
 
