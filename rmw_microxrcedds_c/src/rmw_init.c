@@ -168,9 +168,9 @@ rmw_init_options_fini(
   rmw_uxrce_mempool_item_t * item = init_options_memory.allocateditems;
 
   while (NULL != item) {
-    rmw_uxrce_init_options_impl_t * custom_init_options =
+    rmw_uxrce_init_options_impl_t * aux_init_options =
       (rmw_uxrce_init_options_impl_t *)item->data;
-    if (custom_init_options == init_options->impl) {
+    if (aux_init_options == init_options->impl) {
       put_memory(&init_options_memory, item);
       break;
     }
