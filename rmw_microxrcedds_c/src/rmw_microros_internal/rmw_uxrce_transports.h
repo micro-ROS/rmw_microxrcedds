@@ -47,7 +47,7 @@
  */
 rmw_ret_t rmw_uxrce_transport_init(
   rmw_context_impl_t * context,
-  rmw_init_options_impl_t * init_options,
+  rmw_uxrce_init_options_impl_t * init_options,
   void * override_transport);
 
 /**

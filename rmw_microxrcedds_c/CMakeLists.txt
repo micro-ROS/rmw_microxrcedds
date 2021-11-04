@@ -52,13 +52,15 @@ set(RMW_UXRCE_MAX_PUBLISHERS "4" CACHE STRING "This value sets the maximum numbe
 set(RMW_UXRCE_MAX_SUBSCRIPTIONS "4" CACHE STRING "This value sets the maximum number of subscriptions for an application.")
 set(RMW_UXRCE_MAX_SERVICES "4" CACHE STRING "This value sets the maximum number of services for an application.")
 set(RMW_UXRCE_MAX_CLIENTS "4" CACHE STRING "This value sets the maximum number of clients for an application.")
+set(RMW_UXRCE_MAX_WAIT_SETS "4" CACHE STRING "This value sets the maximum number of wait sets for an application.")
+set(RMW_UXRCE_MAX_GUARD_CONDITION "4" CACHE STRING "This value sets the maximum number of guard conditions for an application.")
 set(RMW_UXRCE_MAX_TOPICS "-1" CACHE STRING
   "This value sets the maximum number of topics for an application.
   If set to -1 RMW_UXRCE_MAX_TOPICS = RMW_UXRCE_MAX_PUBLISHERS + RMW_UXRCE_MAX_SUBSCRIPTIONS + RMW_UXRCE_MAX_NODES.")
 option(RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS "Enables increasing static pools with dynamic allocation when needed." OFF)
-set(RMW_UXRCE_NODE_NAME_MAX_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a node name.")
-set(RMW_UXRCE_TOPIC_NAME_MAX_LENGTH "100" CACHE STRING "This value sets the maximum number of characters for a topic name.")
-set(RMW_UXRCE_TYPE_NAME_MAX_LENGTH "128" CACHE STRING "This value sets the maximum number of characters for a type name.")
+set(RMW_UXRCE_NODE_NAME_MAX_LENGTH "60" CACHE STRING "This value sets the maximum number of characters for a node name.")
+set(RMW_UXRCE_TOPIC_NAME_MAX_LENGTH "60" CACHE STRING "This value sets the maximum number of characters for a topic name.")
+set(RMW_UXRCE_TYPE_NAME_MAX_LENGTH "100" CACHE STRING "This value sets the maximum number of characters for a type name.")
 set(RMW_UXRCE_REF_BUFFER_LENGTH "100" CACHE STRING "This value sets the maximum number of characters for a reference buffer.")
 set(RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT "1000" CACHE STRING
   "This value sets the default time to wait for a publication in a reliable mode in milliseconds.")

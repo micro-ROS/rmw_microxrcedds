@@ -20,7 +20,7 @@ extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
 
 rmw_ret_t rmw_uxrce_transport_init(
   rmw_context_impl_t * context_impl,
-  rmw_init_options_impl_t * init_options_impl,
+  rmw_uxrce_init_options_impl_t * init_options_impl,
   void * override_transport)
 {
 #ifdef RMW_UXRCE_TRANSPORT_SERIAL
