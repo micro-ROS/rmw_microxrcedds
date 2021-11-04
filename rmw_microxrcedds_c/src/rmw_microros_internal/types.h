@@ -104,18 +104,14 @@ struct rmw_context_impl_s
 
 typedef struct rmw_context_impl_s rmw_uxrce_session_t;
 
-<<<<<<< HEAD
-struct  rmw_init_options_impl_s
-=======
-struct rmw_init_options_impl_t
->>>>>>> cb4f522 (Static operation (#184))
+struct rmw_init_options_impl_s
 {
   rmw_uxrce_mempool_item_t mem;
 
   struct rmw_uxrce_transport_params_t transport_params;
 };
 
-typedef struct rmw_init_options_impl_t rmw_uxrce_init_options_impl_t;
+typedef struct rmw_init_options_impl_s rmw_uxrce_init_options_impl_t;
 
 // ROS2 entities definitions
 
@@ -206,12 +202,7 @@ typedef struct rmw_uxrce_publisher_t
 typedef struct rmw_uxrce_node_t
 {
   rmw_uxrce_mempool_item_t mem;
-<<<<<<< HEAD
-  rmw_node_t * rmw_handle;
   rmw_uxrce_session_t * context;
-=======
-  rmw_context_impl_t * context;
->>>>>>> cb4f522 (Static operation (#184))
 
   uxrObjectId participant_id;
 
