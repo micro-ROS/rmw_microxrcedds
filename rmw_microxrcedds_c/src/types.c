@@ -58,6 +58,15 @@ rmw_uxrce_topic_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
 rmw_uxrce_mempool_t static_buffer_memory;
 rmw_uxrce_static_input_buffer_t custom_static_buffers[RMW_UXRCE_MAX_HISTORY];
 
+rmw_uxrce_mempool_t init_options_memory;
+rmw_uxrce_init_options_impl_t custom_init_options[RMW_UXRCE_MAX_OPTIONS];
+
+rmw_uxrce_mempool_t wait_set_memory;
+rmw_uxrce_wait_set_t custom_wait_set[RMW_UXRCE_MAX_WAIT_SETS];
+
+rmw_uxrce_mempool_t guard_condition_memory;
+rmw_uxrce_guard_condition_t custom_guard_condition[RMW_UXRCE_MAX_GUARD_CONDITION];
+
 // Memory init functions
 
 #define RMW_INIT_MEMORY(X) \
@@ -90,6 +99,9 @@ RMW_INIT_MEMORY(node)
 RMW_INIT_MEMORY(session)
 RMW_INIT_MEMORY(topic)
 RMW_INIT_MEMORY(static_input_buffer)
+RMW_INIT_MEMORY(init_options_impl)
+RMW_INIT_MEMORY(wait_set)
+RMW_INIT_MEMORY(guard_condition)
 
 // Memory management functions
 
@@ -106,18 +118,11 @@ void rmw_uxrce_fini_node_memory(
     RMW_SET_ERROR_MSG("node handle not from this implementation");
     return;
   }
-  if (node->namespace_) {
-    rmw_free((char *)node->namespace_);
-  }
-  if (node->name) {
-    rmw_free((char *)node->name);
-  }
   if (node->implementation_identifier) {
     node->implementation_identifier = NULL;
   }
   if (node->data) {
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
-    custom_node->rmw_handle = NULL;
     custom_node->context = NULL;
 
     put_memory(&node_memory, &custom_node->mem);
@@ -125,7 +130,6 @@ void rmw_uxrce_fini_node_memory(
     node->data = NULL;
   }
 
-  rmw_node_free(node);
   node = NULL;
 }
 
@@ -139,19 +143,14 @@ void rmw_uxrce_fini_publisher_memory(
   if (publisher->implementation_identifier) {
     publisher->implementation_identifier = NULL;
   }
-  if (publisher->topic_name) {
-    rmw_free((char *)publisher->topic_name);
-  }
   if (publisher->data) {
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
-
-    custom_publisher->rmw_handle = NULL;
 
     put_memory(&publisher_memory, &custom_publisher->mem);
     publisher->data = NULL;
   }
 
-  rmw_free(publisher);
+  publisher = NULL;
 }
 
 void rmw_uxrce_fini_subscription_memory(
@@ -164,18 +163,14 @@ void rmw_uxrce_fini_subscription_memory(
   if (subscriber->implementation_identifier) {
     subscriber->implementation_identifier = NULL;
   }
-  if (subscriber->topic_name) {
-    rmw_free((char *)subscriber->topic_name);
-  }
   if (subscriber->data) {
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscriber->data;
-
-    custom_subscription->rmw_handle = NULL;
 
     put_memory(&subscription_memory, &custom_subscription->mem);
     subscriber->data = NULL;
   }
-  rmw_free(subscriber);
+
+  subscriber = NULL;
 }
 
 void rmw_uxrce_fini_service_memory(
@@ -188,17 +183,14 @@ void rmw_uxrce_fini_service_memory(
   if (service->implementation_identifier) {
     service->implementation_identifier = NULL;
   }
-  if (service->service_name) {
-    rmw_free((char *)service->service_name);
-  }
   if (service->data) {
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
-    custom_service->rmw_handle = NULL;
 
     put_memory(&service_memory, &custom_service->mem);
     service->data = NULL;
   }
-  rmw_free(service);
+
+  service = NULL;
 }
 
 void rmw_uxrce_fini_client_memory(
@@ -211,17 +203,14 @@ void rmw_uxrce_fini_client_memory(
   if (client->implementation_identifier) {
     client->implementation_identifier = NULL;
   }
-  if (client->service_name) {
-    rmw_free((char *)client->service_name);
-  }
   if (client->data) {
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
-    custom_client->rmw_handle = NULL;
 
     put_memory(&client_memory, &custom_client->mem);
     client->data = NULL;
   }
-  rmw_free(client);
+
+  client = NULL;
 }
 
 void rmw_uxrce_fini_topic_memory(
