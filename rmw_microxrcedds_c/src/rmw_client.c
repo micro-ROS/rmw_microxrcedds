@@ -45,29 +45,25 @@ rmw_create_client(
   } else if (!qos_policies) {
     RMW_SET_ERROR_MSG("qos_profile is null");
   } else {
-    rmw_client = (rmw_client_t *)rmw_allocate(
-      sizeof(rmw_client_t));
-    rmw_client->data = NULL;
-    rmw_client->implementation_identifier = rmw_get_implementation_identifier();
-
-    rmw_client->service_name = (const char *)(rmw_allocate(
-        sizeof(char) * (strlen(
-          service_name) + 1)));
-    if (!rmw_client->service_name) {
-      RMW_SET_ERROR_MSG("failed to allocate memory");
-      goto fail;
-    }
-    memcpy((void *)rmw_client->service_name, service_name, strlen(service_name) + 1);
-
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     rmw_uxrce_mempool_item_t * memory_node = get_memory(&client_memory);
     if (!memory_node) {
       RMW_SET_ERROR_MSG("Not available memory node");
+      return NULL;
+    }
+    rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)memory_node->data;
+
+    rmw_client = &custom_client->rmw_client;
+    rmw_client->data = NULL;
+    rmw_client->implementation_identifier = rmw_get_implementation_identifier();
+    rmw_client->service_name = custom_client->service_name;
+    if ((strlen(service_name) + 1 ) > sizeof(custom_client->service_name)) {
+      RMW_SET_ERROR_MSG("failed to allocate string");
       goto fail;
     }
 
-    rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)memory_node->data;
-    custom_client->rmw_handle = rmw_client;
+    memcpy((void *)rmw_client->service_name, service_name, strlen(service_name) + 1);
+
     custom_client->owner_node = custom_node;
     custom_client->session_timeout = RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT;
     custom_client->qos = *qos_policies;

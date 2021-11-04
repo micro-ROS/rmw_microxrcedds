@@ -23,24 +23,36 @@ rmw_create_guard_condition(
 {
   (void)context;
 
-  rmw_guard_condition_t * rmw_guard_condition = (rmw_guard_condition_t *)rmw_allocate(
-    sizeof(rmw_guard_condition_t));
+  rmw_uxrce_mempool_item_t * memory_node = get_memory(&guard_condition_memory);
+  if (!memory_node) {
+    RMW_SET_ERROR_MSG("Not available memory node");
+    return NULL;
+  }
+  rmw_uxrce_guard_condition_t * custom_guard_condition =
+    (rmw_uxrce_guard_condition_t *)memory_node->data;
+  custom_guard_condition->hasTriggered = false;
+  custom_guard_condition->rmw_guard_condition.context = context;
+  custom_guard_condition->rmw_guard_condition.implementation_identifier =
+    rmw_get_implementation_identifier();
 
-  rmw_guard_condition->context = context;
-  rmw_guard_condition->implementation_identifier = rmw_get_implementation_identifier();
-  rmw_guard_condition->data = (bool *)rmw_allocate(sizeof(bool));
-
-  bool * hasTriggered = (bool *)rmw_guard_condition->data;
-  *hasTriggered = false;
-
-  return rmw_guard_condition;
+  return &custom_guard_condition->rmw_guard_condition;
 }
 
 rmw_ret_t
 rmw_destroy_guard_condition(
   rmw_guard_condition_t * guard_condition)
 {
-  rmw_free(guard_condition);
+  rmw_uxrce_mempool_item_t * item = guard_condition_memory.allocateditems;
 
-  return RMW_RET_OK;
+  while (NULL != item) {
+    rmw_uxrce_guard_condition_t * custom_guard_condition =
+      (rmw_uxrce_guard_condition_t *)item->data;
+    if (&custom_guard_condition->rmw_guard_condition == guard_condition) {
+      put_memory(&guard_condition_memory, item);
+      return RMW_RET_OK;
+    }
+    item = item->next;
+  }
+
+  return RMW_RET_ERROR;
 }

@@ -37,6 +37,7 @@ protected:
 
   void TearDown() override
   {
+    ASSERT_EQ(rmw_init_options_fini(&test_options), RMW_RET_OK);
     ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
   }
 
