@@ -60,11 +60,6 @@ set(RMW_UXRCE_REF_BUFFER_LENGTH "100" CACHE STRING "This value sets the maximum 
 set(RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT "1000" CACHE STRING
   "This value sets the default time to wait for a publication in a reliable mode in milliseconds.")
 
-<<<<<<< HEAD
-set(RMW_UXRCE_STREAM_HISTORY "4" CACHE STRING "This value sets the number of MTUs to buffer, both input and output. Micro XRCE-DDS client configuration provides their size")
-set(RMW_UXRCE_STREAM_HISTORY_INPUT "" CACHE STRING "This value sets the number of MTUs to input buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_OUTPUT is blank. Micro XRCE-DDS client configuration provides their size")
-set(RMW_UXRCE_STREAM_HISTORY_OUTPUT "" CACHE STRING "This value sets the number of MTUs to output buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_INPUT is blank. Micro XRCE-DDS client configuration provides their size")
-=======
 set(RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT "1000" CACHE STRING
   "This value sets the default maximum time to wait for an XRCE entity creation and destroy in milliseconds.
   If set to 0 best effort is used.")
@@ -88,7 +83,6 @@ set(RMW_UXRCE_STREAM_HISTORY_INPUT "" CACHE STRING
   "This value sets the number of MTUs to input buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_OUTPUT is blank.")
 set(RMW_UXRCE_STREAM_HISTORY_OUTPUT "" CACHE STRING
   "This value sets the number of MTUs to output buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_INPUT is blank.")
->>>>>>> 0575d52 (Separate creation & destroy entities streams (#185))
 
 if(RMW_UXRCE_STREAM_HISTORY_INPUT STREQUAL "" OR RMW_UXRCE_STREAM_HISTORY_OUTPUT STREQUAL "")
   unset(RMW_UXRCE_STREAM_HISTORY_INPUT)
