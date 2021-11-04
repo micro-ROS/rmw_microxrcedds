@@ -104,10 +104,14 @@ typedef struct rmw_context_impl_t
 
 typedef struct rmw_context_impl_t rmw_uxrce_session_t;
 
-struct  rmw_init_options_impl_t
+struct rmw_init_options_impl_t
 {
+  rmw_uxrce_mempool_item_t mem;
+
   struct rmw_uxrce_transport_params_t transport_params;
 };
+
+typedef struct rmw_init_options_impl_t rmw_uxrce_init_options_impl_t;
 
 // ROS2 entities definitions
 
@@ -124,7 +128,6 @@ typedef struct rmw_uxrce_topic_t
 typedef struct rmw_uxrce_service_t
 {
   rmw_uxrce_mempool_item_t mem;
-  rmw_service_t * rmw_handle;
   uxrObjectId service_id;
   const service_type_support_callbacks_t * type_support_callbacks;
   uint16_t service_data_resquest;
@@ -134,12 +137,14 @@ typedef struct rmw_uxrce_service_t
   uxrStreamId stream_id;
   int session_timeout;
   struct rmw_uxrce_node_t * owner_node;
+
+  rmw_service_t rmw_service;
+  char service_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
 } rmw_uxrce_service_t;
 
 typedef struct rmw_uxrce_client_t
 {
   rmw_uxrce_mempool_item_t mem;
-  rmw_client_t * rmw_handle;
   uxrObjectId client_id;
   const service_type_support_callbacks_t * type_support_callbacks;
   uint16_t client_data_request;
@@ -149,12 +154,14 @@ typedef struct rmw_uxrce_client_t
   uxrStreamId stream_id;
   int session_timeout;
   struct rmw_uxrce_node_t * owner_node;
+
+  rmw_client_t rmw_client;
+  char service_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
 } rmw_uxrce_client_t;
 
 typedef struct rmw_uxrce_subscription_t
 {
   rmw_uxrce_mempool_item_t mem;
-  rmw_subscription_t * rmw_handle;
   uxrObjectId subscriber_id;
   uxrObjectId datareader_id;
 
@@ -164,12 +171,14 @@ typedef struct rmw_uxrce_subscription_t
   struct rmw_uxrce_node_t * owner_node;
   rmw_qos_profile_t qos;
   uxrStreamId stream_id;
+
+  rmw_subscription_t rmw_subscription;
+  char topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
 } rmw_uxrce_subscription_t;
 
 typedef struct rmw_uxrce_publisher_t
 {
   rmw_uxrce_mempool_item_t mem;
-  rmw_publisher_t * rmw_handle;
   uxrObjectId publisher_id;
   uxrObjectId datawriter_id;
 
@@ -185,15 +194,21 @@ typedef struct rmw_uxrce_publisher_t
   int session_timeout;
 
   struct rmw_uxrce_node_t * owner_node;
+
+  rmw_publisher_t rmw_publisher;
+  char topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
 } rmw_uxrce_publisher_t;
 
 typedef struct rmw_uxrce_node_t
 {
   rmw_uxrce_mempool_item_t mem;
-  rmw_node_t * rmw_handle;
   rmw_context_impl_t * context;
 
   uxrObjectId participant_id;
+
+  rmw_node_t rmw_node;
+  char node_name[RMW_UXRCE_NODE_NAME_MAX_LENGTH];
+  char node_namespace[RMW_UXRCE_NODE_NAME_MAX_LENGTH];
 } rmw_uxrce_node_t;
 
 #define RMW_UXRCE_QOS_LIFESPAN_DEFAULT {30LL, 0LL}
@@ -226,6 +241,22 @@ typedef struct rmw_uxrce_static_input_buffer_t
   } related;
 } rmw_uxrce_static_input_buffer_t;
 
+typedef struct rmw_uxrce_wait_set_t
+{
+  rmw_uxrce_mempool_item_t mem;
+
+  rmw_wait_set_t rmw_wait_set;
+} rmw_uxrce_wait_set_t;
+
+typedef struct rmw_uxrce_guard_condition_t
+{
+  rmw_uxrce_mempool_item_t mem;
+
+  bool hasTriggered;
+
+  rmw_guard_condition_t rmw_guard_condition;
+} rmw_uxrce_guard_condition_t;
+
 // Static memory pools
 
 extern char rmw_uxrce_entity_naming_buffer[RMW_UXRCE_ENTITY_NAMING_BUFFER_LENGTH];
@@ -254,6 +285,15 @@ extern rmw_uxrce_topic_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
 extern rmw_uxrce_mempool_t static_buffer_memory;
 extern rmw_uxrce_static_input_buffer_t custom_static_buffers[RMW_UXRCE_MAX_HISTORY];
 
+extern rmw_uxrce_mempool_t init_options_memory;
+extern rmw_uxrce_init_options_impl_t custom_init_options[RMW_UXRCE_MAX_OPTIONS];
+
+extern rmw_uxrce_mempool_t wait_set_memory;
+extern rmw_uxrce_wait_set_t custom_wait_set[RMW_UXRCE_MAX_WAIT_SETS];
+
+extern rmw_uxrce_mempool_t guard_condition_memory;
+extern rmw_uxrce_guard_condition_t custom_guard_condition[RMW_UXRCE_MAX_GUARD_CONDITION];
+
 // Memory init functions
 
 #define RMW_INIT_DEFINE_MEMORY(X) \
@@ -270,6 +310,9 @@ RMW_INIT_DEFINE_MEMORY(node)
 RMW_INIT_DEFINE_MEMORY(session)
 RMW_INIT_DEFINE_MEMORY(topic)
 RMW_INIT_DEFINE_MEMORY(static_input_buffer)
+RMW_INIT_DEFINE_MEMORY(init_options_impl)
+RMW_INIT_DEFINE_MEMORY(wait_set)
+RMW_INIT_DEFINE_MEMORY(guard_condition)
 
 // Memory management functions
 

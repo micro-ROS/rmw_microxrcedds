@@ -39,37 +39,33 @@ rmw_node_t * create_node(
   rmw_uxrce_mempool_item_t * memory_node = get_memory(&node_memory);
   if (!memory_node) {
     RMW_SET_ERROR_MSG("Not available memory node");
-    goto fail;
+    return NULL;
   }
 
   rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)memory_node->data;
 
   custom_node->context = context->impl;
 
-  node_handle = rmw_node_allocate();
-  if (!node_handle) {
-    RMW_SET_ERROR_MSG("failed to allocate rmw_node_t");
-    return NULL;
-  }
-
-  custom_node->rmw_handle = node_handle;
+  node_handle = &custom_node->rmw_node;
 
   node_handle->implementation_identifier = rmw_get_implementation_identifier();
   node_handle->data = custom_node;
-  node_handle->name = (const char *)(rmw_allocate(sizeof(char) * (strlen(name) + 1)));
-  if (!node_handle->name) {
-    RMW_SET_ERROR_MSG("failed to allocate memory");
-    rmw_uxrce_fini_node_memory(node_handle);
-    return NULL;
+  node_handle->name = custom_node->node_name;
+
+  if ((strlen(name) + 1 ) > sizeof(custom_node->node_name)) {
+    RMW_SET_ERROR_MSG("failed to allocate string");
+    goto fail;
   }
+
   memcpy((char *)node_handle->name, name, strlen(name) + 1);
 
-  node_handle->namespace_ = rmw_allocate(sizeof(char) * (strlen(namespace_) + 1));
-  if (!node_handle->namespace_) {
-    RMW_SET_ERROR_MSG("failed to allocate memory");
-    rmw_uxrce_fini_node_memory(node_handle);
-    return NULL;
+  node_handle->namespace_ = custom_node->node_namespace;
+
+  if ((strlen(namespace_) + 1 ) > sizeof(custom_node->node_namespace)) {
+    RMW_SET_ERROR_MSG("failed to allocate string");
+    goto fail;
   }
+
   memcpy((char *)node_handle->namespace_, namespace_, strlen(namespace_) + 1);
 
   custom_node->participant_id =
@@ -178,7 +174,7 @@ rmw_ret_t rmw_destroy_node(
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)item->data;
     item = item->next;
     if (custom_publisher->owner_node == custom_node) {
-      ret = rmw_destroy_publisher(node, custom_publisher->rmw_handle);
+      ret = rmw_destroy_publisher(node, &custom_publisher->rmw_publisher);
     }
   }
 
@@ -187,7 +183,7 @@ rmw_ret_t rmw_destroy_node(
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)item->data;
     item = item->next;
     if (custom_subscription->owner_node == custom_node) {
-      ret = rmw_destroy_subscription(node, custom_subscription->rmw_handle);
+      ret = rmw_destroy_subscription(node, &custom_subscription->rmw_subscription);
     }
   }
 
@@ -196,7 +192,7 @@ rmw_ret_t rmw_destroy_node(
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)item->data;
     item = item->next;
     if (custom_service->owner_node == custom_node) {
-      ret = rmw_destroy_service(node, custom_service->rmw_handle);
+      ret = rmw_destroy_service(node, &custom_service->rmw_service);
     }
   }
 
@@ -205,7 +201,7 @@ rmw_ret_t rmw_destroy_node(
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)item->data;
     item = item->next;
     if (custom_client->owner_node == custom_node) {
-      ret = rmw_destroy_client(node, custom_client->rmw_handle);
+      ret = rmw_destroy_client(node, &custom_client->rmw_client);
     }
   }
 

@@ -55,7 +55,17 @@ rmw_init_options_init(
   init_options->allocator = allocator;
   init_options->enclave = "/";
 
-  init_options->impl = allocator.allocate(sizeof(rmw_init_options_impl_t), allocator.state);
+  // This can be call before rmw_init()
+  rmw_uxrce_init_init_options_impl_memory(
+    &init_options_memory, custom_init_options,
+    RMW_UXRCE_MAX_OPTIONS);
+
+  rmw_uxrce_mempool_item_t * memory_node = get_memory(&init_options_memory);
+  if (!memory_node) {
+    RMW_SET_ERROR_MSG("Not available memory node");
+    return RMW_RET_ERROR;
+  }
+  init_options->impl = memory_node->data;
 
 #if defined(RMW_UXRCE_TRANSPORT_SERIAL)
   if (strlen(RMW_UXRCE_DEFAULT_SERIAL_DEVICE) <= MAX_SERIAL_DEVICE) {
@@ -124,8 +134,18 @@ rmw_init_options_copy(
     return RMW_RET_INVALID_ARGUMENT;
   }
   memcpy(dst, src, sizeof(rmw_init_options_t));
-  dst->impl = rmw_allocate(sizeof(rmw_init_options_impl_t));
-  memcpy(dst->impl, src->impl, sizeof(rmw_init_options_impl_t));
+
+  rmw_uxrce_mempool_item_t * memory_node = get_memory(&init_options_memory);
+  if (!memory_node) {
+    RMW_SET_ERROR_MSG("Not available memory node");
+    return RMW_RET_ERROR;
+  }
+  dst->impl = memory_node->data;
+
+  rmw_uxrce_init_options_impl_t * dst_impl = dst->impl;
+  rmw_uxrce_init_options_impl_t * src_impl = src->impl;
+
+  dst_impl->transport_params = src_impl->transport_params;
 
   return RMW_RET_OK;
 }
@@ -142,9 +162,25 @@ rmw_init_options_fini(
     eprosima_microxrcedds_identifier,
     return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
 
-  rmw_free(init_options->impl);
+  rmw_uxrce_mempool_item_t * item = init_options_memory.allocateditems;
+
+  while (NULL != item) {
+    rmw_uxrce_init_options_impl_t * custom_init_options =
+      (rmw_uxrce_init_options_impl_t *)item->data;
+    if (custom_init_options == init_options->impl) {
+      put_memory(&init_options_memory, item);
+      break;
+    }
+    item = item->next;
+  }
+
+  if (NULL == item) {
+    return RMW_RET_ERROR;
+  }
+
 
   *init_options = rmw_get_zero_initialized_init_options();
+
   return RMW_RET_OK;
 }
 
@@ -222,6 +258,13 @@ rmw_init(
   rmw_uxrce_init_service_memory(&service_memory, custom_services, RMW_UXRCE_MAX_SERVICES);
   rmw_uxrce_init_client_memory(&client_memory, custom_clients, RMW_UXRCE_MAX_CLIENTS);
   rmw_uxrce_init_topic_memory(&topics_memory, custom_topics, RMW_UXRCE_MAX_TOPICS_INTERNAL);
+  rmw_uxrce_init_init_options_impl_memory(
+    &init_options_memory, custom_init_options,
+    RMW_UXRCE_MAX_OPTIONS);
+  rmw_uxrce_init_wait_set_memory(&wait_set_memory, custom_wait_set, RMW_UXRCE_MAX_WAIT_SETS);
+  rmw_uxrce_init_guard_condition_memory(
+    &guard_condition_memory, custom_guard_condition,
+    RMW_UXRCE_MAX_GUARD_CONDITION);
 
   // Micro-XRCE-DDS Client transport initialization
   rmw_ret_t transport_init_ret = rmw_uxrce_transport_init(
@@ -256,6 +299,8 @@ rmw_init(
 
   if (!uxr_create_session(&context_impl->session)) {
     CLOSE_TRANSPORT(&context_impl->transport);
+    put_memory(&session_memory, &context_impl->mem);
+    context->impl = NULL;
     RMW_SET_ERROR_MSG("failed to create node session on Micro ROS Agent.");
     return RMW_RET_ERROR;
   }
@@ -303,7 +348,6 @@ rmw_ret_t
 rmw_context_fini(
   rmw_context_t * context)
 {
-  // TODO(pablogs9): Should we manage not closed XRCE sessions?
   rmw_ret_t ret = RMW_RET_OK;
 
   rmw_uxrce_mempool_item_t * item = node_memory.allocateditems;
@@ -312,7 +356,7 @@ rmw_context_fini(
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)item->data;
     item = item->next;
     if (custom_node->context == context->impl) {
-      ret = rmw_destroy_node(custom_node->rmw_handle);
+      ret = rmw_destroy_node(&custom_node->rmw_node);
     }
   }
 

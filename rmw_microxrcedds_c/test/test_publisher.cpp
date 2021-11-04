@@ -90,9 +90,9 @@ TEST_F(TestPublisher, construction_and_destruction)
 
 
 /*
- * Testing node memory poll for diferent topic
+ * Testing node memory poll for diferent publisher
  */
-TEST_F(TestPublisher, memory_poll_multiple_topic)
+TEST_F(TestPublisher, memory_poll_multiple_publisher)
 {
   rmw_qos_profile_t dummy_qos_policies;
 
@@ -190,9 +190,9 @@ TEST_F(TestPublisher, memory_poll_multiple_topic)
 
 
 /*
- * Testing node memory poll for same topic
+ * Testing node memory poll for same publisher
  */
-TEST_F(TestPublisher, memory_poll_shared_topic)
+TEST_F(TestPublisher, memory_poll_shared_publisher)
 {
   dummy_type_support_t dummy_type_support;
 
