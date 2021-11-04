@@ -155,20 +155,20 @@ rmw_create_publisher(
   #ifdef RMW_UXRCE_USE_REFS
     publisher_req = uxr_buffer_create_publisher_xml(
       &custom_publisher->owner_node->context->session,
-      *custom_node->context->creation_destroy_stream,
+      *custom_node->context->creation_stream,
       custom_publisher->publisher_id,
       custom_node->participant_id, "", UXR_REPLACE | UXR_REUSE);
   #else
     publisher_req = uxr_buffer_create_publisher_bin(
       &custom_publisher->owner_node->context->session,
-      *custom_node->context->creation_destroy_stream,
+      *custom_node->context->creation_stream,
       custom_publisher->publisher_id,
       custom_node->participant_id,
       UXR_REPLACE | UXR_REUSE);
   #endif /* ifdef RMW_UXRCE_USE_REFS */
 
     if (!run_xrce_session(
-        custom_node->context, publisher_req,
+        custom_node->context, custom_node->context->creation_stream, publisher_req,
         custom_node->context->creation_timeout))
     {
       put_memory(&publisher_memory, &custom_publisher->mem);
@@ -194,7 +194,7 @@ rmw_create_publisher(
 
     datawriter_req = uxr_buffer_create_datawriter_ref(
       &custom_publisher->owner_node->context->session,
-      *custom_node->context->creation_destroy_stream,
+      *custom_node->context->creation_stream,
       custom_publisher->datawriter_id,
       custom_publisher->publisher_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
   #else
@@ -217,7 +217,7 @@ rmw_create_publisher(
 
     datawriter_req = uxr_buffer_create_datawriter_bin(
       &custom_publisher->owner_node->context->session,
-      *custom_node->context->creation_destroy_stream,
+      *custom_node->context->creation_stream,
       custom_publisher->datawriter_id,
       custom_publisher->publisher_id,
       custom_publisher->topic->topic_id,
@@ -229,7 +229,7 @@ rmw_create_publisher(
   #endif /* ifdef RMW_UXRCE_USE_REFS */
 
     if (!run_xrce_session(
-        custom_node->context, datawriter_req,
+        custom_node->context, custom_node->context->creation_stream, datawriter_req,
         custom_node->context->creation_timeout))
     {
       put_memory(&publisher_memory, &custom_publisher->mem);
@@ -367,18 +367,18 @@ rmw_destroy_publisher(
 
     uint16_t delete_writer = uxr_buffer_delete_entity(
       &custom_publisher->owner_node->context->session,
-      *custom_publisher->owner_node->context->creation_destroy_stream,
+      *custom_publisher->owner_node->context->destroy_stream,
       custom_publisher->datawriter_id);
     uint16_t delete_publisher = uxr_buffer_delete_entity(
       &custom_publisher->owner_node->context->session,
-      *custom_publisher->owner_node->context->creation_destroy_stream,
+      *custom_publisher->owner_node->context->destroy_stream,
       custom_publisher->publisher_id);
 
     bool ret = run_xrce_session(
-      custom_node->context, delete_writer,
+      custom_node->context, custom_node->context->destroy_stream, delete_writer,
       custom_node->context->destroy_timeout);
     ret &= run_xrce_session(
-      custom_node->context, delete_publisher,
+      custom_node->context, custom_node->context->destroy_stream, delete_publisher,
       custom_node->context->destroy_timeout);
     if (!ret) {
       result_ret = RMW_RET_TIMEOUT;
