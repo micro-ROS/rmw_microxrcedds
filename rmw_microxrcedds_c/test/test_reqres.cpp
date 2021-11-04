@@ -69,6 +69,9 @@ public:
     EXPECT_EQ(rmw_destroy_node(node_srv), RMW_RET_OK);
     EXPECT_EQ(rmw_destroy_node(node_cli), RMW_RET_OK);
 
+    ASSERT_EQ(rmw_init_options_fini(&options_srv), RMW_RET_OK);
+    ASSERT_EQ(rmw_init_options_fini(&options_cli), RMW_RET_OK);
+
     ASSERT_EQ(rmw_shutdown(&context_srv), RMW_RET_OK);
     ASSERT_EQ(rmw_shutdown(&context_cli), RMW_RET_OK);
   }

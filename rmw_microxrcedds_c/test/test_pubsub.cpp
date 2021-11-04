@@ -63,6 +63,9 @@ public:
     EXPECT_EQ(rmw_destroy_node(node_pub), RMW_RET_OK);
     EXPECT_EQ(rmw_destroy_node(node_sub), RMW_RET_OK);
 
+    ASSERT_EQ(rmw_init_options_fini(&options_pub), RMW_RET_OK);
+    ASSERT_EQ(rmw_init_options_fini(&options_sub), RMW_RET_OK);
+
     ASSERT_EQ(rmw_shutdown(&context_pub), RMW_RET_OK);
     ASSERT_EQ(rmw_shutdown(&context_sub), RMW_RET_OK);
   }

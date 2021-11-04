@@ -30,10 +30,6 @@ rmw_ret_t rmw_uros_init_options(
     return RMW_RET_INVALID_ARGUMENT;
   }
   rmw_ret_t ret = RMW_RET_OK;
-  // TODO(pablogs9): Is the impl allocated at this point?
-  // rmw_options->impl = rmw_options->allocator.allocate(
-  // sizeof(rmw_init_options_impl_t),
-  // rmw_options->allocator.state);
 #if defined(RMW_UXRCE_TRANSPORT_SERIAL)
   if (argc >= 2) {
     snprintf(rmw_options->impl->transport_params.serial_device, MAX_SERIAL_DEVICE, "%s", argv[1]);
