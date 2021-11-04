@@ -31,9 +31,9 @@ rmw_create_wait_set(
     RMW_SET_ERROR_MSG("Not available memory node");
     return NULL;
   }
-  rmw_uxrce_wait_set_t * custom_wait_set = (rmw_uxrce_wait_set_t *)memory_node->data;
+  rmw_uxrce_wait_set_t * aux_wait_set = (rmw_uxrce_wait_set_t *)memory_node->data;
 
-  return &custom_wait_set->rmw_wait_set;
+  return &aux_wait_set->rmw_wait_set;
 }
 
 rmw_ret_t
@@ -43,8 +43,8 @@ rmw_destroy_wait_set(
   rmw_uxrce_mempool_item_t * item = wait_set_memory.allocateditems;
 
   while (NULL != item) {
-    rmw_uxrce_wait_set_t * custom_wait_set = (rmw_uxrce_wait_set_t *)item->data;
-    if (&custom_wait_set->rmw_wait_set == wait_set) {
+    rmw_uxrce_wait_set_t * aux_wait_set = (rmw_uxrce_wait_set_t *)item->data;
+    if (&aux_wait_set->rmw_wait_set == wait_set) {
       put_memory(&wait_set_memory, item);
       return RMW_RET_OK;
     }
