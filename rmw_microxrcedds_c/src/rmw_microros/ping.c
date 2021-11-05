@@ -33,6 +33,8 @@ rmw_ret_t rmw_uros_ping_agent(
 {
   bool success = false;
 
+  UXR_LOCK(&session_memory->mutex);
+
   if (NULL == session_memory.allocateditems) {
 #ifdef RMW_UXRCE_TRANSPORT_SERIAL
     uxrSerialTransport transport;
@@ -52,6 +54,7 @@ rmw_ret_t rmw_uros_ping_agent(
     rmw_ret_t ret = rmw_uxrce_transport_init(NULL, NULL, (void *)&transport);
 
     if (RMW_RET_OK != ret) {
+      UXR_UNLOCK(&session_memory->mutex);
       return ret;
     }
 
@@ -66,6 +69,8 @@ rmw_ret_t rmw_uros_ping_agent(
       item = item->next;
     } while (NULL != item && !success);
   }
+
+  UXR_UNLOCK(&session_memory->mutex);
 
   return success ? RMW_RET_OK : RMW_RET_ERROR;
 }
