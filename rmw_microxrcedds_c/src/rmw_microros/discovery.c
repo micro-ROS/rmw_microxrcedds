@@ -34,14 +34,18 @@ bool on_agent_found(
   uint16_t port;
 
   uxr_locator_to_ip(locator, ip, sizeof(ip), &port, &ip_protocol);
-  snprintf(port_str, MAX_PORT_LEN, "%d", port);
+  if (0 > snprintf(port_str, MAX_PORT_LEN, "%d", port)) {
+    return false;
+  }
 
   uxrUDPTransport transport;
   if (uxr_init_udp_transport(&transport, ip_protocol, ip, port_str)) {
     uxrSession session;
     uxr_init_session(&session, &transport.comm, rmw_options->impl->transport_params.client_key);
     if (uxr_create_session_retries(&session, 5)) {
-      snprintf(rmw_options->impl->transport_params.agent_port, MAX_PORT_LEN, "%d", port);
+      if (0 > snprintf(rmw_options->impl->transport_params.agent_port, MAX_PORT_LEN, "%d", port)) {
+        return false;
+      }
       snprintf(rmw_options->impl->transport_params.agent_address, MAX_IP_LEN, "%s", ip);
       uxr_delete_session(&session);
       return true;
