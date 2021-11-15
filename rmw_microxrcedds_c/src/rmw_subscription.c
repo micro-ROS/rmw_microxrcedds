@@ -230,7 +230,8 @@ rmw_create_subscription(
     delivery_control.max_elapsed_time = UXR_MAX_ELAPSED_TIME_UNLIMITED;
     delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
 
-    rmw_uxrce_entities_init_options_t * uxrce_init_options = (rmw_uxrce_entities_init_options_t *) subscription_options->rmw_specific_subscription_payload;
+    rmw_uxrce_entities_init_options_t * uxrce_init_options =
+      (rmw_uxrce_entities_init_options_t *) subscription_options->rmw_specific_subscription_payload;
     size_t used_input_stream =
       (NULL != uxrce_init_options) ?
       uxrce_init_options->stream_index.subscriber_input_stream : 0;

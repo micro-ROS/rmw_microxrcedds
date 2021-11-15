@@ -86,9 +86,12 @@ typedef struct rmw_context_impl_t
   int creation_timeout;
   int destroy_timeout;
 
-  uint8_t input_reliable_stream_buffer[UXR_CONFIG_MAX_INPUT_RELIABLE_STREAMS][RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
-  uint8_t output_reliable_stream_buffer[UXR_CONFIG_MAX_OUTPUT_RELIABLE_STREAMS][RMW_UXRCE_MAX_OUTPUT_BUFFER_SIZE];
-  uint8_t output_best_effort_stream_buffer[UXR_CONFIG_MAX_OUTPUT_BEST_EFFORT_STREAMS][RMW_UXRCE_MAX_TRANSPORT_MTU];
+  uint8_t input_reliable_stream_buffer[UXR_CONFIG_MAX_INPUT_RELIABLE_STREAMS][
+    RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
+  uint8_t output_reliable_stream_buffer[UXR_CONFIG_MAX_OUTPUT_RELIABLE_STREAMS][
+    RMW_UXRCE_MAX_OUTPUT_BUFFER_SIZE];
+  uint8_t output_best_effort_stream_buffer[UXR_CONFIG_MAX_OUTPUT_BEST_EFFORT_STREAMS][
+    RMW_UXRCE_MAX_TRANSPORT_MTU];
 
   uint16_t id_participant;
   uint16_t id_topic;
@@ -305,7 +308,8 @@ extern rmw_uxrce_mempool_t guard_condition_memory;
 extern rmw_uxrce_guard_condition_t custom_guard_condition[RMW_UXRCE_MAX_GUARD_CONDITION];
 
 extern rmw_uxrce_mempool_t entities_init_options_memory;
-extern rmw_uxrce_entities_init_options_t custom_entities_init_options[RMW_UXRCE_MAX_ENTITIES_INIT_OPTION];
+extern rmw_uxrce_entities_init_options_t custom_entities_init_options[
+  RMW_UXRCE_MAX_ENTITIES_INIT_OPTION];
 
 // Memory init functions
 

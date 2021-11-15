@@ -104,7 +104,8 @@ rmw_create_publisher(
     custom_publisher->session_timeout = RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT;
     custom_publisher->qos = *qos_policies;
 
-    rmw_uxrce_entities_init_options_t * uxrce_init_options = (rmw_uxrce_entities_init_options_t *) publisher_options->rmw_specific_publisher_payload;
+    rmw_uxrce_entities_init_options_t * uxrce_init_options =
+      (rmw_uxrce_entities_init_options_t *) publisher_options->rmw_specific_publisher_payload;
     size_t used_output_stream =
       (NULL != uxrce_init_options) ?
       uxrce_init_options->stream_index.publisher_output_stream : 0;
