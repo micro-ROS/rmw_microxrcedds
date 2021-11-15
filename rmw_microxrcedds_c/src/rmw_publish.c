@@ -78,10 +78,14 @@ rmw_publish(
         custom_publisher->stream_id);
 
       if (UXR_BEST_EFFORT_STREAM == custom_publisher->stream_id.type) {
-        uxr_flash_output_streams(&custom_publisher->owner_node->context->session);
+        uxr_flash_one_output_stream(
+          &custom_publisher->owner_node->context->session,
+          custom_publisher->stream_id);
       } else {
-        written &= uxr_run_session_until_confirm_delivery(
-          &custom_publisher->owner_node->context->session, custom_publisher->session_timeout);
+        written &= uxr_run_session_until_confirm_delivery_one_stream(
+          &custom_publisher->owner_node->context->session,
+          custom_publisher->stream_id,
+          custom_publisher->session_timeout);
       }
     }
     if (!written) {

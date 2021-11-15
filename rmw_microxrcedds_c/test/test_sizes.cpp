@@ -39,6 +39,7 @@ TEST_F(RMWBaseTest, estimate_default_static_memory)
   uint64_t init_options_impl_size = sizeof(rmw_uxrce_init_options_impl_t);
   uint64_t wait_sets_size = sizeof(rmw_uxrce_wait_set_t);
   uint64_t guard_conditions_size = sizeof(rmw_uxrce_guard_condition_t);
+  uint64_t entities_init_option_size = sizeof(rmw_uxrce_entities_init_options_t);
 
   fprintf(stderr, "# Static memory analysis \n");
   fprintf(stderr, "_**Default configuration**_\n");
@@ -72,7 +73,9 @@ TEST_F(RMWBaseTest, estimate_default_static_memory)
   fprintf(
     stderr, "| Guard Condition | %d | %ld B | \n", RMW_UXRCE_MAX_GUARD_CONDITION,
     guard_conditions_size);
-
+  fprintf(
+    stderr, "| Ent. Init. Opt | %d | %ld B | \n", RMW_UXRCE_MAX_ENTITIES_INIT_OPTION,
+    entities_init_option_size);
 
   uint64_t total = RMW_UXRCE_MAX_SESSIONS * context_size +
     RMW_UXRCE_MAX_TOPICS_INTERNAL * topic_size +
@@ -84,7 +87,8 @@ TEST_F(RMWBaseTest, estimate_default_static_memory)
     RMW_UXRCE_MAX_HISTORY * static_input_buffer_size +
     RMW_UXRCE_MAX_OPTIONS * init_options_impl_size +
     RMW_UXRCE_MAX_WAIT_SETS * wait_sets_size +
-    RMW_UXRCE_MAX_GUARD_CONDITION * guard_conditions_size;
+    RMW_UXRCE_MAX_GUARD_CONDITION * guard_conditions_size +
+    RMW_UXRCE_MAX_ENTITIES_INIT_OPTION * entities_init_option_size;
 
   fprintf(stderr, "\n");
   fprintf(stderr, "**TOTAL: %ld B**\n", total);

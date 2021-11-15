@@ -128,3 +128,79 @@ rmw_ret_t rmw_uros_options_set_client_key(
 
   return RMW_RET_OK;
 }
+
+rmw_ret_t rmw_uros_set_publisher_out_stream(
+  size_t stream,
+  rmw_publisher_options_t * rmw_options)
+{
+  if (NULL == rmw_options) {
+    RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
+    return RMW_RET_INVALID_ARGUMENT;
+  }
+
+  if (NULL == rmw_options->rmw_specific_publisher_payload){
+    rmw_uxrce_mempool_item_t * memory_node = get_memory(&entities_init_options_memory);
+    if (NULL == memory_node) {
+      RMW_SET_ERROR_MSG("failed to allocate memory for publisher options");
+      return RMW_RET_ERROR;
+    }
+    rmw_options->rmw_specific_publisher_payload = memory_node->data;
+  }
+
+  rmw_uxrce_entities_init_options_t * uxrce_init_options = (rmw_uxrce_entities_init_options_t *) rmw_options->rmw_specific_publisher_payload;
+  uxrce_init_options->stream_index.publisher_output_stream = stream;
+
+  return RMW_RET_OK;
+}
+
+rmw_ret_t rmw_uros_free_publisher_init_options(
+  rmw_publisher_options_t * rmw_options)
+{
+  if (NULL == rmw_options || NULL == rmw_options->rmw_specific_subscription_payload) {
+    RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
+    return RMW_RET_INVALID_ARGUMENT;
+  }
+
+  put_memory(&entities_init_options_memory, &rmw_options->mem);
+  rmw_options->rmw_specific_subscription_payload = NULL;
+
+  return RMW_RET_OK;
+}
+
+rmw_ret_t rmw_uros_set_subscriber_input_stream(
+  size_t stream,
+  rmw_subscription_options_t * rmw_options)
+{
+  if (NULL == rmw_options) {
+    RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
+    return RMW_RET_INVALID_ARGUMENT;
+  }
+
+  if (NULL == rmw_options->rmw_specific_subscription_payload){
+    rmw_uxrce_mempool_item_t * memory_node = get_memory(&entities_init_options_memory);
+    if (NULL == memory_node) {
+      RMW_SET_ERROR_MSG("failed to allocate memory for subscriber options");
+      return RMW_RET_ERROR;
+    }
+    rmw_options->rmw_specific_subscription_payload = memory_node->data;
+  }
+
+  rmw_uxrce_entities_init_options_t * uxrce_init_options = (rmw_uxrce_entities_init_options_t *) rmw_options->rmw_specific_subscription_payload;
+  uxrce_init_options->stream_index.subscriber_input_stream = stream;
+
+  return RMW_RET_OK;
+}
+
+rmw_ret_t rmw_uros_free_subscriber_init_options(
+  rmw_subscription_options_t * rmw_options)
+{
+  if (NULL == rmw_options || NULL == rmw_options->rmw_specific_subscription_payload) {
+    RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
+    return RMW_RET_INVALID_ARGUMENT;
+  }
+
+  put_memory(&entities_init_options_memory, &rmw_options->mem);
+  rmw_options->rmw_specific_subscription_payload = NULL;
+
+  return RMW_RET_OK;
+}

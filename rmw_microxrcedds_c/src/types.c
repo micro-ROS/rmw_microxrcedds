@@ -67,6 +67,9 @@ rmw_uxrce_wait_set_t custom_wait_set[RMW_UXRCE_MAX_WAIT_SETS];
 rmw_uxrce_mempool_t guard_condition_memory;
 rmw_uxrce_guard_condition_t custom_guard_condition[RMW_UXRCE_MAX_GUARD_CONDITION];
 
+rmw_uxrce_mempool_t entities_init_options_memory;
+rmw_uxrce_entities_init_options_t custom_entities_init_options[RMW_UXRCE_MAX_ENTITIES_INIT_OPTION];
+
 // Memory init functions
 
 #define RMW_INIT_MEMORY(X) \
@@ -103,6 +106,7 @@ RMW_INIT_MEMORY(static_input_buffer)
 RMW_INIT_MEMORY(init_options_impl)
 RMW_INIT_MEMORY(wait_set)
 RMW_INIT_MEMORY(guard_condition)
+RMW_INIT_MEMORY(entities_init_options)
 
 // Memory management functions
 

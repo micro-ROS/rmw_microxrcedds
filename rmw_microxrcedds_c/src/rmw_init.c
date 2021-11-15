@@ -269,6 +269,7 @@ rmw_init(
   rmw_uxrce_init_guard_condition_memory(
     &guard_condition_memory, custom_guard_condition,
     RMW_UXRCE_MAX_GUARD_CONDITION);
+  rmw_uxrce_init_entities_init_options_memory(&entities_init_options_memory, custom_entities_init_options, RMW_UXRCE_MAX_ENTITIES_INIT_OPTION);
 
   // Micro-XRCE-DDS Client transport initialization
   rmw_ret_t transport_init_ret = rmw_uxrce_transport_init(
@@ -286,20 +287,34 @@ rmw_init(
   uxr_set_request_callback(&context_impl->session, on_request, NULL);
   uxr_set_reply_callback(&context_impl->session, on_reply, NULL);
 
-  context_impl->reliable_input = uxr_create_input_reliable_stream(
-    &context_impl->session, context_impl->input_reliable_stream_buffer,
-    context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY_INPUT,
-    RMW_UXRCE_STREAM_HISTORY_INPUT);
-  context_impl->reliable_output =
-    uxr_create_output_reliable_stream(
-    &context_impl->session, context_impl->output_reliable_stream_buffer,
-    context_impl->transport.comm.mtu * RMW_UXRCE_STREAM_HISTORY_OUTPUT,
-    RMW_UXRCE_STREAM_HISTORY_OUTPUT);
+  for (size_t i = 0; i < UXR_CONFIG_MAX_INPUT_RELIABLE_STREAMS; i++)
+  {
+    context_impl->reliable_input[i] = uxr_create_input_reliable_stream(
+      &context_impl->session, context_impl->input_reliable_stream_buffer[i],
+      RMW_UXRCE_MAX_INPUT_BUFFER_SIZE,
+      RMW_UXRCE_STREAM_HISTORY_INPUT);
+  }
 
-  context_impl->best_effort_input = uxr_create_input_best_effort_stream(&context_impl->session);
-  context_impl->best_effort_output = uxr_create_output_best_effort_stream(
-    &context_impl->session,
-    context_impl->output_best_effort_stream_buffer, context_impl->transport.comm.mtu);
+  for (size_t i = 0; i < UXR_CONFIG_MAX_OUTPUT_RELIABLE_STREAMS; i++)
+  {
+    context_impl->reliable_output[i] =
+      uxr_create_output_reliable_stream(
+      &context_impl->session, context_impl->output_reliable_stream_buffer[i],
+      RMW_UXRCE_MAX_OUTPUT_BUFFER_SIZE,
+      RMW_UXRCE_STREAM_HISTORY_OUTPUT);
+  }
+
+  for (size_t i = 0; i < UXR_CONFIG_MAX_INPUT_BEST_EFFORT_STREAMS; i++)
+  {
+    context_impl->best_effort_input[i] = uxr_create_input_best_effort_stream(&context_impl->session);
+  }
+
+  for (size_t i = 0; i < UXR_CONFIG_MAX_OUTPUT_BEST_EFFORT_STREAMS; i++)
+  {
+    context_impl->best_effort_output[i] = uxr_create_output_best_effort_stream(
+      &context_impl->session,
+      context_impl->output_best_effort_stream_buffer[i], context_impl->transport.comm.mtu);
+  }
 
   if (!uxr_create_session(&context_impl->session)) {
     CLOSE_TRANSPORT(&context_impl->transport);
