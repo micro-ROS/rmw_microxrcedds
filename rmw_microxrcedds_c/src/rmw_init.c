@@ -233,12 +233,12 @@ rmw_init(
   context_impl->destroy_timeout = RMW_UXRCE_ENTITY_DESTROY_TIMEOUT;
 
   context_impl->creation_stream = (RMW_UXRCE_ENTITY_CREATION_TIMEOUT > 0) ?
-    &context_impl->reliable_output :
-    &context_impl->best_effort_output;
+    &context_impl->reliable_output[0] :
+    &context_impl->best_effort_output[0];
 
   context_impl->destroy_stream = (RMW_UXRCE_ENTITY_DESTROY_TIMEOUT > 0) ?
-    &context_impl->reliable_output :
-    &context_impl->best_effort_output;
+    &context_impl->reliable_output[0] :
+    &context_impl->best_effort_output[0];
 
   context_impl->id_participant = 0;
   context_impl->id_topic = 0;

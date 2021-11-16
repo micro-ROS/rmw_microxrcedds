@@ -157,13 +157,16 @@ rmw_ret_t rmw_uros_set_publisher_out_stream(
 rmw_ret_t rmw_uros_free_publisher_init_options(
   rmw_publisher_options_t * rmw_options)
 {
-  if (NULL == rmw_options || NULL == rmw_options->rmw_specific_subscription_payload) {
+  if (NULL == rmw_options || NULL == rmw_options->rmw_specific_publisher_payload) {
     RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
     return RMW_RET_INVALID_ARGUMENT;
   }
 
-  put_memory(&entities_init_options_memory, &rmw_options->mem);
-  rmw_options->rmw_specific_subscription_payload = NULL;
+  rmw_uxrce_entities_init_options_t * uxrce_init_options =
+    (rmw_uxrce_entities_init_options_t *) rmw_options->rmw_specific_publisher_payload;
+
+  put_memory(&entities_init_options_memory, &uxrce_init_options->mem);
+  rmw_options->rmw_specific_publisher_payload = NULL;
 
   return RMW_RET_OK;
 }
@@ -201,7 +204,10 @@ rmw_ret_t rmw_uros_free_subscriber_init_options(
     return RMW_RET_INVALID_ARGUMENT;
   }
 
-  put_memory(&entities_init_options_memory, &rmw_options->mem);
+  rmw_uxrce_entities_init_options_t * uxrce_init_options =
+    (rmw_uxrce_entities_init_options_t *) rmw_options->rmw_specific_subscription_payload;
+
+  put_memory(&entities_init_options_memory, &uxrce_init_options->mem);
   rmw_options->rmw_specific_subscription_payload = NULL;
 
   return RMW_RET_OK;
