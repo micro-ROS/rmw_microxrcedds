@@ -93,7 +93,7 @@ rmw_wait(
   if (available_contexts == 0) {
     UXR_UNLOCK(&session_memory.mutex);
     return RMW_RET_OK;
-  };
+  }
 
   int32_t per_session_timeout =
     (timeout.i32 == UXR_TIMEOUT_INF) ? UXR_TIMEOUT_INF :
