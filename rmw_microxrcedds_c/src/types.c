@@ -225,9 +225,10 @@ size_t rmw_uxrce_count_static_input_buffer_for_entity(
   void * entity)
 {
   size_t count = 0;
-  rmw_uxrce_mempool_item_t * item = static_buffer_memory.allocateditems;
 
   UXR_LOCK(&static_buffer_memory.mutex);
+  rmw_uxrce_mempool_item_t * item = static_buffer_memory.allocateditems;
+
   while (item != NULL) {
     rmw_uxrce_static_input_buffer_t * data = (rmw_uxrce_static_input_buffer_t *)item->data;
     if (data->owner == entity) {
