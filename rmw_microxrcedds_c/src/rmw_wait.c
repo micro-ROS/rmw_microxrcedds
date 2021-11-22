@@ -51,15 +51,10 @@ rmw_wait(
     timeout.i32 = (timeout.i64 > INT32_MAX) ? INT32_MAX : timeout.i64;
   }
 
-  // Clean expired buffers
-  rmw_uxrce_clean_expired_static_input_buffer();
-
-  rmw_uxrce_mempool_item_t * item = NULL;
-
-  // Clear run flag for all sessions
   UXR_LOCK(&session_memory.mutex);
 
-  item = session_memory.allocateditems;
+  // Clear run flag for all sessions
+  rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
   while (item != NULL) {
     rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
     custom_context->need_to_be_ran = false;
