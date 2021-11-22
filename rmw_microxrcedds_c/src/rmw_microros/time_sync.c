@@ -30,7 +30,8 @@ bool rmw_uros_epoch_synchronized()
   rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
   rmw_context_impl_t * context = (rmw_context_impl_t *)item->data;
 
-  return context->session.synchronized;
+  bool ret = context->session.synchronized;
+  return ret;
 }
 
 int64_t rmw_uros_epoch_millis()
@@ -44,7 +45,8 @@ int64_t rmw_uros_epoch_millis()
   rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
   rmw_context_impl_t * context = (rmw_context_impl_t *)item->data;
 
-  return uxr_epoch_millis(&context->session);
+  int64_t ret = uxr_epoch_millis(&context->session);
+  return ret;
 }
 
 int64_t rmw_uros_epoch_nanos()
@@ -58,7 +60,8 @@ int64_t rmw_uros_epoch_nanos()
   rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
   rmw_context_impl_t * context = (rmw_context_impl_t *)item->data;
 
-  return uxr_epoch_nanos(&context->session);
+  int64_t ret = uxr_epoch_nanos(&context->session);
+  return ret;
 }
 
 rmw_ret_t rmw_uros_sync_session(
@@ -77,8 +80,7 @@ rmw_ret_t rmw_uros_sync_session(
 
   if (!uxr_sync_session(&context->session, timeout_ms)) {
     RMW_SET_ERROR_MSG("Time synchronization failed.");
-    return RMW_RET_ERROR;
+    ret = RMW_RET_ERROR;
   }
-
   return ret;
 }

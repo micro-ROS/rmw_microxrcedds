@@ -51,13 +51,12 @@ rmw_wait(
     timeout.i32 = (timeout.i64 > INT32_MAX) ? INT32_MAX : timeout.i64;
   }
 
-  // Clean expired buffers
   rmw_uxrce_clean_expired_static_input_buffer();
 
-  rmw_uxrce_mempool_item_t * item = NULL;
+  UXR_LOCK(&session_memory.mutex);
 
   // Clear run flag for all sessions
-  item = session_memory.allocateditems;
+  rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
   while (item != NULL) {
     rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
     custom_context->need_to_be_ran = false;
@@ -90,7 +89,11 @@ rmw_wait(
     item = item->next;
   }
 
-  rmw_uxrce_clean_expired_static_input_buffer();
+  // There is no context that contais any of the wait set entities. Nothing to wait here.
+  if (available_contexts == 0) {
+    UXR_UNLOCK(&session_memory.mutex);
+    return RMW_RET_OK;
+  }
 
   int32_t per_session_timeout =
     (timeout.i32 == UXR_TIMEOUT_INF) ? UXR_TIMEOUT_INF :
@@ -104,6 +107,8 @@ rmw_wait(
     }
     item = item->next;
   }
+
+  UXR_UNLOCK(&session_memory.mutex);
 
   bool buffered_status = false;
 
