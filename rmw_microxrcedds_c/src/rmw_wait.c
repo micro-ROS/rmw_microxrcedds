@@ -57,6 +57,8 @@ rmw_wait(
   rmw_uxrce_mempool_item_t * item = NULL;
 
   // Clear run flag for all sessions
+  UXR_LOCK(&session_memory.mutex);
+
   item = session_memory.allocateditems;
   while (item != NULL) {
     rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
@@ -104,6 +106,8 @@ rmw_wait(
     }
     item = item->next;
   }
+
+  UXR_LOCK(&session_memory.mutex);
 
   bool buffered_status = false;
 
