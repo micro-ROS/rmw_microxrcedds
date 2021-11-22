@@ -107,7 +107,7 @@ rmw_wait(
     item = item->next;
   }
 
-  UXR_LOCK(&session_memory.mutex);
+  UXR_UNLOCK(&session_memory.mutex);
 
   bool buffered_status = false;
 
