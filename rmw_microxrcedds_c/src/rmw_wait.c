@@ -89,6 +89,7 @@ rmw_wait(
 
   rmw_uxrce_clean_expired_static_input_buffer();
 
+  // There is no context that contais any of the wait set entities. Nothing to wait here.
   if (available_contexts == 0) {
     UXR_UNLOCK(&session_memory.mutex);
     return RMW_RET_OK;
