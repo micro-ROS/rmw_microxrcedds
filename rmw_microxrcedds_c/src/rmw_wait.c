@@ -51,6 +51,8 @@ rmw_wait(
     timeout.i32 = (timeout.i64 > INT32_MAX) ? INT32_MAX : timeout.i64;
   }
 
+  rmw_uxrce_clean_expired_static_input_buffer();
+
   UXR_LOCK(&session_memory.mutex);
 
   // Clear run flag for all sessions
@@ -86,8 +88,6 @@ rmw_wait(
     available_contexts += custom_context->need_to_be_ran ? 1 : 0;
     item = item->next;
   }
-
-  rmw_uxrce_clean_expired_static_input_buffer();
 
   // There is no context that contais any of the wait set entities. Nothing to wait here.
   if (available_contexts == 0) {
