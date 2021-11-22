@@ -22,32 +22,23 @@
 
 bool rmw_uros_epoch_synchronized()
 {
-  UXR_LOCK(&session_memory.mutex);
-
   // Check session is initialized
   if (NULL == session_memory.allocateditems) {
     RMW_SET_ERROR_MSG("Uninitialized session.");
-    UXR_UNLOCK(&session_memory.mutex);
     return false;
   }
   rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
   rmw_context_impl_t * context = (rmw_context_impl_t *)item->data;
 
   bool ret = context->session.synchronized;
-
-  UXR_UNLOCK(&session_memory.mutex);
   return ret;
 }
 
 int64_t rmw_uros_epoch_millis()
 {
-  UXR_LOCK(&session_memory.mutex);
-
   // Check session is initialized
   if (NULL == session_memory.allocateditems) {
     RMW_SET_ERROR_MSG("Uninitialized session.");
-    UXR_UNLOCK(&session_memory.mutex);
-
     return 0;
   }
 
@@ -55,19 +46,14 @@ int64_t rmw_uros_epoch_millis()
   rmw_context_impl_t * context = (rmw_context_impl_t *)item->data;
 
   int64_t ret = uxr_epoch_millis(&context->session);
-
-  UXR_UNLOCK(&session_memory.mutex);
   return ret;
 }
 
 int64_t rmw_uros_epoch_nanos()
 {
-  UXR_LOCK(&session_memory.mutex);
-
   // Check session is initialized
   if (NULL == session_memory.allocateditems) {
     RMW_SET_ERROR_MSG("Uninitialized session.");
-    UXR_UNLOCK(&session_memory.mutex);
     return 0;
   }
 
@@ -75,7 +61,6 @@ int64_t rmw_uros_epoch_nanos()
   rmw_context_impl_t * context = (rmw_context_impl_t *)item->data;
 
   int64_t ret = uxr_epoch_nanos(&context->session);
-  UXR_UNLOCK(&session_memory.mutex);
   return ret;
 }
 
@@ -84,11 +69,9 @@ rmw_ret_t rmw_uros_sync_session(
 {
   rmw_ret_t ret = RMW_RET_OK;
 
-  UXR_LOCK(&session_memory.mutex);
   // Check session is initialized
   if (NULL == session_memory.allocateditems) {
     RMW_SET_ERROR_MSG("Uninitialized session.");
-    UXR_UNLOCK(&session_memory.mutex);
     return RMW_RET_ERROR;
   }
 
@@ -99,7 +82,5 @@ rmw_ret_t rmw_uros_sync_session(
     RMW_SET_ERROR_MSG("Time synchronization failed.");
     ret = RMW_RET_ERROR;
   }
-
-  UXR_UNLOCK(&session_memory.mutex);
   return ret;
 }
