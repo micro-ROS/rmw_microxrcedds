@@ -161,13 +161,13 @@ rmw_create_client(
 
     custom_client->stream_id =
       (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
-      custom_node->context->best_effort_output :
-      custom_node->context->reliable_output;
+      custom_node->context->best_effort_output[0] :
+      custom_node->context->reliable_output[0];
 
     uxrStreamId data_request_stream_id =
       (qos_policies->reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
-      custom_node->context->best_effort_input :
-      custom_node->context->reliable_input;
+      custom_node->context->best_effort_input[0] :
+      custom_node->context->reliable_input[0];
 
     custom_client->client_data_request = uxr_buffer_request_data(
       &custom_node->context->session,

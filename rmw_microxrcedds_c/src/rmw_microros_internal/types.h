@@ -76,19 +76,22 @@ typedef struct rmw_context_impl_t
 #endif  // if RMW_UXRCE_GRAPH
   rmw_guard_condition_t graph_guard_condition;
 
-  uxrStreamId reliable_input;
-  uxrStreamId reliable_output;
-  uxrStreamId best_effort_output;
-  uxrStreamId best_effort_input;
+  uxrStreamId reliable_input[UXR_CONFIG_MAX_INPUT_RELIABLE_STREAMS];
+  uxrStreamId reliable_output[UXR_CONFIG_MAX_OUTPUT_RELIABLE_STREAMS];
+  uxrStreamId best_effort_output[UXR_CONFIG_MAX_OUTPUT_BEST_EFFORT_STREAMS];
+  uxrStreamId best_effort_input[UXR_CONFIG_MAX_INPUT_BEST_EFFORT_STREAMS];
 
   uxrStreamId * creation_stream;
   uxrStreamId * destroy_stream;
   int creation_timeout;
   int destroy_timeout;
 
-  uint8_t input_reliable_stream_buffer[RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
-  uint8_t output_reliable_stream_buffer[RMW_UXRCE_MAX_OUTPUT_BUFFER_SIZE];
-  uint8_t output_best_effort_stream_buffer[RMW_UXRCE_MAX_TRANSPORT_MTU];
+  uint8_t input_reliable_stream_buffer[UXR_CONFIG_MAX_INPUT_RELIABLE_STREAMS][
+    RMW_UXRCE_MAX_INPUT_BUFFER_SIZE];
+  uint8_t output_reliable_stream_buffer[UXR_CONFIG_MAX_OUTPUT_RELIABLE_STREAMS][
+    RMW_UXRCE_MAX_OUTPUT_BUFFER_SIZE];
+  uint8_t output_best_effort_stream_buffer[UXR_CONFIG_MAX_OUTPUT_BEST_EFFORT_STREAMS][
+    RMW_UXRCE_MAX_TRANSPORT_MTU];
 
   uint16_t id_participant;
   uint16_t id_topic;
@@ -112,6 +115,16 @@ struct rmw_init_options_impl_t
 };
 
 typedef struct rmw_init_options_impl_t rmw_uxrce_init_options_impl_t;
+
+typedef struct rmw_uxrce_entities_init_options_t
+{
+  rmw_uxrce_mempool_item_t mem;
+
+  union {
+    size_t publisher_output_stream;
+    size_t subscriber_input_stream;
+  } stream_index;
+} rmw_uxrce_entities_init_options_t;
 
 // ROS2 entities definitions
 
@@ -294,6 +307,10 @@ extern rmw_uxrce_wait_set_t custom_wait_set[RMW_UXRCE_MAX_WAIT_SETS];
 extern rmw_uxrce_mempool_t guard_condition_memory;
 extern rmw_uxrce_guard_condition_t custom_guard_condition[RMW_UXRCE_MAX_GUARD_CONDITION];
 
+extern rmw_uxrce_mempool_t entities_init_options_memory;
+extern rmw_uxrce_entities_init_options_t custom_entities_init_options[
+  RMW_UXRCE_MAX_ENTITIES_INIT_OPTION];
+
 // Memory init functions
 
 #define RMW_INIT_DEFINE_MEMORY(X) \
@@ -313,6 +330,7 @@ RMW_INIT_DEFINE_MEMORY(static_input_buffer)
 RMW_INIT_DEFINE_MEMORY(init_options_impl)
 RMW_INIT_DEFINE_MEMORY(wait_set)
 RMW_INIT_DEFINE_MEMORY(guard_condition)
+RMW_INIT_DEFINE_MEMORY(entities_init_options)
 
 // Memory management functions
 

@@ -87,6 +87,58 @@ rmw_ret_t rmw_uros_options_set_client_key(
   uint32_t client_key,
   rmw_init_options_t * rmw_options);
 
+/**
+ * \brief Fills rmw implementation-specific options with the given parameters.
+ * In this case, the stream number of a publisher can be defined.
+ * This function may use static memory resources that should be freed.
+ *
+ * \param[in] stream Micro XRCE-DDS Client stream number.
+ * \param[in,out] rmw_options Updated options with rmw specifics.
+ * \return RMW_RET_OK If arguments were valid and set in rmw_init_options.
+ * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
+ * \return RMW_RET_ERROR In other case.
+ */
+rmw_ret_t rmw_uros_set_publisher_out_stream(
+  size_t stream,
+  rmw_publisher_options_t * rmw_options);
+
+/**
+ * \brief Free rmw implementation-specific static resources allocated.
+ *
+ * \param[in,out] rmw_options RMW options with rmw specifics.
+ * \return RMW_RET_OK If arguments were valid and set in rmw_init_options.
+ * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
+ * \return RMW_RET_ERROR In other case.
+ */
+rmw_ret_t rmw_uros_free_publisher_init_options(
+  rmw_publisher_options_t * rmw_options);
+
+/**
+ * \brief Fills rmw implementation-specific options with the given parameters.
+ * In this case, the stream number of a subscriber can be defined.
+ * This function may use static memory resources that should be freed.
+ *
+ * \param[in] stream Micro XRCE-DDS Client stream number.
+ * \param[in,out] rmw_options Updated options with rmw specifics.
+ * \return RMW_RET_OK If arguments were valid and set in rmw_init_options.
+ * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
+ * \return RMW_RET_ERROR In other case.
+ */
+rmw_ret_t rmw_uros_set_subscriber_input_stream(
+  size_t stream,
+  rmw_subscription_options_t * rmw_options);
+
+/**
+ * \brief Free rmw implementation-specific static resources allocated.
+ *
+ * \param[in,out] rmw_options Options with rmw specifics.
+ * \return RMW_RET_OK If arguments were valid and set in rmw_init_options.
+ * \return RMW_RET_INVALID_ARGUMENT If rmw_init_options is not valid or unexpected arguments.
+ * \return RMW_RET_ERROR In other case.
+ */
+rmw_ret_t rmw_uros_free_subscriber_init_options(
+  rmw_subscription_options_t * rmw_options);
+
 /** @}*/
 
 #if defined(__cplusplus)
