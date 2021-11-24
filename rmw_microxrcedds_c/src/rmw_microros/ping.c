@@ -53,7 +53,6 @@ rmw_ret_t rmw_uros_ping_agent(
     rmw_ret_t ret = rmw_uxrce_transport_init(NULL, NULL, (void *)&transport);
 
     if (RMW_RET_OK != ret) {
-      UXR_UNLOCK(&session_memory.mutex);
       return ret;
     }
 
@@ -70,8 +69,6 @@ rmw_ret_t rmw_uros_ping_agent(
       item = item->next;
     } while (NULL != item && !success);
   }
-
-  UXR_UNLOCK(&session_memory.mutex);
 
   return success ? RMW_RET_OK : RMW_RET_ERROR;
 }
