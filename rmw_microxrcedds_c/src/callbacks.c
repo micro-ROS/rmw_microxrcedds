@@ -141,7 +141,6 @@ void on_request(
           length))
       {
         put_memory(&static_buffer_memory, memory_node);
-        return;
       } else {
         static_buffer->owner = (void *) custom_service;
         static_buffer->length = length;
@@ -195,7 +194,6 @@ void on_reply(
           length))
       {
         put_memory(&static_buffer_memory, memory_node);
-        return;
       } else {
         static_buffer->owner = (void *) custom_client;
         static_buffer->length = length;
