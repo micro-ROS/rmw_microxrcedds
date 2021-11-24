@@ -33,6 +33,11 @@ rmw_ret_t rmw_uros_ping_agent(
 {
   bool success = false;
 
+  if (!session_memory.is_initialized)
+  {
+    rmw_uxrce_init_session_memory(&session_memory, custom_sessions, RMW_UXRCE_MAX_SESSIONS);
+  }
+
   UXR_LOCK(&session_memory.mutex);
 
   if (NULL == session_memory.allocateditems) {
