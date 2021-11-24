@@ -197,7 +197,6 @@ void on_reply(
         put_memory(&static_buffer_memory, memory_node);
         return;
       } else {
-
         static_buffer->owner = (void *) custom_client;
         static_buffer->length = length;
         static_buffer->related.reply_id = reply_id;
