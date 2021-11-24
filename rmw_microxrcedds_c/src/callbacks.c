@@ -141,7 +141,6 @@ void on_request(
           length))
       {
         put_memory(&static_buffer_memory, memory_node);
-        return;
       } else {
         static_buffer->owner = (void *) custom_service;
         static_buffer->length = length;
@@ -177,12 +176,13 @@ void on_reply(
     // Check if reply is related to the client
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client_item->data;
     if (custom_client->client_data_request == request_id) {
+      UXR_LOCK(&static_buffer_memory.mutex);
+
       rmw_uxrce_mempool_item_t * memory_node = rmw_uxrce_get_static_input_buffer_for_entity(
         custom_client, custom_client->qos);
       if (!memory_node) {
         RMW_SET_ERROR_MSG("Not available static buffer memory node");
         UXR_UNLOCK(&static_buffer_memory.mutex);
-
         return;
       }
 
@@ -195,9 +195,7 @@ void on_reply(
           length))
       {
         put_memory(&static_buffer_memory, memory_node);
-        return;
       } else {
-
         static_buffer->owner = (void *) custom_client;
         static_buffer->length = length;
         static_buffer->related.reply_id = reply_id;
