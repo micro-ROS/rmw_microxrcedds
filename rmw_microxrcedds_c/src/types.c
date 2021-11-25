@@ -67,6 +67,12 @@ rmw_uxrce_wait_set_t custom_wait_set[RMW_UXRCE_MAX_WAIT_SETS];
 rmw_uxrce_mempool_t guard_condition_memory;
 rmw_uxrce_guard_condition_t custom_guard_condition[RMW_UXRCE_MAX_GUARD_CONDITION];
 
+// Global mutexs
+#ifdef UCLIENT_PROFILE_MULTITHREAD
+uxrMutex rmw_uxrce_wait_mutex;
+bool rmw_uxrce_wait_mutex_initialized = false;
+#endif  // UCLIENT_PROFILE_MULTITHREAD
+
 // Memory init functions
 
 #define RMW_INIT_MEMORY(X) \
