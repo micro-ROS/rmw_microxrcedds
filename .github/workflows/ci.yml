@@ -21,15 +21,10 @@ jobs:
 
         - name: Download dependencies
           run: |
-            git clone -b foxy https://github.com/eProsima/Micro-CDR src/Micro-CDR
-<<<<<<< HEAD
-            git clone -b foxy https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client
+            git clone -b ros2 https://github.com/eProsima/Micro-CDR src/Micro-CDR
+            git clone -b ros2 https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client
             git clone -b main https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
             git clone -b master https://github.com/ros2/rmw src/rmw
-=======
-            git clone -b ros2 https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client
-            git clone -b galactic https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
->>>>>>> 5de3d76 (Multithread improvements (#205))
             touch src/rosidl_typesupport_microxrcedds/test/COLCON_IGNORE
             # Install coverage tools
             apt update && apt install -y python3-pip
