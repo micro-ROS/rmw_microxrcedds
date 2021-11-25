@@ -294,6 +294,14 @@ extern rmw_uxrce_wait_set_t custom_wait_set[RMW_UXRCE_MAX_WAIT_SETS];
 extern rmw_uxrce_mempool_t guard_condition_memory;
 extern rmw_uxrce_guard_condition_t custom_guard_condition[RMW_UXRCE_MAX_GUARD_CONDITION];
 
+// Global mutexs
+#ifdef UCLIENT_PROFILE_MULTITHREAD
+// This mutex protects `need_to_be_ran` member of `session_memory` elements
+// between concurrent calls to `rmw_wait()`
+extern uxrMutex rmw_uxrce_wait_mutex;
+extern bool rmw_uxrce_wait_mutex_initialized;
+#endif  // UCLIENT_PROFILE_MULTITHREAD
+
 // Memory init functions
 
 #define RMW_INIT_DEFINE_MEMORY(X) \
