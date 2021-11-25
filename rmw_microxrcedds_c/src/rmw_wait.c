@@ -34,7 +34,14 @@ rmw_wait(
   (void)events;
   (void)wait_set;
 
+  // With `rmw_uxrce_wait_mutex` member `need_to_be_ran` is protected.
+  // `session_memory` itself is not protected because it is not modified between
+  // rmw_init and rmw_shutdown, and rmw_wait cannot be called concurrently with
+  // those functions.
+  UXR_LOCK(&rmw_uxrce_wait_mutex);
+
   if (!services && !clients && !subscriptions && !guard_conditions) {
+    UXR_UNLOCK(&rmw_uxrce_wait_mutex);
     return RMW_RET_OK;
   }
 
@@ -53,8 +60,6 @@ rmw_wait(
 
   rmw_uxrce_clean_expired_static_input_buffer();
 
-  UXR_LOCK(&session_memory.mutex);
-
   // Clear run flag for all sessions
   rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
   while (item != NULL) {
@@ -63,6 +68,7 @@ rmw_wait(
     item = item->next;
   }
 
+  // TODO(pablogs9): What happens if there already data in one entity?
   // Enable flag for every XRCE session available in the entities
   for (size_t i = 0; services && i < services->service_count; ++i) {
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)services->services[i];
@@ -91,7 +97,7 @@ rmw_wait(
 
   // There is no context that contais any of the wait set entities. Nothing to wait here.
   if (available_contexts == 0) {
-    UXR_UNLOCK(&session_memory.mutex);
+    UXR_UNLOCK(&rmw_uxrce_wait_mutex);
     return RMW_RET_OK;
   }
 
@@ -108,7 +114,7 @@ rmw_wait(
     item = item->next;
   }
 
-  UXR_UNLOCK(&session_memory.mutex);
+  UXR_UNLOCK(&rmw_uxrce_wait_mutex);
 
   bool buffered_status = false;
 

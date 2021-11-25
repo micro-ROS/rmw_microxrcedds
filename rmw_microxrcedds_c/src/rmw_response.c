@@ -97,10 +97,13 @@ rmw_take_response(
 
   rmw_uxrce_clean_expired_static_input_buffer();
 
+  UXR_LOCK(&static_buffer_memory.mutex);
+
   // Find first related item in static buffer memory pool
   rmw_uxrce_mempool_item_t * static_buffer_item =
     rmw_uxrce_find_static_input_buffer_by_owner((void *) custom_client);
   if (static_buffer_item == NULL) {
+    UXR_UNLOCK(&static_buffer_memory.mutex);
     return RMW_RET_ERROR;
   }
 
@@ -125,6 +128,8 @@ rmw_take_response(
     ros_response);
 
   put_memory(&static_buffer_memory, static_buffer_item);
+
+  UXR_UNLOCK(&static_buffer_memory.mutex);
 
   if (taken != NULL) {
     *taken = deserialize_rv;

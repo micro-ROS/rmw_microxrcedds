@@ -33,9 +33,8 @@ rmw_ret_t rmw_uros_ping_agent(
 {
   bool success = false;
 
-  UXR_LOCK(&session_memory.mutex);
-
-  if (NULL == session_memory.allocateditems) {
+  if (!session_memory.is_initialized || NULL == session_memory.allocateditems) {
+    // There is no session available to ping. Init transport is required.
 #ifdef RMW_UXRCE_TRANSPORT_SERIAL
     uxrSerialTransport transport;
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
@@ -54,23 +53,22 @@ rmw_ret_t rmw_uros_ping_agent(
     rmw_ret_t ret = rmw_uxrce_transport_init(NULL, NULL, (void *)&transport);
 
     if (RMW_RET_OK != ret) {
-      UXR_UNLOCK(&session_memory.mutex);
       return ret;
     }
 
     success = uxr_ping_agent_attempts(&transport.comm, timeout_ms, attempts);
     CLOSE_TRANSPORT(&transport);
   } else {
+    // There is a session available to ping. Using session.
     rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
     do {
       rmw_context_impl_t * context = (rmw_context_impl_t *)item->data;
 
-      success = uxr_ping_agent_attempts(&context->transport.comm, timeout_ms, attempts);
+      success = uxr_ping_agent_session(&context->session, timeout_ms, attempts);
+
       item = item->next;
     } while (NULL != item && !success);
   }
-
-  UXR_UNLOCK(&session_memory.mutex);
 
   return success ? RMW_RET_OK : RMW_RET_ERROR;
 }

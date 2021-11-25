@@ -70,10 +70,13 @@ void on_topic(
     if ((custom_subscription->datareader_id.id == object_id.id) &&
       (custom_subscription->datareader_id.type == object_id.type))
     {
+      UXR_LOCK(&static_buffer_memory.mutex);
+
       rmw_uxrce_mempool_item_t * memory_node = rmw_uxrce_get_static_input_buffer_for_entity(
         custom_subscription, custom_subscription->qos);
       if (!memory_node) {
         RMW_SET_ERROR_MSG("Not available static buffer memory node");
+        UXR_UNLOCK(&static_buffer_memory.mutex);
         return;
       }
 
@@ -86,14 +89,14 @@ void on_topic(
           length))
       {
         put_memory(&static_buffer_memory, memory_node);
-        return;
+      } else {
+        static_buffer->owner = (void *) custom_subscription;
+        static_buffer->length = length;
+        static_buffer->timestamp = rmw_uros_epoch_nanos();
+        static_buffer->entity_type = RMW_UXRCE_ENTITY_TYPE_SUBSCRIPTION;
       }
 
-      static_buffer->owner = (void *) custom_subscription;
-      static_buffer->length = length;
-      static_buffer->timestamp = rmw_uros_epoch_nanos();
-      static_buffer->entity_type = RMW_UXRCE_ENTITY_TYPE_SUBSCRIPTION;
-
+      UXR_UNLOCK(&static_buffer_memory.mutex);
       return;
     }
     subscription_item = subscription_item->next;
@@ -119,10 +122,13 @@ void on_request(
     // Check if request is related to the service
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service_item->data;
     if (custom_service->service_data_resquest == request_id) {
+      UXR_LOCK(&static_buffer_memory.mutex);
+
       rmw_uxrce_mempool_item_t * memory_node = rmw_uxrce_get_static_input_buffer_for_entity(
         custom_service, custom_service->qos);
       if (!memory_node) {
         RMW_SET_ERROR_MSG("Not available static buffer memory node");
+        UXR_UNLOCK(&static_buffer_memory.mutex);
         return;
       }
 
@@ -135,14 +141,15 @@ void on_request(
           length))
       {
         put_memory(&static_buffer_memory, memory_node);
-        return;
+      } else {
+        static_buffer->owner = (void *) custom_service;
+        static_buffer->length = length;
+        static_buffer->related.sample_id = *sample_id;
+        static_buffer->timestamp = rmw_uros_epoch_nanos();
+        static_buffer->entity_type = RMW_UXRCE_ENTITY_TYPE_SERVICE;
       }
 
-      static_buffer->owner = (void *) custom_service;
-      static_buffer->length = length;
-      static_buffer->related.sample_id = *sample_id;
-      static_buffer->timestamp = rmw_uros_epoch_nanos();
-      static_buffer->entity_type = RMW_UXRCE_ENTITY_TYPE_SERVICE;
+      UXR_UNLOCK(&static_buffer_memory.mutex);
 
       return;
     }
@@ -169,10 +176,13 @@ void on_reply(
     // Check if reply is related to the client
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client_item->data;
     if (custom_client->client_data_request == request_id) {
+      UXR_LOCK(&static_buffer_memory.mutex);
+
       rmw_uxrce_mempool_item_t * memory_node = rmw_uxrce_get_static_input_buffer_for_entity(
         custom_client, custom_client->qos);
       if (!memory_node) {
         RMW_SET_ERROR_MSG("Not available static buffer memory node");
+        UXR_UNLOCK(&static_buffer_memory.mutex);
         return;
       }
 
@@ -185,14 +195,14 @@ void on_reply(
           length))
       {
         put_memory(&static_buffer_memory, memory_node);
-        return;
+      } else {
+        static_buffer->owner = (void *) custom_client;
+        static_buffer->length = length;
+        static_buffer->related.reply_id = reply_id;
+        static_buffer->timestamp = rmw_uros_epoch_nanos();
+        static_buffer->entity_type = RMW_UXRCE_ENTITY_TYPE_CLIENT;
       }
-
-      static_buffer->owner = (void *) custom_client;
-      static_buffer->length = length;
-      static_buffer->related.reply_id = reply_id;
-      static_buffer->timestamp = rmw_uros_epoch_nanos();
-      static_buffer->entity_type = RMW_UXRCE_ENTITY_TYPE_CLIENT;
+      UXR_UNLOCK(&static_buffer_memory.mutex);
 
       return;
     }
