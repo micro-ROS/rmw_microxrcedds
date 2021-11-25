@@ -201,6 +201,13 @@ rmw_init(
   context->implementation_identifier = eprosima_microxrcedds_identifier;
   context->options.domain_id = options->domain_id;
 
+#ifdef UCLIENT_PROFILE_MULTITHREAD
+  if (!rmw_uxrce_wait_mutex_initialized) {
+    UXR_INIT_LOCK(&rmw_uxrce_wait_mutex);
+    rmw_uxrce_wait_mutex_initialized = true;
+  }
+#endif  // UCLIENT_PROFILE_MULTITHREAD
+
   rmw_uxrce_init_session_memory(&session_memory, custom_sessions, RMW_UXRCE_MAX_SESSIONS);
   rmw_uxrce_init_static_input_buffer_memory(
     &static_buffer_memory, custom_static_buffers,

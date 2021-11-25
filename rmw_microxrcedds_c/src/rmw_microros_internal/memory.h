@@ -38,7 +38,7 @@ typedef struct rmw_uxrce_mempool_t
 
 #ifdef UCLIENT_PROFILE_MULTITHREAD
   uxrMutex mutex;
-#endif  // RMW_MICROROS_INTERNAL__UCLIENT_PROFILE_MULTITHREAD
+#endif  // UCLIENT_PROFILE_MULTITHREAD
 } rmw_uxrce_mempool_t;
 
 bool has_memory(
