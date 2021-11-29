@@ -154,11 +154,12 @@ rmw_wait(
 
   // Check guard conditions
   for (size_t i = 0; guard_conditions && i < guard_conditions->guard_condition_count; ++i) {
-    bool * hasTriggered = (bool *)guard_conditions->guard_conditions[i];
-    if ((*hasTriggered) == false) {
+    rmw_uxrce_guard_condition_t * custom_guard_condition =
+      (rmw_uxrce_guard_condition_t *)guard_conditions->guard_conditions[i];
+    if (custom_guard_condition->hasTriggered == false) {
       guard_conditions->guard_conditions[i] = NULL;
     } else {
-      *hasTriggered = false;
+      custom_guard_condition->hasTriggered = false;
       buffered_status = true;
     }
   }
