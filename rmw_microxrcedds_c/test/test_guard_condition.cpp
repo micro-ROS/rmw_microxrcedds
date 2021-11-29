@@ -68,6 +68,7 @@ TEST_F(TestGuardCondition, guard_condition)
   rc = rmw_trigger_guard_condition(gc);
   ASSERT_EQ(rc, RMW_RET_OK);
 
+  aux[0] = gc->data;
   guard_conditions.guard_conditions = aux;
   guard_conditions.guard_condition_count = 1;
   rc = rmw_wait(NULL, &guard_conditions, NULL, NULL, NULL, NULL, &wait_timeout);
