@@ -34,6 +34,7 @@ rmw_create_guard_condition(
   aux_guard_condition->rmw_guard_condition.context = context;
   aux_guard_condition->rmw_guard_condition.implementation_identifier =
     rmw_get_implementation_identifier();
+  aux_guard_condition->rmw_guard_condition.data = aux_guard_condition;
 
   return &aux_guard_condition->rmw_guard_condition;
 }
