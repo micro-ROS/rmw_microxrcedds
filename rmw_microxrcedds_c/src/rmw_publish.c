@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 #include <rmw_microros/rmw_microros.h>
 #include <uxr/client/profile/multithread/multithread.h>

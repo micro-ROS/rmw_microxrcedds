@@ -18,7 +18,6 @@
 #include <rmw_microros/rmw_microros.h>
 #include <rmw_microxrcedds_c/config.h>
 #include <rmw/rmw.h>
-#include <rmw/error_handling.h>
 #include <rmw/allocators.h>
 #include <uxr/client/util/time.h>
 

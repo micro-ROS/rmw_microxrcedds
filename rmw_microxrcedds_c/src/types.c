@@ -22,7 +22,6 @@
 #endif /* ifdef HAVE_CPP_TYPESUPPORT */
 
 #include <rmw/allocators.h>
-#include <rmw/error_handling.h>
 
 #include <uxr/client/profile/multithread/multithread.h>
 

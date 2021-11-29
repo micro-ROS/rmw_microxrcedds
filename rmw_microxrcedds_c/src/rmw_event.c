@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rmw/error_handling.h>
 #include <rmw/event.h>
 
 rmw_ret_t

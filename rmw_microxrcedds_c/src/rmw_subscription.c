@@ -26,7 +26,6 @@
 #endif /* ifdef HAVE_CPP_TYPESUPPORT */
 
 #include <rmw/rmw.h>
-#include <rmw/error_handling.h>
 #include <rmw/types.h>
 #include <rmw/allocators.h>
 

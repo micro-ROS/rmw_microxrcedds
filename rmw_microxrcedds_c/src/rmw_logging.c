@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #include <rmw/rmw.h>
-#include <rmw/error_handling.h>
 
 rmw_ret_t
 rmw_set_log_severity(

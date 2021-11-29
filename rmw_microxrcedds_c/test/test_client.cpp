@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #include <rosidl_typesupport_microxrcedds_c/message_type_support.h>
-#include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 #include <rmw/validate_namespace.h>
 #include <rmw/validate_node_name.h>

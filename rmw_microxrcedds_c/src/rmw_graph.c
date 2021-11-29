@@ -14,7 +14,6 @@
 
 #include <rmw_microros_internal/rmw_graph.h>
 
-#include <rmw/error_handling.h>
 #include <rosidl_runtime_c/string_functions.h>
 #include <micro_ros_msgs/msg/detail/graph__rosidl_typesupport_microxrcedds_c.h>
 

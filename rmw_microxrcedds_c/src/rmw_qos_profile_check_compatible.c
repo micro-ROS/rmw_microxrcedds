@@ -14,7 +14,6 @@
 
 #include <rmw/rmw.h>
 #include <rmw/types.h>
-#include <rmw/error_handling.h>
 #include <rmw/qos_profiles.h>
 
 rmw_ret_t

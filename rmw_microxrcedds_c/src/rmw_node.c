@@ -16,7 +16,6 @@
 
 #include <rmw_microxrcedds_c/config.h>
 #include <rmw/allocators.h>
-#include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 
 #include "./rmw_microros_internal/types.h"

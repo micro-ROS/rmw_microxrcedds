@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #include <rmw/rmw.h>
-#include <rmw/error_handling.h>
 #include <rmw/names_and_types.h>
 
 #include <rmw_microxrcedds_c/config.h>

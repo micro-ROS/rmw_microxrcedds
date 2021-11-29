@@ -23,7 +23,6 @@
 
 #include <rmw/rmw.h>
 #include <rmw/allocators.h>
-#include <rmw/error_handling.h>
 
 rmw_service_t *
 rmw_create_service(

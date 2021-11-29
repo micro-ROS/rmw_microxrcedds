@@ -14,8 +14,6 @@
 
 #include <rmw_microros_internal/rmw_uxrce_transports.h>
 
-#include <rmw/error_handling.h>
-
 extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
 
 rmw_ret_t rmw_uxrce_transport_init(

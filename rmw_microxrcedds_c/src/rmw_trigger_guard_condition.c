@@ -14,7 +14,6 @@
 
 #include <rmw/rmw.h>
 #include <rmw/names_and_types.h>
-#include <rmw/error_handling.h>
 
 #include "./rmw_microros_internal/utils.h"
 

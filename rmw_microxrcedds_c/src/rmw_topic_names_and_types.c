@@ -14,7 +14,6 @@
 
 #include <rmw/rmw.h>
 #include <rmw/names_and_types.h>
-#include <rmw/error_handling.h>
 
 #include <rmw_microxrcedds_c/config.h>
 #include <rmw_microxrcedds_c/rmw_c_macros.h>
