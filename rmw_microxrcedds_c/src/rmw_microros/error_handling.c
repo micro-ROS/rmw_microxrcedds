@@ -13,12 +13,12 @@
 // limitations under the License.
 
 #include <rmw/rmw.h>
-#include <rmw_microros/memory_error_handling.h>
+#include <rmw_microros_internal/memory_error_handling_internal.h>
 
-rmw_uros_memory_error_handling memory_error_callback = NULL;
+rmw_uros_error_handling error_callback = NULL;
 
-void rmw_uros_set_memory_error_handling_callback(
-  rmw_uros_memory_error_handling memory_error_cb)
+void rmw_uros_set_error_handling_callback(
+  rmw_uros_error_handling error_cb)
 {
-  memory_error_callback = memory_error_cb;
+  error_callback = error_cb;
 }

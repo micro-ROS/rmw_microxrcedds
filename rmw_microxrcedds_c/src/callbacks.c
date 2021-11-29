@@ -13,10 +13,8 @@
 // limitations under the License.
 
 #include <rmw_microros_internal/callbacks.h>
+#include <rmw_microros_internal/memory_error_handling_internal.h>
 #include <rmw/error_handling.h>
-#include <rmw_microros/memory_error_handling.h>
-
-extern rmw_uros_memory_error_handling memory_error_callback;
 
 void on_status(
   struct uxrSession * session,
@@ -79,10 +77,7 @@ void on_topic(
       if (!memory_node) {
         RMW_SET_ERROR_MSG("Not available static buffer memory node");
         UXR_UNLOCK(&static_buffer_memory.mutex);
-        if (NULL != memory_error_callback) {
-          memory_error_callback(
-            "Not available static_buffer_memory for subscription", ub, length);
-        }
+        RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_SUBSCRIPTION, RMW_UROS_ERROR_MIDDLEWARE_ALLOCATION, .node = custom_subscription->owner_node->node_name, .namespace = custom_subscription->owner_node->node_namespace, .topic_name = custom_subscription->topic_name, .ucdr = ub, .size = length);
         return;
       }
 
@@ -135,10 +130,7 @@ void on_request(
       if (!memory_node) {
         RMW_SET_ERROR_MSG("Not available static buffer memory node");
         UXR_UNLOCK(&static_buffer_memory.mutex);
-        if (NULL != memory_error_callback) {
-          memory_error_callback(
-            "Not available static_buffer_memory for request", ub, length);
-        }
+        // RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_MIDDLEWARE_ALLOCATION, .node = custom_service->owner_node->node_name, .namespace = custom_service->owner_node->node_namespace, .topic = custom_subscription->topic_name, .ucdr = ub, .size = length);
         return;
       }
 
@@ -193,10 +185,7 @@ void on_reply(
       if (!memory_node) {
         RMW_SET_ERROR_MSG("Not available static buffer memory node");
         UXR_UNLOCK(&static_buffer_memory.mutex);
-        if (NULL != memory_error_callback) {
-          memory_error_callback(
-            "Not available static_buffer_memory for reply", ub, length);
-        }
+        // RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_MIDDLEWARE_ALLOCATION, ub, length);
         return;
       }
 

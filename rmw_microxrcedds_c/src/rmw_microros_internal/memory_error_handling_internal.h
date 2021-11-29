@@ -16,37 +16,29 @@
  * @file
  */
 
-#ifndef RMW_MICROROS__MEMORY_ERROR_HANDLING_H_
-#define RMW_MICROROS__MEMORY_ERROR_HANDLING_H_
+#ifndef RMW_MICROROS_INTERNAL__ERROR_HANDLING_INTERNAL_H_
+#define RMW_MICROROS_INTERNAL__ERROR_HANDLING_INTERNAL_H_
 
-#include <ucdr/microcdr.h>
+#include <rmw_microxrcedds_c/config.h>
+#include <rmw_microros/error_handling.h>
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif  // if defined(__cplusplus)
 
-typedef void (* rmw_uros_memory_error_handling)(
-  char * identifier,
-  ucdrBuffer * ucdr,
-  size_t size);
+#ifdef RMW_UROS_ERROR_HANDLING
+extern rmw_uros_error_handling error_callback;
 
-/** \addtogroup rmw micro-ROS RMW API
- *  @{
- */
+// #define RMW_UROS_TRACE_ERROR(source, context) if(NULL != error_callback) {error_callback(source, (rmw_uros_error_context_t) context);}
+#define RMW_UROS_TRACE_ERROR(entity, source, ...) if(NULL != error_callback) {error_callback(entity, source, (rmw_uros_error_context_t){__VA_ARGS__});}
 
-/**
- * \brief Sets the callback functions for handling error in static memory handling
- *
- * \param[in] memory_error_cb callback to be triggered on static memory failure
- */
-void rmw_uros_set_memory_error_handling_callback(
-  rmw_uros_memory_error_handling memory_error_cb);
-
-/** @}*/
+#else
+#define RMW_UROS_TRACE_ERROR(source, context)
+#endif  // RMW_UROS_ERROR_HANDLING
 
 #if defined(__cplusplus)
 }
 #endif  // if defined(__cplusplus)
 
-#endif  // RMW_MICROROS__MEMORY_ERROR_HANDLING_H_
+#endif  // RMW_MICROROS_INTERNAL__ERROR_HANDLING_INTERNAL_H_

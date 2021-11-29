@@ -35,6 +35,7 @@ find_package(rmw REQUIRED)
 # Build options
 option(BUILD_DOCUMENTATION "Use doxygen to create product documentation" OFF)
 option(RMW_UXRCE_GRAPH "Allows to perform graph-related operations to the user" OFF)
+option(RMW_UROS_ERROR_HANDLING "Provides error handling callback functionality to user-space" ON)
 
 if(RMW_UXRCE_GRAPH)
   find_package(micro_ros_msgs REQUIRED)
@@ -190,10 +191,10 @@ set(SRCS
   src/rmw_microros/time_sync.c
   src/rmw_microros/ping.c
   src/rmw_microros/timing.c
-  src/rmw_microros/memory_error_handling.c
   $<$<OR:$<BOOL:${RMW_UXRCE_TRANSPORT_UDP}>,$<BOOL:${RMW_UXRCE_TRANSPORT_TCP}>>:src/rmw_microros/discovery.c>
   $<$<BOOL:${RMW_UXRCE_TRANSPORT_CUSTOM}>:src/rmw_microros/custom_transport.c>
   $<$<BOOL:${RMW_UXRCE_GRAPH}>:src/rmw_graph.c>
+  $<$<BOOL:${RMW_UROS_ERROR_HANDLING}>:src/rmw_microros/error_handling.c>
 )
 
 add_library(${PROJECT_NAME}
