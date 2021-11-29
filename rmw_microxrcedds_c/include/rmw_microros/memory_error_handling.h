@@ -38,7 +38,7 @@ typedef void (* rmw_uros_memory_error_handling)(
 /**
  * \brief Sets the callback functions for handling error in static memory handling
  *
- * \param[in] memory_error_cb publisher where continous serialization is being configured
+ * \param[in] memory_error_cb callback to be triggered on static memory failure
  */
 void rmw_uros_set_memory_error_handling_callback(
   rmw_uros_memory_error_handling memory_error_cb);
