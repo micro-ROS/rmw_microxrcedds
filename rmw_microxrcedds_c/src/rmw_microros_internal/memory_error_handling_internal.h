@@ -31,7 +31,8 @@ extern "C"
 extern rmw_uros_error_handling error_callback;
 
 // #define RMW_UROS_TRACE_ERROR(source, context) if(NULL != error_callback) {error_callback(source, (rmw_uros_error_context_t) context);}
-#define RMW_UROS_TRACE_ERROR(entity, source, ...) if(NULL != error_callback) {error_callback(entity, source, (rmw_uros_error_context_t){__VA_ARGS__});}
+#define RMW_UROS_TRACE_ERROR(entity, source, ...) if (NULL != error_callback) {error_callback( \
+      entity, source, (rmw_uros_error_context_t) {__VA_ARGS__});}
 
 #else
 #define RMW_UROS_TRACE_ERROR(source, context)

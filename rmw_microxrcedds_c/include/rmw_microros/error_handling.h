@@ -19,14 +19,16 @@
 #ifndef RMW_MICROROS__ERROR_HANDLING_H_
 #define RMW_MICROROS__ERROR_HANDLING_H_
 
+#ifdef RMW_UROS_ERROR_HANDLING
+
 #include <ucdr/microcdr.h>
+#include <rosidl_typesupport_microxrcedds_c/message_type_support.h>
+#include <rosidl_typesupport_microxrcedds_c/service_type_support.h>
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif  // if defined(__cplusplus)
-
-#ifdef RMW_UROS_ERROR_HANDLING
 
 typedef enum
 {
@@ -39,17 +41,23 @@ typedef enum
   RMW_UROS_ERROR_ON_PUBLISHER
 } rmw_uros_error_entity_type_t;
 
-typedef enum {
+typedef enum
+{
   RMW_UROS_ERROR_ENTITY_CREATION = 0,
   RMW_UROS_ERROR_MIDDLEWARE_ALLOCATION,
 } rmw_uros_error_source_t;
 
-typedef struct {
+typedef struct
+{
   const char * node;
   const char * namespace;
   const char * topic_name;
   const ucdrBuffer * ucdr;
   const size_t size;
+  union {
+    const message_type_support_callbacks_t * message_callbacks;
+    const service_type_support_callbacks_t * service_callbacks;
+  } type_support;
 } rmw_uros_error_context_t;
 
 typedef void (* rmw_uros_error_handling)(
@@ -69,12 +77,12 @@ typedef void (* rmw_uros_error_handling)(
 void rmw_uros_set_error_handling_callback(
   rmw_uros_error_handling error_cb);
 
-#endif  // RMW_UROS_ERROR_HANDLING
-
 /** @}*/
 
 #if defined(__cplusplus)
 }
 #endif  // if defined(__cplusplus)
+
+#endif  // RMW_UROS_ERROR_HANDLING
 
 #endif  // RMW_MICROROS__ERROR_HANDLING_H_

@@ -75,9 +75,15 @@ void on_topic(
       rmw_uxrce_mempool_item_t * memory_node = rmw_uxrce_get_static_input_buffer_for_entity(
         custom_subscription, custom_subscription->qos);
       if (!memory_node) {
-        RMW_SET_ERROR_MSG("Not available static buffer memory node");
         UXR_UNLOCK(&static_buffer_memory.mutex);
-        RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_SUBSCRIPTION, RMW_UROS_ERROR_MIDDLEWARE_ALLOCATION, .node = custom_subscription->owner_node->node_name, .namespace = custom_subscription->owner_node->node_namespace, .topic_name = custom_subscription->topic_name, .ucdr = ub, .size = length);
+        RMW_SET_ERROR_MSG("Not available static buffer memory node");
+        RMW_UROS_TRACE_ERROR(
+          RMW_UROS_ERROR_ON_SUBSCRIPTION, RMW_UROS_ERROR_MIDDLEWARE_ALLOCATION,
+          .node = custom_subscription->owner_node->node_name,
+          .namespace = custom_subscription->owner_node->node_namespace,
+          .topic_name = custom_subscription->topic_name, .ucdr = ub,
+          .size = length,
+          .type_support.message_callbacks = custom_subscription->type_support_callbacks);
         return;
       }
 
@@ -128,9 +134,15 @@ void on_request(
       rmw_uxrce_mempool_item_t * memory_node = rmw_uxrce_get_static_input_buffer_for_entity(
         custom_service, custom_service->qos);
       if (!memory_node) {
-        RMW_SET_ERROR_MSG("Not available static buffer memory node");
         UXR_UNLOCK(&static_buffer_memory.mutex);
-        // RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_MIDDLEWARE_ALLOCATION, .node = custom_service->owner_node->node_name, .namespace = custom_service->owner_node->node_namespace, .topic = custom_subscription->topic_name, .ucdr = ub, .size = length);
+        RMW_SET_ERROR_MSG("Not available static buffer memory node");
+        RMW_UROS_TRACE_ERROR(
+          RMW_UROS_ERROR_ON_SERVICE, RMW_UROS_ERROR_MIDDLEWARE_ALLOCATION,
+          .node = custom_service->owner_node->node_name,
+          .namespace = custom_service->owner_node->node_namespace,
+          .topic_name = custom_service->service_name, .ucdr = ub,
+          .size = length,
+          .type_support.service_callbacks = custom_service->type_support_callbacks);
         return;
       }
 
@@ -183,9 +195,15 @@ void on_reply(
       rmw_uxrce_mempool_item_t * memory_node = rmw_uxrce_get_static_input_buffer_for_entity(
         custom_client, custom_client->qos);
       if (!memory_node) {
-        RMW_SET_ERROR_MSG("Not available static buffer memory node");
         UXR_UNLOCK(&static_buffer_memory.mutex);
-        // RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_MIDDLEWARE_ALLOCATION, ub, length);
+        RMW_SET_ERROR_MSG("Not available static buffer memory node");
+        RMW_UROS_TRACE_ERROR(
+          RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_MIDDLEWARE_ALLOCATION,
+          .node = custom_client->owner_node->node_name,
+          .namespace = custom_client->owner_node->node_namespace,
+          .topic_name = custom_client->service_name, .ucdr = ub,
+          .size = length,
+          .type_support.service_callbacks = custom_service->type_support_callbacks);
         return;
       }
 
