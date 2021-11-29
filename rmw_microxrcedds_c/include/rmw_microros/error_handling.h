@@ -44,6 +44,7 @@ typedef enum
 typedef enum
 {
   RMW_UROS_ERROR_ENTITY_CREATION = 0,
+  RMW_UROS_ERROR_ENTITY_DESTRUCTION,
   RMW_UROS_ERROR_MIDDLEWARE_ALLOCATION,
 } rmw_uros_error_source_t;
 

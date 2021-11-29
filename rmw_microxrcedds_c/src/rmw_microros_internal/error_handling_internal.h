@@ -31,10 +31,10 @@ extern "C"
 extern rmw_uros_error_handling error_callback;
 
 #define RMW_UROS_TRACE_ERROR(entity, source, desc, ...) \
+  RMW_SET_ERROR_MSG(desc); \
   if (NULL != error_callback) { \
     rmw_uros_error_context_t ctx = {__VA_ARGS__}; \
     ctx.description = desc; \
-    RMW_SET_ERROR_MSG(desc); \
     error_callback(entity, source, ctx, __FILE__, __LINE__); \
   }
 

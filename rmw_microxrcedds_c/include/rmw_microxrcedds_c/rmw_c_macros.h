@@ -15,6 +15,8 @@
 #ifndef RMW_MICROXRCEDDS_C__RMW_C_MACROS_H_
 #define RMW_MICROXRCEDDS_C__RMW_C_MACROS_H_
 
+#include <rmw/error_handling.h>
+
 #define RMW_CHECK_TYPE_IDENTIFIERS_MATCH(ElementName, ElementTypeID, ExpectedTypeID, OnFailure) \
   { \
     if (strcmp(ElementTypeID, ExpectedTypeID) != 0) { \
