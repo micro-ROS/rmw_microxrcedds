@@ -58,12 +58,15 @@ typedef struct
     const message_type_support_callbacks_t * message_callbacks;
     const service_type_support_callbacks_t * service_callbacks;
   } type_support;
+  const char * description;
 } rmw_uros_error_context_t;
 
 typedef void (* rmw_uros_error_handling)(
   const rmw_uros_error_source_t source,
   const rmw_uros_error_entity_type_t entity,
-  const rmw_uros_error_context_t context);
+  const rmw_uros_error_context_t context,
+  const char * file,
+  const int line);
 
 /** \addtogroup rmw micro-ROS RMW API
  *  @{

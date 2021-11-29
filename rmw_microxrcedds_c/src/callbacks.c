@@ -14,7 +14,6 @@
 
 #include <rmw_microros_internal/callbacks.h>
 #include <rmw_microros_internal/memory_error_handling_internal.h>
-#include <rmw/error_handling.h>
 
 void on_status(
   struct uxrSession * session,
@@ -76,9 +75,9 @@ void on_topic(
         custom_subscription, custom_subscription->qos);
       if (!memory_node) {
         UXR_UNLOCK(&static_buffer_memory.mutex);
-        RMW_SET_ERROR_MSG("Not available static buffer memory node");
         RMW_UROS_TRACE_ERROR(
           RMW_UROS_ERROR_ON_SUBSCRIPTION, RMW_UROS_ERROR_MIDDLEWARE_ALLOCATION,
+          "Not available static buffer memory node in on_topic callback",
           .node = custom_subscription->owner_node->node_name,
           .namespace = custom_subscription->owner_node->node_namespace,
           .topic_name = custom_subscription->topic_name, .ucdr = ub,
@@ -135,9 +134,9 @@ void on_request(
         custom_service, custom_service->qos);
       if (!memory_node) {
         UXR_UNLOCK(&static_buffer_memory.mutex);
-        RMW_SET_ERROR_MSG("Not available static buffer memory node");
         RMW_UROS_TRACE_ERROR(
           RMW_UROS_ERROR_ON_SERVICE, RMW_UROS_ERROR_MIDDLEWARE_ALLOCATION,
+          "Not available static buffer memory node in on_request callback",
           .node = custom_service->owner_node->node_name,
           .namespace = custom_service->owner_node->node_namespace,
           .topic_name = custom_service->service_name, .ucdr = ub,
@@ -196,14 +195,14 @@ void on_reply(
         custom_client, custom_client->qos);
       if (!memory_node) {
         UXR_UNLOCK(&static_buffer_memory.mutex);
-        RMW_SET_ERROR_MSG("Not available static buffer memory node");
         RMW_UROS_TRACE_ERROR(
           RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_MIDDLEWARE_ALLOCATION,
+          "Not available static buffer memory node in on_reply callback",
           .node = custom_client->owner_node->node_name,
           .namespace = custom_client->owner_node->node_namespace,
           .topic_name = custom_client->service_name, .ucdr = ub,
           .size = length,
-          .type_support.service_callbacks = custom_service->type_support_callbacks);
+          .type_support.service_callbacks = custom_client->type_support_callbacks);
         return;
       }
 
