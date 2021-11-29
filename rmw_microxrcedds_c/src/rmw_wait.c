@@ -96,22 +96,19 @@ rmw_wait(
   }
 
   // There is no context that contais any of the wait set entities. Nothing to wait here.
-  if (available_contexts == 0) {
-    UXR_UNLOCK(&rmw_uxrce_wait_mutex);
-    return RMW_RET_OK;
-  }
+  if (available_contexts != 0) {
+    int32_t per_session_timeout =
+      (timeout.i32 == UXR_TIMEOUT_INF) ? UXR_TIMEOUT_INF :
+      (int32_t)((float)timeout.i32 / (float)available_contexts);
 
-  int32_t per_session_timeout =
-    (timeout.i32 == UXR_TIMEOUT_INF) ? UXR_TIMEOUT_INF :
-    (int32_t)((float)timeout.i32 / (float)available_contexts);
-
-  item = session_memory.allocateditems;
-  while (item != NULL) {
-    rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
-    if (custom_context->need_to_be_ran) {
-      uxr_run_session_until_data(&custom_context->session, per_session_timeout);
+    item = session_memory.allocateditems;
+    while (item != NULL) {
+      rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
+      if (custom_context->need_to_be_ran) {
+        uxr_run_session_until_data(&custom_context->session, per_session_timeout);
+      }
+      item = item->next;
     }
-    item = item->next;
   }
 
   UXR_UNLOCK(&rmw_uxrce_wait_mutex);
@@ -154,11 +151,12 @@ rmw_wait(
 
   // Check guard conditions
   for (size_t i = 0; guard_conditions && i < guard_conditions->guard_condition_count; ++i) {
-    bool * hasTriggered = (bool *)guard_conditions->guard_conditions[i];
-    if ((*hasTriggered) == false) {
+    rmw_uxrce_guard_condition_t * custom_guard_condition =
+      (rmw_uxrce_guard_condition_t *)guard_conditions->guard_conditions[i];
+    if (custom_guard_condition->hasTriggered == false) {
       guard_conditions->guard_conditions[i] = NULL;
     } else {
-      *hasTriggered = false;
+      custom_guard_condition->hasTriggered = false;
       buffered_status = true;
     }
   }

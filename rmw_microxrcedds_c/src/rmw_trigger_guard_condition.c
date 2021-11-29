@@ -30,8 +30,9 @@ rmw_trigger_guard_condition(
     RMW_SET_ERROR_MSG("guard condition handle not from this implementation");
     ret = RMW_RET_ERROR;
   } else {
-    bool * hasTriggered = (bool *)guard_condition->data;
-    *hasTriggered = true;
+    rmw_uxrce_guard_condition_t * aux_guard_condition =
+      (rmw_uxrce_guard_condition_t *)guard_condition->data;
+    aux_guard_condition->hasTriggered = true;
   }
 
   return ret;
