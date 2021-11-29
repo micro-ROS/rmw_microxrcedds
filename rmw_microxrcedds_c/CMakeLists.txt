@@ -190,6 +190,7 @@ set(SRCS
   src/rmw_microros/time_sync.c
   src/rmw_microros/ping.c
   src/rmw_microros/timing.c
+  src/rmw_microros/memory_error_handling.c
   $<$<OR:$<BOOL:${RMW_UXRCE_TRANSPORT_UDP}>,$<BOOL:${RMW_UXRCE_TRANSPORT_TCP}>>:src/rmw_microros/discovery.c>
   $<$<BOOL:${RMW_UXRCE_TRANSPORT_CUSTOM}>:src/rmw_microros/custom_transport.c>
   $<$<BOOL:${RMW_UXRCE_GRAPH}>:src/rmw_graph.c>
