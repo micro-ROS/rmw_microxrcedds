@@ -49,7 +49,7 @@ bool run_xrce_session(
   return true;
 }
 
-uxrQoS_t convert_qos_profile(const rmw_qos_profile_t rmw_qos)
+uxrQoS_t convert_qos_profile(const rmw_qos_profile_t * rmw_qos)
 {
   uxrQoSDurability durability;
   switch (rmw_qos->durability) {
