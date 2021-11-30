@@ -25,7 +25,7 @@ bool run_xrce_session(
   uint16_t requests,
   int timeout);
 
-uxrQoS_t convert_qos_profile(const rmw_qos_profile_t rmw_qos);
+uxrQoS_t convert_qos_profile(const rmw_qos_profile_t * rmw_qos);
 
 int generate_name(
   const uxrObjectId * id,
