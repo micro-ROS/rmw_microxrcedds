@@ -137,6 +137,7 @@ rmw_create_service(
       res_type_name,
       req_topic_name,
       res_topic_name,
+      convert_qos_profile(qos_policies),
       UXR_REPLACE | UXR_REUSE);
 #endif /* ifdef RMW_UXRCE_USE_XML */
 
