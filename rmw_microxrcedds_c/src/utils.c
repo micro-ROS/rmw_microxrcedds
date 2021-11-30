@@ -92,7 +92,7 @@ uxrQoS_t convert_qos_profile(const rmw_qos_profile_t * rmw_qos)
     .reliability = reliability,
     .history = history,
     .depth = rmw_qos->depth,
-  }
+  };
 
   return qos;
 }
