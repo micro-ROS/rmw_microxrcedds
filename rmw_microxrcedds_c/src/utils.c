@@ -49,6 +49,55 @@ bool run_xrce_session(
   return true;
 }
 
+uxrQoS_t convert_qos_profile(const rmw_qos_profile_t * rmw_qos)
+{
+  uxrQoSDurability durability;
+  switch (rmw_qos->durability) {
+    case RMW_QOS_POLICY_DURABILITY_VOLATILE:
+      durability = UXR_DURABILITY_VOLATILE;
+      break;
+    case RMW_QOS_POLICY_DURABILITY_UNKNOWN:
+    case RMW_QOS_POLICY_DURABILITY_SYSTEM_DEFAULT:
+    case RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL:
+    default:
+      durability = UXR_DURABILITY_TRANSIENT_LOCAL;
+      break;
+  }
+
+  uxrQoSReliability reliability;
+  switch (rmw_qos->reliability) {
+    case RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT:
+      reliability = UXR_RELIABILITY_BEST_EFFORT;
+      break;
+    case RMW_QOS_POLICY_RELIABILITY_RELIABLE:
+    case RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT:
+    default:
+      reliability = UXR_RELIABILITY_RELIABLE;
+      break;
+  }
+
+  uxrQoSHistory history;
+  switch (rmw_qos->history) {
+    case RMW_QOS_POLICY_HISTORY_KEEP_ALL:
+      history = UXR_HISTORY_KEEP_ALL;
+      break;
+    case RMW_QOS_POLICY_HISTORY_KEEP_LAST:
+    default:
+      history = UXR_HISTORY_KEEP_LAST;
+      break;
+  }
+
+  uxrQoS_t qos = {
+    .durability = durability,
+    .reliability = reliability,
+    .history = history,
+    .depth = rmw_qos->depth,
+  };
+
+  return qos;
+}
+
+
 int build_participant_xml(
   size_t domain_id,
   const char * participant_name,
