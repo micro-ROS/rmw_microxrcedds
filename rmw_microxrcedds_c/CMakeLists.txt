@@ -35,7 +35,7 @@ find_package(rmw REQUIRED)
 # Build options
 option(BUILD_DOCUMENTATION "Use doxygen to create product documentation" OFF)
 option(RMW_UXRCE_GRAPH "Allows to perform graph-related operations to the user" OFF)
-option(RMW_UROS_ERROR_HANDLING "Provides error handling callback functionality to user-space" ON)
+option(RMW_UROS_ERROR_HANDLING "Provides error handling callback functionality to user-space" OFF)
 
 if(RMW_UXRCE_GRAPH)
   find_package(micro_ros_msgs REQUIRED)
@@ -147,6 +147,10 @@ else()
 endif()
 
 set(DOC_INSTALL_DIR ${DOC_DIR} CACHE PATH "Installation directory for documentation")
+
+if(BUILD_TESTING)
+  set(RMW_UROS_ERROR_HANDLING ON)
+endif()
 
 set(SRCS
   src/identifiers.c

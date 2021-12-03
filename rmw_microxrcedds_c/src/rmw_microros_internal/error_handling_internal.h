@@ -44,7 +44,7 @@ extern rmw_uros_error_handling error_callback;
     RMW_UROS_ERROR_CHECK, desc, 0)
 
 #else
-#define RMW_UROS_TRACE_ERROR(source, context)
+#define RMW_UROS_TRACE_ERROR(source, context, desc, ...)
 #define RMW_UROS_TRACE_MESSAGE(desc)
 #endif  // RMW_UROS_ERROR_HANDLING
 
