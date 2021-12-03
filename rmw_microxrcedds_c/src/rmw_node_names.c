@@ -96,7 +96,8 @@ fini:
   (void)node;
   (void)node_names;
   (void)node_namespaces;
-  RMW_UROS_TRACE_MESSAGE("Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
+  RMW_UROS_TRACE_MESSAGE(
+    "Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }

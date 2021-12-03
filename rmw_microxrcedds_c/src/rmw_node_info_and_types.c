@@ -176,7 +176,8 @@ rmw_get_publisher_names_and_types_by_node(
   (void)node_namespace;
   (void)demangle;
   (void)topic_names_and_types;
-  RMW_UROS_TRACE_MESSAGE("Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
+  RMW_UROS_TRACE_MESSAGE(
+    "Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }
@@ -206,7 +207,8 @@ rmw_get_subscriber_names_and_types_by_node(
   (void)node_namespace;
   (void)demangle;
   (void)topic_names_and_types;
-  RMW_UROS_TRACE_MESSAGE("Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
+  RMW_UROS_TRACE_MESSAGE(
+    "Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }
@@ -234,7 +236,8 @@ rmw_get_service_names_and_types_by_node(
   (void)node_name;
   (void)node_namespace;
   (void)service_names_and_types;
-  RMW_UROS_TRACE_MESSAGE("Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
+  RMW_UROS_TRACE_MESSAGE(
+    "Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }
@@ -262,7 +265,8 @@ rmw_get_client_names_and_types_by_node(
   (void)node_name;
   (void)node_namespace;
   (void)service_names_and_types;
-  RMW_UROS_TRACE_MESSAGE("Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
+  RMW_UROS_TRACE_MESSAGE(
+    "Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }

@@ -99,7 +99,8 @@ rmw_count_publishers(
   (void)node;
   (void)topic_name;
   (void)count;
-  RMW_UROS_TRACE_MESSAGE("Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
+  RMW_UROS_TRACE_MESSAGE(
+    "Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }
@@ -120,7 +121,8 @@ rmw_count_subscribers(
   (void)node;
   (void)topic_name;
   (void)count;
-  RMW_UROS_TRACE_MESSAGE("Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
+  RMW_UROS_TRACE_MESSAGE(
+    "Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }

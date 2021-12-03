@@ -169,7 +169,8 @@ fini:
   (void)allocator;
   (void)no_demangle;
   (void)topic_names_and_types;
-  RMW_UROS_TRACE_MESSAGE("Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
+  RMW_UROS_TRACE_MESSAGE(
+    "Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }

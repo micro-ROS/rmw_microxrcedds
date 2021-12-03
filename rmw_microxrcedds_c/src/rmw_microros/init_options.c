@@ -34,7 +34,8 @@ rmw_ret_t rmw_uros_init_options(
   if (argc >= 2) {
     snprintf(rmw_options->impl->transport_params.serial_device, MAX_SERIAL_DEVICE, "%s", argv[1]);
   } else {
-    RMW_UROS_TRACE_MESSAGE("Wrong number of arguments in rmw options. Needs one argument with the serial device.");
+    RMW_UROS_TRACE_MESSAGE(
+      "Wrong number of arguments in rmw options. Needs one argument with the serial device.");
     ret = RMW_RET_INVALID_ARGUMENT;
   }
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)

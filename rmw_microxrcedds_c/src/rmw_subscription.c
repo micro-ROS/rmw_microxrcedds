@@ -265,7 +265,8 @@ sub_count_pub_fail:
 #else
   (void)subscription;
   (void)publisher_count;
-  RMW_UROS_TRACE_MESSAGE("Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
+  RMW_UROS_TRACE_MESSAGE(
+    "Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }
