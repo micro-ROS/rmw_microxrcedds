@@ -21,6 +21,7 @@
 
 #include "./rmw_microros_internal/types.h"
 #include "./rmw_microros_internal/identifiers.h"
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 #ifdef RMW_UXRCE_GRAPH
 #include "./rmw_microros_internal/rmw_graph.h"
@@ -37,8 +38,8 @@ __rmw_count_entities(
   // Perform RMW checks
   RMW_CHECK_ARGUMENT_FOR_NULL(node, RMW_RET_INVALID_ARGUMENT);
   RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
-    node, node->implementation_identifier,
-    eprosima_microxrcedds_identifier, return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+    node->implementation_identifier,
+    RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
   RMW_CHECK_ARGUMENT_FOR_NULL(topic_name, RMW_RET_INVALID_ARGUMENT);
   RMW_CHECK_ARGUMENT_FOR_NULL(count, RMW_RET_INVALID_ARGUMENT);
   // Set count to zero, just in case it was holding another value
@@ -98,8 +99,7 @@ rmw_count_publishers(
   (void)node;
   (void)topic_name;
   (void)count;
-  RMW_SET_ERROR_MSG(
-    "Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
+  RMW_UROS_TRACE_MESSAGE("Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }
@@ -120,8 +120,7 @@ rmw_count_subscribers(
   (void)node;
   (void)topic_name;
   (void)count;
-  RMW_SET_ERROR_MSG(
-    "Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
+  RMW_UROS_TRACE_MESSAGE("Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }

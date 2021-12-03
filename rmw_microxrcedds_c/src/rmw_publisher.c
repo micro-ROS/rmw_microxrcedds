@@ -33,6 +33,7 @@
 
 #include "./rmw_microros_internal/utils.h"
 #include "./rmw_microros_internal/rmw_microxrcedds_topic.h"
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_ret_t
 rmw_init_publisher_allocation(
@@ -43,7 +44,7 @@ rmw_init_publisher_allocation(
   (void)type_support;
   (void)message_bounds;
   (void)allocation;
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -52,7 +53,7 @@ rmw_fini_publisher_allocation(
   rmw_publisher_allocation_t * allocation)
 {
   (void)allocation;
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -68,20 +69,20 @@ rmw_create_publisher(
 
   rmw_publisher_t * rmw_publisher = NULL;
   if (!node) {
-    RMW_SET_ERROR_MSG("node handle is null");
+    RMW_UROS_TRACE_MESSAGE("node handle is null")
   } else if (!type_support) {
-    RMW_SET_ERROR_MSG("type support is null");
+    RMW_UROS_TRACE_MESSAGE("type support is null")
   } else if (!is_uxrce_rmw_identifier_valid(node->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("node handle not from this implementation");
+    RMW_UROS_TRACE_MESSAGE("node handle not from this implementation")
   } else if (!topic_name || strlen(topic_name) == 0) {
-    RMW_SET_ERROR_MSG("publisher topic is null or empty string");
+    RMW_UROS_TRACE_MESSAGE("publisher topic is null or empty string")
   } else if (!qos_policies) {
-    RMW_SET_ERROR_MSG("qos_profile is null");
+    RMW_UROS_TRACE_MESSAGE("qos_profile is null")
   } else {
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     rmw_uxrce_mempool_item_t * memory_node = get_memory(&publisher_memory);
     if (!memory_node) {
-      RMW_SET_ERROR_MSG("Not available memory node");
+      RMW_UROS_TRACE_MESSAGE("Not available memory node")
       return NULL;
     }
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)memory_node->data;
@@ -92,7 +93,7 @@ rmw_create_publisher(
     rmw_publisher->topic_name = custom_publisher->topic_name;
 
     if ((strlen(topic_name) + 1 ) > sizeof(custom_publisher->topic_name)) {
-      RMW_SET_ERROR_MSG("failed to allocate string");
+      RMW_UROS_TRACE_MESSAGE("failed to allocate string")
       goto fail;
     }
     snprintf(
@@ -123,7 +124,7 @@ rmw_create_publisher(
     }
 #endif /* ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE */
     if (NULL == type_support_xrce) {
-      RMW_SET_ERROR_MSG("Undefined type support");
+      RMW_UROS_TRACE_MESSAGE("Undefined type support")
       goto fail;
     }
 
@@ -131,7 +132,7 @@ rmw_create_publisher(
       (const message_type_support_callbacks_t *)type_support_xrce->data;
 
     if (custom_publisher->type_support_callbacks == NULL) {
-      RMW_SET_ERROR_MSG("type support data is NULL");
+      RMW_UROS_TRACE_MESSAGE("type support data is NULL")
       goto fail;
     }
 
@@ -141,7 +142,7 @@ rmw_create_publisher(
       custom_publisher->type_support_callbacks, qos_policies);
 
     if (custom_publisher->topic == NULL) {
-      RMW_SET_ERROR_MSG("Error creating topic");
+      RMW_UROS_TRACE_MESSAGE("Error creating topic")
       goto fail;
     }
 
@@ -187,7 +188,7 @@ rmw_create_publisher(
         topic_name, rmw_uxrce_entity_naming_buffer,
         sizeof(rmw_uxrce_entity_naming_buffer)))
     {
-      RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
+      RMW_UROS_TRACE_MESSAGE("failed to generate xml request for node creation")
       goto fail;
     }
 
@@ -260,8 +261,7 @@ pub_count_sub_fail:
 #else
   (void)publisher;
   (void)subscription_count;
-  RMW_SET_ERROR_MSG(
-    "Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
+  RMW_UROS_TRACE_MESSAGE("Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }
@@ -271,7 +271,7 @@ rmw_publisher_assert_liveliness(
   const rmw_publisher_t * publisher)
 {
   (void)publisher;
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -298,7 +298,7 @@ rmw_borrow_loaned_message(
   (void)type_support;
   (void)ros_message;
 
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -310,7 +310,7 @@ rmw_return_loaned_message_from_publisher(
   (void)publisher;
   (void)loaned_message;
 
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -321,22 +321,22 @@ rmw_destroy_publisher(
 {
   rmw_ret_t result_ret = RMW_RET_OK;
   if (!node) {
-    RMW_SET_ERROR_MSG("node handle is null");
+    RMW_UROS_TRACE_MESSAGE("node handle is null")
     result_ret = RMW_RET_ERROR;
   } else if (!is_uxrce_rmw_identifier_valid(node->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("node handle not from this implementation");
+    RMW_UROS_TRACE_MESSAGE("node handle not from this implementation")
     result_ret = RMW_RET_ERROR;
   } else if (!node->data) {
-    RMW_SET_ERROR_MSG("node imp is null");
+    RMW_UROS_TRACE_MESSAGE("node imp is null")
     result_ret = RMW_RET_ERROR;
   } else if (!publisher) {
-    RMW_SET_ERROR_MSG("publisher handle is null");
+    RMW_UROS_TRACE_MESSAGE("publisher handle is null")
     result_ret = RMW_RET_ERROR;
   } else if (!is_uxrce_rmw_identifier_valid(publisher->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("publisher handle not from this implementation");
+    RMW_UROS_TRACE_MESSAGE("publisher handle not from this implementation")
     result_ret = RMW_RET_ERROR;
   } else if (!publisher->data) {
-    RMW_SET_ERROR_MSG("publisher imp is null");
+    RMW_UROS_TRACE_MESSAGE("publisher imp is null")
     result_ret = RMW_RET_ERROR;
   } else {
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;

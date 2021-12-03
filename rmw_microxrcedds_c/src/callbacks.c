@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include <rmw_microros_internal/callbacks.h>
-#include <rmw_microros_internal/memory_error_handling_internal.h>
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 void on_status(
   struct uxrSession * session,

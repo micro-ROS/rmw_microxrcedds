@@ -14,6 +14,8 @@
 
 #include <rmw/event.h>
 
+#include "./rmw_microros_internal/error_handling_internal.h"
+
 rmw_ret_t
 rmw_publisher_event_init(
   rmw_event_t * rmw_event,
@@ -23,7 +25,7 @@ rmw_publisher_event_init(
   (void)rmw_event;
   (void)publisher;
   (void)event_type;
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -36,6 +38,6 @@ rmw_subscription_event_init(
   (void)rmw_event;
   (void)subscription;
   (void)event_type;
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }

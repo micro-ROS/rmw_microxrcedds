@@ -18,6 +18,7 @@
 #include <rmw/ret_types.h>
 
 #include "../rmw_microros_internal/types.h"
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_ret_t rmw_uros_init_options(
   int argc,
@@ -25,7 +26,7 @@ rmw_ret_t rmw_uros_init_options(
   rmw_init_options_t * rmw_options)
 {
   if (NULL == rmw_options) {
-    RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
+    RMW_UROS_TRACE_MESSAGE("Uninitialised rmw_init_options.")
     return RMW_RET_INVALID_ARGUMENT;
   }
   rmw_ret_t ret = RMW_RET_OK;
@@ -33,8 +34,7 @@ rmw_ret_t rmw_uros_init_options(
   if (argc >= 2) {
     snprintf(rmw_options->impl->transport_params.serial_device, MAX_SERIAL_DEVICE, "%s", argv[1]);
   } else {
-    RMW_SET_ERROR_MSG(
-      "Wrong number of arguments in rmw options. Needs one argument with the serial device.");
+    RMW_UROS_TRACE_MESSAGE("Wrong number of arguments in rmw options. Needs one argument with the serial device.");
     ret = RMW_RET_INVALID_ARGUMENT;
   }
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
@@ -42,7 +42,7 @@ rmw_ret_t rmw_uros_init_options(
     snprintf(rmw_options->impl->transport_params.agent_address, MAX_IP_LEN, "%s", argv[1]);
     snprintf(rmw_options->impl->transport_params.agent_port, MAX_PORT_LEN, "%s", argv[2]);
   } else {
-    RMW_SET_ERROR_MSG("Wrong number of arguments in rmw options. Needs an Agent IP and port.");
+    RMW_UROS_TRACE_MESSAGE("Wrong number of arguments in rmw options. Needs an Agent IP and port.");
     ret = RMW_RET_INVALID_ARGUMENT;
   }
 #else
@@ -58,14 +58,14 @@ rmw_ret_t rmw_uros_options_set_serial_device(
 {
 #if defined(RMW_UXRCE_TRANSPORT_SERIAL)
   if (NULL == rmw_options) {
-    RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
+    RMW_UROS_TRACE_MESSAGE("Uninitialised rmw_init_options.")
     return RMW_RET_INVALID_ARGUMENT;
   }
 
   if (dev != NULL && strlen(dev) <= MAX_SERIAL_DEVICE) {
     snprintf(rmw_options->impl->transport_params.serial_device, MAX_SERIAL_DEVICE, "%s", dev);
   } else {
-    RMW_SET_ERROR_MSG("serial port configuration error");
+    RMW_UROS_TRACE_MESSAGE("serial port configuration error")
     return RMW_RET_INVALID_ARGUMENT;
   }
   return RMW_RET_OK;
@@ -73,7 +73,7 @@ rmw_ret_t rmw_uros_options_set_serial_device(
   (void)dev;
   (void)rmw_options;
 
-  RMW_SET_ERROR_MSG("RMW_UXRCE_TRANSPORT_SERIAL not set.");
+  RMW_UROS_TRACE_MESSAGE("RMW_UXRCE_TRANSPORT_SERIAL not set.")
   return RMW_RET_INVALID_ARGUMENT;
 #endif /* if defined(RMW_UXRCE_TRANSPORT_SERIAL) */
 }
@@ -85,21 +85,21 @@ rmw_ret_t rmw_uros_options_set_udp_address(
 {
 #ifdef RMW_UXRCE_TRANSPORT_UDP
   if (NULL == rmw_options) {
-    RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
+    RMW_UROS_TRACE_MESSAGE("Uninitialised rmw_init_options.")
     return RMW_RET_INVALID_ARGUMENT;
   }
 
   if (ip != NULL && strlen(ip) <= MAX_IP_LEN) {
     snprintf(rmw_options->impl->transport_params.agent_address, MAX_IP_LEN, "%s", ip);
   } else {
-    RMW_SET_ERROR_MSG("default ip configuration error");
+    RMW_UROS_TRACE_MESSAGE("default ip configuration error")
     return RMW_RET_INVALID_ARGUMENT;
   }
 
   if (port != NULL && strlen(port) <= MAX_PORT_LEN) {
     snprintf(rmw_options->impl->transport_params.agent_port, MAX_PORT_LEN, "%s", port);
   } else {
-    RMW_SET_ERROR_MSG("default port configuration error");
+    RMW_UROS_TRACE_MESSAGE("default port configuration error")
     return RMW_RET_INVALID_ARGUMENT;
   }
 
@@ -109,7 +109,7 @@ rmw_ret_t rmw_uros_options_set_udp_address(
   (void)port;
   (void)rmw_options;
 
-  RMW_SET_ERROR_MSG("RMW_UXRCE_TRANSPORT_UDP not set.");
+  RMW_UROS_TRACE_MESSAGE("RMW_UXRCE_TRANSPORT_UDP not set.")
   return RMW_RET_INVALID_ARGUMENT;
 #endif /* ifdef RMW_UXRCE_TRANSPORT_UDP */
 }
@@ -119,7 +119,7 @@ rmw_ret_t rmw_uros_options_set_client_key(
   rmw_init_options_t * rmw_options)
 {
   if (NULL == rmw_options) {
-    RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
+    RMW_UROS_TRACE_MESSAGE("Uninitialised rmw_init_options.")
     return RMW_RET_INVALID_ARGUMENT;
   }
 

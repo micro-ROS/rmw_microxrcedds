@@ -19,7 +19,7 @@
 #include <rmw/allocators.h>
 
 #include "./rmw_microros_internal/utils.h"
-
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_uxrce_topic_t *
 create_topic(
@@ -34,7 +34,7 @@ create_topic(
   rmw_uxrce_mempool_item_t * memory_node = get_memory(&topics_memory);
 
   if (!memory_node) {
-    RMW_SET_ERROR_MSG("Not available memory node");
+    RMW_UROS_TRACE_MESSAGE("Not available memory node");
     goto fail;
   }
 
@@ -57,7 +57,7 @@ create_topic(
       topic_name, rmw_uxrce_entity_naming_buffer,
       sizeof(rmw_uxrce_entity_naming_buffer)))
   {
-    RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
+    RMW_UROS_TRACE_MESSAGE("failed to generate xml request for node creation")
     rmw_uxrce_fini_topic_memory(custom_topic);
     custom_topic = NULL;
     goto fail;

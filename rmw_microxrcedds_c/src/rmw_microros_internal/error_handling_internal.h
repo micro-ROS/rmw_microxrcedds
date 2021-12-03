@@ -19,6 +19,7 @@
 #ifndef RMW_MICROROS_INTERNAL__ERROR_HANDLING_INTERNAL_H_
 #define RMW_MICROROS_INTERNAL__ERROR_HANDLING_INTERNAL_H_
 
+#include <rmw/error_handling.h>
 #include <rmw_microxrcedds_c/config.h>
 #include <rmw_microros/error_handling.h>
 
@@ -38,8 +39,11 @@ extern rmw_uros_error_handling error_callback;
     error_callback(entity, source, ctx, __FILE__, __LINE__); \
   }
 
+#define RMW_UROS_TRACE_MESSAGE(desc) RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_UNKNOWN, RMW_UROS_ERROR_CHECK, desc, 0)
+
 #else
 #define RMW_UROS_TRACE_ERROR(source, context)
+#define RMW_UROS_TRACE_MESSAGE(desc)
 #endif  // RMW_UROS_ERROR_HANDLING
 
 #if defined(__cplusplus)

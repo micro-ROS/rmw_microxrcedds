@@ -41,7 +41,7 @@ rmw_ret_t rmw_uros_set_custom_transport(
     rmw_uxrce_transport_default_params.write_cb = write_cb;
     rmw_uxrce_transport_default_params.read_cb = read_cb;
   } else {
-    RMW_SET_ERROR_MSG("Uninitialised arguments.");
+    RMW_UROS_TRACE_MESSAGE("Uninitialised arguments.")
     return RMW_RET_INVALID_ARGUMENT;
   }
   return RMW_RET_OK;
@@ -69,7 +69,7 @@ rmw_ret_t rmw_uros_options_set_custom_transport(
     rmw_options->impl->transport_params.write_cb = write_cb;
     rmw_options->impl->transport_params.read_cb = read_cb;
   } else {
-    RMW_SET_ERROR_MSG("Uninitialised arguments.");
+    RMW_UROS_TRACE_MESSAGE("Uninitialised arguments.")
     return RMW_RET_INVALID_ARGUMENT;
   }
 

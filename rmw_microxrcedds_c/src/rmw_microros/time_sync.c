@@ -18,12 +18,13 @@
 #include <uxr/client/util/time.h>
 
 #include "../rmw_microros_internal/types.h"
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 bool rmw_uros_epoch_synchronized()
 {
   // Check session is initialized
   if (NULL == session_memory.allocateditems) {
-    RMW_SET_ERROR_MSG("Uninitialized session.");
+    RMW_UROS_TRACE_MESSAGE("Uninitialized session.");
     return false;
   }
   rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
@@ -37,7 +38,7 @@ int64_t rmw_uros_epoch_millis()
 {
   // Check session is initialized
   if (NULL == session_memory.allocateditems) {
-    RMW_SET_ERROR_MSG("Uninitialized session.");
+    RMW_UROS_TRACE_MESSAGE("Uninitialized session.");
     return 0;
   }
 
@@ -52,7 +53,7 @@ int64_t rmw_uros_epoch_nanos()
 {
   // Check session is initialized
   if (NULL == session_memory.allocateditems) {
-    RMW_SET_ERROR_MSG("Uninitialized session.");
+    RMW_UROS_TRACE_MESSAGE("Uninitialized session.");
     return 0;
   }
 
@@ -70,7 +71,7 @@ rmw_ret_t rmw_uros_sync_session(
 
   // Check session is initialized
   if (NULL == session_memory.allocateditems) {
-    RMW_SET_ERROR_MSG("Uninitialized session.");
+    RMW_UROS_TRACE_MESSAGE("Uninitialized session.");
     return RMW_RET_ERROR;
   }
 
@@ -78,7 +79,7 @@ rmw_ret_t rmw_uros_sync_session(
   rmw_context_impl_t * context = (rmw_context_impl_t *)item->data;
 
   if (!uxr_sync_session(&context->session, timeout_ms)) {
-    RMW_SET_ERROR_MSG("Time synchronization failed.");
+    RMW_UROS_TRACE_MESSAGE("Time synchronization failed.")
     ret = RMW_RET_ERROR;
   }
   return ret;

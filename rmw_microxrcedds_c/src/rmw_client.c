@@ -35,20 +35,20 @@ rmw_create_client(
 {
   rmw_client_t * rmw_client = NULL;
   if (!node) {
-    RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_ENTITY_CREATION, "node handle is null", 0);
+    RMW_UROS_TRACE_MESSAGE("node handle is null")
   } else if (!type_support) {
-    RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_ENTITY_CREATION, "type support is null", 0);
+    RMW_UROS_TRACE_MESSAGE("type support is null")
   } else if (!is_uxrce_rmw_identifier_valid(node->implementation_identifier)) {
-    RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_ENTITY_CREATION, "node handle not from this implementation", 0);
+    RMW_UROS_TRACE_MESSAGE("node handle not from this implementation")
   } else if (!service_name || strlen(service_name) == 0) {
-    RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_ENTITY_CREATION, "service name is null or empty string", 0);
+    RMW_UROS_TRACE_MESSAGE("service name is null or empty string")
   } else if (!qos_policies) {
-    RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_ENTITY_CREATION, "qos_profile is null", 0);
+    RMW_UROS_TRACE_MESSAGE("qos_profile is null")
   } else {
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     rmw_uxrce_mempool_item_t * memory_node = get_memory(&client_memory);
     if (!memory_node) {
-      RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_ENTITY_CREATION, "Not available memory node", 0);
+      RMW_UROS_TRACE_MESSAGE("Not available memory node")
       return NULL;
     }
     rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)memory_node->data;
@@ -58,7 +58,7 @@ rmw_create_client(
     rmw_client->implementation_identifier = rmw_get_implementation_identifier();
     rmw_client->service_name = custom_client->service_name;
     if ((strlen(service_name) + 1 ) > sizeof(custom_client->service_name)) {
-      RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_ENTITY_CREATION, "failed to allocate string", 0);
+      RMW_UROS_TRACE_MESSAGE("failed to allocate string")
       goto fail;
     }
 
@@ -80,7 +80,7 @@ rmw_create_client(
     }
 #endif /* ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE */
     if (NULL == type_support_xrce) {
-      RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_ENTITY_CREATION, "Undefined type support", 0);
+      RMW_UROS_TRACE_MESSAGE("Undefined type support")
       goto fail;
     }
 
@@ -88,7 +88,7 @@ rmw_create_client(
       (const service_type_support_callbacks_t *)type_support_xrce->data;
 
     if (custom_client->type_support_callbacks == NULL) {
-      RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_ENTITY_CREATION, "type support data is NULL", 0);
+      RMW_UROS_TRACE_MESSAGE("type support data is NULL")
       goto fail;
     }
 
@@ -109,7 +109,7 @@ rmw_create_client(
         custom_client->type_support_callbacks, qos_policies, rmw_uxrce_entity_naming_buffer,
         sizeof(rmw_uxrce_entity_naming_buffer)))
     {
-      RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_ENTITY_CREATION, "failed to generate xml request for client creation", 0);
+      RMW_UROS_TRACE_MESSAGE("failed to generate xml request for client creation")
       goto fail;
     }
     client_req = uxr_buffer_create_requester_xml(
@@ -190,22 +190,22 @@ rmw_destroy_client(
 {
   rmw_ret_t result_ret = RMW_RET_OK;
   if (!node) {
-    RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_ENTITY_DESTRUCTION, "node handle is null", 0);
+    RMW_UROS_TRACE_MESSAGE("node handle is null")
     result_ret = RMW_RET_ERROR;
   } else if (!is_uxrce_rmw_identifier_valid(node->implementation_identifier)) {
-    RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_ENTITY_DESTRUCTION, "node handle not from this implementation", 0);
+    RMW_UROS_TRACE_MESSAGE("node handle not from this implementation")
     result_ret = RMW_RET_ERROR;
   } else if (!node->data) {
-    RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_ENTITY_DESTRUCTION, "node imp is null", 0);
+    RMW_UROS_TRACE_MESSAGE("node imp is null")
     result_ret = RMW_RET_ERROR;
   } else if (!client) {
-    RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_ENTITY_DESTRUCTION, "client handle is null", 0);
+    RMW_UROS_TRACE_MESSAGE("client handle is null")
     result_ret = RMW_RET_ERROR;
   } else if (!is_uxrce_rmw_identifier_valid(client->implementation_identifier)) {
-    RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_ENTITY_DESTRUCTION, "client handle not from this implementation", 0);
+    RMW_UROS_TRACE_MESSAGE("client handle not from this implementation")
     result_ret = RMW_RET_ERROR;
   } else if (!client->data) {
-    RMW_UROS_TRACE_ERROR(RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_ENTITY_DESTRUCTION, "client imp is null", 0);
+    RMW_UROS_TRACE_MESSAGE("client imp is null")
     result_ret = RMW_RET_ERROR;
   } else {
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
