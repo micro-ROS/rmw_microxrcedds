@@ -16,11 +16,11 @@
 #include <rmw/rmw.h>
 #include <rmw/allocators.h>
 #include <rmw/ret_types.h>
-#include <rmw/error_handling.h>
 
 #include <uxr/client/client.h>
 
 #include "../rmw_microros_internal/types.h"
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 #ifdef UCLIENT_PROFILE_DISCOVERY
 bool on_agent_found(
@@ -61,7 +61,7 @@ rmw_ret_t rmw_uros_discover_agent(
 {
 #ifdef UCLIENT_PROFILE_DISCOVERY
   if (NULL == rmw_options) {
-    RMW_SET_ERROR_MSG("Uninitialised rmw_init_options.");
+    RMW_UROS_TRACE_MESSAGE("Uninitialised rmw_init_options.")
     return RMW_RET_INVALID_ARGUMENT;
   }
 
@@ -75,7 +75,7 @@ rmw_ret_t rmw_uros_discover_agent(
 #else
   (void)rmw_options;
 
-  RMW_SET_ERROR_MSG("UCLIENT_PROFILE_DISCOVERY not set.");
+  RMW_UROS_TRACE_MESSAGE("UCLIENT_PROFILE_DISCOVERY not set.")
   return RMW_RET_INVALID_ARGUMENT;
 #endif /* ifdef UCLIENT_PROFILE_DISCOVERY */
 }

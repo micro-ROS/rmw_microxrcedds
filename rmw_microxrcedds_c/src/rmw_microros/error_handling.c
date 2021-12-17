@@ -12,20 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rmw_microxrcedds_c/config.h>
 #include <rmw/rmw.h>
-#include <rmw/allocators.h>
-#include <rmw/ret_types.h>
+#include "./rmw_microros_internal/error_handling_internal.h"
 
-#include "../rmw_microros_internal/types.h"
+rmw_uros_error_handling error_callback = NULL;
 
-void rmw_uros_set_continous_serialization_callbacks(
-  rmw_publisher_t * publisher,
-  rmw_uros_continous_serialization_size size_cb,
-  rmw_uros_continous_serialization serialization_cb)
+void rmw_uros_set_error_handling_callback(
+  rmw_uros_error_handling error_cb)
 {
-  rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
-
-  custom_publisher->cs_cb_size = size_cb;
-  custom_publisher->cs_cb_serialization = serialization_cb;
+  error_callback = error_cb;
 }

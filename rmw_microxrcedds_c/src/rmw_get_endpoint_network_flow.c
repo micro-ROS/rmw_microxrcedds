@@ -14,8 +14,9 @@
 
 #include <rmw/rmw.h>
 #include <rmw/types.h>
-#include <rmw/error_handling.h>
 #include <rmw/get_network_flow_endpoints.h>
+
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_ret_t
 rmw_publisher_get_network_flow_endpoints(
@@ -27,7 +28,7 @@ rmw_publisher_get_network_flow_endpoints(
   (void) allocator;
   (void) network_flow_endpoint_array;
 
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -41,6 +42,6 @@ rmw_subscription_get_network_flow_endpoints(
   (void) allocator;
   (void) network_flow_endpoint_array;
 
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }

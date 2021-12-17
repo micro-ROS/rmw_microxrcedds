@@ -14,10 +14,8 @@
 
 #include <rmw_microros_internal/utils.h>
 
-#include <rmw/error_handling.h>
-
 #include "./rmw_microros_internal/types.h"
-
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 // TODO(pablogs9) Refactor all this file.
 
@@ -42,7 +40,7 @@ bool run_xrce_session(
         &context->session,
         timeout, &request, &status, 1))
     {
-      RMW_SET_ERROR_MSG("Issues running micro XRCE-DDS session");
+      RMW_UROS_TRACE_MESSAGE("Issues running micro XRCE-DDS session")
       return false;
     }
   }
