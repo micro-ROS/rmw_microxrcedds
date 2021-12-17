@@ -13,10 +13,11 @@
 // limitations under the License.
 
 #include <rmw/rmw.h>
-#include <rmw/error_handling.h>
 #include <uxr/client/profile/multithread/multithread.h>
+#include <rmw_microxrcedds_c/rmw_c_macros.h>
 
 #include "./rmw_microros_internal/utils.h"
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_ret_t
 rmw_send_response(
@@ -24,10 +25,9 @@ rmw_send_response(
   rmw_request_id_t * request_header,
   void * ros_response)
 {
-  if (!is_uxrce_rmw_identifier_valid(service->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("Wrong implementation");
-    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
-  }
+  RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
+    service->implementation_identifier,
+    RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
 
   rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
   rmw_uxrce_node_t * custom_node = custom_service->owner_node;
@@ -58,7 +58,7 @@ rmw_send_response(
     response_length);
 
   if (UXR_INVALID_REQUEST_ID == rc) {
-    RMW_SET_ERROR_MSG("Micro XRCE-DDS service response error.");
+    RMW_UROS_TRACE_MESSAGE("Micro XRCE-DDS service response error.")
     return RMW_RET_ERROR;
   }
 
@@ -84,13 +84,12 @@ rmw_take_response(
   void * ros_response,
   bool * taken)
 {
+  RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
+    client->implementation_identifier,
+    RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+
   if (taken != NULL) {
     *taken = false;
-  }
-
-  if (!is_uxrce_rmw_identifier_valid(client->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("Wrong implementation");
-    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
   }
 
   rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
@@ -136,7 +135,7 @@ rmw_take_response(
   }
 
   if (!deserialize_rv) {
-    RMW_SET_ERROR_MSG("Typesupport desserialize error.");
+    RMW_UROS_TRACE_MESSAGE("Typesupport desserialize error.")
     return RMW_RET_ERROR;
   }
 

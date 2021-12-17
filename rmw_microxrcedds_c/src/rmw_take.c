@@ -13,9 +13,10 @@
 // limitations under the License.
 
 #include <rmw/rmw.h>
-#include <rmw/error_handling.h>
+#include <rmw_microxrcedds_c/rmw_c_macros.h>
 
 #include "./rmw_microros_internal/utils.h"
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_ret_t
 rmw_take(
@@ -38,13 +39,12 @@ rmw_take_with_info(
   (void)message_info;
   (void)allocation;
 
+  RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
+    subscription->implementation_identifier,
+    RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+
   if (taken != NULL) {
     *taken = false;
-  }
-
-  if (!is_uxrce_rmw_identifier_valid(subscription->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("Wrong implementation");
-    return RMW_RET_ERROR;
   }
 
   rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
@@ -83,7 +83,7 @@ rmw_take_with_info(
   }
 
   if (!deserialize_rv) {
-    RMW_SET_ERROR_MSG("Typesupport desserialize error.");
+    RMW_UROS_TRACE_MESSAGE("Typesupport desserialize error.")
     return RMW_RET_ERROR;
   }
 
@@ -99,15 +99,14 @@ rmw_take_sequence(
   size_t * taken,
   rmw_subscription_allocation_t * allocation)
 {
+  RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
+    subscription->implementation_identifier,
+    RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+
   bool taken_flag;
   rmw_ret_t ret = RMW_RET_OK;
 
   *taken = 0;
-
-  if (!is_uxrce_rmw_identifier_valid(subscription->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("Wrong implementation");
-    return RMW_RET_ERROR;
-  }
 
   for (size_t i = 0; i < count; i++) {
     taken_flag = false;
@@ -144,7 +143,7 @@ rmw_take_serialized_message(
   (void)serialized_message;
   (void)taken;
   (void)allocation;
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -161,7 +160,7 @@ rmw_take_serialized_message_with_info(
   (void)taken;
   (void)message_info;
   (void)allocation;
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -177,7 +176,7 @@ rmw_take_loaned_message(
   (void)taken;
   (void)allocation;
 
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -195,7 +194,7 @@ rmw_take_loaned_message_with_info(
   (void)message_info;
   (void)allocation;
 
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -207,7 +206,7 @@ rmw_return_loaned_message_from_subscription(
   (void)subscription;
   (void)loaned_message;
 
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -220,6 +219,6 @@ rmw_take_event(
   (void)event_handle;
   (void)event_info;
   (void)taken;
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }

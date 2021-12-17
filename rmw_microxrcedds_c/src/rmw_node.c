@@ -15,13 +15,14 @@
 #include <rmw_microros_internal/rmw_node.h>
 
 #include <rmw_microxrcedds_c/config.h>
+#include <rmw_microxrcedds_c/rmw_c_macros.h>
 #include <rmw/allocators.h>
-#include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 
 #include "./rmw_microros_internal/types.h"
 #include "./rmw_microros_internal/utils.h"
 #include "./rmw_microros_internal/identifiers.h"
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_node_t * create_node(
   const char * name,
@@ -32,13 +33,13 @@ rmw_node_t * create_node(
   rmw_node_t * node_handle = NULL;
 
   if (!context) {
-    RMW_SET_ERROR_MSG("context is null");
+    RMW_UROS_TRACE_MESSAGE("context is null");
     return NULL;
   }
 
   rmw_uxrce_mempool_item_t * memory_node = get_memory(&node_memory);
   if (!memory_node) {
-    RMW_SET_ERROR_MSG("Not available memory node");
+    RMW_UROS_TRACE_MESSAGE("Not available memory node")
     return NULL;
   }
 
@@ -53,7 +54,7 @@ rmw_node_t * create_node(
   node_handle->name = custom_node->node_name;
 
   if ((strlen(name) + 1 ) > sizeof(custom_node->node_name)) {
-    RMW_SET_ERROR_MSG("failed to allocate string");
+    RMW_UROS_TRACE_MESSAGE("failed to allocate string")
     goto fail;
   }
 
@@ -62,7 +63,7 @@ rmw_node_t * create_node(
   node_handle->namespace_ = custom_node->node_namespace;
 
   if ((strlen(namespace_) + 1 ) > sizeof(custom_node->node_namespace)) {
-    RMW_SET_ERROR_MSG("failed to allocate string");
+    RMW_UROS_TRACE_MESSAGE("failed to allocate string")
     goto fail;
   }
 
@@ -77,7 +78,7 @@ rmw_node_t * create_node(
       rmw_uxrce_entity_naming_buffer,
       sizeof(rmw_uxrce_entity_naming_buffer)))
   {
-    RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
+    RMW_UROS_TRACE_MESSAGE("failed to generate xml request for node creation")
     return NULL;
   }
   participant_req = uxr_buffer_create_participant_ref(
@@ -133,9 +134,9 @@ rmw_create_node(
   (void)localhost_only;
   rmw_node_t * rmw_node = NULL;
   if (!name || strlen(name) == 0) {
-    RMW_SET_ERROR_MSG("name is null");
+    RMW_UROS_TRACE_MESSAGE("name is null");
   } else if (!namespace_ || strlen(namespace_) == 0) {
-    RMW_SET_ERROR_MSG("namespace is null");
+    RMW_UROS_TRACE_MESSAGE("namespace is null");
   } else {
     if (domain_id == 0 && context->options.domain_id != 0) {
       domain_id = context->options.domain_id;
@@ -150,17 +151,14 @@ rmw_ret_t rmw_destroy_node(
 {
   rmw_ret_t ret = RMW_RET_OK;
   if (!node) {
-    RMW_SET_ERROR_MSG("node handle is null");
+    RMW_UROS_TRACE_MESSAGE("node handle is null")
     return RMW_RET_ERROR;
   }
 
-  if (!is_uxrce_rmw_identifier_valid(node->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("node handle not from this implementation");
-    return RMW_RET_ERROR;
-  }
+  RMW_CHECK_TYPE_IDENTIFIERS_MATCH(node->implementation_identifier, RMW_RET_ERROR);
 
   if (!node->data) {
-    RMW_SET_ERROR_MSG("node impl is null");
+    RMW_UROS_TRACE_MESSAGE("node impl is null")
     return RMW_RET_ERROR;
   }
 
@@ -227,7 +225,7 @@ rmw_node_assert_liveliness(
   const rmw_node_t * node)
 {
   (void)node;
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 

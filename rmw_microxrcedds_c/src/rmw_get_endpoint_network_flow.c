@@ -1,4 +1,4 @@
-// Copyright 2019 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2021 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,43 +13,35 @@
 // limitations under the License.
 
 #include <rmw/rmw.h>
+#include <rmw/types.h>
+#include <rmw/get_network_flow_endpoints.h>
+
 #include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_ret_t
-rmw_serialize(
-  const void * ros_message,
-  const rosidl_message_type_support_t * type_support,
-  rmw_serialized_message_t * serialized_message)
+rmw_publisher_get_network_flow_endpoints(
+  const rmw_publisher_t * publisher,
+  rcutils_allocator_t * allocator,
+  rmw_network_flow_endpoint_array_t * network_flow_endpoint_array)
 {
-  (void)ros_message;
-  (void)type_support;
-  (void)serialized_message;
+  (void) publisher;
+  (void) allocator;
+  (void) network_flow_endpoint_array;
+
   RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 
 rmw_ret_t
-rmw_deserialize(
-  const rmw_serialized_message_t * serialized_message,
-  const rosidl_message_type_support_t * type_support,
-  void * ros_message)
+rmw_subscription_get_network_flow_endpoints(
+  const rmw_subscription_t * subscription,
+  rcutils_allocator_t * allocator,
+  rmw_network_flow_endpoint_array_t * network_flow_endpoint_array)
 {
-  (void)serialized_message;
-  (void)type_support;
-  (void)ros_message;
-  RMW_UROS_TRACE_MESSAGE("function not implemented")
-  return RMW_RET_UNSUPPORTED;
-}
+  (void) subscription;
+  (void) allocator;
+  (void) network_flow_endpoint_array;
 
-rmw_ret_t
-rmw_get_serialized_message_size(
-  const rosidl_message_type_support_t * type_support,
-  const rosidl_runtime_c__Sequence__bound * message_bounds,
-  size_t * size)
-{
-  (void)type_support;
-  (void)message_bounds;
-  (void)size;
   RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }

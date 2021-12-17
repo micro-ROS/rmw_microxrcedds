@@ -15,6 +15,9 @@
 #include <rmw/rmw.h>
 #include <rmw/error_handling.h>
 
+#include <rmw_microxrcedds_c/rmw_c_macros.h>
+#include "./rmw_microros_internal/error_handling_internal.h"
+
 rmw_ret_t
 rmw_compare_gids_equal(
   const rmw_gid_t * gid1,
@@ -24,13 +27,12 @@ rmw_compare_gids_equal(
   // Check
   RMW_CHECK_ARGUMENT_FOR_NULL(gid1, RMW_RET_INVALID_ARGUMENT);
   RMW_CHECK_ARGUMENT_FOR_NULL(gid2, RMW_RET_INVALID_ARGUMENT);
-  if (gid1->implementation_identifier != rmw_get_implementation_identifier()) {
-    RMW_SET_ERROR_MSG("publisher handle not from this implementation");
-    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
-  } else if (gid2->implementation_identifier != rmw_get_implementation_identifier()) {
-    RMW_SET_ERROR_MSG("publisher handle not from this implementation");
-    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION;
-  }
+  RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
+    gid1->implementation_identifier,
+    RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+  RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
+    gid2->implementation_identifier,
+    RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
 
   *result = memcmp(gid1->data, gid2->data, sizeof(rmw_gid_t)) == 0;
 

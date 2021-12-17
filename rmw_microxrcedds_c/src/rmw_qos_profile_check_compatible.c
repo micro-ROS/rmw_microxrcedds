@@ -12,20 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rmw_microxrcedds_c/config.h>
 #include <rmw/rmw.h>
-#include <rmw/allocators.h>
-#include <rmw/ret_types.h>
+#include <rmw/types.h>
+#include <rmw/qos_profiles.h>
+#include "./rmw_microros_internal/error_handling_internal.h"
 
-#include "../rmw_microros_internal/types.h"
-
-void rmw_uros_set_continous_serialization_callbacks(
-  rmw_publisher_t * publisher,
-  rmw_uros_continous_serialization_size size_cb,
-  rmw_uros_continous_serialization serialization_cb)
+rmw_ret_t
+rmw_qos_profile_check_compatible(
+  const rmw_qos_profile_t publisher_profile,
+  const rmw_qos_profile_t subscription_profile,
+  rmw_qos_compatibility_type_t * compatibility,
+  char * reason,
+  size_t reason_size)
 {
-  rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
+  (void) publisher_profile;
+  (void) subscription_profile;
+  (void) compatibility;
+  (void) reason;
+  (void) reason_size;
 
-  custom_publisher->cs_cb_size = size_cb;
-  custom_publisher->cs_cb_serialization = serialization_cb;
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
+  return RMW_RET_UNSUPPORTED;
 }
