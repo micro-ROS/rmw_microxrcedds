@@ -16,12 +16,7 @@
 #include <math.h>
 
 #include <rmw/rmw.h>
-<<<<<<< HEAD
-#include <rcutils/time.h>
-#include <rmw/error_handling.h>
-=======
 #include <rmw/time.h>
->>>>>>> 266248d (Runtime error handling API (#212))
 
 #include "./rmw_microros_internal/utils.h"
 
