@@ -67,8 +67,8 @@ typedef struct
 } rmw_uros_error_context_t;
 
 typedef void (* rmw_uros_error_handling)(
-  const rmw_uros_error_source_t source,
   const rmw_uros_error_entity_type_t entity,
+  const rmw_uros_error_source_t source,
   const rmw_uros_error_context_t context,
   const char * file,
   const int line);
