@@ -13,13 +13,13 @@
 // limitations under the License.
 
 #include <rmw/rmw.h>
-#include <rmw/error_handling.h>
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_ret_t
 rmw_set_log_severity(
   rmw_log_severity_t severity)
 {
   (void)severity;
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }

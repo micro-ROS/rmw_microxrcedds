@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include <rmw/rmw.h>
-#include <rmw/error_handling.h>
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_ret_t
 rmw_serialize(
@@ -24,7 +24,7 @@ rmw_serialize(
   (void)ros_message;
   (void)type_support;
   (void)serialized_message;
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -37,7 +37,7 @@ rmw_deserialize(
   (void)serialized_message;
   (void)type_support;
   (void)ros_message;
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -50,6 +50,6 @@ rmw_get_serialized_message_size(
   (void)type_support;
   (void)message_bounds;
   (void)size;
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }

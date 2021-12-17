@@ -17,7 +17,6 @@
 #include <rmw/rmw.h>
 #include <rmw/allocators.h>
 #include <rmw/ret_types.h>
-#include <rmw/error_handling.h>
 
 #include <uxr/client/client.h>
 #include <uxr/client/util/ping.h>

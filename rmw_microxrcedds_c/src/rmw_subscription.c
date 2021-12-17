@@ -26,12 +26,12 @@
 #endif /* ifdef HAVE_CPP_TYPESUPPORT */
 
 #include <rmw/rmw.h>
-#include <rmw/error_handling.h>
 #include <rmw/types.h>
 #include <rmw/allocators.h>
 
 #include "./rmw_microros_internal/utils.h"
 #include "./rmw_microros_internal/rmw_microxrcedds_topic.h"
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_ret_t
 rmw_init_subscription_allocation(
@@ -42,7 +42,7 @@ rmw_init_subscription_allocation(
   (void)type_support;
   (void)message_bounds;
   (void)allocation;
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -51,7 +51,7 @@ rmw_fini_subscription_allocation(
   rmw_subscription_allocation_t * allocation)
 {
   (void)allocation;
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -67,22 +67,22 @@ rmw_create_subscription(
 
   rmw_subscription_t * rmw_subscription = NULL;
   if (!node) {
-    RMW_SET_ERROR_MSG("node handle is null");
+    RMW_UROS_TRACE_MESSAGE("node handle is null")
   } else if (!type_support) {
-    RMW_SET_ERROR_MSG("type support is null");
+    RMW_UROS_TRACE_MESSAGE("type support is null")
   } else if (!is_uxrce_rmw_identifier_valid(node->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("node handle not from this implementation");
+    RMW_UROS_TRACE_MESSAGE("node handle not from this implementation")
   } else if (!topic_name || strlen(topic_name) == 0) {
-    RMW_SET_ERROR_MSG("subscription topic is null or empty string");
+    RMW_UROS_TRACE_MESSAGE("subscription topic is null or empty string")
     return NULL;
   } else if (!qos_policies) {
-    RMW_SET_ERROR_MSG("qos_profile is null");
+    RMW_UROS_TRACE_MESSAGE("qos_profile is null")
     return NULL;
   } else {
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     rmw_uxrce_mempool_item_t * memory_node = get_memory(&subscription_memory);
     if (!memory_node) {
-      RMW_SET_ERROR_MSG("Not available memory node");
+      RMW_UROS_TRACE_MESSAGE("Not available memory node")
       return NULL;
     }
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)memory_node->data;
@@ -92,7 +92,7 @@ rmw_create_subscription(
     rmw_subscription->implementation_identifier = rmw_get_implementation_identifier();
     rmw_subscription->topic_name = custom_subscription->topic_name;
     if ((strlen(topic_name) + 1 ) > sizeof(custom_subscription->topic_name)) {
-      RMW_SET_ERROR_MSG("failed to allocate string");
+      RMW_UROS_TRACE_MESSAGE("failed to allocate string")
       goto fail;
     }
 
@@ -115,7 +115,7 @@ rmw_create_subscription(
     }
 #endif /* ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE */
     if (NULL == type_support_xrce) {
-      RMW_SET_ERROR_MSG("Undefined type support");
+      RMW_UROS_TRACE_MESSAGE("Undefined type support")
       goto fail;
     }
 
@@ -123,7 +123,7 @@ rmw_create_subscription(
       (const message_type_support_callbacks_t *)type_support_xrce->data;
 
     if (custom_subscription->type_support_callbacks == NULL) {
-      RMW_SET_ERROR_MSG("type support data is NULL");
+      RMW_UROS_TRACE_MESSAGE("type support data is NULL")
       goto fail;
     }
 
@@ -174,7 +174,7 @@ rmw_create_subscription(
         topic_name, rmw_uxrce_entity_naming_buffer,
         sizeof(rmw_uxrce_entity_naming_buffer)))
     {
-      RMW_SET_ERROR_MSG("failed to generate xml request for node creation");
+      RMW_UROS_TRACE_MESSAGE("failed to generate xml request for node creation")
       goto fail;
     }
 
@@ -197,7 +197,7 @@ rmw_create_subscription(
         custom_node->context, custom_node->context->creation_stream, datareader_req,
         custom_node->context->creation_timeout))
     {
-      RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
+      RMW_UROS_TRACE_MESSAGE("Issues creating Micro XRCE-DDS entities")
       put_memory(&subscription_memory, &custom_subscription->mem);
       goto fail;
     }
@@ -265,7 +265,7 @@ sub_count_pub_fail:
 #else
   (void)subscription;
   (void)publisher_count;
-  RMW_SET_ERROR_MSG(
+  RMW_UROS_TRACE_MESSAGE(
     "Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
@@ -291,22 +291,22 @@ rmw_destroy_subscription(
 {
   rmw_ret_t result_ret = RMW_RET_OK;
   if (!node) {
-    RMW_SET_ERROR_MSG("node handle is null");
+    RMW_UROS_TRACE_MESSAGE("node handle is null")
     result_ret = RMW_RET_ERROR;
   } else if (!is_uxrce_rmw_identifier_valid(node->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("node handle not from this implementation");
+    RMW_UROS_TRACE_MESSAGE("node handle not from this implementation")
     result_ret = RMW_RET_ERROR;
   } else if (!node->data) {
-    RMW_SET_ERROR_MSG("node imp is null");
+    RMW_UROS_TRACE_MESSAGE("node imp is null")
     result_ret = RMW_RET_ERROR;
   } else if (!subscription) {
-    RMW_SET_ERROR_MSG("subscription handle is null");
+    RMW_UROS_TRACE_MESSAGE("subscription handle is null")
     result_ret = RMW_RET_ERROR;
   } else if (!is_uxrce_rmw_identifier_valid(subscription->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("subscription handle not from this implementation");
+    RMW_UROS_TRACE_MESSAGE("subscription handle not from this implementation")
     result_ret = RMW_RET_ERROR;
   } else if (!subscription->data) {
-    RMW_SET_ERROR_MSG("subscription imp is null");
+    RMW_UROS_TRACE_MESSAGE("subscription imp is null")
     result_ret = RMW_RET_ERROR;
   } else {
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;

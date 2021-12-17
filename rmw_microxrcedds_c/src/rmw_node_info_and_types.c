@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #include <rmw/rmw.h>
-#include <rmw/error_handling.h>
 #include <rmw/names_and_types.h>
 
 #include <rmw_microxrcedds_c/config.h>
@@ -21,6 +20,7 @@
 
 #include "./rmw_microros_internal/types.h"
 #include "./rmw_microros_internal/identifiers.h"
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 #ifdef RMW_UXRCE_GRAPH
 #include "./rmw_microros_internal/rmw_graph.h"
@@ -41,8 +41,8 @@ __rmw_get_entity_names_and_types_by_node(
 
   RMW_CHECK_ARGUMENT_FOR_NULL(node, RMW_RET_INVALID_ARGUMENT);
   RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
-    node, node->implementation_identifier,
-    eprosima_microxrcedds_identifier, return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+    node->implementation_identifier,
+    RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
   RCUTILS_CHECK_ALLOCATOR_WITH_MSG(
     allocator, "Allocator argument is invalid",
     return RMW_RET_INVALID_ARGUMENT);
@@ -176,7 +176,7 @@ rmw_get_publisher_names_and_types_by_node(
   (void)node_namespace;
   (void)demangle;
   (void)topic_names_and_types;
-  RMW_SET_ERROR_MSG(
+  RMW_UROS_TRACE_MESSAGE(
     "Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
@@ -207,7 +207,7 @@ rmw_get_subscriber_names_and_types_by_node(
   (void)node_namespace;
   (void)demangle;
   (void)topic_names_and_types;
-  RMW_SET_ERROR_MSG(
+  RMW_UROS_TRACE_MESSAGE(
     "Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
@@ -236,7 +236,7 @@ rmw_get_service_names_and_types_by_node(
   (void)node_name;
   (void)node_namespace;
   (void)service_names_and_types;
-  RMW_SET_ERROR_MSG(
+  RMW_UROS_TRACE_MESSAGE(
     "Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
@@ -265,7 +265,7 @@ rmw_get_client_names_and_types_by_node(
   (void)node_name;
   (void)node_namespace;
   (void)service_names_and_types;
-  RMW_SET_ERROR_MSG(
+  RMW_UROS_TRACE_MESSAGE(
     "Function not available: enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
