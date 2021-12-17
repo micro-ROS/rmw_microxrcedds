@@ -37,6 +37,7 @@ extern rmw_uros_error_handling error_callback;
     rmw_uros_error_context_t ctx = {__VA_ARGS__}; \
     ctx.description = desc; \
     error_callback(entity, source, ctx, __FILE__, __LINE__); \
+    rmw_reset_error(); \
   }
 
 #define RMW_UROS_TRACE_MESSAGE(desc) RMW_UROS_TRACE_ERROR( \
