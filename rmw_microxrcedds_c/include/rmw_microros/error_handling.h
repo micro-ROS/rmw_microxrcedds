@@ -55,7 +55,7 @@ typedef enum
 typedef struct
 {
   const char * node;
-  const char * namespace;
+  const char * node_namespace;
   const char * topic_name;
   const ucdrBuffer * ucdr;
   const size_t size;

@@ -79,7 +79,7 @@ void on_topic(
           RMW_UROS_ERROR_ON_SUBSCRIPTION, RMW_UROS_ERROR_MIDDLEWARE_ALLOCATION,
           "Not available static buffer memory node in on_topic callback",
           .node = custom_subscription->owner_node->node_name,
-          .namespace = custom_subscription->owner_node->node_namespace,
+          .node_namespace = custom_subscription->owner_node->node_namespace,
           .topic_name = custom_subscription->topic_name, .ucdr = ub,
           .size = length,
           .type_support.message_callbacks = custom_subscription->type_support_callbacks);
@@ -138,7 +138,7 @@ void on_request(
           RMW_UROS_ERROR_ON_SERVICE, RMW_UROS_ERROR_MIDDLEWARE_ALLOCATION,
           "Not available static buffer memory node in on_request callback",
           .node = custom_service->owner_node->node_name,
-          .namespace = custom_service->owner_node->node_namespace,
+          .node_namespace = custom_service->owner_node->node_namespace,
           .topic_name = custom_service->service_name, .ucdr = ub,
           .size = length,
           .type_support.service_callbacks = custom_service->type_support_callbacks);
@@ -199,7 +199,7 @@ void on_reply(
           RMW_UROS_ERROR_ON_CLIENT, RMW_UROS_ERROR_MIDDLEWARE_ALLOCATION,
           "Not available static buffer memory node in on_reply callback",
           .node = custom_client->owner_node->node_name,
-          .namespace = custom_client->owner_node->node_namespace,
+          .node_namespace = custom_client->owner_node->node_namespace,
           .topic_name = custom_client->service_name, .ucdr = ub,
           .size = length,
           .type_support.service_callbacks = custom_client->type_support_callbacks);
