@@ -13,10 +13,10 @@
 // limitations under the License.
 
 #include <rmw/rmw.h>
-#include <rmw/error_handling.h>
 #include <rmw/allocators.h>
 
 #include "./rmw_microros_internal/utils.h"
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_wait_set_t *
 rmw_create_wait_set(
@@ -28,7 +28,7 @@ rmw_create_wait_set(
 
   rmw_uxrce_mempool_item_t * memory_node = get_memory(&wait_set_memory);
   if (!memory_node) {
-    RMW_SET_ERROR_MSG("Not available memory node");
+    RMW_UROS_TRACE_MESSAGE("Not available memory node")
     return NULL;
   }
   rmw_uxrce_wait_set_t * aux_wait_set = (rmw_uxrce_wait_set_t *)memory_node->data;

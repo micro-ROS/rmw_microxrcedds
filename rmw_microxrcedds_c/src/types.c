@@ -22,9 +22,8 @@
 #endif /* ifdef HAVE_CPP_TYPESUPPORT */
 
 #include <rmw/allocators.h>
-#include <rmw/error_handling.h>
-
 #include <uxr/client/profile/multithread/multithread.h>
+#include <rmw_microxrcedds_c/rmw_c_macros.h>
 
 #include "./rmw_microros_internal/utils.h"
 #include "./rmw_microros_internal/memory.h"
@@ -120,10 +119,8 @@ void rmw_uxrce_fini_session_memory(
 void rmw_uxrce_fini_node_memory(
   rmw_node_t * node)
 {
-  if (!is_uxrce_rmw_identifier_valid(node->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("node handle not from this implementation");
-    return;
-  }
+  RMW_CHECK_TYPE_IDENTIFIERS_MATCH(node->implementation_identifier, );
+
   if (node->implementation_identifier) {
     node->implementation_identifier = NULL;
   }
@@ -142,10 +139,8 @@ void rmw_uxrce_fini_node_memory(
 void rmw_uxrce_fini_publisher_memory(
   rmw_publisher_t * publisher)
 {
-  if (!is_uxrce_rmw_identifier_valid(publisher->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("node handle not from this implementation");
-    return;
-  }
+  RMW_CHECK_TYPE_IDENTIFIERS_MATCH(publisher->implementation_identifier, );
+
   if (publisher->implementation_identifier) {
     publisher->implementation_identifier = NULL;
   }
@@ -162,10 +157,8 @@ void rmw_uxrce_fini_publisher_memory(
 void rmw_uxrce_fini_subscription_memory(
   rmw_subscription_t * subscriber)
 {
-  if (!is_uxrce_rmw_identifier_valid(subscriber->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("node handle not from this implementation");
-    return;
-  }
+  RMW_CHECK_TYPE_IDENTIFIERS_MATCH(subscriber->implementation_identifier, );
+
   if (subscriber->implementation_identifier) {
     subscriber->implementation_identifier = NULL;
   }
@@ -182,10 +175,8 @@ void rmw_uxrce_fini_subscription_memory(
 void rmw_uxrce_fini_service_memory(
   rmw_service_t * service)
 {
-  if (!is_uxrce_rmw_identifier_valid(service->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("node handle not from this implementation");
-    return;
-  }
+  RMW_CHECK_TYPE_IDENTIFIERS_MATCH(service->implementation_identifier, );
+
   if (service->implementation_identifier) {
     service->implementation_identifier = NULL;
   }
@@ -202,10 +193,8 @@ void rmw_uxrce_fini_service_memory(
 void rmw_uxrce_fini_client_memory(
   rmw_client_t * client)
 {
-  if (!is_uxrce_rmw_identifier_valid(client->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("node handle not from this implementation");
-    return;
-  }
+  RMW_CHECK_TYPE_IDENTIFIERS_MATCH(client->implementation_identifier, );
+
   if (client->implementation_identifier) {
     client->implementation_identifier = NULL;
   }

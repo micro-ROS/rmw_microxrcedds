@@ -23,7 +23,8 @@
 
 #include <rmw/rmw.h>
 #include <rmw/allocators.h>
-#include <rmw/error_handling.h>
+
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_service_t *
 rmw_create_service(
@@ -34,20 +35,20 @@ rmw_create_service(
 {
   rmw_service_t * rmw_service = NULL;
   if (!node) {
-    RMW_SET_ERROR_MSG("node handle is null");
+    RMW_UROS_TRACE_MESSAGE("node handle is null")
   } else if (!type_support) {
-    RMW_SET_ERROR_MSG("type support is null");
+    RMW_UROS_TRACE_MESSAGE("type support is null")
   } else if (!is_uxrce_rmw_identifier_valid(node->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("node handle not from this implementation");
+    RMW_UROS_TRACE_MESSAGE("node handle not from this implementation")
   } else if (!service_name || strlen(service_name) == 0) {
-    RMW_SET_ERROR_MSG("service name is null or empty string");
+    RMW_UROS_TRACE_MESSAGE("service name is null or empty string")
   } else if (!qos_policies) {
-    RMW_SET_ERROR_MSG("qos_profile is null");
+    RMW_UROS_TRACE_MESSAGE("qos_profile is null")
   } else {
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     rmw_uxrce_mempool_item_t * memory_node = get_memory(&service_memory);
     if (!memory_node) {
-      RMW_SET_ERROR_MSG("Not available memory node");
+      RMW_UROS_TRACE_MESSAGE("Not available memory node")
       return NULL;
     }
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)memory_node->data;
@@ -57,7 +58,7 @@ rmw_create_service(
     rmw_service->implementation_identifier = rmw_get_implementation_identifier();
     rmw_service->service_name = custom_service->service_name;
     if ((strlen(service_name) + 1 ) > sizeof(custom_service->service_name)) {
-      RMW_SET_ERROR_MSG("failed to allocate string");
+      RMW_UROS_TRACE_MESSAGE("failed to allocate string")
       goto fail;
     }
 
@@ -79,7 +80,7 @@ rmw_create_service(
     }
 #endif /* ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE */
     if (NULL == type_support_xrce) {
-      RMW_SET_ERROR_MSG("Undefined type support");
+      RMW_UROS_TRACE_MESSAGE("Undefined type support")
       goto fail;
     }
 
@@ -87,7 +88,7 @@ rmw_create_service(
       (const service_type_support_callbacks_t *)type_support_xrce->data;
 
     if (custom_service->type_support_callbacks == NULL) {
-      RMW_SET_ERROR_MSG("type support data is NULL");
+      RMW_UROS_TRACE_MESSAGE("type support data is NULL")
       goto fail;
     }
 
@@ -107,7 +108,7 @@ rmw_create_service(
         custom_service->type_support_callbacks, qos_policies, rmw_uxrce_entity_naming_buffer,
         sizeof(rmw_uxrce_entity_naming_buffer)))
     {
-      RMW_SET_ERROR_MSG("failed to generate xml request for service creation");
+      RMW_UROS_TRACE_MESSAGE("failed to generate xml request for service creation")
       goto fail;
     }
     service_req = uxr_buffer_create_replier_xml(
@@ -147,7 +148,7 @@ rmw_create_service(
         custom_node->context, custom_node->context->creation_stream, service_req,
         custom_node->context->creation_timeout))
     {
-      RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS entities");
+      RMW_UROS_TRACE_MESSAGE("Issues creating Micro XRCE-DDS entities")
       put_memory(&service_memory, &custom_service->mem);
       goto fail;
     }
@@ -188,22 +189,22 @@ rmw_destroy_service(
 {
   rmw_ret_t result_ret = RMW_RET_OK;
   if (!node) {
-    RMW_SET_ERROR_MSG("node handle is null");
+    RMW_UROS_TRACE_MESSAGE("node handle is null")
     result_ret = RMW_RET_ERROR;
   } else if (!is_uxrce_rmw_identifier_valid(node->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("node handle not from this implementation");
+    RMW_UROS_TRACE_MESSAGE("node handle not from this implementation")
     result_ret = RMW_RET_ERROR;
   } else if (!node->data) {
-    RMW_SET_ERROR_MSG("node imp is null");
+    RMW_UROS_TRACE_MESSAGE("node imp is null")
     result_ret = RMW_RET_ERROR;
   } else if (!service) {
-    RMW_SET_ERROR_MSG("service handle is null");
+    RMW_UROS_TRACE_MESSAGE("service handle is null")
     result_ret = RMW_RET_ERROR;
   } else if (!is_uxrce_rmw_identifier_valid(service->implementation_identifier)) {
-    RMW_SET_ERROR_MSG("service handle not from this implementation");
+    RMW_UROS_TRACE_MESSAGE("service handle not from this implementation")
     result_ret = RMW_RET_ERROR;
   } else if (!service->data) {
-    RMW_SET_ERROR_MSG("service imp is null");
+    RMW_UROS_TRACE_MESSAGE("service imp is null")
     result_ret = RMW_RET_ERROR;
   } else {
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;

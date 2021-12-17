@@ -24,8 +24,6 @@
 #include <rmw/validate_namespace.h>
 #include <rmw/validate_node_name.h>
 
-#include <rmw/error_handling.h>
-
 #include <string>
 
 typedef struct

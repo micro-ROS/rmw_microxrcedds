@@ -18,7 +18,6 @@
 #include <rmw_microros/rmw_microros.h>
 #include <rmw_microxrcedds_c/config.h>
 #include <rmw/rmw.h>
-#include <rmw/error_handling.h>
 #include <rmw/allocators.h>
 #include <uxr/client/util/time.h>
 
@@ -28,7 +27,7 @@
 #include "./rmw_microros_internal/rmw_node.h"
 #include "./rmw_microros_internal/identifiers.h"
 #include "./rmw_microros_internal/rmw_uxrce_transports.h"
-
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 #ifdef RMW_UXRCE_GRAPH
 #include "./rmw_microros_internal/rmw_graph.h"
@@ -45,7 +44,7 @@ rmw_init_options_init(
   RCUTILS_CHECK_ALLOCATOR(&allocator, return RMW_RET_INVALID_ARGUMENT);
 
   if (NULL != init_options->implementation_identifier) {
-    RMW_SET_ERROR_MSG("expected zero-initialized init_options");
+    RMW_UROS_TRACE_MESSAGE("expected zero-initialized init_options")
 
     return RMW_RET_INVALID_ARGUMENT;
   }
@@ -62,7 +61,7 @@ rmw_init_options_init(
 
   rmw_uxrce_mempool_item_t * memory_node = get_memory(&init_options_memory);
   if (!memory_node) {
-    RMW_SET_ERROR_MSG("Not available memory node");
+    RMW_UROS_TRACE_MESSAGE("Not available memory node")
     return RMW_RET_ERROR;
   }
   init_options->impl = memory_node->data;
@@ -75,7 +74,7 @@ rmw_init_options_init(
       "%s",
       RMW_UXRCE_DEFAULT_SERIAL_DEVICE);
   } else {
-    RMW_SET_ERROR_MSG("default serial port configuration overflow");
+    RMW_UROS_TRACE_MESSAGE("default serial port configuration overflow")
     return RMW_RET_INVALID_ARGUMENT;
   }
 #elif defined(RMW_UXRCE_TRANSPORT_UDP) || defined(RMW_UXRCE_TRANSPORT_TCP)
@@ -86,7 +85,7 @@ rmw_init_options_init(
       "%s",
       RMW_UXRCE_DEFAULT_IP);
   } else {
-    RMW_SET_ERROR_MSG("default ip configuration overflow");
+    RMW_UROS_TRACE_MESSAGE("default ip configuration overflow")
     return RMW_RET_INVALID_ARGUMENT;
   }
 
@@ -95,7 +94,7 @@ rmw_init_options_init(
       init_options->impl->transport_params.agent_port,
       MAX_PORT_LEN, "%s", RMW_UXRCE_DEFAULT_PORT);
   } else {
-    RMW_SET_ERROR_MSG("default port configuration overflow");
+    RMW_UROS_TRACE_MESSAGE("default port configuration overflow")
     return RMW_RET_INVALID_ARGUMENT;
   }
 #elif defined(RMW_UXRCE_TRANSPORT_CUSTOM)
@@ -124,12 +123,10 @@ rmw_init_options_copy(
   RMW_CHECK_ARGUMENT_FOR_NULL(src, RMW_RET_INVALID_ARGUMENT);
   RMW_CHECK_ARGUMENT_FOR_NULL(dst, RMW_RET_INVALID_ARGUMENT);
   RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
-    src,
     src->implementation_identifier,
-    eprosima_microxrcedds_identifier,
-    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+    RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
   if (NULL != dst->implementation_identifier) {
-    RMW_SET_ERROR_MSG("expected zero-initialized dst");
+    RMW_UROS_TRACE_MESSAGE("expected zero-initialized dst")
 
     return RMW_RET_INVALID_ARGUMENT;
   }
@@ -137,7 +134,7 @@ rmw_init_options_copy(
 
   rmw_uxrce_mempool_item_t * memory_node = get_memory(&init_options_memory);
   if (!memory_node) {
-    RMW_SET_ERROR_MSG("Not available memory node");
+    RMW_UROS_TRACE_MESSAGE("Not available memory node")
     return RMW_RET_ERROR;
   }
   dst->impl = memory_node->data;
@@ -157,10 +154,8 @@ rmw_init_options_fini(
   RMW_CHECK_ARGUMENT_FOR_NULL(init_options, RMW_RET_INVALID_ARGUMENT);
   RCUTILS_CHECK_ALLOCATOR(&(init_options->allocator), return RMW_RET_INVALID_ARGUMENT);
   RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
-    init_options,
     init_options->implementation_identifier,
-    eprosima_microxrcedds_identifier,
-    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+    RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
 
   rmw_uxrce_mempool_item_t * item = init_options_memory.allocateditems;
 
@@ -193,10 +188,8 @@ rmw_init(
   RCUTILS_CHECK_ARGUMENT_FOR_NULL(context, RMW_RET_INVALID_ARGUMENT);
   RCUTILS_CHECK_ARGUMENT_FOR_NULL(options->impl, RMW_RET_INVALID_ARGUMENT);
   RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
-    options,
     options->implementation_identifier,
-    eprosima_microxrcedds_identifier,
-    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+    RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
   context->instance_id = options->instance_id;
   context->implementation_identifier = eprosima_microxrcedds_identifier;
   context->options.domain_id = options->domain_id;
@@ -215,7 +208,7 @@ rmw_init(
 
   rmw_uxrce_mempool_item_t * memory_node = get_memory(&session_memory);
   if (!memory_node) {
-    RMW_SET_ERROR_MSG("Not available session memory node");
+    RMW_UROS_TRACE_MESSAGE("Not available session memory node")
 
     return RMW_RET_ERROR;
   }
@@ -308,7 +301,7 @@ rmw_init(
     CLOSE_TRANSPORT(&context_impl->transport);
     put_memory(&session_memory, &context_impl->mem);
     context->impl = NULL;
-    RMW_SET_ERROR_MSG("failed to create node session on Micro ROS Agent.");
+    RMW_UROS_TRACE_MESSAGE("failed to create node session on Micro ROS Agent.")
     return RMW_RET_ERROR;
   }
 
@@ -329,10 +322,8 @@ rmw_shutdown(
 {
   RCUTILS_CHECK_ARGUMENT_FOR_NULL(context, RMW_RET_INVALID_ARGUMENT);
   RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
-    context,
     context->implementation_identifier,
-    eprosima_microxrcedds_identifier,
-    return RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
+    RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
 
   rmw_ret_t ret = rmw_context_fini(context);
 
