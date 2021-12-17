@@ -14,7 +14,7 @@
 
 #include <rmw_microros_internal/rmw_uxrce_transports.h>
 
-#include <rmw/error_handling.h>
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
 
@@ -34,7 +34,7 @@ rmw_ret_t rmw_uxrce_transport_init(
     memset(&tty_config, 0, sizeof(tty_config));
 
     if (0 != tcgetattr(fd, &tty_config)) {
-      RMW_SET_ERROR_MSG("rmw_transport_init SERIAL: tgetattr error");
+      RMW_UROS_TRACE_MESSAGE("rmw_transport_init SERIAL: tgetattr error")
       return RMW_RET_ERROR;
     }
 
@@ -76,7 +76,7 @@ rmw_ret_t rmw_uxrce_transport_init(
     cfsetospeed(&tty_config, B115200);
 
     if (0 != tcsetattr(fd, TCSANOW, &tty_config)) {
-      RMW_SET_ERROR_MSG("rmw_transport_init SERIAL: tcsetattr error");
+      RMW_UROS_TRACE_MESSAGE("rmw_transport_init SERIAL: tcsetattr error")
       return RMW_RET_ERROR;
     }
 
@@ -85,11 +85,11 @@ rmw_ret_t rmw_uxrce_transport_init(
       &context_impl->transport;
 
     if (!uxr_init_serial_transport(serial_transport, fd, 0, 1)) {
-      RMW_SET_ERROR_MSG("rmw_transport_init SERIAL: cannot init XRCE transport");
+      RMW_UROS_TRACE_MESSAGE("rmw_transport_init SERIAL: cannot init XRCE transport")
       return RMW_RET_ERROR;
     }
   } else {
-    RMW_SET_ERROR_MSG("rmw_transport_init SERIAL: invalid serial device file descriptor");
+    RMW_UROS_TRACE_MESSAGE("rmw_transport_init SERIAL: invalid serial device file descriptor")
     return RMW_RET_ERROR;
   }
 #elif defined(RMW_UXRCE_TRANSPORT_UDP) || defined(RMW_UXRCE_TRANSPORT_TCP)
@@ -118,7 +118,7 @@ rmw_ret_t rmw_uxrce_transport_init(
     (TRANSPORT_TYPE *)override_transport : &context_impl->transport;
 
   if (!TRANSPORT_INIT_FUNTION(transport, ip_protocol, agent_ip, agent_port)) {
-    RMW_SET_ERROR_MSG("rmw_transport_init UDP/TCP: cannot init XRCE transport");
+    RMW_UROS_TRACE_MESSAGE("rmw_transport_init UDP/TCP: cannot init XRCE transport")
     return RMW_RET_ERROR;
   }
 #undef TRANSPORT_TYPE
@@ -132,7 +132,7 @@ rmw_ret_t rmw_uxrce_transport_init(
     init_options_impl->transport_params.args;
 
   if (!uxr_init_custom_transport(custom_transport, args)) {
-    RMW_SET_ERROR_MSG("rmw_transport_init CUSTOM: cannot init XRCE transport");
+    RMW_UROS_TRACE_MESSAGE("rmw_transport_init CUSTOM: cannot init XRCE transport")
     return RMW_RET_ERROR;
   }
 #endif /* ifdef RMW_UXRCE_TRANSPORT_SERIAL */

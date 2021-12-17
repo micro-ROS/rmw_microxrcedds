@@ -16,6 +16,7 @@
 #include <rmw/allocators.h>
 
 #include "./rmw_microros_internal/utils.h"
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_guard_condition_t *
 rmw_create_guard_condition(
@@ -25,7 +26,7 @@ rmw_create_guard_condition(
 
   rmw_uxrce_mempool_item_t * memory_node = get_memory(&guard_condition_memory);
   if (!memory_node) {
-    RMW_SET_ERROR_MSG("Not available memory node");
+    RMW_UROS_TRACE_MESSAGE("Not available memory node")
     return NULL;
   }
   rmw_uxrce_guard_condition_t * aux_guard_condition =

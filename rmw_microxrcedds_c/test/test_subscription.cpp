@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #include <rosidl_runtime_c/message_type_support_struct.h>
-#include <rmw/error_handling.h>
 #include <rmw/rmw.h>
 #include <rmw/validate_namespace.h>
 #include <rmw/validate_node_name.h>

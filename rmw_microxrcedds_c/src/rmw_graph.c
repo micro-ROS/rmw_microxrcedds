@@ -14,7 +14,6 @@
 
 #include <rmw_microros_internal/rmw_graph.h>
 
-#include <rmw/error_handling.h>
 #include <rosidl_runtime_c/string_functions.h>
 #include <micro_ros_msgs/msg/detail/graph__rosidl_typesupport_microxrcedds_c.h>
 
@@ -27,7 +26,7 @@ rmw_ret_t rmw_graph_init(
   rmw_ret_t ret = RMW_RET_OK;
 
   if (NULL == &context->session) {
-    RMW_SET_ERROR_MSG("Cannot initializate graph context without a XRCE session");
+    RMW_UROS_TRACE_MESSAGE("Cannot initializate graph context without a XRCE session")
     return RMW_RET_INVALID_ARGUMENT;
   }
 
@@ -73,7 +72,7 @@ rmw_ret_t rmw_graph_init(
       subscriber_name, rmw_uxrce_entity_naming_buffer,
       sizeof(rmw_uxrce_entity_naming_buffer)))
   {
-    RMW_SET_ERROR_MSG("Failed to generate xml request for graph subscriber creation");
+    RMW_UROS_TRACE_MESSAGE("Failed to generate xml request for graph subscriber creation")
     ret = RMW_RET_ERROR;
     goto end;
   }
@@ -95,7 +94,7 @@ rmw_ret_t rmw_graph_init(
       &graph_subscription_qos_policies, rmw_uxrce_entity_naming_buffer,
       sizeof(rmw_uxrce_entity_naming_buffer)))
   {
-    RMW_SET_ERROR_MSG("Failed to generate xml request for graph topic creation");
+    RMW_UROS_TRACE_MESSAGE("Failed to generate xml request for graph topic creation")
     ret = RMW_RET_ERROR;
     goto end;
   }
@@ -111,7 +110,7 @@ rmw_ret_t rmw_graph_init(
       &graph_subscription_qos_policies, rmw_uxrce_entity_naming_buffer,
       sizeof(rmw_uxrce_entity_naming_buffer)))
   {
-    RMW_SET_ERROR_MSG("Failed to generate xml request for graph datareader creation");
+    RMW_UROS_TRACE_MESSAGE("Failed to generate xml request for graph datareader creation")
     ret = RMW_RET_ERROR;
     goto end;
   }
@@ -129,7 +128,7 @@ rmw_ret_t rmw_graph_init(
   if (!uxr_run_session_until_all_status(
       &context->session, 1000, requests, status, sizeof(status)))
   {
-    RMW_SET_ERROR_MSG("Issues creating Micro XRCE-DDS graph related entities");
+    RMW_UROS_TRACE_MESSAGE("Issues creating Micro XRCE-DDS graph related entities")
     ret = RMW_RET_ERROR;
     goto end;
   }
@@ -154,7 +153,7 @@ end:
   { \
     bool func_ret = FUNCTION_NAME(__VA_ARGS__); \
     if (!func_ret) { \
-      RMW_SET_ERROR_MSG("Error deserializing graph information"); \
+      RMW_UROS_TRACE_MESSAGE("Error deserializing graph information"); \
       RETVAL = RMW_RET_ERROR; \
     } \
   }

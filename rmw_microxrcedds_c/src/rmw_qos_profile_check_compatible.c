@@ -14,8 +14,8 @@
 
 #include <rmw/rmw.h>
 #include <rmw/types.h>
-#include <rmw/error_handling.h>
 #include <rmw/qos_profiles.h>
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_ret_t
 rmw_qos_profile_check_compatible(
@@ -31,6 +31,6 @@ rmw_qos_profile_check_compatible(
   (void) reason;
   (void) reason_size;
 
-  RMW_SET_ERROR_MSG("function not implemented");
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
