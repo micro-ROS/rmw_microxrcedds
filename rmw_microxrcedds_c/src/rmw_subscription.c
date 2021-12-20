@@ -319,7 +319,7 @@ rmw_destroy_subscription(
 
     run_xrce_session(
       custom_node->context, custom_node->context->destroy_stream, datareader_req,
-      custom_node->context->creation_timeout);
+      custom_node->context->destroy_timeout);
 
     destroy_topic(custom_subscription->topic);
 
