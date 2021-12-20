@@ -18,6 +18,7 @@
 #include <rmw/ret_types.h>
 
 #include "../rmw_microros_internal/types.h"
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
 
