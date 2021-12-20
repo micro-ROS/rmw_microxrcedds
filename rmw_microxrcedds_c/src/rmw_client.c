@@ -214,7 +214,7 @@ rmw_destroy_client(
     uint16_t client_req = uxr_buffer_cancel_data(
       &custom_node->context->session,
       *custom_node->context->destroy_stream,
-      custom_client->service_id);
+      custom_client->client_id);
 
     run_xrce_session(
       custom_node->context, custom_node->context->destroy_stream, client_req,
