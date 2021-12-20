@@ -312,6 +312,15 @@ rmw_destroy_subscription(
     rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
     rmw_uxrce_node_t * custom_node = custom_subscription->owner_node;
 
+    uint16_t datareader_req = uxr_buffer_cancel_data(
+        &custom_node->context->session,
+        *custom_node->context->destroy_stream,
+        custom_subscription->datareader_id);
+
+    run_xrce_session(
+        custom_node->context, custom_node->context->destroy_stream, datareader_req,
+        custom_node->context->creation_timeout);
+
     destroy_topic(custom_subscription->topic);
 
     uint16_t delete_datareader =
