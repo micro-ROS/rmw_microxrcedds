@@ -209,6 +209,16 @@ rmw_destroy_service(
   } else {
     rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)node->data;
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
+
+    uint16_t service_req = uxr_buffer_cancel_data(
+      &custom_node->context->session,
+      *custom_node->context->destroy_stream,
+      custom_service->service_id);
+
+    run_xrce_session(
+      custom_node->context, custom_node->context->destroy_stream, service_req,
+      custom_node->context->destroy_timeout);
+
     uint16_t delete_service =
       uxr_buffer_delete_entity(
       &custom_node->context->session,
