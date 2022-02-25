@@ -212,7 +212,7 @@ rmw_return_loaned_message_from_subscription(
 
 rmw_ret_t
 rmw_take_event(
-  const rmw_events_t * event_handle,
+  const rmw_event_t * event_handle,
   void * event_info,
   bool * taken)
 {
