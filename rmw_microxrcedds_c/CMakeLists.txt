@@ -189,6 +189,7 @@ set(SRCS
   src/types.c
   src/utils.c
   src/callbacks.c
+  src/rmw_event_callbacks.c
   src/rmw_uxrce_transports.c
   src/rmw_microros/continous_serialization.c
   src/rmw_microros/init_options.c
