@@ -12,12 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <rmw_microros_internal/rmw_graph.h>
-
-#include <rosidl_runtime_c/string_functions.h>
-#include <micro_ros_msgs/msg/detail/graph__rosidl_typesupport_microxrcedds_c.h>
-
-#include "./rmw_microros_internal/utils.h"
+#include <rmw/rmw.h>
+#include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_ret_t
 rmw_subscription_set_on_new_message_callback(
