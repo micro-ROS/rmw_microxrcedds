@@ -278,7 +278,7 @@ rmw_init(
     put_memory(&session_memory, &context_impl->mem);
     context->impl = NULL;
     RMW_UROS_TRACE_MESSAGE("failed to open transport in rmw_init.")
-    return RMW_RET_ERROR;
+    return transport_init_ret;
   }
 
   uxr_init_session(
