@@ -242,6 +242,8 @@ rmw_service_response_publisher_get_actual_qos(
   const rmw_service_t * service,
   rmw_qos_profile_t * qos)
 {
+  (void) qos;
+
   rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
   qos = &custom_service->qos;
 
@@ -253,6 +255,8 @@ rmw_service_request_subscription_get_actual_qos(
   const rmw_service_t * service,
   rmw_qos_profile_t * qos)
 {
+  (void) qos;
+
   rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
   qos = &custom_service->qos;
 

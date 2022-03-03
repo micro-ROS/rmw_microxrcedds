@@ -243,6 +243,8 @@ rmw_client_request_publisher_get_actual_qos(
   const rmw_client_t * client,
   rmw_qos_profile_t * qos)
 {
+  (void) qos;
+
   rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
   qos = &custom_client->qos;
 
@@ -254,6 +256,8 @@ rmw_client_response_subscription_get_actual_qos(
   const rmw_client_t * client,
   rmw_qos_profile_t * qos)
 {
+  (void) qos;
+
   rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)client->data;
   qos = &custom_client->qos;
 
