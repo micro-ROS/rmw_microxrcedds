@@ -274,7 +274,11 @@ rmw_init(
   rmw_ret_t transport_init_ret = rmw_uxrce_transport_init(
     context->impl, options->impl, NULL);
   if (RMW_RET_OK != transport_init_ret) {
-    return transport_init_ret;
+    CLOSE_TRANSPORT(&context_impl->transport);
+    put_memory(&session_memory, &context_impl->mem);
+    context->impl = NULL;
+    RMW_UROS_TRACE_MESSAGE("failed to open transport in rmw_init.")
+    return RMW_RET_ERROR;
   }
 
   uxr_init_session(
