@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <rmw/rmw.h>
+#include <rmw/event.h>
 #include <rmw_microxrcedds_c/rmw_c_macros.h>
 
 #include "./rmw_microros_internal/utils.h"
