@@ -17,10 +17,9 @@
 
 #include <rmw/rmw.h>
 #include <rmw/time.h>
+#include <uxr/client/core/session/session.h>
 
 #include "./rmw_microros_internal/utils.h"
-
-#include <uxr/client/core/session/session.h>
 
 rmw_ret_t
 rmw_wait(
