@@ -29,13 +29,13 @@ macro(rmw_test TEST_NAME TEST_SOURCE)
     rmw_microxrcedds)
 
   include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/../src)
+  include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/../test)
 
   target_include_directories(${TEST_NAME}
     PUBLIC
       $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     PRIVATE
       ${PROJECT_SOURCE_DIR}/src
-      ${PROJECT_SOURCE_DIR}/test
       $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include/>)
 
   set_target_properties(${TEST_NAME} PROPERTIES
