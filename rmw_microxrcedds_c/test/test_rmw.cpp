@@ -61,12 +61,12 @@ TEST(rmw_microxrcedds, agent_ping)
   ASSERT_EQ(rmw_init_options_init(&test_options, rcutils_get_default_allocator()), RMW_RET_OK);
   ASSERT_EQ(rmw_init(&test_options, &test_context), RMW_RET_OK);
 
-  ASSERT_EQ(rmw_uros_ping_agent(100, 1), RMW_RET_OK);
+  ASSERT_EQ(rmw_uros_ping_agent(1000, 1), RMW_RET_OK);
 
   ASSERT_EQ(rmw_init_options_fini(&test_options), RMW_RET_OK);
   ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
 
-  ASSERT_EQ(rmw_uros_ping_agent(100, 1), RMW_RET_OK);
+  ASSERT_EQ(rmw_uros_ping_agent(1000, 1), RMW_RET_OK);
 }
 
 /*
