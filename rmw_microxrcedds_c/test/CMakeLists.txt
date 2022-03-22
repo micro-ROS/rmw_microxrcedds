@@ -29,6 +29,7 @@ macro(rmw_test TEST_NAME TEST_SOURCE)
     rmw_microxrcedds)
 
   include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/../src)
+  include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/../test)
 
   target_include_directories(${TEST_NAME}
     PUBLIC
