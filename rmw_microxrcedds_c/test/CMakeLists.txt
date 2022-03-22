@@ -35,6 +35,7 @@ macro(rmw_test TEST_NAME TEST_SOURCE)
       $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     PRIVATE
       ${PROJECT_SOURCE_DIR}/src
+      ${PROJECT_SOURCE_DIR}/test
       $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include/>)
 
   set_target_properties(${TEST_NAME} PROPERTIES

@@ -114,7 +114,7 @@ public:
       };
     dummy_type_support.callbacks.max_serialized_size =
       []() -> size_t {
-        return (size_t)(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + 1);
+        return static_cast<size_t>(MICROXRCEDDS_PADDING + ucdr_alignment(0, MICROXRCEDDS_PADDING) + 1);
       };
   }
 
