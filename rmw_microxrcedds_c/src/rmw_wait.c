@@ -16,12 +16,8 @@
 #include <math.h>
 
 #include <rmw/rmw.h>
-<<<<<<< HEAD
 #include <rcutils/time.h>
-=======
-#include <rmw/time.h>
 #include <uxr/client/core/session/session.h>
->>>>>>> 7670ac9 (Spin session on empty wait (#233))
 
 #include "./rmw_microros_internal/utils.h"
 
