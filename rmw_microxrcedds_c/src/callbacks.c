@@ -80,7 +80,7 @@ void on_topic(
           "Not available static buffer memory node in on_topic callback",
           .node = custom_subscription->owner_node->node_name,
           .node_namespace = custom_subscription->owner_node->node_namespace,
-          .topic_name = custom_subscription->topic_name, .ucdr = ub,
+          .topic_name = custom_subscription->topic->topic_name, .ucdr = ub,
           .size = length,
           .type_support.message_callbacks = custom_subscription->type_support_callbacks);
         return;
