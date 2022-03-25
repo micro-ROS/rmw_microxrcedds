@@ -20,16 +20,9 @@
 #include <rmw/get_topic_endpoint_info.h>
 #endif  // RMW_UXRCE_GRAPH
 
-#ifdef HAVE_C_TYPESUPPORT
-#include <rosidl_typesupport_microxrcedds_c/identifier.h>
-#endif /* ifdef HAVE_C_TYPESUPPORT */
-#ifdef HAVE_CPP_TYPESUPPORT
-#include <rosidl_typesupport_microxrcedds_cpp/identifier.h>
-#endif /* ifdef HAVE_CPP_TYPESUPPORT */
-#include <rosidl_typesupport_microxrcedds_c/message_type_support.h>
-
-#include <rmw/allocators.h>
 #include <rmw/rmw.h>
+#include <rmw/types.h>
+#include <rmw/allocators.h>
 
 #include "./rmw_microros_internal/utils.h"
 #include "./rmw_microros_internal/rmw_microxrcedds_topic.h"
@@ -103,34 +96,10 @@ rmw_create_publisher(
     custom_publisher->cs_cb_size = NULL;
     custom_publisher->cs_cb_serialization = NULL;
 
-    const rosidl_message_type_support_t * type_support_xrce = NULL;
-#ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
-    type_support_xrce = get_message_typesupport_handle(
-      type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
-#endif /* ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE */
-#ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE
-    if (NULL == type_support_xrce) {
-      type_support_xrce = get_message_typesupport_handle(
-        type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
-    }
-#endif /* ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE */
-    if (NULL == type_support_xrce) {
-      RMW_UROS_TRACE_MESSAGE("Undefined type support")
-      goto fail;
-    }
-
-    custom_publisher->type_support_callbacks =
-      (const message_type_support_callbacks_t *)type_support_xrce->data;
-
-    if (custom_publisher->type_support_callbacks == NULL) {
-      RMW_UROS_TRACE_MESSAGE("type support data is NULL")
-      goto fail;
-    }
-
     // Create topic
     custom_publisher->topic = create_topic(
       custom_node, topic_name,
-      custom_publisher->type_support_callbacks, qos_policies);
+      type_support, qos_policies);
 
     if (custom_publisher->topic == NULL) {
       RMW_UROS_TRACE_MESSAGE("Error creating topic")

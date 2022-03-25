@@ -82,7 +82,7 @@ void on_topic(
           .node_namespace = custom_subscription->owner_node->node_namespace,
           .topic_name = custom_subscription->topic->topic_name, .ucdr = ub,
           .size = length,
-          .type_support.message_callbacks = custom_subscription->type_support_callbacks);
+          .type_support.message_callbacks = custom_subscription->topic->type_support_callbacks);
         return;
       }
 

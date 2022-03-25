@@ -117,20 +117,20 @@ typedef struct rmw_init_options_impl_s rmw_uxrce_init_options_impl_t;
 
 typedef struct rmw_uxrce_topic_t
 {
-  rmw_uxrce_mempool_item_t mem;
-
   uxrObjectId topic_id;
-  const message_type_support_callbacks_t * message_type_support_callbacks;
-  char topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
 
-  struct rmw_uxrce_node_t * owner_node;
+  union {
+      const message_type_support_callbacks_t * msg;
+      const service_type_support_callbacks_t * srv;
+  } type_support_callbacks;
+
+  char topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
 } rmw_uxrce_topic_t;
 
 typedef struct rmw_uxrce_service_t
 {
   rmw_uxrce_mempool_item_t mem;
   uxrObjectId service_id;
-  const service_type_support_callbacks_t * type_support_callbacks;
   uint16_t service_data_resquest;
 
   rmw_qos_profile_t qos;
@@ -140,14 +140,13 @@ typedef struct rmw_uxrce_service_t
   struct rmw_uxrce_node_t * owner_node;
 
   rmw_service_t rmw_service;
-  char service_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
+  rmw_uxrce_topic_t topic;
 } rmw_uxrce_service_t;
 
 typedef struct rmw_uxrce_client_t
 {
   rmw_uxrce_mempool_item_t mem;
   uxrObjectId client_id;
-  const service_type_support_callbacks_t * type_support_callbacks;
   uint16_t client_data_request;
 
   rmw_qos_profile_t qos;
@@ -157,7 +156,7 @@ typedef struct rmw_uxrce_client_t
   struct rmw_uxrce_node_t * owner_node;
 
   rmw_client_t rmw_client;
-  char service_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
+  rmw_uxrce_topic_t topic;
 } rmw_uxrce_client_t;
 
 typedef struct rmw_uxrce_subscription_t
@@ -166,14 +165,12 @@ typedef struct rmw_uxrce_subscription_t
   uxrObjectId subscriber_id;
   uxrObjectId datareader_id;
 
-  const message_type_support_callbacks_t * type_support_callbacks;
-  struct rmw_uxrce_topic_t * topic;
-
   struct rmw_uxrce_node_t * owner_node;
   rmw_qos_profile_t qos;
   uxrStreamId stream_id;
 
   rmw_subscription_t rmw_subscription;
+  rmw_uxrce_topic_t topic;
 } rmw_uxrce_subscription_t;
 
 typedef struct rmw_uxrce_publisher_t
@@ -182,20 +179,16 @@ typedef struct rmw_uxrce_publisher_t
   uxrObjectId publisher_id;
   uxrObjectId datawriter_id;
 
-  const message_type_support_callbacks_t * type_support_callbacks;
-
   rmw_uros_continous_serialization_size cs_cb_size;
   rmw_uros_continous_serialization cs_cb_serialization;
 
-  struct rmw_uxrce_topic_t * topic;
-
+  struct rmw_uxrce_node_t * owner_node;
   rmw_qos_profile_t qos;
   uxrStreamId stream_id;
   int session_timeout;
 
-  struct rmw_uxrce_node_t * owner_node;
-
   rmw_publisher_t rmw_publisher;
+  rmw_uxrce_topic_t topic;
 } rmw_uxrce_publisher_t;
 
 typedef struct rmw_uxrce_node_t
@@ -277,9 +270,6 @@ extern rmw_uxrce_service_t custom_services[RMW_UXRCE_MAX_SERVICES];
 
 extern rmw_uxrce_mempool_t client_memory;
 extern rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
-
-extern rmw_uxrce_mempool_t topics_memory;
-extern rmw_uxrce_topic_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
 
 extern rmw_uxrce_mempool_t static_buffer_memory;
 extern rmw_uxrce_static_input_buffer_t custom_static_buffers[RMW_UXRCE_MAX_HISTORY];

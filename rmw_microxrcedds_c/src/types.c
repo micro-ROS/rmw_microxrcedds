@@ -51,9 +51,6 @@ rmw_uxrce_service_t custom_services[RMW_UXRCE_MAX_SERVICES];
 rmw_uxrce_mempool_t client_memory;
 rmw_uxrce_client_t custom_clients[RMW_UXRCE_MAX_CLIENTS];
 
-rmw_uxrce_mempool_t topics_memory;
-rmw_uxrce_topic_t custom_topics[RMW_UXRCE_MAX_TOPICS_INTERNAL];
-
 rmw_uxrce_mempool_t static_buffer_memory;
 rmw_uxrce_static_input_buffer_t custom_static_buffers[RMW_UXRCE_MAX_HISTORY];
 
@@ -103,7 +100,6 @@ RMW_INIT_MEMORY(publisher)
 RMW_INIT_MEMORY(subscription)
 RMW_INIT_MEMORY(node)
 RMW_INIT_MEMORY(session)
-RMW_INIT_MEMORY(topic)
 RMW_INIT_MEMORY(static_input_buffer)
 RMW_INIT_MEMORY(init_options_impl)
 RMW_INIT_MEMORY(wait_set)
@@ -207,13 +203,6 @@ void rmw_uxrce_fini_client_memory(
   }
 
   client = NULL;
-}
-
-void rmw_uxrce_fini_topic_memory(
-  rmw_uxrce_topic_t * topic)
-{
-  put_memory(&topics_memory, &topic->mem);
-  topic->owner_node = NULL;
 }
 
 size_t rmw_uxrce_count_static_input_buffer_for_entity(

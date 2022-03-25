@@ -18,6 +18,9 @@
 
 #include <rmw/allocators.h>
 
+#include <rosidl_typesupport_microxrcedds_c/identifier.h>
+#include <rosidl_typesupport_microxrcedds_c/message_type_support.h>
+
 #include "./rmw_microros_internal/utils.h"
 #include "./rmw_microros_internal/error_handling_internal.h"
 
@@ -25,7 +28,7 @@ rmw_uxrce_topic_t *
 create_topic(
   struct rmw_uxrce_node_t * custom_node,
   const char * topic_name,
-  const message_type_support_callbacks_t * message_type_support_callbacks,
+  const rosidl_message_type_support_t * type_support,
   const rmw_qos_profile_t * qos_policies)
 {
   (void) qos_policies;
@@ -44,7 +47,25 @@ create_topic(
   custom_topic->owner_node = custom_node;
 
   // Asociate to typesupport
-  custom_topic->message_type_support_callbacks = message_type_support_callbacks;
+  const rosidl_message_type_support_t * type_support_xrce = get_message_typesupport_handle(
+    type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
+
+  if (NULL == type_support_xrce) {
+    RMW_UROS_TRACE_MESSAGE("Undefined type support")
+    rmw_uxrce_fini_topic_memory(custom_topic);
+    custom_topic = NULL;
+    goto fail;
+  }
+
+  custom_topic->type_support_callbacks =
+    (const message_type_support_callbacks_t *)type_support_xrce->data;
+
+  if (custom_topic->type_support_callbacks == NULL) {
+    RMW_UROS_TRACE_MESSAGE("type support data is NULL")
+    rmw_uxrce_fini_topic_memory(custom_topic);
+    custom_topic = NULL;
+    goto fail;
+  }
 
   // Generate topic id
   custom_topic->topic_id = uxr_object_id(custom_node->context->id_topic++, UXR_TOPIC_ID);
