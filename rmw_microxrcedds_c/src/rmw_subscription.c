@@ -90,15 +90,6 @@ rmw_create_subscription(
     rmw_subscription = &custom_subscription->rmw_subscription;
     rmw_subscription->data = NULL;
     rmw_subscription->implementation_identifier = rmw_get_implementation_identifier();
-    rmw_subscription->topic_name = custom_subscription->topic_name;
-    if ((strlen(topic_name) + 1 ) > sizeof(custom_subscription->topic_name)) {
-      RMW_UROS_TRACE_MESSAGE("failed to allocate string")
-      goto fail;
-    }
-
-    snprintf(
-      (char *)rmw_subscription->topic_name, sizeof(custom_subscription->topic_name), "%s",
-      topic_name);
 
     custom_subscription->owner_node = custom_node;
     custom_subscription->qos = *qos_policies;
@@ -134,6 +125,8 @@ rmw_create_subscription(
     if (custom_subscription->topic == NULL) {
       goto fail;
     }
+
+    rmw_subscription->topic_name = custom_subscription->topic->topic_name;
 
     // Create subscriber
     custom_subscription->subscriber_id = uxr_object_id(

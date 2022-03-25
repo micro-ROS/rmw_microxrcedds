@@ -49,6 +49,16 @@ create_topic(
   // Generate topic id
   custom_topic->topic_id = uxr_object_id(custom_node->context->id_topic++, UXR_TOPIC_ID);
 
+  if ((strlen(topic_name) + 1 ) > sizeof(custom_topic->topic_name)) {
+    RMW_UROS_TRACE_MESSAGE("failed to allocate string")
+    rmw_uxrce_fini_topic_memory(custom_topic);
+    custom_topic = NULL;
+    goto fail;
+  }
+  snprintf(
+    (char *)custom_topic->topic_name, sizeof(custom_topic->topic_name), "%s",
+    topic_name);
+
   // Generate request
   uint16_t topic_req = 0;
 #ifdef RMW_UXRCE_USE_REFS

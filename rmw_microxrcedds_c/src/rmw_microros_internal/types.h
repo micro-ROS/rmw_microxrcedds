@@ -121,6 +121,7 @@ typedef struct rmw_uxrce_topic_t
 
   uxrObjectId topic_id;
   const message_type_support_callbacks_t * message_type_support_callbacks;
+  char topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
 
   struct rmw_uxrce_node_t * owner_node;
 } rmw_uxrce_topic_t;
@@ -173,7 +174,6 @@ typedef struct rmw_uxrce_subscription_t
   uxrStreamId stream_id;
 
   rmw_subscription_t rmw_subscription;
-  char topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
 } rmw_uxrce_subscription_t;
 
 typedef struct rmw_uxrce_publisher_t
@@ -196,7 +196,6 @@ typedef struct rmw_uxrce_publisher_t
   struct rmw_uxrce_node_t * owner_node;
 
   rmw_publisher_t rmw_publisher;
-  char topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
 } rmw_uxrce_publisher_t;
 
 typedef struct rmw_uxrce_node_t

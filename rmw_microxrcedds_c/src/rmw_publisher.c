@@ -90,15 +90,6 @@ rmw_create_publisher(
     rmw_publisher = &custom_publisher->rmw_publisher;
     rmw_publisher->data = NULL;
     rmw_publisher->implementation_identifier = rmw_get_implementation_identifier();
-    rmw_publisher->topic_name = custom_publisher->topic_name;
-
-    if ((strlen(topic_name) + 1 ) > sizeof(custom_publisher->topic_name)) {
-      RMW_UROS_TRACE_MESSAGE("failed to allocate string")
-      goto fail;
-    }
-    snprintf(
-      (char *)rmw_publisher->topic_name, sizeof(custom_publisher->topic_name), "%s",
-      topic_name);
 
     custom_publisher->owner_node = custom_node;
     custom_publisher->session_timeout = RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT;
@@ -145,6 +136,8 @@ rmw_create_publisher(
       RMW_UROS_TRACE_MESSAGE("Error creating topic")
       goto fail;
     }
+
+    rmw_publisher->topic_name = custom_publisher->topic->topic_name;
 
     // Create publisher
     custom_publisher->publisher_id = uxr_object_id(
