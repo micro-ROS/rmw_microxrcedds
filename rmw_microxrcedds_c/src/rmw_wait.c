@@ -17,6 +17,7 @@
 
 #include <rmw/rmw.h>
 #include <rmw/time.h>
+#include <uxr/client/core/session/session.h>
 
 #include "./rmw_microros_internal/utils.h"
 
@@ -106,6 +107,14 @@ rmw_wait(
       if (custom_context->need_to_be_ran) {
         uxr_run_session_until_data(&custom_context->session, per_session_timeout);
       }
+      item = item->next;
+    }
+  } else {
+    // Spin with no blocking to handle session metatraffic
+    item = session_memory.allocateditems;
+    while (item != NULL) {
+      rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
+      uxr_run_session_timeout(&custom_context->session, 0);
       item = item->next;
     }
   }
