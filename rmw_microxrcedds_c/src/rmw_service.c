@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "./rmw_microros_internal/utils.h"
-
 #include <rmw/rmw.h>
 #include <rmw/allocators.h>
 
 #include <rosidl_typesupport_microxrcedds_c/identifier.h>
 #include <rosidl_typesupport_microxrcedds_c/service_type_support.h>
 
+#include "./rmw_microros_internal/utils.h"
 #include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_service_t *
