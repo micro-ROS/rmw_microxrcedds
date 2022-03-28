@@ -113,7 +113,7 @@ rmw_ret_t rmw_uros_regenerate_entities()
 
   rmw_ret_t ping_ret = rmw_uros_ping_agent(1000, 1);
 
-  if (RMW_RET_OK == ping_ret)
+  if (RMW_RET_OK != ping_ret)
   {
     return RMW_RET_OK;
   }
@@ -121,19 +121,19 @@ rmw_ret_t rmw_uros_regenerate_entities()
   // Regenerate sessions
   {
     rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
-    do {
+    while( NULL != item) {
       rmw_context_impl_t * context = (rmw_context_impl_t *)item->data;
 
       uxr_create_session(&context->session);
 
       item = item->next;
-    } while (NULL != item);
+    }
   }
 
   // Regenerate nodes
   {
     rmw_uxrce_mempool_item_t * item = node_memory.allocateditems;
-    do {
+    while( NULL != item) {
       rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)item->data;
       uint16_t req = UXR_INVALID_REQUEST_ID;
 
@@ -157,13 +157,13 @@ rmw_ret_t rmw_uros_regenerate_entities()
       run_xrce_session(custom_node->context, custom_node->context->creation_stream, req,custom_node->context->creation_timeout);
 
       item = item->next;
-    } while (NULL != item);
+    }
   }
 
   // Regenerate publishers
   {
     rmw_uxrce_mempool_item_t * item = publisher_memory.allocateditems;
-    do {
+    while( NULL != item) {
       rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)item->data;
       uint16_t req = UXR_INVALID_REQUEST_ID;
 
@@ -205,13 +205,13 @@ rmw_ret_t rmw_uros_regenerate_entities()
       run_xrce_session(custom_publisher->owner_node->context, custom_publisher->owner_node->context->creation_stream, req,custom_publisher->owner_node->context->creation_timeout);
 
       item = item->next;
-    } while (NULL != item);
+    };
   }
 
   // Regenerate subscribers
   {
     rmw_uxrce_mempool_item_t * item = subscription_memory.allocateditems;
-    do {
+    while( NULL != item) {
       rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)item->data;
       uint16_t req = UXR_INVALID_REQUEST_ID;
 
@@ -269,13 +269,13 @@ rmw_ret_t rmw_uros_regenerate_entities()
         data_request_stream_id, &delivery_control);
 
       item = item->next;
-    } while (NULL != item);
+    }
   }
 
   // Regenerate requesters
   {
     rmw_uxrce_mempool_item_t * item = service_memory.allocateditems;
-    do {
+    while( NULL != item) {
       rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)item->data;
       uint16_t req = UXR_INVALID_REQUEST_ID;
 
@@ -322,13 +322,13 @@ rmw_ret_t rmw_uros_regenerate_entities()
         *custom_service->owner_node->context->creation_stream, custom_service->service_id,
         data_request_stream_id, &delivery_control);
       item = item->next;
-    } while (NULL != item);
+    }
   }
 
   // Regenerate repliers
   {
     rmw_uxrce_mempool_item_t * item = client_memory.allocateditems;
-    do {
+    while( NULL != item) {
       rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)item->data;
       uint16_t req = UXR_INVALID_REQUEST_ID;
 
@@ -376,7 +376,7 @@ rmw_ret_t rmw_uros_regenerate_entities()
         data_request_stream_id, &delivery_control);
 
       item = item->next;
-    } while (NULL != item);
+    }
   }
 
   return success ? RMW_RET_OK : RMW_RET_ERROR;
