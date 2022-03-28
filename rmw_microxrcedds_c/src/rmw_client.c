@@ -105,16 +105,11 @@ rmw_create_client(
       custom_client->client_id,
       custom_node->participant_id, rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 #else
-    static char req_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
-    static char res_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
     generate_service_types(
-      custom_client->topic.type_support_callbacks.srv, req_type_name, res_type_name,
+      custom_client->topic.type_support_callbacks.srv, type_buffer_1, type_buffer_2,
       RMW_UXRCE_TYPE_NAME_MAX_LENGTH);
-
-    static char req_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
-    static char res_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
     generate_service_topics(
-      service_name, req_topic_name, res_topic_name,
+      service_name, topic_buffer_1, topic_buffer_2,
       RMW_UXRCE_TOPIC_NAME_MAX_LENGTH);
 
     client_req = uxr_buffer_create_requester_bin(
@@ -123,10 +118,10 @@ rmw_create_client(
       custom_client->client_id,
       custom_node->participant_id,
       (char *) service_name,
-      req_type_name,
-      res_type_name,
-      req_topic_name,
-      res_topic_name,
+      type_buffer_1,
+      type_buffer_2,
+      topic_buffer_1,
+      topic_buffer_2,
       convert_qos_profile(qos_policies),
       UXR_REPLACE | UXR_REUSE);
 #endif /* ifdef RMW_UXRCE_USE_XML */

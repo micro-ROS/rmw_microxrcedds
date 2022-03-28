@@ -125,13 +125,10 @@ rmw_create_publisher(
       "%s", topic_name);
     rmw_publisher->topic_name = custom_publisher->topic.topic_name;
 
-    static char full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
-    static char type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
-
-    generate_topic_name(topic_name, full_topic_name, sizeof(full_topic_name));
+    generate_topic_name(topic_name, topic_buffer_1, sizeof(topic_buffer_1));
     generate_type_name(
-      custom_publisher->topic.type_support_callbacks.msg, type_name,
-      sizeof(type_name));
+      custom_publisher->topic.type_support_callbacks.msg, type_buffer_1,
+      sizeof(type_buffer_1));
 
     uint16_t topic_req = UXR_INVALID_REQUEST_ID;
 
@@ -140,8 +137,8 @@ rmw_create_publisher(
       *custom_node->context->creation_stream,
       custom_publisher->topic.topic_id,
       custom_node->participant_id,
-      full_topic_name,
-      type_name,
+      topic_buffer_1,
+      type_buffer_1,
       UXR_REPLACE | UXR_REUSE);
 
     if (!run_xrce_session(

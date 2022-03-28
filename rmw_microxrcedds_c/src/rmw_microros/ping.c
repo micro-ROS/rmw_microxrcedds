@@ -144,13 +144,10 @@ rmw_ret_t rmw_uros_regenerate_entities()
       rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)item->data;
       uint16_t req = UXR_INVALID_REQUEST_ID;
 
-      // TODO(pablogs): Reuse one static buffer.
-      static char xrce_node_name[RMW_UXRCE_NODE_NAME_MAX_LENGTH + RMW_UXRCE_NODE_NAME_MAX_LENGTH + 1];
-
       if (strcmp(custom_node->node_namespace, "/") == 0) {
-        snprintf(xrce_node_name, RMW_UXRCE_NODE_NAME_MAX_LENGTH, "%s", custom_node->node_name);
+        snprintf(node_name_buffer, sizeof(node_name_buffer), "%s", custom_node->node_name);
       } else {
-        snprintf(xrce_node_name, sizeof(xrce_node_name), "%s/%s", custom_node->node_namespace, custom_node->node_name);
+        snprintf(node_name_buffer, sizeof(node_name_buffer), "%s/%s", custom_node->node_namespace, custom_node->node_name);
       }
 
       req = uxr_buffer_create_participant_bin(
@@ -158,7 +155,7 @@ rmw_ret_t rmw_uros_regenerate_entities()
         *custom_node->context->creation_stream,
         custom_node->participant_id,
         custom_node->domain_id,
-        xrce_node_name,
+        node_name_buffer,
         UXR_REPLACE | UXR_REUSE);
 
       run_xrce_session(custom_node->context, custom_node->context->creation_stream, req,custom_node->context->creation_timeout);
@@ -174,19 +171,16 @@ rmw_ret_t rmw_uros_regenerate_entities()
       rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)item->data;
       uint16_t req = UXR_INVALID_REQUEST_ID;
 
-      static char full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
-      static char type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
-
-      generate_topic_name(custom_publishers->topic.topic_name, full_topic_name, sizeof(full_topic_name));
-      generate_type_name(custom_publisher->topic.type_support_callbacks.msg, type_name, sizeof(type_name));
+      generate_topic_name(custom_publishers->topic.topic_name, topic_buffer_1, sizeof(topic_buffer_1));
+      generate_type_name(custom_publisher->topic.type_support_callbacks.msg, type_buffer_1, sizeof(type_buffer_1));
 
       req = uxr_buffer_create_topic_bin(
         &custom_publisher->owner_node->context->session,
         *custom_publisher->owner_node->context->creation_stream,
         custom_publisher->topic.topic_id,
         custom_publisher->owner_node->participant_id,
-        full_topic_name,
-        type_name,
+        topic_buffer_1,
+        type_buffer_1,
         UXR_REPLACE | UXR_REUSE);
 
       run_xrce_session(custom_publisher->owner_node->context, custom_publisher->owner_node->context->creation_stream, req,custom_publisher->owner_node->context->creation_timeout);
@@ -222,19 +216,16 @@ rmw_ret_t rmw_uros_regenerate_entities()
       rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)item->data;
       uint16_t req = UXR_INVALID_REQUEST_ID;
 
-      static char full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
-      static char type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
-
-      generate_topic_name(custom_subscription->topic.topic_name, full_topic_name, sizeof(full_topic_name));
-      generate_type_name(custom_subscription->topic.type_support_callbacks.msg, type_name, sizeof(type_name));
+      generate_topic_name(custom_subscription->topic.topic_name, topic_buffer_1, sizeof(topic_buffer_1));
+      generate_type_name(custom_subscription->topic.type_support_callbacks.msg, type_buffer_1, sizeof(type_buffer_1));
 
       req = uxr_buffer_create_topic_bin(
         &custom_subscription->owner_node->context->session,
         *custom_subscription->owner_node->context->creation_stream,
         custom_subscription->topic.topic_id,
         custom_subscription->owner_node->participant_id,
-        full_topic_name,
-        type_name,
+        topic_buffer_1,
+        type_buffer_1,
         UXR_REPLACE | UXR_REUSE);
 
       run_xrce_session(custom_subscription->owner_node->context, custom_subscription->owner_node->context->creation_stream, req,custom_subscription->owner_node->context->creation_timeout);
@@ -286,16 +277,12 @@ rmw_ret_t rmw_uros_regenerate_entities()
       rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)item->data;
       uint16_t req = UXR_INVALID_REQUEST_ID;
 
-      static char req_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
-      static char res_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
       generate_service_types(
-        custom_service->topic.type_support_callbacks.srv, req_type_name, res_type_name,
+        custom_service->topic.type_support_callbacks.srv, type_buffer_1, type_buffer_2,
         RMW_UXRCE_TYPE_NAME_MAX_LENGTH);
 
-      static char req_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
-      static char res_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
       generate_service_topics(
-        custom_service->topic.topic_name, req_topic_name, res_topic_name,
+        custom_service->topic.topic_name, topic_buffer_1, topic_buffer_2,
         RMW_UXRCE_TOPIC_NAME_MAX_LENGTH);
 
       req = uxr_buffer_create_replier_bin(
@@ -304,10 +291,10 @@ rmw_ret_t rmw_uros_regenerate_entities()
         custom_service->service_id,
         custom_service->owner_node->participant_id,
         (char *) custom_service->topic.topic_name,
-        req_type_name,
-        res_type_name,
-        req_topic_name,
-        res_topic_name,
+        type_buffer_1,
+        type_buffer_2,
+        topic_buffer_1,
+        topic_buffer_2,
         convert_qos_profile(&custom_service->qos),
         UXR_REPLACE | UXR_REUSE);
 
@@ -339,16 +326,11 @@ rmw_ret_t rmw_uros_regenerate_entities()
       rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)item->data;
       uint16_t req = UXR_INVALID_REQUEST_ID;
 
-      static char req_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
-      static char res_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
       generate_service_types(
-        custom_client->topic.type_support_callbacks.srv, req_type_name, res_type_name,
+        custom_client->topic.type_support_callbacks.srv, type_buffer_1, type_buffer_2,
         RMW_UXRCE_TYPE_NAME_MAX_LENGTH);
-
-      static char req_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
-      static char res_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
       generate_service_topics(
-        custom_client->topic.topic_name, req_topic_name, res_topic_name,
+        custom_client->topic.topic_name, topic_buffer_1, topic_buffer_2,
         RMW_UXRCE_TOPIC_NAME_MAX_LENGTH);
 
       req = uxr_buffer_create_requester_bin(
@@ -357,10 +339,10 @@ rmw_ret_t rmw_uros_regenerate_entities()
         custom_client->client_id,
         custom_client->owner_node->participant_id,
         (char *) custom_client->topic.topic_name,
-        req_type_name,
-        res_type_name,
-        req_topic_name,
-        res_topic_name,
+        type_buffer_1,
+        type_buffer_2,
+        topic_buffer_1,
+        topic_buffer_2,
         convert_qos_profile(&custom_client->qos),
         UXR_REPLACE | UXR_REUSE);
 

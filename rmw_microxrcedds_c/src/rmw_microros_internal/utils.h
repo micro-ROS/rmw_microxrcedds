@@ -19,6 +19,13 @@
 
 #include "./rmw_microros_internal/types.h"
 
+// Static buffers for name generation
+extern char type_buffer_1[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
+extern char type_buffer_2[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
+extern char topic_buffer_1[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
+extern char topic_buffer_2[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
+extern char node_name_buffer[2*RMW_UXRCE_NODE_NAME_MAX_LENGTH];
+
 bool run_xrce_session(
   rmw_context_impl_t * context,
   uxrStreamId * target_stream,
@@ -63,49 +70,20 @@ int build_service_xml(
   char xml[],
   size_t buffer_size);
 
-int build_participant_xml(
-  size_t domain_id,
-  const char * participant_name,
-  char xml[],
-  size_t buffer_size);
-int build_publisher_xml(
-  const char * publisher_name,
-  char xml[],
-  size_t buffer_size);
-int build_subscriber_xml(
-  const char * subscriber_name,
-  char xml[],
-  size_t buffer_size);
-int build_topic_xml(
-  const char * topic_name,
-  const message_type_support_callbacks_t * members,
-  const rmw_qos_profile_t * qos_policies,
-  char xml[],
-  size_t buffer_size);
-int build_datawriter_xml(
-  const char * topic_name,
-  const message_type_support_callbacks_t * members,
-  const rmw_qos_profile_t * qos_policies,
-  char xml[],
-  size_t buffer_size);
-int build_datareader_xml(
-  const char * topic_name,
-  const message_type_support_callbacks_t * members,
-  const rmw_qos_profile_t * qos_policies,
-  char xml[],
-  size_t buffer_size);
-
 bool build_participant_profile(
   char profile_name[],
   size_t buffer_size);
+
 bool build_topic_profile(
   const char * topic_name,
   char profile_name[],
   size_t buffer_size);
+
 bool build_datawriter_profile(
   const char * topic_name,
   char profile_name[],
   size_t buffer_size);
+
 bool build_datareader_profile(
   const char * topic_name,
   char profile_name[],
