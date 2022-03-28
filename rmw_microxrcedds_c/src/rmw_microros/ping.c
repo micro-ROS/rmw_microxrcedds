@@ -107,7 +107,9 @@ rmw_ret_t rmw_uros_ping_agent_options(
   return success ? RMW_RET_OK : RMW_RET_ERROR;
 }
 
-rmw_ret_t rmw_uros_regenerate_entities()
+rmw_ret_t rmw_uros_regenerate_entities(
+  const int timeout_ms,
+  const uint8_t attempts)
 {
   bool success = true;
 
@@ -118,7 +120,7 @@ rmw_ret_t rmw_uros_regenerate_entities()
   rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
   rmw_context_impl_t * context = (rmw_context_impl_t *)item->data;
 
-  bool ping_success = uxr_ping_agent_attempts(context->session.comm, 1000, 1);
+  bool ping_success = uxr_ping_agent_attempts(context->session.comm, timeout_ms, attempts);
 
   if (!ping_success) {
     return RMW_RET_ERROR;
