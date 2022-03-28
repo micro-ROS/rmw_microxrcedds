@@ -24,7 +24,7 @@ char type_buffer_1[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
 char type_buffer_2[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
 char topic_buffer_1[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
 char topic_buffer_2[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
-char node_name_buffer[2*RMW_UXRCE_NODE_NAME_MAX_LENGTH];
+char node_name_buffer[2 * RMW_UXRCE_NODE_NAME_MAX_LENGTH];
 
 // Prefix strings
 static const char ros_topic_prefix[] = "rt";

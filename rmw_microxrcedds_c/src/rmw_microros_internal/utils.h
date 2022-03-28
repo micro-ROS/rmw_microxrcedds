@@ -24,7 +24,7 @@ extern char type_buffer_1[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
 extern char type_buffer_2[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
 extern char topic_buffer_1[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
 extern char topic_buffer_2[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
-extern char node_name_buffer[2*RMW_UXRCE_NODE_NAME_MAX_LENGTH];
+extern char node_name_buffer[2 * RMW_UXRCE_NODE_NAME_MAX_LENGTH];
 
 bool run_xrce_session(
   rmw_context_impl_t * context,
