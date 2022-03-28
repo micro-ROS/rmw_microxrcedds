@@ -31,7 +31,38 @@ The configuration file is placed in `rmw_microxrcedds_c/rmw_microxrcedds.config`
 
 - *RMW_UXRCE_IP*: In case you are using the UDP communication mode, this value indicates the IP of the Micro XRCE-Agent.
 
+<<<<<<< HEAD
 - *RMW_UXRCE_PORT*: In case you are using the UDP communication mode, this value indicates the port used by the Micro XRCE-Agent.
+=======
+| Name                                      | Description                                                                                                                                                                                    | Default |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| RMW_UXRCE_TRANSPORT                       | Sets Micro XRCE-DDS transport to use. (udp, serial, custom)                                                                                                                                    | udp     |
+| RMW_UXRCE_IPV                             | Sets Micro XRCE-DDS IP version to use. (ipv4, ipv6)                                                                                                                                            | ipv4    |
+| RMW_UXRCE_CREATION_MODE                   | Sets creation mode in Micro XRCE-DDS. (bin, refs)                                                                                                                                              | bin     |
+| RMW_UXRCE_MAX_HISTORY                     | This value sets the number of history slots available for RMW subscriptions, </br> requests and replies                                                                                        | 8       |
+| RMW_UXRCE_MAX_SESSIONS                    | This value sets the maximum number of Micro XRCE-DDS sessions.                                                                                                                                 | 1       |
+| RMW_UXRCE_MAX_NODES                       | This value sets the maximum number of nodes.                                                                                                                                                   | 4       |
+| RMW_UXRCE_MAX_PUBLISHERS                  | This value sets the maximum number of topic publishers for an application.                                                                                                                           | 4       |
+| RMW_UXRCE_MAX_SUBSCRIPTIONS               | This value sets the maximum number of topic subscriptions for an application.                                                                                                                        | 4       |
+| RMW_UXRCE_MAX_SERVICES                    | This value sets the maximum number of service servers for an application.                                                                                                                             | 4       |
+| RMW_UXRCE_MAX_CLIENTS                     | This value sets the maximum number of service clients for an application.                                                                                                                              | 4       |
+| RMW_UXRCE_MAX_TOPICS                      | This value sets the maximum number of topics for an application. </br> If set to -1 RMW_UXRCE_MAX_TOPICS = RMW_UXRCE_MAX_PUBLISHERS + </br> RMW_UXRCE_MAX_SUBSCRIPTIONS + RMW_UXRCE_MAX_NODES. | -1      |
+| RMW_UXRCE_MAX_WAIT_SETS                   | This value sets the maximum number of wait sets for an application.                                                                                                                            | 4       |
+| RMW_UXRCE_MAX_GUARD_CONDITION             | This value sets the maximum number of guard conditions for an application.                                                                                                                     | 4       |
+| RMW_UXRCE_NODE_NAME_MAX_LENGTH            | This value sets the maximum number of characters for a node name.                                                                                                                              | 60      |
+| RMW_UXRCE_TOPIC_NAME_MAX_LENGTH           | This value sets the maximum number of characters for a topic name.                                                                                                                             | 60      |
+| RMW_UXRCE_TYPE_NAME_MAX_LENGTH            | This value sets the maximum number of characters for a type name.                                                                                                                              | 100     |
+| RMW_UXRCE_REF_BUFFER_LENGTH               | This value sets the maximum number of characters for a reference buffer.                                                                                                                       | 100     |
+| RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT | This value sets the default maximum time to wait for an XRCE entity creation </br> and destroy in milliseconds. If set to 0 best effort is used.                                               | 1000    |
+| RMW_UXRCE_ENTITY_CREATION_TIMEOUT         | This value sets the maximum time to wait for an XRCE entity creation </br> in milliseconds. If set to 0 best effort is used.                                                                   | 1000    |
+| RMW_UXRCE_ENTITY_DESTROY_TIMEOUT          | This value sets the maximum time to wait for an XRCE entity destroy </br> in milliseconds. If set to 0 best effort is used.                                                                    | 1000    |
+| RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT        | This value sets the default time to wait for a publication in a </br> reliable mode in milliseconds.                                                                                           | 1000    |
+| RMW_UXRCE_STREAM_HISTORY                  | This value sets the number of MTUs to buffer, both input and output.                                                                                                                           | 4       |
+| RMW_UXRCE_STREAM_HISTORY_INPUT            | This value sets the number of MTUs to input buffer. </br> It will be ignored if RMW_UXRCE_STREAM_HISTORY_OUTPUT is blank.                                                                      | -       |
+| RMW_UXRCE_STREAM_HISTORY_OUTPUT           | This value sets the number of MTUs to output buffer. </br> It will be ignored if RMW_UXRCE_STREAM_HISTORY_INPUT is blank.                                                                      | -       |
+| RMW_UXRCE_GRAPH                           | Allows to perform graph-related operations to the user                                                                                                                                         | OFF     |
+| RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS       | Enables increasing static pools with dynamic allocation when needed.                                                                                                                           | OFF     |
+>>>>>>> fa98772 (Clarify some descriptions a bit better (#242))
 
 - *RMW_UXRCE_DEVICE*: In case you are using the serial communication mode, this value indicates the file descriptor of the serial port (Linux).
 - *RMW_UXRCE_CREATION_MODE*: chooses the preferred XRCE-DDS entities creation method. It could be XML or references.
