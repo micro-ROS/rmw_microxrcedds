@@ -27,7 +27,6 @@
 
 #include "./rmw_microros_internal/utils.h"
 #include "./rmw_microros_internal/memory.h"
-#include "./rmw_microros_internal/rmw_microxrcedds_topic.h"
 
 // Static memory pools
 

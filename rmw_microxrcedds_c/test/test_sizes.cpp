@@ -28,7 +28,6 @@
 TEST_F(RMWBaseTest, estimate_default_static_memory)
 {
   uint64_t context_size = sizeof(rmw_context_impl_t);
-  uint64_t topic_size = sizeof(rmw_uxrce_topic_t);
   uint64_t service_size = sizeof(rmw_uxrce_service_t);
   uint64_t client_size = sizeof(rmw_uxrce_client_t);
   uint64_t subscription_size = sizeof(rmw_uxrce_subscription_t);
@@ -53,7 +52,6 @@ TEST_F(RMWBaseTest, estimate_default_static_memory)
   fprintf(stderr, "| Entity | Qty | Size per unit |\n");
   fprintf(stderr, "| - | - | - |\n");
   fprintf(stderr, "| Context | %d | %ld B | \n", RMW_UXRCE_MAX_SESSIONS, context_size);
-  fprintf(stderr, "| Topic | %d | %ld B | \n", RMW_UXRCE_MAX_TOPICS_INTERNAL, topic_size);
   fprintf(stderr, "| Service | %d | %ld B | \n", RMW_UXRCE_MAX_SERVICES, service_size);
   fprintf(stderr, "| Client | %d | %ld B | \n", RMW_UXRCE_MAX_CLIENTS, client_size);
   fprintf(
@@ -74,7 +72,6 @@ TEST_F(RMWBaseTest, estimate_default_static_memory)
 
 
   uint64_t total = RMW_UXRCE_MAX_SESSIONS * context_size +
-    RMW_UXRCE_MAX_TOPICS_INTERNAL * topic_size +
     RMW_UXRCE_MAX_SERVICES * service_size +
     RMW_UXRCE_MAX_CLIENTS * client_size +
     RMW_UXRCE_MAX_SUBSCRIPTIONS * subscription_size +

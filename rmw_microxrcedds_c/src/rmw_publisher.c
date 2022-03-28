@@ -24,8 +24,10 @@
 #include <rmw/types.h>
 #include <rmw/allocators.h>
 
+#include <rosidl_typesupport_microxrcedds_c/identifier.h>
+#include <rosidl_typesupport_microxrcedds_c/message_type_support.h>
+
 #include "./rmw_microros_internal/utils.h"
-#include "./rmw_microros_internal/rmw_microxrcedds_topic.h"
 #include "./rmw_microros_internal/error_handling_internal.h"
 
 rmw_ret_t
@@ -97,16 +99,51 @@ rmw_create_publisher(
     custom_publisher->cs_cb_serialization = NULL;
 
     // Create topic
-    custom_publisher->topic = create_topic(
-      custom_node, topic_name,
-      type_support, qos_policies);
+    custom_publisher->topic.owner_node = custom_publisher->owner_node;
+    custom_publisher->topic.topic_id = uxr_object_id(custom_node->context->id_topic++, UXR_TOPIC_ID);
 
-    if (custom_publisher->topic == NULL) {
-      RMW_UROS_TRACE_MESSAGE("Error creating topic")
+    const rosidl_message_type_support_t * type_support_xrce = get_message_typesupport_handle(type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
+
+    if (NULL == type_support_xrce) {
+      RMW_UROS_TRACE_MESSAGE("Undefined type support")
+      custom_publisher = NULL;
       goto fail;
     }
 
-    rmw_publisher->topic_name = custom_publisher->topic->topic_name;
+    custom_publisher->topic.type_support_callbacks.msg = (const message_type_support_callbacks_t *)type_support_xrce->data;
+
+    if ((strlen(topic_name) + 1 ) > sizeof(custom_publisher->topic.topic_name)) {
+      RMW_UROS_TRACE_MESSAGE("failed to allocate string")
+      custom_publisher = NULL;
+      goto fail;
+    }
+    snprintf((char *)custom_publisher->topic.topic_name, sizeof(custom_publisher->topic.topic_name), "%s", topic_name);
+    rmw_publisher->topic_name = custom_publisher->topic.topic_name;
+
+    static char full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
+    static char type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
+
+    generate_topic_name(topic_name, full_topic_name, sizeof(full_topic_name));
+    generate_type_name(custom_publisher->topic.type_support_callbacks.msg, type_name, sizeof(type_name));
+
+    uint16_t topic_req = UXR_INVALID_REQUEST_ID;
+
+    topic_req = uxr_buffer_create_topic_bin(
+      &custom_node->context->session,
+      *custom_node->context->creation_stream,
+      custom_publisher->topic.topic_id,
+      custom_node->participant_id,
+      full_topic_name,
+      type_name,
+      UXR_REPLACE | UXR_REUSE);
+
+    if (!run_xrce_session(
+        custom_node->context, custom_node->context->creation_stream, topic_req,
+        custom_node->context->creation_timeout))
+    {
+      custom_publisher = NULL;
+      goto fail;
+    }
 
     // Create publisher
     custom_publisher->publisher_id = uxr_object_id(
@@ -165,7 +202,7 @@ rmw_create_publisher(
       *custom_node->context->creation_stream,
       custom_publisher->datawriter_id,
       custom_publisher->publisher_id,
-      custom_publisher->topic->topic_id,
+      custom_publisher->topic.topic_id,
       convert_qos_profile(qos_policies),
       UXR_REPLACE | UXR_REUSE);
   #endif /* ifdef RMW_UXRCE_USE_REFS */
@@ -305,8 +342,6 @@ rmw_destroy_publisher(
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
     rmw_uxrce_node_t * custom_node = custom_publisher->owner_node;
 
-    destroy_topic(custom_publisher->topic);
-
     uint16_t delete_writer = uxr_buffer_delete_entity(
       &custom_publisher->owner_node->context->session,
       *custom_publisher->owner_node->context->destroy_stream,
@@ -315,6 +350,10 @@ rmw_destroy_publisher(
       &custom_publisher->owner_node->context->session,
       *custom_publisher->owner_node->context->destroy_stream,
       custom_publisher->publisher_id);
+    uint16_t delete_topic = uxr_buffer_delete_entity(
+      &custom_publisher->owner_node->context->session,
+      *custom_publisher->owner_node->context->destroy_stream,
+      custom_publisher->topic.topic_id);
 
     bool ret = run_xrce_session(
       custom_node->context, custom_node->context->destroy_stream, delete_writer,
@@ -322,10 +361,14 @@ rmw_destroy_publisher(
     ret &= run_xrce_session(
       custom_node->context, custom_node->context->destroy_stream, delete_publisher,
       custom_node->context->destroy_timeout);
+    ret &= run_xrce_session(
+      custom_node->context, custom_node->context->destroy_stream, delete_topic,
+      custom_node->context->destroy_timeout);
     if (!ret) {
       result_ret = RMW_RET_TIMEOUT;
     }
 
+    memset(&custom_publisher->topic, 0, sizeof(rmw_uxrce_topic_t));
     rmw_uxrce_fini_publisher_memory(publisher);
   }
 

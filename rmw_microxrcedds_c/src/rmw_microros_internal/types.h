@@ -119,6 +119,8 @@ typedef struct rmw_uxrce_topic_t
 {
   uxrObjectId topic_id;
 
+  struct rmw_uxrce_node_t * owner_node;
+
   union {
       const message_type_support_callbacks_t * msg;
       const service_type_support_callbacks_t * srv;
@@ -325,8 +327,6 @@ void rmw_uxrce_fini_client_memory(
   rmw_client_t * client);
 void rmw_uxrce_fini_service_memory(
   rmw_service_t * service);
-void rmw_uxrce_fini_topic_memory(
-  rmw_uxrce_topic_t * topic);
 
 // Memory pools functions
 

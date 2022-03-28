@@ -50,7 +50,7 @@ rmw_publish(
     ret = RMW_RET_ERROR;
   } else {
     rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
-    const message_type_support_callbacks_t * functions = custom_publisher->topic->type_support_callbacks;
+    const message_type_support_callbacks_t * functions = custom_publisher->topic.type_support_callbacks.msg;
     uint32_t topic_length = functions->get_serialized_size(ros_message);
 
     if (custom_publisher->cs_cb_size) {
