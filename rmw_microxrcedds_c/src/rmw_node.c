@@ -46,6 +46,7 @@ rmw_node_t * create_node(
   rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)memory_node->data;
 
   custom_node->context = context->impl;
+  custom_node->domain_id = domain_id;
 
   node_handle = &custom_node->rmw_node;
 

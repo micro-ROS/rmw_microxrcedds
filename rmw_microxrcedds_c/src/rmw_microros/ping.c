@@ -23,6 +23,7 @@
 
 #include "../rmw_microros_internal/rmw_uxrce_transports.h"
 #include "../rmw_microros_internal/types.h"
+#include "./rmw_microros_internal/utils.h"
 
 extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
 
@@ -104,4 +105,280 @@ rmw_ret_t rmw_uros_ping_agent_options(
   CLOSE_TRANSPORT(&transport);
 
   return success ? RMW_RET_OK : RMW_RET_ERROR;
+}
+
+rmw_ret_t rmw_uros_regenerate_entities()
+{
+  bool success = true;
+
+  rmw_ret_t ping_ret = rmw_uros_ping_agent(1000, 1);
+
+  if (RMW_RET_OK == ping_ret)
+  {
+    return RMW_RET_OK;
+  }
+
+  // Regenerate sessions
+  {
+    rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
+    do {
+      rmw_context_impl_t * context = (rmw_context_impl_t *)item->data;
+
+      uxr_create_session(&context->session);
+
+      item = item->next;
+    } while (NULL != item);
+  }
+
+  // Regenerate nodes
+  {
+    rmw_uxrce_mempool_item_t * item = node_memory.allocateditems;
+    do {
+      rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)item->data;
+      uint16_t req = UXR_INVALID_REQUEST_ID;
+
+      // TODO(pablogs): Reuse one static buffer.
+      static char xrce_node_name[RMW_UXRCE_NODE_NAME_MAX_LENGTH + RMW_UXRCE_NODE_NAME_MAX_LENGTH + 1];
+
+      if (strcmp(custom_node->node_namespace, "/") == 0) {
+        snprintf(xrce_node_name, RMW_UXRCE_NODE_NAME_MAX_LENGTH, "%s", custom_node->node_name);
+      } else {
+        snprintf(xrce_node_name, sizeof(xrce_node_name), "%s/%s", custom_node->node_namespace, custom_node->node_name);
+      }
+
+      req = uxr_buffer_create_participant_bin(
+        &custom_node->context->session,
+        *custom_node->context->creation_stream,
+        custom_node->participant_id,
+        custom_node->domain_id,
+        xrce_node_name,
+        UXR_REPLACE | UXR_REUSE);
+
+      run_xrce_session(custom_node->context, custom_node->context->creation_stream, req,custom_node->context->creation_timeout);
+
+      item = item->next;
+    } while (NULL != item);
+  }
+
+  // Regenerate publishers
+  {
+    rmw_uxrce_mempool_item_t * item = publisher_memory.allocateditems;
+    do {
+      rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)item->data;
+      uint16_t req = UXR_INVALID_REQUEST_ID;
+
+      static char full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
+      static char type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
+
+      generate_topic_name(custom_publishers->topic.topic_name, full_topic_name, sizeof(full_topic_name));
+      generate_type_name(custom_publisher->topic.type_support_callbacks.msg, type_name, sizeof(type_name));
+
+      req = uxr_buffer_create_topic_bin(
+        &custom_publisher->owner_node->context->session,
+        *custom_publisher->owner_node->context->creation_stream,
+        custom_publisher->topic.topic_id,
+        custom_publisher->owner_node->participant_id,
+        full_topic_name,
+        type_name,
+        UXR_REPLACE | UXR_REUSE);
+
+      run_xrce_session(custom_publisher->owner_node->context, custom_publisher->owner_node->context->creation_stream, req,custom_publisher->owner_node->context->creation_timeout);
+
+      req = uxr_buffer_create_publisher_bin(
+        &custom_publisher->owner_node->context->session,
+        *custom_publisher->owner_node->context->creation_stream,
+        custom_publisher->publisher_id,
+        custom_publisher->owner_node->participant_id,
+        UXR_REPLACE | UXR_REUSE);
+
+      run_xrce_session(custom_publisher->owner_node->context, custom_publisher->owner_node->context->creation_stream, req,custom_publisher->owner_node->context->creation_timeout);
+
+      req = uxr_buffer_create_datawriter_bin(
+        &custom_publisher->owner_node->context->session,
+        *custom_publisher->owner_node->context->creation_stream,
+        custom_publisher->datawriter_id,
+        custom_publisher->publisher_id,
+        custom_publisher->topic.topic_id,
+        convert_qos_profile(&custom_publisher->qos),
+        UXR_REPLACE | UXR_REUSE);
+
+      run_xrce_session(custom_publisher->owner_node->context, custom_publisher->owner_node->context->creation_stream, req,custom_publisher->owner_node->context->creation_timeout);
+
+      item = item->next;
+    } while (NULL != item);
+  }
+
+  // Regenerate subscribers
+  {
+    rmw_uxrce_mempool_item_t * item = subscription_memory.allocateditems;
+    do {
+      rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)item->data;
+      uint16_t req = UXR_INVALID_REQUEST_ID;
+
+      static char full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
+      static char type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
+
+      generate_topic_name(custom_subscription->topic.topic_name, full_topic_name, sizeof(full_topic_name));
+      generate_type_name(custom_subscription->topic.type_support_callbacks.msg, type_name, sizeof(type_name));
+
+      req = uxr_buffer_create_topic_bin(
+        &custom_subscription->owner_node->context->session,
+        *custom_subscription->owner_node->context->creation_stream,
+        custom_subscription->topic.topic_id,
+        custom_subscription->owner_node->participant_id,
+        full_topic_name,
+        type_name,
+        UXR_REPLACE | UXR_REUSE);
+
+      run_xrce_session(custom_subscription->owner_node->context, custom_subscription->owner_node->context->creation_stream, req,custom_subscription->owner_node->context->creation_timeout);
+
+      req = uxr_buffer_create_subscriber_bin(
+        &custom_subscription->owner_node->context->session,
+        *custom_subscription->owner_node->context->creation_stream,
+        custom_subscription->subscriber_id,
+        custom_subscription->owner_node->participant_id,
+        UXR_REPLACE | UXR_REUSE);
+
+      run_xrce_session(custom_subscription->owner_node->context, custom_subscription->owner_node->context->creation_stream, req,custom_subscription->owner_node->context->creation_timeout);
+
+      req = uxr_buffer_create_datareader_bin(
+        &custom_subscription->owner_node->context->session,
+        *custom_subscription->owner_node->context->creation_stream,
+        custom_subscription->datareader_id,
+        custom_subscription->subscriber_id,
+        custom_subscription->topic.topic_id,
+        convert_qos_profile(&custom_subscription->qos),
+        UXR_REPLACE | UXR_REUSE);
+
+      run_xrce_session(custom_subscription->owner_node->context, custom_subscription->owner_node->context->creation_stream, req,custom_subscription->owner_node->context->creation_timeout);
+
+      uxrDeliveryControl delivery_control;
+      delivery_control.max_samples = UXR_MAX_SAMPLES_UNLIMITED;
+      delivery_control.min_pace_period = 0;
+      delivery_control.max_elapsed_time = UXR_MAX_ELAPSED_TIME_UNLIMITED;
+      delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
+
+      uxrStreamId data_request_stream_id =
+      (custom_subscription->qos.reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+      custom_subscription->owner_node->context->best_effort_input :
+      custom_subscription->owner_node->context->reliable_input;
+
+      uxr_buffer_request_data(
+        &custom_subscription->owner_node->context->session,
+        *custom_subscription->owner_node->context->creation_stream, custom_subscription->datareader_id,
+        data_request_stream_id, &delivery_control);
+
+      item = item->next;
+    } while (NULL != item);
+  }
+
+  // Regenerate requesters
+  {
+    rmw_uxrce_mempool_item_t * item = service_memory.allocateditems;
+    do {
+      rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)item->data;
+      uint16_t req = UXR_INVALID_REQUEST_ID;
+
+      static char req_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
+      static char res_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
+      generate_service_types(
+        custom_service->topic.type_support_callbacks.srv, req_type_name, res_type_name,
+        RMW_UXRCE_TYPE_NAME_MAX_LENGTH);
+
+      static char req_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
+      static char res_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
+      generate_service_topics(
+        custom_service->topic.topic_name, req_topic_name, res_topic_name,
+        RMW_UXRCE_TOPIC_NAME_MAX_LENGTH);
+
+      req = uxr_buffer_create_replier_bin(
+        &custom_service->owner_node->context->session,
+        *custom_service->owner_node->context->creation_stream,
+        custom_service->service_id,
+        custom_service->owner_node->participant_id,
+        (char *) custom_service->topic.topic_name,
+        req_type_name,
+        res_type_name,
+        req_topic_name,
+        res_topic_name,
+        convert_qos_profile(&custom_service->qos),
+        UXR_REPLACE | UXR_REUSE);
+
+      run_xrce_session(custom_service->owner_node->context, custom_service->owner_node->context->creation_stream, req,custom_service->owner_node->context->creation_timeout);
+
+      uxrStreamId data_request_stream_id =
+        (custom_service->qos.reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+        custom_service->owner_node->context->best_effort_input :
+        custom_service->owner_node->context->reliable_input;
+
+      uxrDeliveryControl delivery_control;
+        delivery_control.max_samples = UXR_MAX_SAMPLES_UNLIMITED;
+        delivery_control.min_pace_period = 0;
+        delivery_control.max_elapsed_time = UXR_MAX_ELAPSED_TIME_UNLIMITED;
+        delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
+
+      custom_service->service_data_resquest = uxr_buffer_request_data(
+        &custom_service->owner_node->context->session,
+        *custom_service->owner_node->context->creation_stream, custom_service->service_id,
+        data_request_stream_id, &delivery_control);
+      item = item->next;
+    } while (NULL != item);
+  }
+
+  // Regenerate repliers
+  {
+    rmw_uxrce_mempool_item_t * item = client_memory.allocateditems;
+    do {
+      rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)item->data;
+      uint16_t req = UXR_INVALID_REQUEST_ID;
+
+      static char req_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
+      static char res_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
+      generate_service_types(
+        custom_client->topic.type_support_callbacks.srv, req_type_name, res_type_name,
+        RMW_UXRCE_TYPE_NAME_MAX_LENGTH);
+
+      static char req_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
+      static char res_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
+      generate_service_topics(
+        custom_client->topic.topic_name, req_topic_name, res_topic_name,
+        RMW_UXRCE_TOPIC_NAME_MAX_LENGTH);
+
+      req = uxr_buffer_create_requester_bin(
+        &custom_client->owner_node->context->session,
+        *custom_client->owner_node->context->creation_stream,
+        custom_client->client_id,
+        custom_client->owner_node->participant_id,
+        (char *) custom_client->topic.topic_name,
+        req_type_name,
+        res_type_name,
+        req_topic_name,
+        res_topic_name,
+        convert_qos_profile(&custom_client->qos),
+        UXR_REPLACE | UXR_REUSE);
+
+      run_xrce_session(custom_client->owner_node->context, custom_client->owner_node->context->creation_stream, req,custom_client->owner_node->context->creation_timeout);
+
+      uxrStreamId data_request_stream_id =
+        (custom_client->qos.reliability == RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT) ?
+        custom_client->owner_node->context->best_effort_input :
+        custom_client->owner_node->context->reliable_input;
+
+      uxrDeliveryControl delivery_control;
+        delivery_control.max_samples = UXR_MAX_SAMPLES_UNLIMITED;
+        delivery_control.min_pace_period = 0;
+        delivery_control.max_elapsed_time = UXR_MAX_ELAPSED_TIME_UNLIMITED;
+        delivery_control.max_bytes_per_second = UXR_MAX_BYTES_PER_SECOND_UNLIMITED;
+
+      custom_client->client_data_request = uxr_buffer_request_data(
+        &custom_client->owner_node->context->session,
+        *custom_client->owner_node->context->creation_stream, custom_client->client_id,
+        data_request_stream_id, &delivery_control);
+
+      item = item->next;
+    } while (NULL != item);
+  }
+
+  return success ? RMW_RET_OK : RMW_RET_ERROR;
+
 }

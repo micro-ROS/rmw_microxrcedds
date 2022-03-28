@@ -199,6 +199,7 @@ typedef struct rmw_uxrce_node_t
   rmw_uxrce_session_t * context;
 
   uxrObjectId participant_id;
+  size_t domain_id;
 
   rmw_node_t rmw_node;
   char node_name[RMW_UXRCE_NODE_NAME_MAX_LENGTH];
