@@ -111,11 +111,18 @@ rmw_ret_t rmw_uros_regenerate_entities()
 {
   bool success = true;
 
-  rmw_ret_t ping_ret = rmw_uros_ping_agent(1000, 1);
+  if (!session_memory.is_initialized || NULL == session_memory.allocateditems) {
+    return RMW_RET_ERROR;
+  }
 
-  if (RMW_RET_OK != ping_ret)
+  rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
+  rmw_context_impl_t * context = (rmw_context_impl_t *)item->data;
+
+  bool ping_success = uxr_ping_agent_attempts(context->session.comm, 1000, 1);
+
+  if (!ping_success)
   {
-    return RMW_RET_OK;
+    return RMW_RET_ERROR;
   }
 
   // Regenerate sessions
@@ -380,5 +387,4 @@ rmw_ret_t rmw_uros_regenerate_entities()
   }
 
   return success ? RMW_RET_OK : RMW_RET_ERROR;
-
 }
