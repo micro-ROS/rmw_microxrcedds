@@ -91,9 +91,12 @@ rmw_create_subscription(
 
     // Create topic
     custom_subscription->topic.owner_node = custom_subscription->owner_node;
-    custom_subscription->topic.topic_id = uxr_object_id(custom_node->context->id_topic++, UXR_TOPIC_ID);
+    custom_subscription->topic.topic_id = uxr_object_id(
+      custom_node->context->id_topic++,
+      UXR_TOPIC_ID);
 
-    const rosidl_message_type_support_t * type_support_xrce = get_message_typesupport_handle(type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
+    const rosidl_message_type_support_t * type_support_xrce = get_message_typesupport_handle(
+      type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
 
     if (NULL == type_support_xrce) {
       RMW_UROS_TRACE_MESSAGE("Undefined type support")
@@ -101,21 +104,26 @@ rmw_create_subscription(
       goto fail;
     }
 
-    custom_subscription->topic.type_support_callbacks.msg = (const message_type_support_callbacks_t *)type_support_xrce->data;
+    custom_subscription->topic.type_support_callbacks.msg =
+      (const message_type_support_callbacks_t *)type_support_xrce->data;
 
     if ((strlen(topic_name) + 1 ) > sizeof(custom_subscription->topic.topic_name)) {
       RMW_UROS_TRACE_MESSAGE("failed to allocate string")
       custom_subscription = NULL;
       goto fail;
     }
-    snprintf((char *)custom_subscription->topic.topic_name, sizeof(custom_subscription->topic.topic_name), "%s", topic_name);
+    snprintf(
+      (char *)custom_subscription->topic.topic_name,
+      sizeof(custom_subscription->topic.topic_name), "%s", topic_name);
     rmw_subscription->topic_name = custom_subscription->topic.topic_name;
 
     static char full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
     static char type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
 
     generate_topic_name(topic_name, full_topic_name, sizeof(full_topic_name));
-    generate_type_name(custom_subscription->topic.type_support_callbacks.msg, type_name, sizeof(type_name));
+    generate_type_name(
+      custom_subscription->topic.type_support_callbacks.msg, type_name,
+      sizeof(type_name));
 
     uint16_t topic_req = UXR_INVALID_REQUEST_ID;
 

@@ -122,8 +122,8 @@ typedef struct rmw_uxrce_topic_t
   struct rmw_uxrce_node_t * owner_node;
 
   union {
-      const message_type_support_callbacks_t * msg;
-      const service_type_support_callbacks_t * srv;
+    const message_type_support_callbacks_t * msg;
+    const service_type_support_callbacks_t * srv;
   } type_support_callbacks;
 
   char topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
