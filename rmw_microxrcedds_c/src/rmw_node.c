@@ -46,6 +46,7 @@ rmw_node_t * create_node(
   rmw_uxrce_node_t * custom_node = (rmw_uxrce_node_t *)memory_node->data;
 
   custom_node->context = context->impl;
+  custom_node->domain_id = domain_id;
 
   node_handle = &custom_node->rmw_node;
 
@@ -88,12 +89,10 @@ rmw_node_t * create_node(
     (uint16_t)domain_id,
     rmw_uxrce_entity_naming_buffer, UXR_REPLACE | UXR_REUSE);
 #else
-  static char xrce_node_name[RMW_UXRCE_NODE_NAME_MAX_LENGTH];
-
   if (strcmp(namespace_, "/") == 0) {
-    snprintf(xrce_node_name, RMW_UXRCE_NODE_NAME_MAX_LENGTH, "%s", name);
+    snprintf(node_name_buffer, sizeof(node_name_buffer), "%s", name);
   } else {
-    snprintf(xrce_node_name, RMW_UXRCE_NODE_NAME_MAX_LENGTH, "%s/%s", namespace_, name);
+    snprintf(node_name_buffer, sizeof(node_name_buffer), "%s/%s", namespace_, name);
   }
 
   participant_req = uxr_buffer_create_participant_bin(
@@ -101,7 +100,7 @@ rmw_node_t * create_node(
     *custom_node->context->creation_stream,
     custom_node->participant_id,
     domain_id,
-    xrce_node_name,
+    node_name_buffer,
     UXR_REPLACE | UXR_REUSE);
 #endif /* ifdef RMW_UXRCE_USE_REFS */
 
