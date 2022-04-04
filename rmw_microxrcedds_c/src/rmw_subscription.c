@@ -372,4 +372,3 @@ rmw_subscription_get_content_filter(
 
   return RMW_RET_UNSUPPORTED;
 }
-
