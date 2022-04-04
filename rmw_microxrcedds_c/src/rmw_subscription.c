@@ -348,3 +348,27 @@ rmw_destroy_subscription(
 
   return result_ret;
 }
+
+rmw_ret_t
+rmw_subscription_set_content_filter(
+  rmw_subscription_t * subscription,
+  const rmw_subscription_content_filter_options_t * options)
+{
+  (void) subscription;
+  (void) options;
+
+  return RMW_RET_UNSUPPORTED;
+}
+
+rmw_ret_t
+rmw_subscription_get_content_filter(
+  const rmw_subscription_t * subscription,
+  rcutils_allocator_t * allocator,
+  rmw_subscription_content_filter_options_t * options)
+{
+  (void) subscription;
+  (void) allocator;
+  (void) options;
+
+  return RMW_RET_UNSUPPORTED;
+}
