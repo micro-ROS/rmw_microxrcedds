@@ -80,9 +80,9 @@ void on_topic(
           "Not available static buffer memory node in on_topic callback",
           .node = custom_subscription->owner_node->node_name,
           .node_namespace = custom_subscription->owner_node->node_namespace,
-          .topic_name = custom_subscription->topic_name, .ucdr = ub,
+          .topic_name = custom_subscription->topic.topic_name, .ucdr = ub,
           .size = length,
-          .type_support.message_callbacks = custom_subscription->type_support_callbacks);
+          .type_support.message_callbacks = custom_subscription->topic.type_support_callbacks.msg);
         return;
       }
 
@@ -139,9 +139,9 @@ void on_request(
           "Not available static buffer memory node in on_request callback",
           .node = custom_service->owner_node->node_name,
           .node_namespace = custom_service->owner_node->node_namespace,
-          .topic_name = custom_service->service_name, .ucdr = ub,
+          .topic_name = custom_service->topic.topic_name, .ucdr = ub,
           .size = length,
-          .type_support.service_callbacks = custom_service->type_support_callbacks);
+          .type_support.service_callbacks = custom_service->topic.type_support_callbacks.srv);
         return;
       }
 
@@ -200,9 +200,9 @@ void on_reply(
           "Not available static buffer memory node in on_reply callback",
           .node = custom_client->owner_node->node_name,
           .node_namespace = custom_client->owner_node->node_namespace,
-          .topic_name = custom_client->service_name, .ucdr = ub,
+          .topic_name = custom_client->topic.topic_name, .ucdr = ub,
           .size = length,
-          .type_support.service_callbacks = custom_client->type_support_callbacks);
+          .type_support.service_callbacks = custom_client->topic.type_support_callbacks.srv);
         return;
       }
 

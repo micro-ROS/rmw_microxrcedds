@@ -71,7 +71,7 @@ rmw_take_with_info(
     static_buffer->buffer,
     static_buffer->length);
 
-  bool deserialize_rv = custom_subscription->type_support_callbacks->cdr_deserialize(
+  bool deserialize_rv = custom_subscription->topic.type_support_callbacks.msg->cdr_deserialize(
     &temp_buffer,
     ros_message);
 

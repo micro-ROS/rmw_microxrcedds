@@ -45,7 +45,7 @@ rmw_send_response(
     sizeof(sample_id.writer_guid.guidPrefix.data));
 
   const rosidl_message_type_support_t * res_members =
-    custom_service->type_support_callbacks->response_members_();
+    custom_service->topic.type_support_callbacks.srv->response_members_();
   const message_type_support_callbacks_t * functions =
     (const message_type_support_callbacks_t *)res_members->data;
 
@@ -112,7 +112,7 @@ rmw_take_response(
   request_header->request_id.sequence_number = static_buffer->related.reply_id;
 
   const rosidl_message_type_support_t * res_members =
-    custom_client->type_support_callbacks->response_members_();
+    custom_client->topic.type_support_callbacks.srv->response_members_();
   const message_type_support_callbacks_t * functions =
     (const message_type_support_callbacks_t *)res_members->data;
 

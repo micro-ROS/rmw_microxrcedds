@@ -33,7 +33,7 @@ rmw_send_request(
   rmw_uxrce_node_t * custom_node = custom_client->owner_node;
 
   const rosidl_message_type_support_t * req_members =
-    custom_client->type_support_callbacks->request_members_();
+    custom_client->topic.type_support_callbacks.srv->request_members_();
   const message_type_support_callbacks_t * functions =
     (const message_type_support_callbacks_t *)req_members->data;
 
@@ -111,7 +111,7 @@ rmw_take_request(
     static_buffer->related.sample_id.writer_guid.guidPrefix.data, 12);
 
   const rosidl_message_type_support_t * req_members =
-    custom_service->type_support_callbacks->request_members_();
+    custom_service->topic.type_support_callbacks.srv->request_members_();
   const message_type_support_callbacks_t * functions =
     (const message_type_support_callbacks_t *)req_members->data;
 

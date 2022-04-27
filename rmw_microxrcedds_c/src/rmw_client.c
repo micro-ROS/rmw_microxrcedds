@@ -12,16 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-#ifdef HAVE_C_TYPESUPPORT
-#include <rosidl_typesupport_microxrcedds_c/identifier.h>
-#endif /* ifdef HAVE_C_TYPESUPPORT */
-#ifdef HAVE_CPP_TYPESUPPORT
-#include <rosidl_typesupport_microxrcedds_cpp/identifier.h>
-#endif /* ifdef HAVE_CPP_TYPESUPPORT */
-
 #include <rmw/rmw.h>
 #include <rmw/allocators.h>
+
+#include <rosidl_typesupport_microxrcedds_c/identifier.h>
+#include <rosidl_typesupport_microxrcedds_c/service_type_support.h>
 
 #include "./rmw_microros_internal/utils.h"
 #include "./rmw_microros_internal/error_handling_internal.h"
@@ -56,8 +51,8 @@ rmw_create_client(
     rmw_client = &custom_client->rmw_client;
     rmw_client->data = NULL;
     rmw_client->implementation_identifier = rmw_get_implementation_identifier();
-    rmw_client->service_name = custom_client->service_name;
-    if ((strlen(service_name) + 1 ) > sizeof(custom_client->service_name)) {
+    rmw_client->service_name = custom_client->topic.topic_name;
+    if ((strlen(service_name) + 1 ) > sizeof(custom_client->topic.topic_name)) {
       RMW_UROS_TRACE_MESSAGE("failed to allocate string")
       goto fail;
     }
@@ -68,26 +63,18 @@ rmw_create_client(
     custom_client->session_timeout = RMW_UXRCE_PUBLISH_RELIABLE_TIMEOUT;
     custom_client->qos = *qos_policies;
 
-    const rosidl_service_type_support_t * type_support_xrce = NULL;
-#ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
-    type_support_xrce = get_service_typesupport_handle(
+    const rosidl_service_type_support_t * type_support_xrce = get_service_typesupport_handle(
       type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE);
-#endif /* ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE */
-#ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE
-    if (NULL == type_support_xrce) {
-      type_support_xrce = get_service_typesupport_handle(
-        type_support, ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE);
-    }
-#endif /* ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_CPP__IDENTIFIER_VALUE */
+
     if (NULL == type_support_xrce) {
       RMW_UROS_TRACE_MESSAGE("Undefined type support")
       goto fail;
     }
 
-    custom_client->type_support_callbacks =
+    custom_client->topic.type_support_callbacks.srv =
       (const service_type_support_callbacks_t *)type_support_xrce->data;
 
-    if (custom_client->type_support_callbacks == NULL) {
+    if (custom_client->topic.type_support_callbacks.srv == NULL) {
       RMW_UROS_TRACE_MESSAGE("type support data is NULL")
       goto fail;
     }
@@ -121,7 +108,7 @@ rmw_create_client(
     static char req_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
     static char res_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
     generate_service_types(
-      custom_client->type_support_callbacks, req_type_name, res_type_name,
+      custom_client->topic.type_support_callbacks.srv, req_type_name, res_type_name,
       RMW_UXRCE_TYPE_NAME_MAX_LENGTH);
 
     static char req_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
