@@ -120,15 +120,25 @@ rmw_create_client(
 #else
     static char req_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
     static char res_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
-    generate_service_types(
-      custom_client->type_support_callbacks, req_type_name, res_type_name,
-      RMW_UXRCE_TYPE_NAME_MAX_LENGTH);
+    if(!generate_service_types(
+      custom_service->type_support_callbacks, req_type_name, res_type_name,
+      RMW_UXRCE_TYPE_NAME_MAX_LENGTH))
+    {
+      RMW_UROS_TRACE_MESSAGE("Not enough memory for service type names")
+      put_memory(&service_memory, &custom_service->mem);
+      goto fail;
+    }
 
     static char req_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
     static char res_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
-    generate_service_topics(
+    if(!generate_service_topics(
       service_name, req_topic_name, res_topic_name,
-      RMW_UXRCE_TOPIC_NAME_MAX_LENGTH);
+      RMW_UXRCE_TOPIC_NAME_MAX_LENGTH))
+    {
+      RMW_UROS_TRACE_MESSAGE("Not enough memory for service topic names")
+      put_memory(&service_memory, &custom_service->mem);
+      goto fail;
+    }
 
     client_req = uxr_buffer_create_requester_bin(
       &custom_node->context->session,

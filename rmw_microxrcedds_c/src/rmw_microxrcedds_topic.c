@@ -71,8 +71,19 @@ create_topic(
   static char full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH];
   static char type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
 
-  generate_topic_name(topic_name, full_topic_name, sizeof(full_topic_name));
-  generate_type_name(message_type_support_callbacks, type_name, sizeof(type_name));
+  if (!generate_topic_name(topic_name, full_topic_name, sizeof(full_topic_name))) {
+    RMW_UROS_TRACE_MESSAGE("Error creating topic name");
+    rmw_uxrce_fini_topic_memory(custom_topic);
+    custom_topic = NULL;
+    goto fail;
+  }
+
+  if (!generate_type_name(message_type_support_callbacks, type_name, sizeof(type_name))) {
+    RMW_UROS_TRACE_MESSAGE("Error creating topic name");
+    rmw_uxrce_fini_topic_memory(custom_topic);
+    custom_topic = NULL;
+    goto fail;
+  }
 
   topic_req = uxr_buffer_create_topic_bin(
     &custom_node->context->session,
