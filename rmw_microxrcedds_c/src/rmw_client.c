@@ -121,11 +121,11 @@ rmw_create_client(
     static char req_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
     static char res_type_name[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
     if (!generate_service_types(
-        custom_service->type_support_callbacks, req_type_name, res_type_name,
+        custom_client->type_support_callbacks, req_type_name, res_type_name,
         RMW_UXRCE_TYPE_NAME_MAX_LENGTH))
     {
       RMW_UROS_TRACE_MESSAGE("Not enough memory for service type names")
-      put_memory(&service_memory, &custom_service->mem);
+      put_memory(&client_memory, &custom_client->mem);
       goto fail;
     }
 
@@ -136,7 +136,7 @@ rmw_create_client(
         RMW_UXRCE_TOPIC_NAME_MAX_LENGTH))
     {
       RMW_UROS_TRACE_MESSAGE("Not enough memory for service topic names")
-      put_memory(&service_memory, &custom_service->mem);
+      put_memory(&client_memory, &custom_client->mem);
       goto fail;
     }
 
