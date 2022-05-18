@@ -120,24 +120,25 @@ int build_participant_xml(
   return ret;
 }
 
-int generate_service_topics(
+bool generate_service_topics(
   const char * service_name,
   char * request_topic,
   char * reply_topic,
   size_t buffer_size)
 {
-  snprintf(
+  int ret_req = snprintf(
     request_topic, buffer_size, "%s%s%s", ros_request_prefix,
     service_name, ros_request_subfix);
 
-  snprintf(
+  int ret_rep = snprintf(
     reply_topic, buffer_size, "%s%s%s", ros_reply_prefix,
     service_name, ros_reply_subfix);
 
-  return 1;
+  return (ret_req >= 0) && (ret_req < (int)buffer_size) && (ret_rep >= 0) &&
+         (ret_rep < (int)buffer_size);
 }
 
-int generate_service_types(
+bool generate_service_types(
   const service_type_support_callbacks_t * members,
   char * request_type,
   char * reply_type,
@@ -151,10 +152,11 @@ int generate_service_types(
   const message_type_support_callbacks_t * res_callbacks =
     (const message_type_support_callbacks_t *)res_members->data;
 
-  generate_type_name(req_callbacks, request_type, buffer_size);
-  generate_type_name(res_callbacks, reply_type, buffer_size);
+  bool ret = true;
+  ret &= generate_type_name(req_callbacks, request_type, buffer_size);
+  ret &= generate_type_name(res_callbacks, reply_type, buffer_size);
 
-  return 0;
+  return ret;
 }
 
 int build_service_xml(
@@ -287,7 +289,7 @@ int generate_name(
   return ret;
 }
 
-size_t generate_type_name(
+bool generate_type_name(
   const message_type_support_callbacks_t * members,
   char type_name[],
   size_t buffer_size)
@@ -295,13 +297,10 @@ size_t generate_type_name(
   static const char * sep = "::";
   static const char * protocol = "dds";
   static const char * suffix = "_";
-  size_t full_name_size = strlen(protocol) + strlen(suffix) + strlen(sep) + strlen(
-    members->message_name_) + strlen(suffix) +
-    ((NULL != members->message_namespace_) ? strlen(members->message_namespace_) : 0) + 1;
 
   type_name[0] = 0;
 
-  snprintf(
+  int ret = snprintf(
     type_name, buffer_size,
     "%s%s%s%s%s%s%s",
     (NULL != members->message_namespace_) ? members->message_namespace_ : "",
@@ -313,10 +312,10 @@ size_t generate_type_name(
     suffix
   );
 
-  return full_name_size;
+  return (ret >= 0) && (ret < (int)buffer_size);
 }
 
-int generate_topic_name(
+bool generate_topic_name(
   const char * topic_name,
   char * full_topic_name,
   size_t full_topic_name_size)
@@ -327,10 +326,8 @@ int generate_topic_name(
     "%s%s",
     ros_topic_prefix,
     topic_name);
-  if ((ret < 0) && (ret >= (int)full_topic_name_size)) {
-    return 0;
-  }
-  return ret;
+
+  return (ret >= 0) && (ret < (int)full_topic_name_size);
 }
 
 int build_topic_xml(
@@ -352,7 +349,7 @@ int build_topic_xml(
   static char type_name_buffer[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
 
   if (RMW_UXRCE_TOPIC_NAME_MAX_LENGTH >= strlen(topic_name) &&
-    0 != generate_type_name(members, type_name_buffer, sizeof(type_name_buffer)))
+    generate_type_name(members, type_name_buffer, sizeof(type_name_buffer)))
   {
     char full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH + 1 + sizeof(ros_topic_prefix)];
 
@@ -390,7 +387,7 @@ int build_xml(
   int ret = 0;
   static char type_name_buffer[RMW_UXRCE_TYPE_NAME_MAX_LENGTH];
 
-  if (0 != generate_type_name(members, type_name_buffer, sizeof(type_name_buffer))) {
+  if (generate_type_name(members, type_name_buffer, sizeof(type_name_buffer))) {
     char full_topic_name[RMW_UXRCE_TOPIC_NAME_MAX_LENGTH + 1 + sizeof(ros_topic_prefix)];
     full_topic_name[0] = '\0';
 
