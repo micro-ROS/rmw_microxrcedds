@@ -134,7 +134,8 @@ bool generate_service_topics(
     reply_topic, buffer_size, "%s%s%s", ros_reply_prefix,
     service_name, ros_reply_subfix);
 
-  return (ret_req >= 0) && (ret_req < (int)buffer_size) && (ret_rep >= 0) && (ret_rep < (int)buffer_size)
+  return (ret_req >= 0) && (ret_req < (int)buffer_size) && (ret_rep >= 0) &&
+         (ret_rep < (int)buffer_size)
 }
 
 bool generate_service_types(
