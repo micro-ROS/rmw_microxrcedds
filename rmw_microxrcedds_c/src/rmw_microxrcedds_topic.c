@@ -79,7 +79,7 @@ create_topic(
   }
 
   if (!generate_type_name(message_type_support_callbacks, type_name, sizeof(type_name))) {
-    RMW_UROS_TRACE_MESSAGE("Error creating topic name");
+    RMW_UROS_TRACE_MESSAGE("Error creating type name");
     rmw_uxrce_fini_topic_memory(custom_topic);
     custom_topic = NULL;
     goto fail;
