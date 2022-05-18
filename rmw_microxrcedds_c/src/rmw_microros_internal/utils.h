@@ -32,23 +32,23 @@ int generate_name(
   char name[],
   size_t buffer_size);
 
-size_t generate_type_name(
+bool generate_type_name(
   const message_type_support_callbacks_t * members,
   char type_name[],
   size_t buffer_size);
 
-int generate_topic_name(
+bool generate_topic_name(
   const char * topic_name,
   char * full_topic_name,
   size_t full_topic_name_size);
 
-int generate_service_types(
+bool generate_service_types(
   const service_type_support_callbacks_t * members,
   char * request_type,
   char * reply_type,
   size_t buffer_size);
 
-int generate_service_topics(
+bool generate_service_topics(
   const char * service_name,
   char * request_topic,
   char * reply_topic,
