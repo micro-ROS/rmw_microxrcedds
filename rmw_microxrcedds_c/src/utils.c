@@ -297,9 +297,6 @@ bool generate_type_name(
   static const char * sep = "::";
   static const char * protocol = "dds";
   static const char * suffix = "_";
-  size_t full_name_size = strlen(protocol) + strlen(suffix) + strlen(sep) + strlen(
-    members->message_name_) + strlen(suffix) +
-    ((NULL != members->message_namespace_) ? strlen(members->message_namespace_) : 0) + 1;
 
   type_name[0] = 0;
 
