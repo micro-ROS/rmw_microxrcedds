@@ -2,8 +2,8 @@
 Changelog for package rmw_microxrcedds
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.0 (2022-05-25)
+------------------
 * Fix topic and type name handling (`#254 <https://github.com/micro-ROS/rmw-microxrcedds/issues/254>`_)
 * Add framing macros (`#250 <https://github.com/micro-ROS/rmw-microxrcedds/issues/250>`_)
 * Add content filter topic API (`#246 <https://github.com/micro-ROS/rmw-microxrcedds/issues/246>`_)
