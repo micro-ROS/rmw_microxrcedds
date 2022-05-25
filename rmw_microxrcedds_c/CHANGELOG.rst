@@ -2,8 +2,8 @@
 Changelog for package rmw_microxrcedds
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.1.0 (2022-05-25)
+------------------
 * Fix topic and type name handling (`#254 <https://github.com/micro-ROS/rmw-microxrcedds/issues/254>`_) (`#256 <https://github.com/micro-ROS/rmw-microxrcedds/issues/256>`_)
 * Add framing macros (`#250 <https://github.com/micro-ROS/rmw-microxrcedds/issues/250>`_) (`#251 <https://github.com/micro-ROS/rmw-microxrcedds/issues/251>`_)
 * Spin session on empty wait (backport `#233 <https://github.com/micro-ROS/rmw-microxrcedds/issues/233>`_) (`#239 <https://github.com/micro-ROS/rmw-microxrcedds/issues/239>`_)
