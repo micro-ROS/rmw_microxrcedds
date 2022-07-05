@@ -60,10 +60,9 @@ rmw_ret_t rmw_uros_set_context_entity_creation_session_timeout(
   RMW_CHECK_ARGUMENT_FOR_NULL(context, RMW_RET_INVALID_ARGUMENT);
   rmw_uxrce_session_t * custom_session = (rmw_uxrce_session_t *)context->impl;
 
-  if(session_timeout == 0) {
-    rmw_context_impl_t * context_impl = (rmw_context_impl_t *) context->impl;
-    custom_session->creation_stream = &context_impl->best_effort_output;
-  }
+  rmw_context_impl_t * context_impl = (rmw_context_impl_t *) context->impl;
+  custom_session->creation_stream = session_timeout <= 0 ?
+    &context_impl->best_effort_output : &context_impl->reliable_output;
 
   custom_session->creation_timeout = session_timeout;
   return RMW_RET_OK;
@@ -76,10 +75,9 @@ rmw_ret_t rmw_uros_set_context_entity_destroy_session_timeout(
   RMW_CHECK_ARGUMENT_FOR_NULL(context, RMW_RET_INVALID_ARGUMENT);
   rmw_uxrce_session_t * custom_session = (rmw_uxrce_session_t *)context->impl;
 
-  if(session_timeout == 0) {
-    rmw_context_impl_t * context_impl = (rmw_context_impl_t *) context->impl;
-    custom_session->destroy_stream = &context_impl->best_effort_output;
-  }
+  rmw_context_impl_t * context_impl = (rmw_context_impl_t *) context->impl;
+  custom_session->destroy_stream = session_timeout <= 0 ?
+    &context_impl->best_effort_output : &context_impl->reliable_output;
 
   custom_session->destroy_timeout = session_timeout;
   return RMW_RET_OK;
