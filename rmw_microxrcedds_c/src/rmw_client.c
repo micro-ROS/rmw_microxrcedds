@@ -160,7 +160,6 @@ rmw_create_client(
         custom_node->context, custom_node->context->creation_stream, client_req,
         custom_node->context->creation_timeout))
     {
-      put_memory(&client_memory, &custom_client->mem);
       goto fail;
     }
 

@@ -66,7 +66,7 @@ rmw_create_publisher(
   const rmw_publisher_options_t * publisher_options)
 {
   (void)publisher_options;
-
+  rmw_uxrce_publisher_t *publisher_data = NULL;
   rmw_publisher_t * rmw_publisher = NULL;
   if (!node) {
     RMW_UROS_TRACE_MESSAGE("node handle is null")
@@ -111,6 +111,8 @@ rmw_create_publisher(
 
     custom_publisher->cs_cb_size = NULL;
     custom_publisher->cs_cb_serialization = NULL;
+
+    rmw_publisher->data = custom_publisher;
 
     const rosidl_message_type_support_t * type_support_xrce = NULL;
 #ifdef ROSIDL_TYPESUPPORT_MICROXRCEDDS_C__IDENTIFIER_VALUE
@@ -171,11 +173,8 @@ rmw_create_publisher(
         custom_node->context, custom_node->context->creation_stream, publisher_req,
         custom_node->context->creation_timeout))
     {
-      put_memory(&publisher_memory, &custom_publisher->mem);
       goto fail;
     }
-
-    rmw_publisher->data = custom_publisher;
 
     // Create datawriter
     custom_publisher->datawriter_id = uxr_object_id(
@@ -212,13 +211,17 @@ rmw_create_publisher(
         custom_node->context, custom_node->context->creation_stream, datawriter_req,
         custom_node->context->creation_timeout))
     {
-      put_memory(&publisher_memory, &custom_publisher->mem);
       goto fail;
     }
   }
 
   return rmw_publisher;
 fail:
+  publisher_data = (rmw_uxrce_publisher_t *)rmw_publisher->data;
+  if (publisher_data != NULL && publisher_data->topic != NULL)
+  {
+    rmw_uxrce_fini_topic_memory(publisher_data->topic);
+  }
   rmw_uxrce_fini_publisher_memory(rmw_publisher);
   rmw_publisher = NULL;
   return rmw_publisher;

@@ -159,7 +159,6 @@ rmw_create_service(
         custom_node->context->creation_timeout))
     {
       RMW_UROS_TRACE_MESSAGE("Issues creating Micro XRCE-DDS entities")
-      put_memory(&service_memory, &custom_service->mem);
       goto fail;
     }
 
