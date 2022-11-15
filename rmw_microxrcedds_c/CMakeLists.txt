@@ -84,17 +84,44 @@ if(RMW_UXRCE_ENTITY_DESTROY_TIMEOUT STREQUAL "")
   set(RMW_UXRCE_ENTITY_DESTROY_TIMEOUT ${RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT})
 endif()
 
-set(RMW_UXRCE_STREAM_HISTORY "4" CACHE STRING "This value sets the number of MTUs to buffer, both input and output. Must be a power of two.")
+set(RMW_UXRCE_STREAM_HISTORY "4" CACHE STRING
+  "This value sets the number of MTUs to buffer, both input and output. Must be a power of two.")
 set(RMW_UXRCE_STREAM_HISTORY_INPUT "" CACHE STRING
-  "This value sets the number of MTUs to input buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_OUTPUT is blank. If set, must be a power of two.")
+  "This value sets the number of MTUs to input buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_OUTPUT is blank. \
+If set, must be a power of two.")
 set(RMW_UXRCE_STREAM_HISTORY_OUTPUT "" CACHE STRING
-  "This value sets the number of MTUs to output buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_INPUT is blank. If set, must be a power of two.")
+  "This value sets the number of MTUs to output buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_INPUT is blank. \
+If set, must be a power of two.")
 
 if(RMW_UXRCE_STREAM_HISTORY_INPUT STREQUAL "" OR RMW_UXRCE_STREAM_HISTORY_OUTPUT STREQUAL "")
   unset(RMW_UXRCE_STREAM_HISTORY_INPUT)
   unset(RMW_UXRCE_STREAM_HISTORY_OUTPUT)
+
+  # check power-of-two requirement
+  # from: http://graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2
+  math(EXPR __RMW_UXRCE_STREAM_HISTORY_CHECK "${RMW_UXRCE_STREAM_HISTORY} & (${RMW_UXRCE_STREAM_HISTORY} - 1)")
+  if(${__RMW_UXRCE_STREAM_HISTORY_CHECK} GREATER 0)
+    message(FATAL_ERROR "STREAM_HISTORY must be a power-of-two (not: ${RMW_UXRCE_STREAM_HISTORY})")
+  endif()
+  unset(__RMW_UXRCE_STREAM_HISTORY_CHECK)
+
 else()
   unset(RMW_UXRCE_STREAM_HISTORY)
+
+  # check power-of-two requirement
+  # from: http://graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2
+  math(EXPR __RMW_UXRCE_STREAM_HISTORY_INPUT_CHECK "${RMW_UXRCE_STREAM_HISTORY_INPUT} & (${RMW_UXRCE_STREAM_HISTORY_INPUT} - 1)")
+  math(EXPR __RMW_UXRCE_STREAM_HISTORY_OUTPUT_CHECK "${RMW_UXRCE_STREAM_HISTORY_OUTPUT} & (${RMW_UXRCE_STREAM_HISTORY_OUTPUT} - 1)")
+
+  if(${__RMW_UXRCE_STREAM_HISTORY_INPUT_CHECK} GREATER 0)
+    message(FATAL_ERROR "STREAM_HISTORY_INPUT must be a power-of-two (not: ${RMW_UXRCE_STREAM_HISTORY_INPUT})")
+  endif()
+  if(${__RMW_UXRCE_STREAM_HISTORY_OUTPUT_CHECK} GREATER 0)
+    message(FATAL_ERROR "STREAM_HISTORY_OUTPUT must be a power-of-two (not: ${RMW_UXRCE_STREAM_HISTORY_OUTPUT})")
+  endif()
+
+  unset(__RMW_UXRCE_STREAM_HISTORY_INPUT_CHECK)
+  unset(__RMW_UXRCE_STREAM_HISTORY_OUTPUT_CHECK)
 endif()
 
 # Transport handle define macros.
