@@ -84,11 +84,11 @@ if(RMW_UXRCE_ENTITY_DESTROY_TIMEOUT STREQUAL "")
   set(RMW_UXRCE_ENTITY_DESTROY_TIMEOUT ${RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT})
 endif()
 
-set(RMW_UXRCE_STREAM_HISTORY "4" CACHE STRING "This value sets the number of MTUs to buffer, both input and output.")
+set(RMW_UXRCE_STREAM_HISTORY "4" CACHE STRING "This value sets the number of MTUs to buffer, both input and output. Must be a power of two.")
 set(RMW_UXRCE_STREAM_HISTORY_INPUT "" CACHE STRING
-  "This value sets the number of MTUs to input buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_OUTPUT is blank.")
+  "This value sets the number of MTUs to input buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_OUTPUT is blank. If set, must be a power of two.")
 set(RMW_UXRCE_STREAM_HISTORY_OUTPUT "" CACHE STRING
-  "This value sets the number of MTUs to output buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_INPUT is blank.")
+  "This value sets the number of MTUs to output buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_INPUT is blank. If set, must be a power of two.")
 
 if(RMW_UXRCE_STREAM_HISTORY_INPUT STREQUAL "" OR RMW_UXRCE_STREAM_HISTORY_OUTPUT STREQUAL "")
   unset(RMW_UXRCE_STREAM_HISTORY_INPUT)
