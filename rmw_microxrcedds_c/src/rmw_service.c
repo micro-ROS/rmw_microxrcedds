@@ -54,7 +54,7 @@ rmw_create_service(
     rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)memory_node->data;
 
     rmw_service = &custom_service->rmw_service;
-    rmw_service->data = NULL;
+    rmw_service->data = custom_service;
     rmw_service->implementation_identifier = rmw_get_implementation_identifier();
     rmw_service->service_name = custom_service->service_name;
     if ((strlen(service_name) + 1 ) > sizeof(custom_service->service_name)) {
@@ -123,7 +123,6 @@ rmw_create_service(
         RMW_UXRCE_TYPE_NAME_MAX_LENGTH))
     {
       RMW_UROS_TRACE_MESSAGE("Not enough memory for service type names")
-      put_memory(&service_memory, &custom_service->mem);
       goto fail;
     }
 
@@ -134,7 +133,6 @@ rmw_create_service(
         RMW_UXRCE_TOPIC_NAME_MAX_LENGTH))
     {
       RMW_UROS_TRACE_MESSAGE("Not enough memory for service topic names")
-      put_memory(&service_memory, &custom_service->mem);
       goto fail;
     }
 
@@ -152,14 +150,11 @@ rmw_create_service(
       UXR_REPLACE | UXR_REUSE);
 #endif /* ifdef RMW_UXRCE_USE_XML */
 
-    rmw_service->data = custom_service;
-
     if (!run_xrce_session(
         custom_node->context, custom_node->context->creation_stream, service_req,
         custom_node->context->creation_timeout))
     {
       RMW_UROS_TRACE_MESSAGE("Issues creating Micro XRCE-DDS entities")
-      put_memory(&service_memory, &custom_service->mem);
       goto fail;
     }
 
