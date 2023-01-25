@@ -216,8 +216,7 @@ rmw_create_publisher(
 
   return rmw_publisher;
 fail:
-  if (custom_publisher != NULL && custom_publisher->topic != NULL)
-  {
+  if (custom_publisher != NULL && custom_publisher->topic != NULL) {
     rmw_uxrce_fini_topic_memory(custom_publisher->topic);
   }
 

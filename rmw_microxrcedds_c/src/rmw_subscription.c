@@ -220,8 +220,7 @@ rmw_create_subscription(
   return rmw_subscription;
 
 fail:
-  if (custom_subscription != NULL && custom_subscription->topic != NULL)
-  {
+  if (custom_subscription != NULL && custom_subscription->topic != NULL) {
     rmw_uxrce_fini_topic_memory(custom_subscription->topic);
   }
 
