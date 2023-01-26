@@ -173,6 +173,11 @@ rmw_ret_t rmw_destroy_node(
     item = item->next;
     if (custom_publisher->owner_node == custom_node) {
       ret = rmw_destroy_publisher(node, &custom_publisher->rmw_publisher);
+
+      // We should not early return on a RMW_RET_TIMEOUT, as it may be an expected output
+      if (RMW_RET_ERROR == ret) {
+        return ret;
+      }
     }
   }
 
@@ -182,6 +187,10 @@ rmw_ret_t rmw_destroy_node(
     item = item->next;
     if (custom_subscription->owner_node == custom_node) {
       ret = rmw_destroy_subscription(node, &custom_subscription->rmw_subscription);
+
+      if (RMW_RET_ERROR == ret) {
+        return ret;
+      }
     }
   }
 
@@ -191,6 +200,10 @@ rmw_ret_t rmw_destroy_node(
     item = item->next;
     if (custom_service->owner_node == custom_node) {
       ret = rmw_destroy_service(node, &custom_service->rmw_service);
+
+      if (RMW_RET_ERROR == ret) {
+        return ret;
+      }
     }
   }
 
@@ -200,6 +213,10 @@ rmw_ret_t rmw_destroy_node(
     item = item->next;
     if (custom_client->owner_node == custom_node) {
       ret = rmw_destroy_client(node, &custom_client->rmw_client);
+
+      if (RMW_RET_ERROR == ret) {
+        return ret;
+      }
     }
   }
 
