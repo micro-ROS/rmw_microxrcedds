@@ -67,6 +67,7 @@ rmw_create_publisher(
 {
   (void)publisher_options;
 
+  rmw_uxrce_publisher_t * custom_publisher = NULL;
   rmw_publisher_t * rmw_publisher = NULL;
   if (!node) {
     RMW_UROS_TRACE_MESSAGE("node handle is null")
@@ -85,10 +86,10 @@ rmw_create_publisher(
       RMW_UROS_TRACE_MESSAGE("Not available memory node")
       return NULL;
     }
-    rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)memory_node->data;
+    custom_publisher = (rmw_uxrce_publisher_t *)memory_node->data;
 
     rmw_publisher = &custom_publisher->rmw_publisher;
-    rmw_publisher->data = NULL;
+    rmw_publisher->data = custom_publisher;
     rmw_publisher->implementation_identifier = rmw_get_implementation_identifier();
     rmw_publisher->topic_name = custom_publisher->topic_name;
 
@@ -171,11 +172,8 @@ rmw_create_publisher(
         custom_node->context, custom_node->context->creation_stream, publisher_req,
         custom_node->context->creation_timeout))
     {
-      put_memory(&publisher_memory, &custom_publisher->mem);
       goto fail;
     }
-
-    rmw_publisher->data = custom_publisher;
 
     // Create datawriter
     custom_publisher->datawriter_id = uxr_object_id(
@@ -212,13 +210,16 @@ rmw_create_publisher(
         custom_node->context, custom_node->context->creation_stream, datawriter_req,
         custom_node->context->creation_timeout))
     {
-      put_memory(&publisher_memory, &custom_publisher->mem);
       goto fail;
     }
   }
 
   return rmw_publisher;
 fail:
+  if (custom_publisher != NULL && custom_publisher->topic != NULL) {
+    rmw_uxrce_fini_topic_memory(custom_publisher->topic);
+  }
+
   rmw_uxrce_fini_publisher_memory(rmw_publisher);
   rmw_publisher = NULL;
   return rmw_publisher;
