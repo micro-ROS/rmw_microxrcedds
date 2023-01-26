@@ -33,6 +33,7 @@ rmw_create_client(
   const char * service_name,
   const rmw_qos_profile_t * qos_policies)
 {
+  rmw_uxrce_client_t * custom_client = NULL;
   rmw_client_t * rmw_client = NULL;
   if (!node) {
     RMW_UROS_TRACE_MESSAGE("node handle is null")
@@ -51,10 +52,10 @@ rmw_create_client(
       RMW_UROS_TRACE_MESSAGE("Not available memory node")
       return NULL;
     }
-    rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)memory_node->data;
+    custom_client = (rmw_uxrce_client_t *)memory_node->data;
 
     rmw_client = &custom_client->rmw_client;
-    rmw_client->data = NULL;
+    rmw_client->data = custom_client;
     rmw_client->implementation_identifier = rmw_get_implementation_identifier();
     rmw_client->service_name = custom_client->service_name;
     if ((strlen(service_name) + 1 ) > sizeof(custom_client->service_name)) {
@@ -125,7 +126,6 @@ rmw_create_client(
         RMW_UXRCE_TYPE_NAME_MAX_LENGTH))
     {
       RMW_UROS_TRACE_MESSAGE("Not enough memory for service type names")
-      put_memory(&client_memory, &custom_client->mem);
       goto fail;
     }
 
@@ -136,7 +136,6 @@ rmw_create_client(
         RMW_UXRCE_TOPIC_NAME_MAX_LENGTH))
     {
       RMW_UROS_TRACE_MESSAGE("Not enough memory for service topic names")
-      put_memory(&client_memory, &custom_client->mem);
       goto fail;
     }
 
@@ -154,13 +153,10 @@ rmw_create_client(
       UXR_REPLACE | UXR_REUSE);
 #endif /* ifdef RMW_UXRCE_USE_XML */
 
-    rmw_client->data = custom_client;
-
     if (!run_xrce_session(
         custom_node->context, custom_node->context->creation_stream, client_req,
         custom_node->context->creation_timeout))
     {
-      put_memory(&client_memory, &custom_client->mem);
       goto fail;
     }
 
