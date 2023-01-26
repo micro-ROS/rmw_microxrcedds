@@ -65,6 +65,7 @@ rmw_create_subscription(
 {
   (void)subscription_options;
 
+  rmw_uxrce_subscription_t * custom_subscription = NULL;
   rmw_subscription_t * rmw_subscription = NULL;
   if (!node) {
     RMW_UROS_TRACE_MESSAGE("node handle is null")
@@ -85,10 +86,10 @@ rmw_create_subscription(
       RMW_UROS_TRACE_MESSAGE("Not available memory node")
       return NULL;
     }
-    rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)memory_node->data;
+    custom_subscription = (rmw_uxrce_subscription_t *)memory_node->data;
 
     rmw_subscription = &custom_subscription->rmw_subscription;
-    rmw_subscription->data = NULL;
+    rmw_subscription->data = custom_subscription;
     rmw_subscription->implementation_identifier = rmw_get_implementation_identifier();
     rmw_subscription->topic_name = custom_subscription->topic_name;
     if ((strlen(topic_name) + 1 ) > sizeof(custom_subscription->topic_name)) {
@@ -159,7 +160,6 @@ rmw_create_subscription(
         custom_node->context, custom_node->context->creation_stream, subscriber_req,
         custom_node->context->creation_timeout))
     {
-      put_memory(&subscription_memory, &custom_subscription->mem);
       goto fail;
     }
 
@@ -198,11 +198,8 @@ rmw_create_subscription(
         custom_node->context->creation_timeout))
     {
       RMW_UROS_TRACE_MESSAGE("Issues creating Micro XRCE-DDS entities")
-      put_memory(&subscription_memory, &custom_subscription->mem);
       goto fail;
     }
-
-    rmw_subscription->data = custom_subscription;
 
     uxrDeliveryControl delivery_control;
     delivery_control.max_samples = UXR_MAX_SAMPLES_UNLIMITED;
@@ -223,6 +220,10 @@ rmw_create_subscription(
   return rmw_subscription;
 
 fail:
+  if (custom_subscription != NULL && custom_subscription->topic != NULL) {
+    rmw_uxrce_fini_topic_memory(custom_subscription->topic);
+  }
+
   rmw_uxrce_fini_subscription_memory(rmw_subscription);
   rmw_subscription = NULL;
   return rmw_subscription;

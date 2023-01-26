@@ -58,8 +58,6 @@ create_topic(
       sizeof(rmw_uxrce_entity_naming_buffer)))
   {
     RMW_UROS_TRACE_MESSAGE("failed to generate xml request for node creation")
-    rmw_uxrce_fini_topic_memory(custom_topic);
-    custom_topic = NULL;
     goto fail;
   }
 
@@ -73,15 +71,11 @@ create_topic(
 
   if (!generate_topic_name(topic_name, full_topic_name, sizeof(full_topic_name))) {
     RMW_UROS_TRACE_MESSAGE("Error creating topic name");
-    rmw_uxrce_fini_topic_memory(custom_topic);
-    custom_topic = NULL;
     goto fail;
   }
 
   if (!generate_type_name(message_type_support_callbacks, type_name, sizeof(type_name))) {
     RMW_UROS_TRACE_MESSAGE("Error creating type name");
-    rmw_uxrce_fini_topic_memory(custom_topic);
-    custom_topic = NULL;
     goto fail;
   }
 
@@ -99,12 +93,17 @@ create_topic(
       custom_node->context, custom_node->context->creation_stream, topic_req,
       custom_node->context->creation_timeout))
   {
-    rmw_uxrce_fini_topic_memory(custom_topic);
-    custom_topic = NULL;
     goto fail;
   }
 
+  return custom_topic;
+
 fail:
+  if (custom_topic != NULL) {
+    rmw_uxrce_fini_topic_memory(custom_topic);
+  }
+
+  custom_topic = NULL;
   return custom_topic;
 }
 
