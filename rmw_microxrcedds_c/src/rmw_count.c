@@ -126,3 +126,29 @@ rmw_count_subscribers(
   return RMW_RET_UNSUPPORTED;
 #endif  // RMW_UXRCE_GRAPH
 }
+
+rmw_ret_t
+rmw_count_clients(
+  const rmw_node_t * node,
+  const char * service_name,
+  size_t * count)
+{
+  (void)node;
+  (void)service_name;
+  (void)count;
+  RMW_UROS_TRACE_MESSAGE("function not implemented");
+  return RMW_RET_UNSUPPORTED;
+}
+
+rmw_ret_t
+rmw_count_services(
+  const rmw_node_t * node,
+  const char * service_name,
+  size_t * count)
+{
+  (void)node;
+  (void)service_name;
+  (void)count;
+  RMW_UROS_TRACE_MESSAGE("function not implemented");
+  return RMW_RET_UNSUPPORTED;
+}
