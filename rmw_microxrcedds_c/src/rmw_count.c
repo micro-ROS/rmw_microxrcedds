@@ -111,12 +111,20 @@ rmw_count_subscribers(
   const char * topic_name,
   size_t * count)
 {
+#ifdef RMW_UXRCE_GRAPH
+  return __rmw_count_entities(
+    micro_ros_msgs__msg__Entity__SUBSCRIBER,
+    node,
+    topic_name,
+    count);
+#else
   (void)node;
   (void)topic_name;
   (void)count;
   RMW_UROS_TRACE_MESSAGE(
     "Function not available; enable RMW_UXRCE_GRAPH configuration profile before using");
   return RMW_RET_UNSUPPORTED;
+#endif  // RMW_UXRCE_GRAPH
 }
 
 rmw_ret_t
