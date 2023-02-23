@@ -93,6 +93,8 @@ set(RMW_UXRCE_STREAM_HISTORY_OUTPUT "" CACHE STRING
   "This value sets the number of MTUs to output buffer. It will be ignored if RMW_UXRCE_STREAM_HISTORY_INPUT is blank. \
 If set, must be a power of two.")
 
+set(RMW_UXRCE_C_STANDARD 99 CACHE STRING "Version of the C language used to build the library")
+
 if(RMW_UXRCE_STREAM_HISTORY_INPUT STREQUAL "" OR RMW_UXRCE_STREAM_HISTORY_OUTPUT STREQUAL "")
   unset(RMW_UXRCE_STREAM_HISTORY_INPUT)
   unset(RMW_UXRCE_STREAM_HISTORY_OUTPUT)
@@ -294,7 +296,7 @@ target_include_directories(${PROJECT_NAME}
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
   C_STANDARD
-    99
+    ${RMW_UXRCE_C_STANDARD}
   C_STANDARD_REQUIRED
     YES
 )
