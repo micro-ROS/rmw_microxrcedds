@@ -282,10 +282,15 @@ rmw_publisher_get_actual_qos(
   const rmw_publisher_t * publisher,
   rmw_qos_profile_t * qos)
 {
+<<<<<<< HEAD
   (void)qos;
+=======
+  RMW_CHECK_ARGUMENT_FOR_NULL(publisher, RMW_RET_INVALID_ARGUMENT);
+  RMW_CHECK_ARGUMENT_FOR_NULL(qos, RMW_RET_INVALID_ARGUMENT);
+>>>>>>> 7886a89 (Fix QoS getter (#292))
 
   rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
-  qos = &custom_publisher->qos;
+  *qos = custom_publisher->qos;
 
   return RMW_RET_OK;
 }

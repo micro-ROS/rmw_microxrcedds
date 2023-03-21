@@ -241,3 +241,34 @@ rmw_destroy_service(
 
   return result_ret;
 }
+<<<<<<< HEAD
+=======
+
+rmw_ret_t
+rmw_service_response_publisher_get_actual_qos(
+  const rmw_service_t * service,
+  rmw_qos_profile_t * qos)
+{
+  RMW_CHECK_ARGUMENT_FOR_NULL(service, RMW_RET_INVALID_ARGUMENT);
+  RMW_CHECK_ARGUMENT_FOR_NULL(qos, RMW_RET_INVALID_ARGUMENT);
+
+  rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
+  *qos = custom_service->qos;
+
+  return RMW_RET_OK;
+}
+
+rmw_ret_t
+rmw_service_request_subscription_get_actual_qos(
+  const rmw_service_t * service,
+  rmw_qos_profile_t * qos)
+{
+  RMW_CHECK_ARGUMENT_FOR_NULL(service, RMW_RET_INVALID_ARGUMENT);
+  RMW_CHECK_ARGUMENT_FOR_NULL(qos, RMW_RET_INVALID_ARGUMENT);
+
+  rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)service->data;
+  *qos = custom_service->qos;
+
+  return RMW_RET_OK;
+}
+>>>>>>> 7886a89 (Fix QoS getter (#292))
