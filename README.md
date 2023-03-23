@@ -19,9 +19,6 @@ The implementation wraps the latest code from eProsima's Micro XRCE-DDS client t
 This library defines the interface used by upper layers in the ROS 2 stack, and that is implemented using XRCE-DDS middleware in the lower layers.
 For further information about `rmw_microxrcedds` click [here](https://github.com/micro-ROS/micro-ROS-doc/blob/dashing/rmw_microxrcedds/README.md).
 
-<<<<<<< HEAD
-#### Library build Configurations
-=======
 #### Library configuration
 
 This RMW implementation can be configured via CMake arguments, its usual to configure them via `colcon.meta` file in a micro-ROS enviroment.
@@ -60,7 +57,6 @@ All the configurable parameters are:
 | RMW_UXRCE_STREAM_HISTORY_OUTPUT           | This value sets the number of MTUs to output buffer. </br> It will be ignored if RMW_UXRCE_STREAM_HISTORY_INPUT is blank. If set, must be a power-of-two.                                      | -       |
 | RMW_UXRCE_GRAPH                           | Allows to perform graph-related operations to the user                                                                                                                                         | OFF     |
 | RMW_UXRCE_ALLOW_DYNAMIC_ALLOCATIONS       | Enables increasing static pools with dynamic allocation when needed.                                                                                                                           | OFF     |
->>>>>>> fb2dca6 (Enforce power-of-two for history setting in CMakeLists (#271))
 
 The middleware implementation uses static memory assignations.
 Because of this, assignations of the memory are upper bounded so must be configured by the user before the build process.

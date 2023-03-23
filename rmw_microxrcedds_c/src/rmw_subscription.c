@@ -277,10 +277,11 @@ rmw_subscription_get_actual_qos(
   const rmw_subscription_t * subscription,
   rmw_qos_profile_t * qos)
 {
-  (void)qos;
+  RMW_CHECK_ARGUMENT_FOR_NULL(subscription, RMW_RET_INVALID_ARGUMENT);
+  RMW_CHECK_ARGUMENT_FOR_NULL(qos, RMW_RET_INVALID_ARGUMENT);
 
   rmw_uxrce_subscription_t * custom_subscription = (rmw_uxrce_subscription_t *)subscription->data;
-  qos = &custom_subscription->qos;
+  *qos = custom_subscription->qos;
 
   return RMW_RET_OK;
 }

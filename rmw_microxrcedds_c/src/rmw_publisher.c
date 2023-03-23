@@ -282,10 +282,11 @@ rmw_publisher_get_actual_qos(
   const rmw_publisher_t * publisher,
   rmw_qos_profile_t * qos)
 {
-  (void)qos;
+  RMW_CHECK_ARGUMENT_FOR_NULL(publisher, RMW_RET_INVALID_ARGUMENT);
+  RMW_CHECK_ARGUMENT_FOR_NULL(qos, RMW_RET_INVALID_ARGUMENT);
 
   rmw_uxrce_publisher_t * custom_publisher = (rmw_uxrce_publisher_t *)publisher->data;
-  qos = &custom_publisher->qos;
+  *qos = custom_publisher->qos;
 
   return RMW_RET_OK;
 }
