@@ -14,6 +14,8 @@
 
 #include <rmw/dynamic_message_type_support.h>
 
+#include "./rmw_microros_internal/error_handling_internal.h"
+
 rmw_ret_t
 rmw_take_dynamic_message(
   const rmw_subscription_t * subscription,
