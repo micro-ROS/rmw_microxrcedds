@@ -25,7 +25,7 @@ rmw_take_dynamic_message(
   (void)dynamic_message;
   (void)taken;
   (void)allocation;
-  RMW_UROS_TRACE_MESSAGE("function not implemented")
+  RMW_UROS_TRACE_MESSAGE("function not implemented");
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -44,7 +44,7 @@ rmw_take_dynamic_message_with_info(
   (void)taken;
   (void)message_info;
   (void)allocation;
-  RMW_UROS_TRACE_MESSAGE("function not implemented")
+  RMW_UROS_TRACE_MESSAGE("function not implemented");
   return RMW_RET_UNSUPPORTED;
 }
 
@@ -59,6 +59,6 @@ rmw_serialization_support_init(
   (void)serialization_lib_name;
   (void)allocator;
   (void)serialization_support;
-  RMW_UROS_TRACE_MESSAGE("function not implemented")
+  RMW_UROS_TRACE_MESSAGE("function not implemented");
   return RMW_RET_UNSUPPORTED;
 }
