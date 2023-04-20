@@ -25,8 +25,12 @@ jobs:
             git clone -b ros2 https://github.com/eProsima/Micro-CDR src/Micro-CDR
             git clone -b ros2 https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client
             git clone -b main https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
-            git clone -b master https://github.com/ros2/rmw src/rmw
+            git clone -b rolling https://github.com/ros2/rmw src/rmw
             touch src/rosidl_typesupport_microxrcedds/test/COLCON_IGNORE
+
+            # Workarround until rolling docker is updated
+            git clone -b rolling https://github.com/ros2/rosidl src/rosidl
+
             # Install coverage tools
             pip3 install gcovr
             . /opt/ros/$ROS_DISTRO/setup.sh
