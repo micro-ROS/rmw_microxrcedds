@@ -30,6 +30,8 @@ jobs:
 
             # Workarround until rolling docker is updated
             git clone -b rolling https://github.com/ros2/rosidl src/rosidl
+            cp -r src/rosidl/rosidl_runtime_c src/rosidl_runtime_c
+            rm -rf src/rosidl
 
             # Install coverage tools
             pip3 install gcovr
