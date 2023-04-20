@@ -21,7 +21,7 @@ jobs:
 
         - name: Download dependencies
           run: |
-            apt update && apt install -y python3-pip git python3-rosdep python3-colcon-common-extensions curl
+            apt update && apt install -y python3-pip git python3-rosdep python3-colcon-common-extensions curl ros-$ROS_DISTRO-performance-test-fixture
             git clone -b ros2 https://github.com/eProsima/Micro-CDR src/Micro-CDR
             git clone -b ros2 https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client
             git clone -b main https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
@@ -39,7 +39,6 @@ jobs:
             . /opt/ros/$ROS_DISTRO/setup.sh
             rosdep init && rosdep update
             rosdep install --from-paths src -r
-            apt -y install ros-$ROS_DISTRO-performance-test-fixture
 
         - name: Build
           run: . /opt/ros/$ROS_DISTRO/setup.sh && colcon build --symlink-install --cmake-args -DBUILD_SHARED_LIBS=ON -DCMAKE_CXX_FLAGS="-ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline" -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE=ON -DCMAKE_C_FLAGS="-ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline" -DCMAKE_C_OUTPUT_EXTENSION_REPLACE=ON
