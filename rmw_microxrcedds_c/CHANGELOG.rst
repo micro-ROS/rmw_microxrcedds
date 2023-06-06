@@ -2,6 +2,15 @@
 Changelog for package rmw_microxrcedds
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix QoS getter (`#292 <https://github.com/micro-ROS/rmw_microxrcedds/issues/292>`_)
+* convert c_standard to an optional pass in argument (`#286 <https://github.com/micro-ROS/rmw_microxrcedds/issues/286>`_)
+* Fix memory release on entities creation (`#280 <https://github.com/micro-ROS/rmw_microxrcedds/issues/280>`_)
+* Enforce power-of-two for history setting in CMakeLists (`#271 <https://github.com/micro-ROS/rmw_microxrcedds/issues/271>`_)
+* Add features.c (`#267 <https://github.com/micro-ROS/rmw_microxrcedds/issues/267>`_) (`#268 <https://github.com/micro-ROS/rmw_microxrcedds/issues/268>`_)
+* Change context creation to besteffort with no timeout (`#260 <https://github.com/micro-ROS/rmw_microxrcedds/issues/260>`_) (`#263 <https://github.com/micro-ROS/rmw_microxrcedds/issues/263>`_)
+
 3.0.0 (2022-05-25)
 ------------------
 * Fix topic and type name handling (`#254 <https://github.com/micro-ROS/rmw-microxrcedds/issues/254>`_)
