@@ -2,8 +2,8 @@
 Changelog for package rmw_microxrcedds
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+5.0.0 (2023-06-06)
+------------------
 * Fix QoS getter (`#292 <https://github.com/micro-ROS/rmw_microxrcedds/issues/292>`_) (`#293 <https://github.com/micro-ROS/rmw_microxrcedds/issues/293>`_)
 * Add missing implementations (`#296 <https://github.com/micro-ROS/rmw_microxrcedds/issues/296>`_)
 * Add missing source file to CMakeList (`#291 <https://github.com/micro-ROS/rmw_microxrcedds/issues/291>`_)
