@@ -29,12 +29,6 @@ jobs:
             git clone -b rolling https://github.com/ros2/rmw src/rmw
             touch src/rosidl_typesupport_microxrcedds/test/COLCON_IGNORE
 
-            # Workarround until rolling docker is updated
-            git clone -b rolling https://github.com/ros2/rosidl src/rosidl
-            cp -r src/rosidl/rosidl_runtime_c src/rosidl_runtime_c
-            rm -rf src/rosidl
-            touch src/rosidl_runtime_c/test/COLCON_IGNORE
-
             # Install coverage tools
             pip3 install gcovr
             . /opt/ros/$ROS_DISTRO/setup.sh
