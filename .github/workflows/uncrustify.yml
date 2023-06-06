@@ -8,7 +8,7 @@ jobs:
     run_uncrustify:
       if: contains(github.event.comment.html_url, '/pull/') && contains(github.event.comment.body, 'Marie Kondo')
       runs-on: ubuntu-latest
-      container: ros:foxy
+      container: ros:iron
       steps:
         - uses: xt0rted/pull-request-comment-branch@v1
           id: comment-branch
