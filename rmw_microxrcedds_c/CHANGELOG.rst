@@ -2,8 +2,8 @@
 Changelog for package rmw_microxrcedds
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.1 (2023-06-06)
+------------------
 * Fix QoS getter (`#292 <https://github.com/micro-ROS/rmw_microxrcedds/issues/292>`_)
 * convert c_standard to an optional pass in argument (`#286 <https://github.com/micro-ROS/rmw_microxrcedds/issues/286>`_)
 * Fix memory release on entities creation (`#280 <https://github.com/micro-ROS/rmw_microxrcedds/issues/280>`_)
