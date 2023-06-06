@@ -3,19 +3,20 @@ name: CI rmw_microxrcedds_c
 on:
     push:
       branches:
-        - foxy
-        - main
+        - humble
+        - iron
+        - rolling
     pull_request:
       branches:
         - '**'
 
 jobs:
     rmw_microxrcedds_ci:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-latest
         container: microros/micro-ros-agent:rolling
 
         steps:
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@v3
           with:
             path: src/rmw-microxrcedds
 
@@ -24,7 +25,7 @@ jobs:
             apt update && apt install -y python3-pip git python3-rosdep python3-colcon-common-extensions curl ros-$ROS_DISTRO-performance-test-fixture
             git clone -b ros2 https://github.com/eProsima/Micro-CDR src/Micro-CDR
             git clone -b ros2 https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client
-            git clone -b main https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
+            git clone -b rolling https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
             git clone -b rolling https://github.com/ros2/rmw src/rmw
             touch src/rosidl_typesupport_microxrcedds/test/COLCON_IGNORE
 
