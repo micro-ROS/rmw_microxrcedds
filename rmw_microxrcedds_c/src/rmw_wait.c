@@ -62,7 +62,7 @@ rmw_wait(
 
   // Count sessions to be ran
   uint8_t available_contexts = 0;
-  item = session_memory.allocateditems;
+  rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
   while (item != NULL) {
     available_contexts++;
     item = item->next;
