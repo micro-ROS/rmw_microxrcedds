@@ -60,42 +60,15 @@ rmw_wait(
 
   rmw_uxrce_clean_expired_static_input_buffer();
 
-  // Clear run flag for all sessions
-  rmw_uxrce_mempool_item_t * item = session_memory.allocateditems;
-  while (item != NULL) {
-    rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
-    custom_context->need_to_be_ran = false;
-    item = item->next;
-  }
-
-  // TODO(pablogs9): What happens if there already data in one entity?
-  // Enable flag for every XRCE session available in the entities
-  for (size_t i = 0; services && i < services->service_count; ++i) {
-    rmw_uxrce_service_t * custom_service = (rmw_uxrce_service_t *)services->services[i];
-    custom_service->owner_node->context->need_to_be_ran = true;
-  }
-
-  for (size_t i = 0; clients && i < clients->client_count; ++i) {
-    rmw_uxrce_client_t * custom_client = (rmw_uxrce_client_t *)clients->clients[i];
-    custom_client->owner_node->context->need_to_be_ran = true;
-  }
-
-  for (size_t i = 0; subscriptions && i < subscriptions->subscriber_count; ++i) {
-    rmw_uxrce_subscription_t * custom_subscription =
-      (rmw_uxrce_subscription_t *)subscriptions->subscribers[i];
-    custom_subscription->owner_node->context->need_to_be_ran = true;
-  }
-
   // Count sessions to be ran
   uint8_t available_contexts = 0;
   item = session_memory.allocateditems;
   while (item != NULL) {
-    rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
-    available_contexts += custom_context->need_to_be_ran ? 1 : 0;
+    available_contexts++;
     item = item->next;
   }
 
-  // There is no context that contais any of the wait set entities. Nothing to wait here.
+  // Spin all available contexts to atleast handle session metatraffic
   if (available_contexts != 0) {
     int32_t per_session_timeout =
       (timeout.i32 == UXR_TIMEOUT_INF) ? UXR_TIMEOUT_INF :
@@ -104,17 +77,7 @@ rmw_wait(
     item = session_memory.allocateditems;
     while (item != NULL) {
       rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
-      if (custom_context->need_to_be_ran) {
-        uxr_run_session_until_data(&custom_context->session, per_session_timeout);
-      }
-      item = item->next;
-    }
-  } else {
-    // Spin with no blocking to handle session metatraffic
-    item = session_memory.allocateditems;
-    while (item != NULL) {
-      rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
-      uxr_run_session_timeout(&custom_context->session, 0);
+      uxr_run_session_until_data(&custom_context->session, per_session_timeout);
       item = item->next;
     }
   }
