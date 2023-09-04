@@ -68,6 +68,9 @@ rmw_publish(
         custom_publisher->stream_id, custom_publisher->datawriter_id, &mb,
         topic_length, flush_session, custom_publisher))
     {
+      // Ensure that payload is serialized in little endian always.
+      mb.endianness = UCDR_LITTLE_ENDIANNESS;
+
       written = functions->cdr_serialize(ros_message, &mb);
       if (custom_publisher->cs_cb_serialization) {
         custom_publisher->cs_cb_serialization(&mb);

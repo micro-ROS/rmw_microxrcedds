@@ -62,6 +62,9 @@ rmw_send_response(
     return RMW_RET_ERROR;
   }
 
+  // Ensure that payload is serialized in little endian always.
+  mb.endianness = UCDR_LITTLE_ENDIANNESS;
+
   uxr_serialize_SampleIdentity(&mb, &sample_id);
   functions->cdr_serialize(ros_response, &mb);
 

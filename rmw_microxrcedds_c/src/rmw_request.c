@@ -49,6 +49,9 @@ rmw_send_request(
     return RMW_RET_ERROR;
   }
 
+  // Ensure that payload is serialized in little endian always.
+  mb.endianness = UCDR_LITTLE_ENDIANNESS;
+
   functions->cdr_serialize(ros_request, &mb);
 
   UXR_UNLOCK_STREAM_ID(&custom_node->context->session, custom_client->stream_id);
