@@ -2,8 +2,8 @@
 Changelog for package rmw_microxrcedds
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.3 (2024-05-31)
+------------------
 * Remove image path (`#302 <https://github.com/micro-ROS/rmw_microxrcedds/issues/302>`_) (`#303 <https://github.com/micro-ROS/rmw_microxrcedds/issues/303>`_)
   (cherry picked from commit bc4eb312ac4601a4137c35f4a56b9b83b4b18339)
   Co-authored-by: Antonio Cuadros <49162117+Acuadros95@users.noreply.github.com>
