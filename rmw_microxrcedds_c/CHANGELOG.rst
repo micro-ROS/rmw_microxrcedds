@@ -2,8 +2,8 @@
 Changelog for package rmw_microxrcedds
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+4.0.2 (2024-05-31)
+------------------
 * Remove image path (`#302 <https://github.com/micro-ROS/rmw_microxrcedds/issues/302>`_)
 * Remove dirs from navigation tabs (`#300 <https://github.com/micro-ROS/rmw_microxrcedds/issues/300>`_)
 * Contributors: Antonio Cuadros
