@@ -2,6 +2,12 @@
 Changelog for package rmw_microxrcedds
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove image path (`#302 <https://github.com/micro-ROS/rmw_microxrcedds/issues/302>`_)
+* Remove dirs from navigation tabs (`#300 <https://github.com/micro-ROS/rmw_microxrcedds/issues/300>`_)
+* Contributors: Antonio Cuadros
+
 4.0.1 (2023-06-06)
 ------------------
 * Fix QoS getter (`#292 <https://github.com/micro-ROS/rmw_microxrcedds/issues/292>`_) (`#293 <https://github.com/micro-ROS/rmw_microxrcedds/issues/293>`_)
