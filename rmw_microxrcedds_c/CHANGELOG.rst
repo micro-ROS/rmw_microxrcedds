@@ -2,8 +2,8 @@
 Changelog for package rmw_microxrcedds
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+5.0.1 (2024-05-31)
+------------------
 * Bump jazzy (`#308 <https://github.com/micro-ROS/rmw_microxrcedds/issues/308>`_)
   * Bump jazzy
   * Fix linting
