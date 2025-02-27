@@ -90,7 +90,7 @@ rmw_ret_t rmw_uros_options_set_udp_address(
     return RMW_RET_INVALID_ARGUMENT;
   }
 
-  if (ip != NULL && strlen(ip) <= MAX_IP_LEN) {
+  if (ip != NULL && strlen(ip) < MAX_IP_LEN) {
     snprintf(rmw_options->impl->transport_params.agent_address, MAX_IP_LEN, "%s", ip);
   } else {
     RMW_UROS_TRACE_MESSAGE("default ip configuration error")
