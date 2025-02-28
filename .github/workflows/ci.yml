@@ -21,14 +21,13 @@ jobs:
 
         - name: Download dependencies
           run: |
-            apt update && apt install -y python3-pip git python3-rosdep python3-colcon-common-extensions curl
+            apt update && apt install -y python3-pip git python3-rosdep python3-colcon-common-extensions curl gcovr
             git clone -b ros2 https://github.com/eProsima/Micro-CDR src/Micro-CDR
             git clone -b ros2 https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client
             git clone -b humble https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
             git clone -b humble https://github.com/ros2/rmw src/rmw
             touch src/rosidl_typesupport_microxrcedds/test/COLCON_IGNORE
             # Install coverage tools
-            pip3 install gcovr
             . /opt/ros/$ROS_DISTRO/setup.sh
             rosdep init && rosdep update
             rosdep install --from-paths src -r
@@ -45,14 +44,14 @@ jobs:
             colcon test --event-handlers console_direct+ --packages-select=rmw_microxrcedds --return-code-on-test-failure
             ./build/rmw_microxrcedds/test/test-sizes 2> memanalisys_out
 
-        - name: Static memory
-          continue-on-error: true
-          if: github.event_name == 'pull_request'
-          uses: machine-learning-apps/pr-comment@master
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            path: memanalisys_out
+        # - name: Static memory
+        #   continue-on-error: true
+        #   if: github.event_name == 'pull_request'
+        #   uses: machine-learning-apps/pr-comment@master
+        #   env:
+        #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        #   with:
+        #     path: memanalisys_out
 
         - name: Coverage
           run: |
