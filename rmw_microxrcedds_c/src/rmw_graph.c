@@ -84,7 +84,8 @@ rmw_ret_t rmw_graph_init(
   graph_info->datareader_id = uxr_object_id(context->id_datareader++, UXR_DATAREADER_ID);
   const char * graph_topic_name = "ros_to_microros_graph";
   graph_info->graph_type_support =
-    rosidl_typesupport_microxrcedds_c__get_message_type_support_handle__micro_ros_msgs__msg__Graph(); //NOLINT
+    // NOLINTNEXTLINE
+    rosidl_typesupport_microxrcedds_c__get_message_type_support_handle__micro_ros_msgs__msg__Graph();
 
   // Create graph topic request
   graph_info->topic_id = uxr_object_id(context->id_topic++, UXR_TOPIC_ID);
