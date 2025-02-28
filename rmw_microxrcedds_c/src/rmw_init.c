@@ -92,7 +92,7 @@ rmw_init_options_init(
     return RMW_RET_INVALID_ARGUMENT;
   }
 
-  if (strlen(RMW_UXRCE_DEFAULT_PORT) <= MAX_PORT_LEN) {
+  if (strlen(RMW_UXRCE_DEFAULT_PORT) < MAX_PORT_LEN) {
     snprintf(
       init_options->impl->transport_params.agent_port,
       MAX_PORT_LEN, "%s", RMW_UXRCE_DEFAULT_PORT);
