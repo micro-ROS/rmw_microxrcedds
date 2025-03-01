@@ -52,7 +52,7 @@ rmw_init_options_init(
   init_options->instance_id = 0;
   init_options->implementation_identifier = eprosima_microxrcedds_identifier;
   init_options->allocator = allocator;
-  init_options->enclave = "/";
+  init_options->enclave = NULL;
   init_options->domain_id = 0;
   init_options->security_options = rmw_get_default_security_options();
 
@@ -133,9 +133,21 @@ rmw_init_options_copy(
     return RMW_RET_INVALID_ARGUMENT;
   }
   memcpy(dst, src, sizeof(rmw_init_options_t));
-
+  rmw_ret_t ret;
+  const rcutils_allocator_t * allocator = &src->allocator;
+  RCUTILS_CHECK_ALLOCATOR(allocator, return RMW_RET_INVALID_ARGUMENT);
+  if (src->enclave != NULL) {
+    // Expecting this does not happen,
+    // because rmw_microxrcedds does not support SROS 2 security feature.
+    ret = rmw_enclave_options_copy(src->enclave, allocator, &dst.enclave);
+    if (RMW_RET_OK != ret) {
+      return ret;
+    }
+  }
   rmw_uxrce_mempool_item_t * memory_node = get_memory(&init_options_memory);
   if (!memory_node) {
+    rmw_enclave_options_fini(dst.enclave, allocator);
+    // Error already assigned below
     RMW_UROS_TRACE_MESSAGE("Not available memory node")
     return RMW_RET_ERROR;
   }
@@ -154,7 +166,8 @@ rmw_init_options_fini(
   rmw_init_options_t * init_options)
 {
   RMW_CHECK_ARGUMENT_FOR_NULL(init_options, RMW_RET_INVALID_ARGUMENT);
-  RCUTILS_CHECK_ALLOCATOR(&(init_options->allocator), return RMW_RET_INVALID_ARGUMENT);
+  rcutils_allocator_t * allocator = &init_options->allocator;
+  RCUTILS_CHECK_ALLOCATOR(allocator, return RMW_RET_INVALID_ARGUMENT);
   RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
     init_options->implementation_identifier,
     RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
@@ -175,6 +188,15 @@ rmw_init_options_fini(
     return RMW_RET_ERROR;
   }
 
+  rmw_ret_t ret;
+  if (init_options->enclave != NULL) {
+    // Expecting this does not happen,
+    // because rmw_microxrcedds does not support SROS 2 security feature.
+    ret = rmw_enclave_options_fini(init_options->enclave, allocator);
+    if (ret != RMW_RET_OK) {
+      return ret;
+    }
+  }
 
   *init_options = rmw_get_zero_initialized_init_options();
 
