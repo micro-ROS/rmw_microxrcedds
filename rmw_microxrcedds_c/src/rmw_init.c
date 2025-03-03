@@ -139,14 +139,14 @@ rmw_init_options_copy(
   if (src->enclave != NULL) {
     // Expecting this does not happen,
     // because rmw_microxrcedds does not support SROS 2 security feature.
-    ret = rmw_enclave_options_copy(src->enclave, allocator, &dst.enclave);
+    ret = rmw_enclave_options_copy(src->enclave, allocator, &dst->enclave);
     if (RMW_RET_OK != ret) {
       return ret;
     }
   }
   rmw_uxrce_mempool_item_t * memory_node = get_memory(&init_options_memory);
   if (!memory_node) {
-    rmw_enclave_options_fini(dst.enclave, allocator);
+    rmw_enclave_options_fini(dst->enclave, allocator);
     // Error already assigned below
     RMW_UROS_TRACE_MESSAGE("Not available memory node")
     return RMW_RET_ERROR;
