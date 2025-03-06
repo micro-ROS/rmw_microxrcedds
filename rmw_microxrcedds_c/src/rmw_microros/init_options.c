@@ -97,7 +97,7 @@ rmw_ret_t rmw_uros_options_set_udp_address(
     return RMW_RET_INVALID_ARGUMENT;
   }
 
-  if (port != NULL && strlen(port) <= MAX_PORT_LEN) {
+  if (port != NULL && strlen(port) < MAX_PORT_LEN) {
     snprintf(rmw_options->impl->transport_params.agent_port, MAX_PORT_LEN, "%s", port);
   } else {
     RMW_UROS_TRACE_MESSAGE("default port configuration error")
