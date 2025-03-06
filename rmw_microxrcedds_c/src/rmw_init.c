@@ -21,6 +21,8 @@
 #include <rmw/allocators.h>
 #include <uxr/client/util/time.h>
 
+#include "rcutils/strdup.h"
+
 #include "./rmw_microros_internal/callbacks.h"
 #include "./rmw_microros_internal/types.h"
 #include "./rmw_microros_internal/utils.h"
