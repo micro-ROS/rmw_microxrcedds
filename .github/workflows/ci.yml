@@ -31,10 +31,6 @@ jobs:
             touch src/rosidl_typesupport_microxrcedds/test/COLCON_IGNORE
 
             # Install coverage tools
-<<<<<<< HEAD
-            apt install -y gcovr
-=======
->>>>>>> aa15666 (Fix max lenght in UDP port string (#315))
             . /opt/ros/$ROS_DISTRO/setup.sh
             rosdep init && rosdep update
             rosdep install --from-paths src -r
@@ -50,18 +46,6 @@ jobs:
             colcon test --event-handlers console_direct+ --packages-select=rmw_microxrcedds --return-code-on-test-failure
             ./build/rmw_microxrcedds/test/test-sizes 2> memanalisys_out
 
-<<<<<<< HEAD
-=======
-        # - name: Static memory
-        #   continue-on-error: true
-        #   if: github.event_name == 'pull_request'
-        #   uses: machine-learning-apps/pr-comment@master
-        #   env:
-        #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        #   with:
-        #     path: memanalisys_out
-
->>>>>>> aa15666 (Fix max lenght in UDP port string (#315))
         - name: Coverage
           run: |
             cd src/rmw-microxrcedds/
