@@ -21,6 +21,8 @@
 #include <rmw/allocators.h>
 #include <uxr/client/util/time.h>
 
+#include "rcutils/strdup.h"
+
 #include "./rmw_microros_internal/callbacks.h"
 #include "./rmw_microros_internal/types.h"
 #include "./rmw_microros_internal/utils.h"
@@ -52,7 +54,7 @@ rmw_init_options_init(
   init_options->instance_id = 0;
   init_options->implementation_identifier = eprosima_microxrcedds_identifier;
   init_options->allocator = allocator;
-  init_options->enclave = "/";
+  init_options->enclave = NULL;
   init_options->domain_id = 0;
   init_options->security_options = rmw_get_default_security_options();
   init_options->localhost_only = RMW_LOCALHOST_ONLY_DEFAULT;
@@ -135,8 +137,16 @@ rmw_init_options_copy(
   }
   memcpy(dst, src, sizeof(rmw_init_options_t));
 
+  rcutils_allocator_t allocator = src->allocator;
+  RCUTILS_CHECK_ALLOCATOR(&allocator, return RMW_RET_INVALID_ARGUMENT);
+  dst->enclave = rcutils_strdup(src->enclave, allocator);
+  if (NULL != src->enclave && NULL == dst->enclave) {
+    return RMW_RET_BAD_ALLOC;
+  }
+
   rmw_uxrce_mempool_item_t * memory_node = get_memory(&init_options_memory);
   if (!memory_node) {
+    allocator.deallocate(dst->enclave, allocator.state);
     RMW_UROS_TRACE_MESSAGE("Not available memory node")
     return RMW_RET_ERROR;
   }
@@ -155,7 +165,8 @@ rmw_init_options_fini(
   rmw_init_options_t * init_options)
 {
   RMW_CHECK_ARGUMENT_FOR_NULL(init_options, RMW_RET_INVALID_ARGUMENT);
-  RCUTILS_CHECK_ALLOCATOR(&(init_options->allocator), return RMW_RET_INVALID_ARGUMENT);
+  rcutils_allocator_t * allocator = &init_options->allocator;
+  RCUTILS_CHECK_ALLOCATOR(allocator, return RMW_RET_INVALID_ARGUMENT);
   RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
     init_options->implementation_identifier,
     RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
@@ -176,6 +187,7 @@ rmw_init_options_fini(
     return RMW_RET_ERROR;
   }
 
+  allocator->deallocate(init_options->enclave, allocator->state);
 
   *init_options = rmw_get_zero_initialized_init_options();
 
