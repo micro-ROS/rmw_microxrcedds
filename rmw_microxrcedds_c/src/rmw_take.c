@@ -210,16 +210,3 @@ rmw_return_loaned_message_from_subscription(
   RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
-
-rmw_ret_t
-rmw_take_event(
-  const rmw_event_t * event_handle,
-  void * event_info,
-  bool * taken)
-{
-  (void)event_handle;
-  (void)event_info;
-  (void)taken;
-  RMW_UROS_TRACE_MESSAGE("function not implemented")
-  return RMW_RET_UNSUPPORTED;
-}
