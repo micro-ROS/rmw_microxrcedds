@@ -41,3 +41,25 @@ rmw_subscription_event_init(
   RMW_UROS_TRACE_MESSAGE("function not implemented")
   return RMW_RET_UNSUPPORTED;
 }
+
+rmw_ret_t
+rmw_take_event(
+  const rmw_event_t * event_handle,
+  void * event_info,
+  bool * taken)
+{
+  (void)event_handle;
+  (void)event_info;
+  (void)taken;
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
+  return RMW_RET_UNSUPPORTED;
+}
+
+bool
+rmw_event_type_is_supported(
+  rmw_event_type_t event_type)
+{
+  (void)event_type;
+  RMW_UROS_TRACE_MESSAGE("function not implemented")
+  return false;
+}
