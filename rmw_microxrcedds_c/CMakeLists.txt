@@ -246,8 +246,8 @@ if(RMW_UXRCE_GRAPH)
     PROPERTY
       IMPORTED_LOCATION ${micro_ros_msgs_LIBRARIES__rosidl_typesupport_microxrcedds_c})
 
-  ament_target_dependencies(${PROJECT_NAME}
-    "micro_ros_msgs"
+  target_link_libraries(${PROJECT_NAME}
+    ${micro_ros_msgs_TARGETS}
 )
 endif()
 
@@ -260,8 +260,8 @@ target_link_libraries(${PROJECT_NAME}
 # Type support lock-up mechanism
 find_package(rosidl_typesupport_microxrcedds_c)
 if(rosidl_typesupport_microxrcedds_c_FOUND)
-  ament_target_dependencies(${PROJECT_NAME}
-    "rosidl_typesupport_microxrcedds_c"
+  target_link_libraries(${PROJECT_NAME}
+    rosidl_typesupport_microxrcedds_c::rosidl_typesupport_microxrcedds_c
 )
   target_compile_definitions(${PROJECT_NAME}
     PUBLIC
@@ -271,8 +271,8 @@ else()
   find_package(rosidl_typesupport_microxrcedds_cpp REQUIRED)
 endif()
 if(rosidl_typesupport_microxrcedds_cpp_FOUND)
-  ament_target_dependencies(${PROJECT_NAME}
-    "rosidl_typesupport_microxrcedds_cpp"
+  target_link_libraries(${PROJECT_NAME}
+    rosidl_typesupport_microxrcedds_cpp::rosidl_typesupport_microxrcedds_cpp
 )
   target_compile_definitions(${PROJECT_NAME}
     PUBLIC
@@ -280,10 +280,10 @@ if(rosidl_typesupport_microxrcedds_cpp_FOUND)
 )
 endif()
 
-ament_target_dependencies(${PROJECT_NAME}
-  "rcutils"
-  "rmw"
-  "microxrcedds_client"
+target_link_libraries(${PROJECT_NAME}
+  rcutils::rcutils
+  rmw::rmw
+  microxrcedds_client
 )
 
 configure_rmw_library(${PROJECT_NAME})
