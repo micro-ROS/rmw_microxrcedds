@@ -44,7 +44,7 @@ macro(rmw_test TEST_NAME TEST_SOURCE)
     CXX_STANDARD_REQUIRED
       YES)
 
-  ament_target_dependencies(${TEST_NAME} rmw)
+  target_link_libraries(${TEST_NAME} rmw::rmw)
 endmacro()
 
 rmw_test(test-node        test_node.cpp)
