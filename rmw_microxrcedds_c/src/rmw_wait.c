@@ -88,10 +88,12 @@ rmw_wait(
 
   // Count sessions to be ran
   uint8_t available_contexts = 0;
+  uint8_t available_sessions = 0;
   item = session_memory.allocateditems;
   while (item != NULL) {
     rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
     available_contexts += custom_context->need_to_be_ran ? 1 : 0;
+    available_sessions++;
     item = item->next;
   }
 
@@ -109,12 +111,16 @@ rmw_wait(
       }
       item = item->next;
     }
-  } else {
+  } else if (available_sessions != 0) {
+    int32_t per_session_timeout =
+      (timeout.i32 == UXR_TIMEOUT_INF) ? UXR_TIMEOUT_INF :
+      (int32_t)((float)timeout.i32 / (float)available_sessions);
+
     // Spin with no blocking to handle session metatraffic
     item = session_memory.allocateditems;
     while (item != NULL) {
       rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
-      uxr_run_session_timeout(&custom_context->session, 0);
+      uxr_run_session_timeout(&custom_context->session, per_session_timeout);
       item = item->next;
     }
   }
