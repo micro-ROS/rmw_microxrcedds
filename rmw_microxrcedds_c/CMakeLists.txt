@@ -237,11 +237,6 @@ set(SRCS
 add_library(${PROJECT_NAME}
   ${SRCS})
 
-target_compile_options(${PROJECT_NAME}
-  PRIVATE
-    -fvisibility=default
-)
-
 if(RMW_UXRCE_GRAPH)
   add_library(micro_ros_msgs_lib SHARED IMPORTED)
 
@@ -294,6 +289,12 @@ target_link_libraries(${PROJECT_NAME}
 # LANGUAGE C is required: the default (CXX) adds -fvisibility-inlines-hidden, which gcc rejects
 # for the C sources this library is built from.
 configure_rmw_library(${PROJECT_NAME} LANGUAGE C)
+
+# configure_rmw_library() hides every symbol by default, but this package annotates no public
+# API, so the whole RMW would become invisible and nothing could link against it. The property
+# is cleared instead of appending -fvisibility=default, because that only worked as long as the
+# compiler took the last -fvisibility on a command line whose order CMake does not guarantee.
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "")
 
 target_include_directories(${PROJECT_NAME}
   PUBLIC
