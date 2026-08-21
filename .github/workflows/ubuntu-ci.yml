@@ -132,12 +132,15 @@ jobs:
 
           # The Agent is only test infrastructure, so it is built optimised and without
           # coverage instrumentation. microxrcedds_agent picks up fastcdr and fastdds from
-          # the image through the cmake-args in its colcon.pkg.
+          # the image through the cmake-args in its colcon.pkg. The logger profile is off
+          # because spdlog causes build issues and the logger profile is not needed here
           colcon build \
             --symlink-install \
             --event-handlers console_direct+ \
             --packages-up-to micro_ros_agent \
-            --cmake-args -DCMAKE_BUILD_TYPE=Release
+            --cmake-args \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DUAGENT_LOGGER_PROFILE=OFF
 
       - name: Test
         run: |
@@ -145,7 +148,8 @@ jobs:
           . install/local_setup.bash
 
           # The tests establish real XRCE sessions, so an Agent has to be listening before colcon
-          # test starts. The Agent must not pick up the implementation under test as its own middleware.
+          # test starts. The Agent must not pick up the implementation under test as its own
+          # middleware. -v4 is accepted but inert while UAGENT_LOGGER_PROFILE is off.
           RMW_IMPLEMENTATION=rmw_fastrtps_cpp ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v4 &
           sleep 1
 
@@ -153,24 +157,6 @@ jobs:
             --event-handlers console_direct+ \
             --return-code-on-test-failure \
             --packages-select $TESTED_PACKAGES
-
-      # TEMPORARY: a link failure on rmw_uros_* symbols reproduces here but not in a local
-      # ros:rolling-desktop container with the same cmake args, so this dumps what the runner
-      # actually did. Remove once the cause is known.
-      - name: Diagnose build failure
-        if: failure()
-        run: |
-          echo "=== cmake / gcc ==="
-          cmake --version | head -1
-          gcc --version | head -1
-          echo "=== library compile flags ==="
-          grep '^C_FLAGS' build/rmw_microxrcedds/CMakeFiles/rmw_microxrcedds.dir/flags.make || true
-          echo "=== exported rmw_uros symbols ==="
-          nm -D --defined-only build/rmw_microxrcedds/librmw_microxrcedds.so | grep rmw_uros || true
-          echo "=== exported rmw_ symbol count ==="
-          nm -D --defined-only build/rmw_microxrcedds/librmw_microxrcedds.so | grep -c ' T rmw_' || true
-          echo "=== test-publisher link line ==="
-          cat build/rmw_microxrcedds/test/CMakeFiles/test-publisher.dir/link.txt || true
 
       - name: Static memory report
         # Kept separate from the test step so it still runs when a test fails,
