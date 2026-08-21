@@ -2,12 +2,15 @@ name: ubuntu CI micro-ROS rmw_microxrcedds
 
 # The container image is derived from the branch under test, which works because the
 # branch names are the distro names:
-#  - kilted  -> microros/micro-ros-agent:kilted
-#  - lyrical -> microros/micro-ros-agent:lyrical
-#  - rolling -> microros/micro-ros-agent:rolling
+#  - kilted  -> ros:kilted-ros-base
+#  - lyrical -> ros:lyrical-ros-base
+#  - rolling -> ros:rolling-ros-base
 #
-# The Agent image is used rather than ros:<distro>-ros-base because these tests need a
-# live micro-ROS Agent on udp4:8888, which the image already ships under /uros_ws.
+# The plain distro image is used rather than microros/micro-ros-agent:<distro> so that
+# nothing depends on those Agent tags existing per distro, and so that the whole
+# workspace is built from one consistent set of sources. The tests need a live Agent on
+# udp4:8888, so microxrcedds_agent and micro_ros_agent are built here: neither is
+# released into any ROS distro, so there is no binary to install.
 #
 # Besides push and pull_request, this is callable via workflow_call so a scheduled
 # workflow on the default branch can run it once per distro branch. Note that
@@ -61,7 +64,7 @@ jobs:
     # inputs.branch is used when this workflow is called
     # github.base_ref covers pull requests
     # github.ref_name is the branch on a push
-    container: microros/micro-ros-agent:${{ inputs.branch || github.base_ref || github.ref_name }}
+    container: ros:${{ inputs.branch || github.base_ref || github.ref_name }}-ros-base
     timeout-minutes: 90
 
     steps:
@@ -79,8 +82,6 @@ jobs:
 
           # The image ships no apt lists
           apt-get update
-          # The Agent image is a runtime image: it ships cmake but no compiler and no
-          # make, so build-essential is required before anything can be built
           apt-get install -y \
             build-essential \
             git \
@@ -89,16 +90,25 @@ jobs:
             python3-rosdep \
             ros-$ROS_DISTRO-performance-test-fixture
 
+          # Micro-CDR and the XRCE Client and Agent are distro independent and pinned;
+          # the type support and the Agent wrapper track the distro under test.
           git clone -b v2.0.2 https://github.com/eProsima/Micro-CDR src/Micro-CDR
           git clone -b v3.0.1 https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client
+          git clone -b v3.0.1 https://github.com/eProsima/Micro-XRCE-DDS-Agent src/Micro-XRCE-DDS-Agent
+          git clone -b $ROS_DISTRO https://github.com/micro-ROS/micro-ROS-Agent src/micro-ROS-Agent
           git clone -b $ROS_DISTRO https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
-          git clone -b $ROS_DISTRO https://github.com/ros2/rmw src/rmw
           touch src/rosidl_typesupport_microxrcedds/test/COLCON_IGNORE
+
+          # rmw is taken from the image rather than built from source
 
           # in case rosdep is not yet initialised
           rosdep init 2>/dev/null || true
           rosdep update --rosdistro $ROS_DISTRO
-          rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -r -y
+          # microxrcedds_agent is declared by micro_ros_agent but is a plain CMake package
+          # (colcon.pkg, no package.xml), so rosdep cannot see it in the workspace and
+          # cannot resolve it as a system dependency either.
+          rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -r -y \
+            --skip-keys microxrcedds_agent
 
       - name: Build
         id: build
@@ -106,9 +116,13 @@ jobs:
         # /ros_entrypoint.sh never runs and each step must source ROS itself.
         run: |
           . /opt/ros/$ROS_DISTRO/setup.bash
+
+          # The package under test first, so a failure here is reported before the several
+          # minutes the Agent takes to build.
           colcon build \
             --symlink-install \
             --event-handlers console_direct+ \
+            --packages-up-to $TESTED_PACKAGES \
             --cmake-args \
               -DBUILD_SHARED_LIBS=ON \
               -DCMAKE_C_FLAGS="$COVERAGE_FLAGS" \
@@ -116,24 +130,32 @@ jobs:
               -DCMAKE_C_OUTPUT_EXTENSION_REPLACE=ON \
               -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE=ON
 
+          # The Agent is only test infrastructure, so it is built optimised and without
+          # coverage instrumentation. microxrcedds_agent picks up fastcdr and fastdds from
+          # the image through the cmake-args in its colcon.pkg.
+          colcon build \
+            --symlink-install \
+            --event-handlers console_direct+ \
+            --packages-up-to micro_ros_agent \
+            --cmake-args -DCMAKE_BUILD_TYPE=Release
+
       - name: Test
         run: |
           . /opt/ros/$ROS_DISTRO/setup.bash
-          . /uros_ws/install/local_setup.bash
+          . install/local_setup.bash
 
-          # The tests establish real XRCE sessions, so an Agent has to be listening
-          # before colcon test starts.
-          ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v4 &
+          # The tests establish real XRCE sessions, so an Agent has to be listening before colcon
+          # test starts. The Agent must not pick up the implementation under test as its own middleware.
+          RMW_IMPLEMENTATION=rmw_fastrtps_cpp ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v4 &
           sleep 1
 
-          . install/local_setup.bash
           colcon test \
             --event-handlers console_direct+ \
             --return-code-on-test-failure \
             --packages-select $TESTED_PACKAGES
 
       - name: Static memory report
-        # Kept separate from the test step so it still runs when a test fails, 
+        # Kept separate from the test step so it still runs when a test fails,
         # but needs the build to succeed
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: |
