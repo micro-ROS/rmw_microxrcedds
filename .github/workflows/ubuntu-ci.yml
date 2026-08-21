@@ -6,10 +6,10 @@ name: ubuntu CI micro-ROS rmw_microxrcedds
 #  - lyrical -> ros:lyrical-ros-base
 #  - rolling -> ros:rolling-ros-base
 #
-# The plain distro image is used rather than microros/micro-ros-agent:<distro> so that
+# The plain distro image is used rather than microros/micro-ROS-Agent:<distro> so that
 # nothing depends on those Agent tags existing per distro, and so that the whole
 # workspace is built from one consistent set of sources. The tests need a live Agent on
-# udp4:8888, so microxrcedds_agent and micro_ros_agent are built here: neither is
+# udp4:8888, so microxrcedds_agent and micro-ROS-Agent are built here: neither is
 # released into any ROS distro, so there is no binary to install.
 #
 # Besides push and pull_request, this is callable via workflow_call so a scheduled
@@ -90,25 +90,34 @@ jobs:
             python3-rosdep \
             ros-$ROS_DISTRO-performance-test-fixture
 
-          # Micro-CDR and the XRCE Client and Agent are distro independent and pinned;
+          # Micro-CDR and the XRCE Client are distro independent and pinned;
           # the type support and the Agent wrapper track the distro under test.
           git clone -b v2.0.2 https://github.com/eProsima/Micro-CDR src/Micro-CDR
           git clone -b v3.0.1 https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client
-          git clone -b v3.0.1 https://github.com/eProsima/Micro-XRCE-DDS-Agent src/Micro-XRCE-DDS-Agent
           git clone -b $ROS_DISTRO https://github.com/micro-ROS/micro-ROS-Agent src/micro-ROS-Agent
           git clone -b $ROS_DISTRO https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
           touch src/rosidl_typesupport_microxrcedds/test/COLCON_IGNORE
 
           # rmw is taken from the image rather than built from source
 
+          # micro-ROS-Agent runs its own superbuild
+          # The logger has to be disabled because it causes build issues and is not needed for the tests,
+          # the superbuild is patched here for that reason
+          agent_superbuild=src/micro-ROS-Agent/micro_ros_agent/cmake/SuperBuild.cmake
+          grep -q 'UAGENT_USE_SYSTEM_LOGGER:BOOL' "$agent_superbuild"
+          sed -i 's|\(-DUAGENT_USE_SYSTEM_LOGGER:BOOL=.*\)|\1\n                -DUAGENT_LOGGER_PROFILE:BOOL=OFF|' \
+            "$agent_superbuild"
+          grep -q 'UAGENT_LOGGER_PROFILE:BOOL=OFF' "$agent_superbuild"
+
           # in case rosdep is not yet initialised
           rosdep init 2>/dev/null || true
           rosdep update --rosdistro $ROS_DISTRO
-          # microxrcedds_agent is declared by micro_ros_agent but is a plain CMake package
-          # (colcon.pkg, no package.xml), so rosdep cannot see it in the workspace and
-          # cannot resolve it as a system dependency either.
-          rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -r -y \
-            --skip-keys microxrcedds_agent
+
+          # micro-ROS-Agent declares a dependency on microxrcedds_agent, but it, together
+          # with microxrcedds_client and microcdr, are built from source in this workflow,
+          # so skip those keys here
+          rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y \
+            --skip-keys "microcdr microxrcedds_client microxrcedds_agent"
 
       - name: Build
         id: build
@@ -131,25 +140,22 @@ jobs:
               -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE=ON
 
           # The Agent is only test infrastructure, so it is built optimised and without
-          # coverage instrumentation. microxrcedds_agent picks up fastcdr and fastdds from
-          # the image through the cmake-args in its colcon.pkg. The logger profile is off
-          # because spdlog causes build issues and the logger profile is not needed here
+          # coverage instrumentation. micro-ROS-Agent's superbuild clones and builds the XRCE
+          # Agent itself, taking fastcdr and fastdds from the image; the logger is disabled by
+          # the patch applied in the previous step.
           colcon build \
             --symlink-install \
             --event-handlers console_direct+ \
             --packages-up-to micro_ros_agent \
-            --cmake-args \
-              -DCMAKE_BUILD_TYPE=Release \
-              -DUAGENT_LOGGER_PROFILE=OFF
+            --cmake-args -DCMAKE_BUILD_TYPE=Release #-DUAGENT_LOGGER_PROFILE=OFF
 
       - name: Test
         run: |
           . /opt/ros/$ROS_DISTRO/setup.bash
           . install/local_setup.bash
 
-          # The tests establish real XRCE sessions, so an Agent has to be listening before colcon
-          # test starts. The Agent must not pick up the implementation under test as its own
-          # middleware. -v4 is accepted but inert while UAGENT_LOGGER_PROFILE is off.
+          # The tests establish real XRCE sessions, so an Agent has to be running before colcon test starts
+          # The Agent must not pick up the implementation under test as its own middleware
           RMW_IMPLEMENTATION=rmw_fastrtps_cpp ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v4 &
           sleep 1
 
