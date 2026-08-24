@@ -156,12 +156,34 @@ jobs:
           # The tests establish real XRCE sessions, so an Agent has to be running before colcon test starts
           # The Agent must not pick up the implementation under test as its own middleware
           RMW_IMPLEMENTATION=rmw_fastrtps_cpp ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v4 &
+          agent_pid=$!
           sleep 1
 
           colcon test \
             --event-handlers console_direct+ \
             --return-code-on-test-failure \
             --packages-select $TESTED_PACKAGES
+
+          # Kill Agent so the next step can start its own Agent
+          kill $agent_pid
+
+      - name: Ensure wait set stability (rmw_wait)
+        # test_wait.cpp asserts on wall clock timings, so it is the part of the suite most
+        # exposed to flakiness, so it is repeated 100 times in a random order
+        run: |
+          . /opt/ros/$ROS_DISTRO/setup.bash
+          . install/local_setup.bash
+
+          RMW_IMPLEMENTATION=rmw_fastrtps_cpp ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v4 &
+          agent_pid=$!
+          sleep 1
+
+          # --gtest_shuffle reseeds on every iteration and prints the seed it used
+          ./build/rmw_microxrcedds/test/test-wait \
+            --gtest_repeat=100 \
+            --gtest_shuffle
+
+          kill $agent_pid
 
       - name: Static memory report
         # Kept separate from the test step so it still runs when a test fails,
