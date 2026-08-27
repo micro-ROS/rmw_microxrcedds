@@ -30,7 +30,7 @@ static bool rmw_uxrce_any_guard_condition_triggered(
   for (size_t i = 0; guard_conditions && i < guard_conditions->guard_condition_count; ++i) {
     rmw_uxrce_guard_condition_t * custom_guard_condition =
       (rmw_uxrce_guard_condition_t *)guard_conditions->guard_conditions[i];
-    if (custom_guard_condition->hasTriggered) {
+    if (NULL != custom_guard_condition && custom_guard_condition->hasTriggered) {
       return true;
     }
   }
@@ -201,7 +201,7 @@ rmw_wait(
   for (size_t i = 0; guard_conditions && i < guard_conditions->guard_condition_count; ++i) {
     rmw_uxrce_guard_condition_t * custom_guard_condition =
       (rmw_uxrce_guard_condition_t *)guard_conditions->guard_conditions[i];
-    if (custom_guard_condition->hasTriggered == false) {
+    if (NULL == custom_guard_condition || custom_guard_condition->hasTriggered == false) {
       guard_conditions->guard_conditions[i] = NULL;
     } else {
       custom_guard_condition->hasTriggered = false;
