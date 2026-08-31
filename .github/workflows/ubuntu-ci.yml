@@ -86,7 +86,6 @@ jobs:
             build-essential \
             git \
             gcovr \
-            libspdlog-dev \
             python3-colcon-common-extensions \
             python3-rosdep \
             ros-$ROS_DISTRO-performance-test-fixture
@@ -94,7 +93,7 @@ jobs:
           # Micro-CDR and the XRCE Client are distro independent and pinned;
           # the type support and the Agent wrapper track the distro under test.
           git clone -b v2.0.2 https://github.com/eProsima/Micro-CDR src/Micro-CDR
-          git clone -b v3.0.1 https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client
+          git clone -b v3.0.2 https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client
           git clone -b $ROS_DISTRO https://github.com/micro-ROS/micro-ROS-Agent src/micro-ROS-Agent
           git clone -b $ROS_DISTRO https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
           touch src/rosidl_typesupport_microxrcedds/test/COLCON_IGNORE
@@ -133,15 +132,15 @@ jobs:
 
           # The Agent is only test infrastructure, so it is built optimised and without
           # coverage instrumentation. micro-ROS-Agent's superbuild clones and builds the XRCE
-          # Agent itself, taking fastcdr, fastdds, and spdlog from the image instead of
-          # building them from source (UAGENT_USE_SYSTEM_FASTDDS/FASTCDR are already forced
-          # ON by that superbuild; UAGENT_USE_SYSTEM_LOGGER is a passthrough it forwards, set
-          # here).
+          # Agent itself, taking fastcdr and fastdds from the image (UAGENT_USE_SYSTEM_FASTDDS/
+          # FASTCDR are forced ON by that superbuild); the logger keeps its default of building
+          # spdlog from source, since UAGENT_USE_SYSTEM_LOGGER=ON pulls in a newer system
+          # spdlog/fmt that the Agent's logging calls aren't compatible with.
           colcon build \
             --symlink-install \
             --event-handlers console_direct+ \
             --packages-up-to micro_ros_agent \
-            --cmake-args -DCMAKE_BUILD_TYPE=Release -DUAGENT_USE_SYSTEM_LOGGER=ON
+            --cmake-args -DCMAKE_BUILD_TYPE=Release
 
       - name: Test
         run: |
