@@ -94,7 +94,7 @@ jobs:
           # the type support and the Agent wrapper track the distro under test.
           git clone -b v2.0.2 https://github.com/eProsima/Micro-CDR src/Micro-CDR
           git clone -b v3.0.2 https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client
-          git clone -b $ROS_DISTRO https://github.com/micro-ROS/micro-ROS-Agent src/micro-ROS-Agent
+          git clone -b update_build https://github.com/micro-ROS/micro-ROS-Agent src/micro-ROS-Agent
           git clone -b $ROS_DISTRO https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
           touch src/rosidl_typesupport_microxrcedds/test/COLCON_IGNORE
 
