@@ -1,0 +1,29 @@
+name: Weekly ubuntu CI micro-ROS rmw_microxrcedds
+
+on:
+  schedule:
+    # Mondays at 02:00 UTC
+    - cron: '0 2 * * 1'
+  # To enable manual trigger
+  workflow_dispatch:
+
+jobs:
+  ubuntu_ci:
+    name: ${{ matrix.branch }}
+    strategy:
+      # Without this, one distro failing would cancel the others and
+      # hide if they are fine
+      fail-fast: false
+      matrix:
+        branch:
+          - humble
+          - jazzy
+          - kilted
+          - lyrical
+          - rolling
+    uses: ./.github/workflows/ubuntu-ci.yml
+    with:
+      branch: ${{ matrix.branch }}
+    # Reusable workflows do not receive the caller's secrets automatically, and the
+    # called workflow needs CODECOV_TOKEN for the coverage upload.
+    secrets: inherit
