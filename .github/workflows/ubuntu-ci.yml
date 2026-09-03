@@ -2,6 +2,8 @@ name: ubuntu CI micro-ROS rmw_microxrcedds
 
 # The container image is derived from the branch under test, which works because the
 # branch names are the distro names:
+#  - humble  -> ros:humble-ros-base
+#  - jazzy   -> ros:jazzy-ros-base
 #  - kilted  -> ros:kilted-ros-base
 #  - lyrical -> ros:lyrical-ros-base
 #  - rolling -> ros:rolling-ros-base
@@ -21,11 +23,15 @@ name: ubuntu CI micro-ROS rmw_microxrcedds
 on:
   push:
     branches:
+      - humble
+      - jazzy
       - kilted
       - lyrical
       - rolling
   pull_request:
     branches:
+      - humble
+      - jazzy
       - kilted
       - lyrical
       - rolling

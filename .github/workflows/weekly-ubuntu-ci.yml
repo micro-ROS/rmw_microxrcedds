@@ -16,6 +16,8 @@ jobs:
       fail-fast: false
       matrix:
         branch:
+          - humble
+          - jazzy
           - kilted
           - lyrical
           - rolling
