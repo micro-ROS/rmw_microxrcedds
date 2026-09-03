@@ -12,11 +12,7 @@ assignees: ''
 - Hardware description: <!-- hardware where you are using micro-ROS -->
 - RTOS: <!-- RTOS where you are using micro-ROS -->
 - Installation type: <!-- micro_ros_setup, modules, etc  -->
-<<<<<<< HEAD
-- Version or commit hash: <!-- version of micro-ROS used: humble, jazzy, kilted, rolling  -->
-=======
 - Version or commit hash: <!-- version of micro-ROS used: humble, jazzy, kilted, lyrical, rolling  -->
->>>>>>> fdd4c91 (Update build and CI (#329))
 
 #### Steps to reproduce the issue
 <!-- Detailed instructions on how to reliably reproduce this issue http://sscce.org/-->
