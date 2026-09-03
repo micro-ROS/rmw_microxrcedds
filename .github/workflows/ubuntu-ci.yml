@@ -171,15 +171,6 @@ jobs:
           . /opt/ros/$ROS_DISTRO/setup.bash
           ./build/rmw_microxrcedds/test/test-sizes 2> memanalisys_out
 
-      # - name: Static memory
-      #   continue-on-error: true
-      #   if: github.event_name == 'pull_request'
-      #   uses: machine-learning-apps/pr-comment@master
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     path: memanalisys_out
-
       - name: Test results
         if: ${{ !cancelled() }}
         run: |
