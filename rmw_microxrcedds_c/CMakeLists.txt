@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 cmake_policy(SET CMP0057 NEW)
 
 set(PACKAGE_VERSION "1.0.0")
@@ -20,7 +20,7 @@ project(rmw_microxrcedds
   VERSION
     ${PACKAGE_VERSION}
   LANGUAGES
-    C
+    C CXX
 )
 
 find_package(ament_cmake_ros REQUIRED)
@@ -286,7 +286,15 @@ ament_target_dependencies(${PROJECT_NAME}
   "microxrcedds_client"
 )
 
-configure_rmw_library(${PROJECT_NAME})
+# LANGUAGE C is required: the default (CXX) adds -fvisibility-inlines-hidden, which gcc rejects
+# for the C sources this library is built from.
+configure_rmw_library(${PROJECT_NAME} LANGUAGE C)
+
+# configure_rmw_library() adds -fvisibility=hidden, this must stay *after* configure_rmw_library()
+target_compile_options(${PROJECT_NAME}
+  PRIVATE
+    -fvisibility=default
+)
 
 target_include_directories(${PROJECT_NAME}
   PUBLIC
