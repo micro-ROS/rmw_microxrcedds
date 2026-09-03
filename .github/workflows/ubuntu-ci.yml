@@ -1,0 +1,194 @@
+name: ubuntu CI micro-ROS rmw_microxrcedds
+
+# The container image is derived from the branch under test, which works because the
+# branch names are the distro names:
+#  - humble  -> ros:humble-ros-base
+#  - jazzy   -> ros:jazzy-ros-base
+#  - kilted  -> ros:kilted-ros-base
+#  - lyrical -> ros:lyrical-ros-base
+#  - rolling -> ros:rolling-ros-base
+#
+# The plain distro image is used rather than microros/micro-ROS-Agent:<distro> so that
+# nothing depends on those Agent tags existing per distro, and so that the whole
+# workspace is built from one consistent set of sources. The tests need a live Agent on
+# udp4:8888, so microxrcedds_agent and micro-ROS-Agent are built here: neither is
+# released into any ROS distro, so there is no binary to install.
+#
+# Besides push and pull_request, this is callable via workflow_call so a scheduled
+# workflow on the default branch can run it once per distro branch. Note that
+# `uses: ./.github/workflows/ubuntu-ci.yml` always resolves to the *caller's* copy of
+# this file, so the default branch's copy is what runs for every branch it tests; only
+# the container image and the checked-out sources follow `inputs.branch`.
+
+on:
+  push:
+    branches:
+      - humble
+      - jazzy
+      - kilted
+      - lyrical
+      - rolling
+  pull_request:
+    branches:
+      - humble
+      - jazzy
+      - kilted
+      - lyrical
+      - rolling
+  workflow_call:
+    inputs:
+      branch:
+        description: >
+          Distro branch to check out and test. Leave unset for push and
+          pull_request, where the triggering ref is used instead.
+        type: string
+        required: false
+        default: ''
+  # To enable manual trigger
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.branch }}
+  cancel-in-progress: true
+
+env:
+  # Single source of truth for what gets tested.
+  TESTED_PACKAGES: rmw_microxrcedds
+  # Coverage instrumentation: --coverage/-ftest-coverage emit the .gcno and .gcda files
+  # gcovr reads, and the -fno-inline flags keep the counts mapped onto the original
+  # source lines instead of onto inlined copies.
+  COVERAGE_FLAGS: >-
+    -ftest-coverage --coverage -fno-inline -fno-inline-small-functions -fno-default-inline
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  rmw_microxrcedds_ci:
+    runs-on: ubuntu-latest
+    # inputs.branch is used when this workflow is called
+    # github.base_ref covers pull requests
+    # github.ref_name is the branch on a push
+    container: ros:${{ inputs.branch || github.base_ref || github.ref_name }}-ros-base
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Empty on push and pull_request, which leaves checkout's own behaviour
+          # intact — importantly the PR merge ref, so PRs keep testing the merge
+          # result rather than the base branch.
+          ref: ${{ inputs.branch }}
+          path: src/rmw-microxrcedds
+
+      - name: Download dependencies
+        run: |
+          . /opt/ros/$ROS_DISTRO/setup.bash
+
+          # The image ships no apt lists
+          apt-get update
+          apt-get install -y \
+            build-essential \
+            git \
+            gcovr \
+            python3-colcon-common-extensions \
+            python3-rosdep \
+            ros-$ROS_DISTRO-performance-test-fixture
+
+          # Micro-CDR and the XRCE Client are distro independent and pinned;
+          # the type support and the Agent wrapper track the distro under test.
+          git clone -b v2.0.2 https://github.com/eProsima/Micro-CDR src/Micro-CDR
+          git clone -b v3.0.2 https://github.com/eProsima/Micro-XRCE-DDS-Client src/Micro-XRCE-DDS-Client
+          git clone -b $ROS_DISTRO https://github.com/micro-ROS/micro-ROS-Agent src/micro-ROS-Agent
+          git clone -b $ROS_DISTRO https://github.com/micro-ROS/rosidl_typesupport_microxrcedds src/rosidl_typesupport_microxrcedds
+          touch src/rosidl_typesupport_microxrcedds/test/COLCON_IGNORE
+
+          # rmw is taken from the image rather than built from source
+
+          # in case rosdep is not yet initialised
+          rosdep init 2>/dev/null || true
+          rosdep update --rosdistro $ROS_DISTRO
+
+          # micro-ROS-Agent declares a dependency on microxrcedds_agent, but it, together
+          # with microxrcedds_client and microcdr, are built from source in this workflow,
+          # so skip those keys here
+          rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y \
+            --skip-keys "microcdr microxrcedds_client microxrcedds_agent"
+
+      - name: Build
+        id: build
+        # GitHub replaces the image's entrypoint for container jobs, so
+        # /ros_entrypoint.sh never runs and each step must source ROS itself.
+        run: |
+          . /opt/ros/$ROS_DISTRO/setup.bash
+
+          # The package under test first, so a failure here is reported before the several
+          # minutes the Agent takes to build.
+          colcon build \
+            --symlink-install \
+            --event-handlers console_direct+ \
+            --packages-up-to $TESTED_PACKAGES \
+            --cmake-args \
+              -DBUILD_SHARED_LIBS=ON \
+              -DCMAKE_C_FLAGS="$COVERAGE_FLAGS" \
+              -DCMAKE_CXX_FLAGS="$COVERAGE_FLAGS" \
+              -DCMAKE_C_OUTPUT_EXTENSION_REPLACE=ON \
+              -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE=ON
+
+          # The Agent is only test infrastructure, so it is built optimised and without
+          # coverage instrumentation. micro-ROS-Agent's superbuild clones and builds the XRCE
+          # Agent itself, taking fastcdr and fastdds from the image (UAGENT_USE_SYSTEM_FASTDDS/
+          # FASTCDR are forced ON by that superbuild); the logger keeps its default of building
+          # spdlog from source, since UAGENT_USE_SYSTEM_LOGGER=ON pulls in a newer system
+          # spdlog/fmt that the Agent's logging calls aren't compatible with.
+          colcon build \
+            --symlink-install \
+            --event-handlers console_direct+ \
+            --packages-up-to micro_ros_agent \
+            --cmake-args -DCMAKE_BUILD_TYPE=Release
+
+      - name: Test
+        run: |
+          . /opt/ros/$ROS_DISTRO/setup.bash
+          . install/local_setup.bash
+
+          # The tests establish real XRCE sessions, so an Agent has to be running before colcon test starts
+          # The Agent must not pick up the implementation under test as its own middleware
+          RMW_IMPLEMENTATION=rmw_fastrtps_cpp ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v4 &
+          sleep 1
+
+          colcon test \
+            --event-handlers console_direct+ \
+            --return-code-on-test-failure \
+            --packages-select $TESTED_PACKAGES
+
+      - name: Static memory report
+        # Kept separate from the test step so it still runs when a test fails,
+        # but needs the build to succeed
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: |
+          . /opt/ros/$ROS_DISTRO/setup.bash
+          ./build/rmw_microxrcedds/test/test-sizes 2> memanalisys_out
+
+      - name: Test results
+        if: ${{ !cancelled() }}
+        run: |
+          . /opt/ros/$ROS_DISTRO/setup.bash
+          colcon test-result --verbose
+
+      - name: Coverage report
+        # gcovr has no .gcda files to read if the build never produced any
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: |
+          cd src/rmw-microxrcedds
+          gcovr -x -r . -o coverage.xml ../../build \
+            --exclude-unreachable-branches \
+            --exclude rmw_microxrcedds_c/test
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: src/rmw-microxrcedds/coverage.xml
+          fail_ci_if_error: false
