@@ -191,7 +191,15 @@ jobs:
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: |
           . /opt/ros/$ROS_DISTRO/setup.bash
+          . install/local_setup.bash
+
+          RMW_IMPLEMENTATION=rmw_fastrtps_cpp ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v4 &
+          agent_pid=$!
+          sleep 1
+
           ./build/rmw_microxrcedds/test/test-sizes 2> memanalisys_out
+
+          kill $agent_pid
 
       - name: Test results
         if: ${{ !cancelled() }}
