@@ -18,8 +18,24 @@
 #include <rmw/rmw.h>
 #include <rmw/time.h>
 #include <uxr/client/core/session/session.h>
+#include <uxr/client/util/time.h>
 
 #include "./rmw_microros_internal/utils.h"
+
+#define RMW_UXRCE_MAX_SESSION_WAIT_SLICE_MS 10
+
+static bool rmw_uxrce_any_guard_condition_triggered(
+  const rmw_guard_conditions_t * guard_conditions)
+{
+  for (size_t i = 0; guard_conditions && i < guard_conditions->guard_condition_count; ++i) {
+    rmw_uxrce_guard_condition_t * custom_guard_condition =
+      (rmw_uxrce_guard_condition_t *)guard_conditions->guard_conditions[i];
+    if (NULL != custom_guard_condition && custom_guard_condition->hasTriggered) {
+      return true;
+    }
+  }
+  return false;
+}
 
 rmw_ret_t
 rmw_wait(
@@ -88,34 +104,58 @@ rmw_wait(
 
   // Count sessions to be ran
   uint8_t available_contexts = 0;
+  uint8_t available_sessions = 0;
   item = session_memory.allocateditems;
   while (item != NULL) {
     rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
     available_contexts += custom_context->need_to_be_ran ? 1 : 0;
+    available_sessions++;
     item = item->next;
   }
 
-  // There is no context that contais any of the wait set entities. Nothing to wait here.
-  if (available_contexts != 0) {
-    int32_t per_session_timeout =
-      (timeout.i32 == UXR_TIMEOUT_INF) ? UXR_TIMEOUT_INF :
-      (int32_t)((float)timeout.i32 / (float)available_contexts);
-
-    item = session_memory.allocateditems;
-    while (item != NULL) {
-      rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
-      if (custom_context->need_to_be_ran) {
-        uxr_run_session_until_data(&custom_context->session, per_session_timeout);
-      }
-      item = item->next;
-    }
-  } else {
-    // Spin with no blocking to handle session metatraffic
-    item = session_memory.allocateditems;
-    while (item != NULL) {
-      rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
+  // Ensure spinning at least once, even if the timeout is 0
+  bool data_available = false;
+  item = session_memory.allocateditems;
+  while (item != NULL) {
+    rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
+    if (custom_context->need_to_be_ran) {
+      data_available |= uxr_run_session_until_data(&custom_context->session, 0);
+    } else {
       uxr_run_session_timeout(&custom_context->session, 0);
-      item = item->next;
+    }
+    item = item->next;
+  }
+  bool guard_condition_triggered = rmw_uxrce_any_guard_condition_triggered(guard_conditions);
+
+  if (available_sessions != 0 && !data_available && !guard_condition_triggered &&
+    timeout.i32 != 0)
+  {
+    // An infinite timeout is handled as a deadline that never expires, so that guard conditions
+    // are still polled between slices instead of blocking inside a single XRCE receive.
+    const int64_t deadline = (timeout.i32 == UXR_TIMEOUT_INF) ?
+      INT64_MAX : uxr_millis() + timeout.i32;
+
+    // Sessions are serviced round-robin in bounded slices, so that no session monopolises the
+    // wait, guard conditions are polled between slices and the deadline is not overshot.
+    item = session_memory.allocateditems;
+    int64_t now = uxr_millis();
+    while (!data_available && !guard_condition_triggered && now < deadline) {
+      rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
+      const int64_t remaining = deadline - now;
+      const int32_t slice = (remaining < RMW_UXRCE_MAX_SESSION_WAIT_SLICE_MS) ?
+        (int32_t)remaining : RMW_UXRCE_MAX_SESSION_WAIT_SLICE_MS;
+
+      if (custom_context->need_to_be_ran) {
+        // If at least one context needs to be ran, the other sessions are not serviced
+        data_available = uxr_run_session_until_data(&custom_context->session, slice);
+      } else if (available_contexts == 0) {
+        // No wait set entity belongs to any session, keep every session's metatraffic alive
+        uxr_run_session_timeout(&custom_context->session, slice);
+      }
+
+      guard_condition_triggered = rmw_uxrce_any_guard_condition_triggered(guard_conditions);
+      item = (item->next == NULL) ? session_memory.allocateditems : item->next;
+      now = uxr_millis();
     }
   }
 
@@ -161,7 +201,7 @@ rmw_wait(
   for (size_t i = 0; guard_conditions && i < guard_conditions->guard_condition_count; ++i) {
     rmw_uxrce_guard_condition_t * custom_guard_condition =
       (rmw_uxrce_guard_condition_t *)guard_conditions->guard_conditions[i];
-    if (custom_guard_condition->hasTriggered == false) {
+    if (NULL == custom_guard_condition || custom_guard_condition->hasTriggered == false) {
       guard_conditions->guard_conditions[i] = NULL;
     } else {
       custom_guard_condition->hasTriggered = false;
