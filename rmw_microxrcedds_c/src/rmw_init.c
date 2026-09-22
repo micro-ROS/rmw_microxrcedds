@@ -378,6 +378,9 @@ rmw_context_fini(
 {
   rmw_ret_t ret = RMW_RET_OK;
 
+  // Safety net against leaks if the app shuts down without destroying its nodes
+  // Nodes destroyed here make a later rcl_node_fini() return RMW_RET_ERROR, this
+  // is normally triggered by rclc_support_fini() -> rcl_shutdown() -> rmw_shutdown()
   rmw_uxrce_mempool_item_t * item = node_memory.allocateditems;
 
   while (item != NULL) {
