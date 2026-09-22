@@ -53,7 +53,7 @@ rmw_init_options_init(
   init_options->implementation_identifier = eprosima_microxrcedds_identifier;
   init_options->allocator = allocator;
   init_options->enclave = NULL;
-  init_options->domain_id = 0;
+  init_options->domain_id = RMW_DEFAULT_DOMAIN_ID;
   init_options->security_options = rmw_get_default_security_options();
 
   // This can be call before rmw_init()
@@ -216,7 +216,8 @@ rmw_init(
     RMW_RET_INCORRECT_RMW_IMPLEMENTATION);
   context->instance_id = options->instance_id;
   context->implementation_identifier = eprosima_microxrcedds_identifier;
-  context->actual_domain_id = options->domain_id;
+  context->actual_domain_id =
+    (RMW_DEFAULT_DOMAIN_ID == options->domain_id) ? 0u : options->domain_id;
 
 #ifdef UCLIENT_PROFILE_MULTITHREAD
   if (!rmw_uxrce_wait_mutex_initialized) {
