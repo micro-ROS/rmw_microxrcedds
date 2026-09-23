@@ -155,7 +155,7 @@ jobs:
 
           # The tests establish real XRCE sessions, so an Agent has to be running before colcon test starts
           # The Agent must not pick up the implementation under test as its own middleware
-          RMW_IMPLEMENTATION=rmw_fastrtps_cpp ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v4 &
+          RMW_IMPLEMENTATION=rmw_fastrtps_cpp install/micro_ros_agent/lib/micro_ros_agent/micro_ros_agent udp4 --port 8888 -d -v4 &
           agent_pid=$!
           sleep 1
 
@@ -166,6 +166,7 @@ jobs:
 
           # Kill Agent so the next step can start its own Agent
           kill $agent_pid
+          wait $agent_pid || true
 
       - name: Ensure wait set stability (rmw_wait)
         # test_wait.cpp asserts on wall clock timings, so it is the part of the suite most
@@ -174,7 +175,7 @@ jobs:
           . /opt/ros/$ROS_DISTRO/setup.bash
           . install/local_setup.bash
 
-          RMW_IMPLEMENTATION=rmw_fastrtps_cpp ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v4 &
+          RMW_IMPLEMENTATION=rmw_fastrtps_cpp install/micro_ros_agent/lib/micro_ros_agent/micro_ros_agent udp4 --port 8888 -d -v4 &
           agent_pid=$!
           sleep 1
 
@@ -184,6 +185,7 @@ jobs:
             --gtest_shuffle
 
           kill $agent_pid
+          wait $agent_pid || true
 
       - name: Static memory report
         # Kept separate from the test step so it still runs when a test fails,
@@ -193,13 +195,14 @@ jobs:
           . /opt/ros/$ROS_DISTRO/setup.bash
           . install/local_setup.bash
 
-          RMW_IMPLEMENTATION=rmw_fastrtps_cpp ros2 run micro_ros_agent micro_ros_agent udp4 --port 8888 -d -v4 &
+          RMW_IMPLEMENTATION=rmw_fastrtps_cpp install/micro_ros_agent/lib/micro_ros_agent/micro_ros_agent udp4 --port 8888 -d -v4 &
           agent_pid=$!
           sleep 1
 
           ./build/rmw_microxrcedds/test/test-sizes 2> memanalisys_out
 
           kill $agent_pid
+          wait $agent_pid || true
 
       - name: Test results
         if: ${{ !cancelled() }}
