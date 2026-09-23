@@ -252,7 +252,9 @@ typedef struct rmw_uxrce_guard_condition_t
 {
   rmw_uxrce_mempool_item_t mem;
 
-  bool hasTriggered;
+  // Polled by rmw_wait and can be written from arbitrary threads
+  // by rmw_trigger_guard_condition, needs 'volatile'
+  volatile bool hasTriggered;
 
   rmw_guard_condition_t rmw_guard_condition;
 } rmw_uxrce_guard_condition_t;
