@@ -70,7 +70,9 @@ rmw_wait(
   if (NULL == wait_timeout || rmw_time_equal(*wait_timeout, (rmw_time_t)RMW_DURATION_INFINITE)) {
     timeout.i32 = UXR_TIMEOUT_INF;
   } else {
-    timeout.i64 = rmw_time_total_nsec(*wait_timeout) / 1000000ULL;
+    // Round non-zero values up to nearest millisecond to sleep at least 1 ms and
+    // never wake up early (e.g. 0 ns -> 0 ms, 1 ns or 999999 ns -> 1 ms)
+    timeout.i64 = (rmw_time_total_nsec(*wait_timeout) + 999999ULL) / 1000000ULL;
     timeout.i32 = (timeout.i64 > INT32_MAX) ? INT32_MAX : timeout.i64;
   }
 
@@ -139,7 +141,7 @@ rmw_wait(
     // wait, guard conditions are polled between slices and the deadline is not overshot.
     item = session_memory.allocateditems;
     int64_t now = uxr_millis();
-    while (!data_available && !guard_condition_triggered && now < deadline) {
+    while (!data_available && !guard_condition_triggered && now <= deadline) {
       rmw_context_impl_t * custom_context = (rmw_context_impl_t *)item->data;
       const int64_t remaining = deadline - now;
       const int32_t slice = (remaining < RMW_UXRCE_MAX_SESSION_WAIT_SLICE_MS) ?
