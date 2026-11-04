@@ -252,6 +252,11 @@ rmw_uxrce_mempool_item_t * rmw_uxrce_get_static_input_buffer_for_entity(
         ret = get_memory(&static_buffer_memory);
       } else {
         ret = rmw_uxrce_find_static_input_buffer_by_owner(entity);
+        if (ret != NULL) {
+          // Recycle through the pool, so that the new sample moves to the list head
+          put_memory(&static_buffer_memory, ret);
+          ret = get_memory(&static_buffer_memory);
+        }
       }
       break;
     case RMW_QOS_POLICY_HISTORY_KEEP_ALL:
@@ -273,19 +278,18 @@ rmw_uxrce_mempool_item_t * rmw_uxrce_find_static_input_buffer_by_owner(
   void * owner)
 {
   rmw_uxrce_mempool_item_t * ret = NULL;
-  int64_t min_time = INT64_MAX;
 
   UXR_LOCK(&static_buffer_memory.mutex);
 
-  // Return the oldest
+  // Return the oldest: allocated items are kept newest first, so it is the last match.
+  // Timestamps cannot order samples, as several can arrive within one clock tick.
   rmw_uxrce_mempool_item_t * static_buffer_item = static_buffer_memory.allocateditems;
   while (static_buffer_item != NULL) {
     rmw_uxrce_static_input_buffer_t * data =
       (rmw_uxrce_static_input_buffer_t *)static_buffer_item->data;
 
-    if (data->owner == owner && data->timestamp < min_time) {
+    if (data->owner == owner) {
       ret = static_buffer_item;
-      min_time = data->timestamp;
     }
 
     static_buffer_item = static_buffer_item->next;
