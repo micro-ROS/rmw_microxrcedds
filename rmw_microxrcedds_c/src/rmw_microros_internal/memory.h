@@ -50,4 +50,12 @@ void put_memory(
   rmw_uxrce_mempool_t * mem,
   rmw_uxrce_mempool_item_t * item);
 
+/**
+ * Moves an allocated item to the head of the allocated list.
+ * The other allocated items keep their relative order.
+ */
+void move_to_head(
+  rmw_uxrce_mempool_t * mem,
+  rmw_uxrce_mempool_item_t * item);
+
 #endif  // RMW_MICROROS_INTERNAL__MEMORY_H_

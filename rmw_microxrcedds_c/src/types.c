@@ -253,9 +253,9 @@ rmw_uxrce_mempool_item_t * rmw_uxrce_get_static_input_buffer_for_entity(
       } else {
         ret = rmw_uxrce_find_static_input_buffer_by_owner(entity);
         if (ret != NULL) {
-          // Recycle through the pool, so that the new sample moves to the list head
-          put_memory(&static_buffer_memory, ret);
-          ret = get_memory(&static_buffer_memory);
+          // The oldest buffer takes the new sample, so it becomes the newest one.
+          // Allocated items are kept newest first, which puts it at the list head.
+          move_to_head(&static_buffer_memory, ret);
         }
       }
       break;
