@@ -35,6 +35,27 @@
 
 extern rmw_uxrce_transport_params_t rmw_uxrce_transport_default_params;
 
+static uint32_t
+generate_client_key(void)
+{
+  static uint32_t state = 0;
+  int64_t now = uxr_nanos();
+  uint32_t entropy = (uint32_t)(now ^ (now >> 32));
+  state ^= entropy;
+  if (state == 0) {
+    state = 0x1337BEEF;
+  }
+  uint32_t key;
+  do {
+    // 32-bit Marsaglia xorshift PRNG (zero dynamic memory allocation)
+    state ^= state << 13;
+    state ^= state >> 17;
+    state ^= state << 5;
+    key = state;
+  } while (key == 0);
+  return key;
+}
+
 rmw_ret_t
 rmw_init_options_init(
   rmw_init_options_t * init_options,
@@ -108,11 +129,7 @@ rmw_init_options_init(
   init_options->impl->transport_params.read_cb = rmw_uxrce_transport_default_params.read_cb;
 #endif /* if defined(RMW_UXRCE_TRANSPORT_SERIAL) */
 
-  srand(uxr_nanos());
-
-  do {
-    init_options->impl->transport_params.client_key = rand(); //NOLINT
-  } while (init_options->impl->transport_params.client_key == 0);
+  init_options->impl->transport_params.client_key = generate_client_key();
 
   return RMW_RET_OK;
 }
