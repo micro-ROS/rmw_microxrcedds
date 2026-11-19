@@ -108,3 +108,26 @@ void put_memory(
 
   UXR_UNLOCK(&mem->mutex);
 }
+
+void move_to_head(
+  rmw_uxrce_mempool_t * mem,
+  rmw_uxrce_mempool_item_t * item)
+{
+  UXR_LOCK(&mem->mutex);
+
+  if (mem->allocateditems != item) {
+    // Unlinks item, which has a previous item as it is not the head
+    item->prev->next = item->next;
+    if (item->next) {
+      item->next->prev = item->prev;
+    }
+
+    // Puts item at the head
+    item->prev = NULL;
+    item->next = mem->allocateditems;
+    item->next->prev = item;
+    mem->allocateditems = item;
+  }
+
+  UXR_UNLOCK(&mem->mutex);
+}
