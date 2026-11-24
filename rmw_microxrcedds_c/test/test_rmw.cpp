@@ -18,6 +18,7 @@
 #include <rmw/init_options.h>
 #include <rcutils/allocator.h>
 #include <rmw_microros/rmw_microros.h>
+#include <rmw_microros_internal/types.h>
 
 #include <ctime>
 
@@ -91,4 +92,29 @@ TEST(rmw_microxrcedds, sync_session)
 
   ASSERT_EQ(rmw_init_options_fini(&test_options), RMW_RET_OK);
   ASSERT_EQ(rmw_shutdown(&test_context), RMW_RET_OK);
+}
+
+/*
+ * Testing client_key generation in rmw_init_options_init. https://github.com/micro-ROS/rmw_microxrcedds/issues/324
+ */
+TEST(rmw_microxrcedds, client_key_generation)
+{
+  rmw_init_options_t options1 = rmw_get_zero_initialized_init_options();
+  rmw_init_options_t options2 = rmw_get_zero_initialized_init_options();
+
+  ASSERT_EQ(rmw_init_options_init(&options1, rcutils_get_default_allocator()), RMW_RET_OK);
+  ASSERT_EQ(rmw_init_options_init(&options2, rcutils_get_default_allocator()), RMW_RET_OK);
+
+  EXPECT_NE(options1.impl->transport_params.client_key, 0u);
+  EXPECT_NE(options2.impl->transport_params.client_key, 0u);
+  EXPECT_NE(options1.impl->transport_params.client_key, options2.impl->transport_params.client_key);
+
+  rmw_init_options_t options_copy = rmw_get_zero_initialized_init_options();
+  ASSERT_EQ(rmw_init_options_copy(&options1, &options_copy), RMW_RET_OK);
+  EXPECT_EQ(options_copy.impl->transport_params.client_key,
+    options1.impl->transport_params.client_key);
+
+  ASSERT_EQ(rmw_init_options_fini(&options_copy), RMW_RET_OK);
+  ASSERT_EQ(rmw_init_options_fini(&options1), RMW_RET_OK);
+  ASSERT_EQ(rmw_init_options_fini(&options2), RMW_RET_OK);
 }
