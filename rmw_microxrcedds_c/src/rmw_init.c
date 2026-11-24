@@ -39,7 +39,7 @@ static uint32_t
 generate_client_key(void)
 {
   static uint32_t state = 0;
-  int64_t now = uxr_nanos();
+  uint64_t now = (uint64_t)uxr_nanos();
   uint32_t entropy = (uint32_t)(now ^ (now >> 32));
   state ^= entropy;
   if (state == 0) {
