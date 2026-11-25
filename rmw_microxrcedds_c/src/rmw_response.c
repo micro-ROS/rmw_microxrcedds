@@ -23,7 +23,7 @@ rmw_ret_t
 rmw_send_response(
   const rmw_service_t * service,
   rmw_request_id_t * request_header,
-  void * ros_response)
+  const void * ros_response)
 {
   RMW_CHECK_TYPE_IDENTIFIERS_MATCH(
     service->implementation_identifier,
